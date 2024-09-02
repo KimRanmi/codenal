@@ -1,4 +1,4 @@
-package com.codenal.domain;
+package com.codenal.calendar.domain;
 
 import java.time.LocalDateTime;
 
