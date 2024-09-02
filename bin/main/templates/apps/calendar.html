@@ -15,7 +15,7 @@
 <body>
 	<div layout:fragment="content">
 
-		<div th:replace="partials/page-title :: page-title('Calendar','Apps')"></div>
+		<div th:replace="partials/page-title :: page-title('캘린더','Apps')"></div>
 
 		<div class="row">
 			<div class="col-12">
@@ -24,36 +24,34 @@
 						<div class="card card-h-100">
 							<div class="card-body">
 								<button class="btn btn-primary w-100" id="btn-new-event"><i class="mdi mdi-plus"></i>
-									Create New Event</button>
+									새 일정 추가</button>
 
 								<div id="external-events">
 									<br>
-									<p class="text-muted">Drag and drop your event or click in the calendar</p>
+									<p class="text-muted">그래그 앤 드롭으로 일정을 추가해보세요.</p>
 									<div class="external-event fc-event bg-soft-success text-success"
 										data-class="bg-soft-success">
-										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>New Event
-										Planning
+										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>회식
 									</div>
 									<div class="external-event fc-event bg-soft-info text-info"
 										data-class="bg-soft-info">
-										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>Meeting
+										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>회식
 									</div>
 									<div class="external-event fc-event bg-soft-warning text-warning"
 										data-class="bg-soft-warning">
-										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>Generating
-										Reports
+										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>회식
 									</div>
 									<div class="external-event fc-event bg-soft-danger text-danger"
 										data-class="bg-soft-danger">
-										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>Create New theme
+										<i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>회식
 									</div>
 								</div>
 
 							</div>
 						</div>
 						<div>
-							<h5 class="mb-1">Upcoming Events</h5>
-							<p class="text-muted">Don't miss scheduled events</p>
+							<h5 class="mb-1">다가오는 일정</h5>
+							<p class="text-muted">일정을 놓치지 않도록 주의하세요.</p>
 							<div class="pe-2 me-n1 mb-3" data-simplebar style="height: 400px">
 								<div id="upcoming-event-list"></div>
 							</div>
@@ -66,9 +64,8 @@
 										<i data-feather="calendar" class="text-info icon-dual-info"></i>
 									</div>
 									<div class="flex-grow-1 ms-3">
-										<h6 class="fs-15">Welcome to your Calendar!</h6>
-										<p class="text-muted mb-0">Event that applications book will appear here. Click
-											on an event to see the details and manage applicants event.</p>
+										<h6 class="fs-15">캘린더에 오신 것을 환영합니다!</h6>
+										<p class="text-muted mb-0">캘린더의 일정을 클릭하여 상세한 내용을 알아보세요.</p>
 									</div>
 								</div>
 							</div>
@@ -93,7 +90,7 @@
 					<div class="modal-dialog modal-dialog-centered">
 						<div class="modal-content border-0">
 							<div class="modal-header p-3 bg-soft-info">
-								<h5 class="modal-title" id="modal-title">Event</h5>
+								<h5 class="modal-title" id="modal-title">일정</h5>
 								<button type="button" class="btn-close" data-bs-dismiss="modal"
 									aria-hidden="true"></button>
 							</div>
@@ -101,7 +98,7 @@
 								<form class="needs-validation" name="event-form" id="form-event" novalidate>
 									<div class="text-end">
 										<a href="#" class="btn btn-sm btn-soft-primary" id="edit-event-btn"
-											data-id="edit-event" onclick="editEvent(this)" role="button">Edit</a>
+											data-id="edit-event" onclick="editEvent(this)" role="button">수정</a>
 									</div>
 									<div class="event-details">
 										<div class="d-flex mb-2">
@@ -145,36 +142,39 @@
 									<div class="row event-form">
 										<div class="col-12">
 											<div class="mb-3">
-												<label class="form-label">Type</label>
+												<label class="form-label">카테고리</label>
 												<select class="form-select d-none" name="category" id="event-category"
 													required>
-													<option value="bg-soft-danger">Danger</option>
+													<option value="bg-soft-success">개인일정</option>
+													<option value="bg-soft-primary">부서일정</option>
+													<option value="bg-soft-info">전체일정</option>
+													<!-- <option value="bg-soft-danger">Danger</option>
 													<option value="bg-soft-success">Success</option>
 													<option value="bg-soft-primary">Primary</option>
 													<option value="bg-soft-info">Info</option>
 													<option value="bg-soft-dark">Dark</option>
-													<option value="bg-soft-warning">Warning</option>
+													<option value="bg-soft-warning">Warning</option> -->
 												</select>
-												<div class="invalid-feedback">Please select a valid event category</div>
+												<div class="invalid-feedback">일정 카테고리를 선택해 주세요.</div>
 											</div>
 										</div>
 										<!--end col-->
 										<div class="col-12">
 											<div class="mb-3">
-												<label class="form-label">Event Name</label>
-												<input class="form-control d-none" placeholder="Enter event name"
+												<label class="form-label">일정 제목</label>
+												<input class="form-control d-none" placeholder="일정 제목 입력"
 													type="text" name="title" id="event-title" required value="" />
-												<div class="invalid-feedback">Please provide a valid event name</div>
+												<div class="invalid-feedback">일정 제목을 입력해주세요.</div>
 											</div>
 										</div>
 										<!--end col-->
 										<div class="col-12">
 											<div class="mb-3">
-												<label>Event Date</label>
+												<label>날짜</label>
 												<div class="input-group d-none">
 													<input type="text" id="event-start-date"
 														class="form-control flatpickr flatpickr-input"
-														placeholder="Select date" readonly required>
+														placeholder="날짜 선택" readonly required>
 													<span class="input-group-text"><i
 															class="ri-calendar-event-line"></i></span>
 												</div>
@@ -185,11 +185,11 @@
 											<div class="row">
 												<div class="col-6">
 													<div class="mb-3">
-														<label class="form-label">Start Time</label>
+														<label class="form-label">시작 시간</label>
 														<div class="input-group d-none">
 															<input id="timepicker1" type="text"
 																class="form-control flatpickr flatpickr-input"
-																placeholder="Select start time" readonly>
+																placeholder="일정 시작 시간 선택" readonly>
 															<span class="input-group-text"><i
 																	class="ri-time-line"></i></span>
 														</div>
@@ -197,11 +197,11 @@
 												</div>
 												<div class="col-6">
 													<div class="mb-3">
-														<label class="form-label">End Time</label>
+														<label class="form-label">종료 시간</label>
 														<div class="input-group d-none">
 															<input id="timepicker2" type="text"
 																class="form-control flatpickr flatpickr-input"
-																placeholder="Select end time" readonly>
+																placeholder="일정 종료 시간 선택" readonly>
 															<span class="input-group-text"><i
 																	class="ri-time-line"></i></span>
 														</div>
@@ -212,10 +212,10 @@
 										<!--end col-->
 										<div class="col-12">
 											<div class="mb-3">
-												<label for="event-location">Location</label>
+												<label for="event-location">장소</label>
 												<div>
 													<input type="text" class="form-control d-none" name="event-location"
-														id="event-location" placeholder="Event location">
+														id="event-location" placeholder="일정 장소 입력">
 												</div>
 											</div>
 										</div>
@@ -223,9 +223,9 @@
 										<input type="hidden" id="eventid" name="eventid" value="" />
 										<div class="col-12">
 											<div class="mb-3">
-												<label class="form-label">Description</label>
+												<label class="form-label">상세 내용</label>
 												<textarea class="form-control d-none" id="event-description"
-													placeholder="Enter a description" rows="3"
+													placeholder="일정 상세 내용 입력" rows="3"
 													spellcheck="false"></textarea>
 											</div>
 										</div>
@@ -234,9 +234,8 @@
 									<!--end row-->
 									<div class="hstack gap-2 justify-content-end">
 										<button type="button" class="btn btn-soft-danger" id="btn-delete-event"><i
-												class="ri-close-line align-bottom"></i> Delete</button>
-										<button type="submit" class="btn btn-success" id="btn-save-event">Add
-											Event</button>
+												class="ri-close-line align-bottom"></i> 삭제</button>
+										<button type="submit" class="btn btn-success" id="btn-save-event">일정 추가</button>
 									</div>
 								</form>
 							</div>

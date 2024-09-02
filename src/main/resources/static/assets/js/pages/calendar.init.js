@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formEvent.classList.remove("was-validated");
         formEvent.reset();
         selectedEvent = null;
-        modalTitle.innerText = 'Add Event';
+        modalTitle.innerText = '일정 추가';
         newEventData = info;
         document.getElementById("edit-event-btn").setAttribute("data-id", "new-event");
         document.getElementById('edit-event-btn').click();
@@ -301,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit-event-btn").removeAttribute("hidden");
             document.getElementById('btn-save-event').setAttribute("hidden", true);
             document.getElementById("edit-event-btn").setAttribute("data-id", "edit-event");
-            document.getElementById("edit-event-btn").innerHTML = "Edit";
+            document.getElementById("edit-event-btn").innerHTML = "수정";
             eventClicked();
             flatPickrInit();
             flatpicekrValueClear();
@@ -311,13 +311,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // First Modal
             document.getElementById("modal-title").innerHTML = "";
-            document.getElementById("event-location-tag").innerHTML = selectedEvent.extendedProps.location === undefined ? "No Location" : selectedEvent.extendedProps.location;
-            document.getElementById("event-description-tag").innerHTML = selectedEvent.extendedProps.description === undefined ? "No Description" : selectedEvent.extendedProps.description;
+            document.getElementById("event-location-tag").innerHTML = selectedEvent.extendedProps.location === undefined ? "장소 없음" : selectedEvent.extendedProps.location;
+            document.getElementById("event-description-tag").innerHTML = selectedEvent.extendedProps.description === undefined ? "내용 없음" : selectedEvent.extendedProps.description;
 
             // Edit Modal
             document.getElementById("event-title").value = selectedEvent.title;
-            document.getElementById("event-location").value = selectedEvent.extendedProps.location === undefined ? "No Location" : selectedEvent.extendedProps.location;
-            document.getElementById("event-description").value = selectedEvent.extendedProps.description === undefined ? "No Description" : selectedEvent.extendedProps.description;
+            document.getElementById("event-location").value = selectedEvent.extendedProps.location === undefined ? "장소 없음" : selectedEvent.extendedProps.location;
+            document.getElementById("event-description").value = selectedEvent.extendedProps.description === undefined ? "내용 없음" : selectedEvent.extendedProps.description;
             document.getElementById("eventid").value = selectedEvent.id;
 
             if (selectedEvent.classNames[0]) {
@@ -451,8 +451,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Form to add new event
     formEvent.addEventListener('submit', function (ev) {
         ev.preventDefault();
+        
         var updatedTitle = document.getElementById("event-title").value;
         var updatedCategory = document.getElementById('event-category').value;
+        
+        var categoryNo = 0;
+        switch(updatedCategory){
+			case 'bg-soft-success' : categoryNo = 1; break; /*개인일정*/
+			case 'bg-soft-primary' : categoryNo = 2; break; /*부서일정*/
+			case 'bg-soft-info' : categoryNo = 3; break; /*전체일정*/
+		}
+		
         var start_date = (document.getElementById("event-start-date").value).split("to");
         var updateStartDate = new Date(start_date[0].trim());
 
@@ -479,6 +488,39 @@ document.addEventListener("DOMContentLoaded", function () {
             end_date = new Date(e_date + "T" + end_time);
         }
         var e_id = defaultEvents.length + 1;
+        
+        	/*const payload = new FormData();
+        	payload.set('calendar_schedule_category' , categoryNo);
+        	payload.set('calendar_schedule_title' , updatedTitle);
+        	payload.set('calendar_schedule_location' , event_location);
+        	payload.set('calendar_schedule_content' , eventDescription);
+        	payload.set('calendar_schedule_writer' , 1);
+        	payload.set('calendar_schedule_start_date' , updateStartDate);
+        	payload.set('calendar_schedule_end_date' , updateEndDate);*/
+	    
+	    	
+	        const payload = {
+				calendar_schedule_category : categoryNo,
+				calendar_schedule_title : updatedTitle,
+				calendar_schedule_location : event_location,
+				calendar_schedule_content : eventDescription,
+				calendar_schedule_writer : 1,
+				calendar_schedule_start_date : updateStartDate,
+				calendar_schedule_end_date : updateEndDate
+			}
+			/*const data = {
+				method:'POST',
+	            body:payload
+			}*/
+			const ggg = 1;
+	        fetch('/create/event',{
+	        	method:'POST',
+	            body:JSON.stringify(ggg)
+	        })
+	        .then(response => response.json())
+	        .then(data=>{
+	        	alert(data.res_msg);
+	        })
 
         // validation
         if (forms[0].checkValidity() === false) {
@@ -612,17 +654,17 @@ function editEvent(data) {
     var data_id = data.getAttribute("data-id");
     if (data_id == 'new-event') {
         document.getElementById('modal-title').innerHTML = "";
-        document.getElementById('modal-title').innerHTML = "Add Event";
-        document.getElementById("btn-save-event").innerHTML = "Add Event";
+        document.getElementById('modal-title').innerHTML = "일정 추가";
+        document.getElementById("btn-save-event").innerHTML = "일정 추가";
         eventTyped();
     } else if (data_id == 'edit-event') {
         data.innerHTML = "Cancel";
         data.setAttribute("data-id", 'cancel-event');
-        document.getElementById("btn-save-event").innerHTML = "Update Event";
+        document.getElementById("btn-save-event").innerHTML = "일정 수정";
         data.removeAttribute("hidden");
         eventTyped();
     } else {
-        data.innerHTML = "Edit";
+        data.innerHTML = "수정";
         data.setAttribute("data-id", 'edit-event');
         eventClicked();
     }
@@ -664,9 +706,9 @@ function upcomingEvent(a) {
         if (e_dt == "Invalid Date" || e_dt == undefined) {
             e_dt = null;
         } else {
-            const newDate = new Date(e_dt).toLocaleDateString('en', { year: 'numeric', month: 'numeric', day: 'numeric' });
+            const newDate = new Date(e_dt).toLocaleDateString('ko', { year: 'numeric', month: 'numeric', day: 'numeric' });
             e_dt = new Date(newDate)
-              .toLocaleDateString("en-GB", {
+              .toLocaleDateString("ko-KR", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
@@ -683,9 +725,9 @@ function upcomingEvent(a) {
         if (startDate === "Invalid Date" || startDate === undefined) {
             startDate = null;
         } else {
-            const newDate = new Date(startDate).toLocaleDateString('en', { year: 'numeric', month: 'numeric', day: 'numeric' });
+            const newDate = new Date(startDate).toLocaleDateString('ko', { year: 'numeric', month: 'numeric', day: 'numeric' });
             startDate = new Date(newDate)
-              .toLocaleDateString("en-GB", {
+              .toLocaleDateString("ko-KR", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
@@ -694,7 +736,7 @@ function upcomingEvent(a) {
               .join(" ");
         }
 
-        var end_dt = (e_dt) ? " to " + e_dt : '';
+        var end_dt = (e_dt) ? " ~ " + e_dt : '';
         var category = (element.className).split("-");
         var description = (element.description) ? element.description : "";
         var e_time_s = tConvert(getTime(element.start));
@@ -703,8 +745,12 @@ function upcomingEvent(a) {
             var e_time_s = "Full day event";
             var e_time_e = null;
         }
-        var e_time_e = (e_time_e) ? " to " + e_time_e : "";
-
+        var e_time_e = (e_time_e) ? " ~ " + e_time_e : "";
+        let nowDate = new Date();
+        nowDate = nowDate.getFullYear()+'-'+(nowDate.getMonth()+1)+'-'+nowDate.getDate();
+        let toDay = new Date(nowDate);
+		if(e_dt == null && element.start >= toDay || e_dt != null && element.end >= toDay){
+			
         u_event = "<div class='card mb-3'>\
                         <div class='card-body'>\
                             <div class='d-flex mb-3'>\
@@ -716,6 +762,7 @@ function upcomingEvent(a) {
                         </div>\
                     </div>";
         document.getElementById("upcoming-event-list").innerHTML += u_event;
+		}
     });
 };
 
@@ -723,7 +770,7 @@ function getTime(params) {
     params = new Date(params);
     if (params.getHours() != null) {
         var hour = params.getHours();
-        var minute = (params.getMinutes()) ? params.getMinutes() : 00;
+        var minute = (params.getMinutes()) ? params.getMinutes() : 0;
         return hour + ":" + minute;
     }
 }
@@ -732,15 +779,15 @@ function tConvert(time) {
     var t = time.split(":");
     var hours = t[0];
     var minutes = t[1];
-    var newformat = hours >= 12 ? 'PM' : 'AM';
+    var newformat = hours >= 12 ? '오전' : '오후';
     hours = hours % 12;
     hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;
-    return (hours + ':' + minutes + ' ' + newformat);
+    return (newformat + ' ' + hours + ':' + minutes);
 }
 
 var str_dt = function formatDate(date) {
-    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
     var d = new Date(date),
         month = '' + monthNames[(d.getMonth())],
         day = '' + d.getDate(),

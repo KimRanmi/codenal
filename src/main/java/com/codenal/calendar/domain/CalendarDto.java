@@ -20,6 +20,7 @@ public class CalendarDto {
 	private Long calendar_schedule_no;
 	private Long calendar_schedule_category;
 	private String calendar_schedule_title;
+	private String calendar_schedule_location;
 	private String calendar_schedule_content;
 	private Long calendar_schedule_writer;
 	private LocalDateTime calendar_schedule_start_date;
@@ -31,6 +32,7 @@ public class CalendarDto {
 				.calendarScheduleNo(calendar_schedule_no)
 				.calendarScheduleCategory(calendar_schedule_category)
 				.calendarScheduleTitle(calendar_schedule_title)
+				.calendarScheduleLocation(calendar_schedule_location)
 				.calendarScheduleContent(calendar_schedule_content)
 				.calendarScheduleWriter(calendar_schedule_writer)
 				.calendarScheduleStartDate(calendar_schedule_start_date)
@@ -44,6 +46,7 @@ public class CalendarDto {
 				.calendar_schedule_no(calendar.getCalendarScheduleNo())
 				.calendar_schedule_category(calendar.getCalendarScheduleCategory())
 				.calendar_schedule_title(calendar.getCalendarScheduleTitle())
+				.calendar_schedule_location(calendar.getCalendarScheduleLocation())
 				.calendar_schedule_content(calendar.getCalendarScheduleContent())
 				.calendar_schedule_writer(calendar.getCalendarScheduleWriter())
 				.calendar_schedule_start_date(calendar.getCalendarScheduleStartDate())

@@ -33,6 +33,9 @@ public class Calendar {
 	@Column(name = "calendar_schedule_title")
 	private String calendarScheduleTitle;
 	
+	@Column(name = "calendar_schedule_location")
+	private String calendarScheduleLocation;
+	
 	@Column(name = "calendar_schedule_content")
 	private String calendarScheduleContent;
 	
