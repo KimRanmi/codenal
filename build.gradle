@@ -1,44 +1,48 @@
-plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.3'
-	id 'io.spring.dependency-management' version '1.1.6'
+plugins { 
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.3'
+    id 'java' 
 }
 
-group = 'com.codenal'
-version = '0.0.1-SNAPSHOT'
+group = 'com.example' 
+version = '0.0.1-SNAPSHOT' 
+description = 'Velzon project for Spring Boot' 
+sourceCompatibility = '17' 
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+repositories { 
+    mavenCentral() 
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+dependencies { 
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security 의존성 추가
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC 드라이버 추가
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' 
 }
 
-repositories {
-	mavenCentral()
+tasks.named('test') { 
+    useJUnitPlatform() 
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	implementation 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC 드라이버 추가
-	
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+bootJar { 
+    enabled = true 
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+build { 
+    dependsOn bootJar 
+}
+
+sourceSets { 
+    main { 
+        resources { 
+            srcDirs = ['src/main/resources'] 
+        } 
+    } 
 }

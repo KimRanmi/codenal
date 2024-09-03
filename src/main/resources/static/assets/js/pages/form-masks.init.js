@@ -76,7 +76,7 @@ if (document.querySelector("#cleave-prefix")) {
 
 if (document.querySelector("#cleave-phone")) {
     var cleaveBlocks = new Cleave('#cleave-phone', {
-        delimiters: ['(', ')', '-'],
+        delimiters: ['-', '-'],
         blocks: [0, 3, 3, 4]
     });
 }

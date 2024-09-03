@@ -278,9 +278,9 @@ public class Apps {
 		return "apps/job-application";
 	}
 	
-	@GetMapping("/apps-job-new")
-	public String apps_job_new() {
-		return "apps/job-new";
+	@GetMapping("/admin-join")
+	public String admin_join() {
+		return "admin/join";
 	}
 	
 	@GetMapping("/apps-job-companies-lists")
