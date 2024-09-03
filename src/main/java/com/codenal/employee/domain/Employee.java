@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name="employee")
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
+@Setter
 public class Employee {
 
     @Id
@@ -68,4 +70,8 @@ public class Employee {
 
     @Column(name = "emp_auth", nullable = false)
     private String empAuth;
-}
+    
+   
+
+    }
+

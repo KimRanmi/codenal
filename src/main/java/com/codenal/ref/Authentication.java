@@ -2,6 +2,7 @@ package com.codenal.ref;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class Authentication {
@@ -11,10 +12,6 @@ public class Authentication {
 		return "authentication/auth-signin-basic";
 	}
 	
-	@GetMapping("/auth-signin-cover")
-	public String auth_signin_cover() {
-		return "authentication/auth-signin-cover";
-	}
 	
 	@GetMapping("/auth-signup-basic")
 	public String auth_signup_basic() {
@@ -46,15 +43,7 @@ public class Authentication {
 		return "authentication/auth-pass-change-cover";
 	}
 	
-	@GetMapping("/auth-lockscreen-basic")
-	public String auth_lockscreen_basic() {
-		return "authentication/auth-lockscreen-basic";
-	}
-	
-	@GetMapping("/auth-lockscreen-cover")
-	public String auth_lockscreen_cover() {
-		return "authentication/auth-lockscreen-cover";
-	}
+
 	
 	@GetMapping("/auth-logout-basic")
 	public String auth_logout_basic() {
@@ -110,6 +99,10 @@ public class Authentication {
 	public String auth_offline() {
 		return "authentication/auth-offline";
 	}
+	
+	
+	
+	
 }
 
 

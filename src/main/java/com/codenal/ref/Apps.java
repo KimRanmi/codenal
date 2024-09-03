@@ -48,9 +48,9 @@ public class Apps {
 		return "apps/ecommerce-add-product";
 	}
 	
-	@GetMapping("/apps-ecommerce-orders")
-	public String apps_ecommerce_orders() {
-		return "apps/ecommerce-orders";
+	@GetMapping("/admin-list")
+	public String admin_list() {
+		return "admin/list";
 	}
 	
 	@GetMapping("/apps-ecommerce-order-details")
