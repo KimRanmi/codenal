@@ -1,5 +1,13 @@
 package com.codenal.approval.controller;
 
-public class ApprovalController {
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
+@Controller
+public class ApprovalController {
+	
+	@GetMapping("/approval/create")
+	public String createApproval() {
+		return "apps/approval/create_app";
+	}
 }
