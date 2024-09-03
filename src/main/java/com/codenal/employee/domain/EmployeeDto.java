@@ -24,7 +24,7 @@ public class EmployeeDto {
     private String empPw;
     private String empName;
     private String empSsn;
-    private String empNum;
+    private String empPhone;
     private String empAddress;
     private String empAddressDetail;
     private Date empHire;
@@ -45,7 +45,7 @@ public class EmployeeDto {
                 .empPw(employee.getEmpPw())
                 .empName(employee.getEmpName())
                 .empSsn(employee.getEmpSsn())
-                .empNum(employee.getEmpNum())
+                .empPhone(employee.getEmpPhone())
                 .empAddress(employee.getEmpAddress())
                 .empAddressDetail(employee.getEmpAddressDetail())
                 .empHire(employee.getEmpHire())
@@ -66,7 +66,7 @@ public class EmployeeDto {
                 .empPw(empPw)
                 .empName(empName)
                 .empSsn(empSsn)
-                .empNum(empNum)
+                .empPhone(empPhone)
                 .empAddress(empAddress)
                 .empAddressDetail(empAddressDetail)
                 .empHire(empHire)

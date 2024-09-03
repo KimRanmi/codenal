@@ -5,20 +5,33 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.codenal.security.service.SecurityService;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+	
+	@Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+   
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityService securityService) throws Exception {
         http
+            .cors(Customizer.withDefaults())  // CORS 설정 추가
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((requests) -> requests
-                .requestMatchers( "/auth-signin-basic", "/assets/**", "/assets/css/**", "/assets/js/**", "/assets/images/**").permitAll()  
+            		  .requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(login ->
@@ -28,8 +41,8 @@ public class WebSecurityConfig {
                 .passwordParameter("emp_pw")
                 .permitAll()
                 .defaultSuccessUrl("/", true)
-                .successHandler(myLoginSuccessHandler())  // 빈으로 등록된 핸들러 사용
-                .failureHandler(myLoginFailureHandler())  // 빈으로 등록된 핸들러 사용
+                .successHandler(myLoginSuccessHandler())
+                .failureHandler(myLoginFailureHandler())
             )
             .logout((logout) -> logout
                 .logoutUrl("/auth-logout-basic")
@@ -39,16 +52,23 @@ public class WebSecurityConfig {
             .rememberMe((rememberMe) -> rememberMe
                 .key("uniqueAndSecret")
                 .tokenValiditySeconds(86400)
-                .userDetailsService(userDetailsService)  // 여기에서 UserDetailsService를 설정
-            )
-            .httpBasic(Customizer.withDefaults());
+                .userDetailsService(securityService)
+            );
+            
 
         return http.build();
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new SecurityService();  
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean

@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name="employee")
@@ -20,11 +21,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
+@Setter
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "emp_idd")
+    @Column(name = "emp_id")
     private int empId;
 
     @Column(name = "emp_pw", nullable = false)
@@ -36,8 +38,8 @@ public class Employee {
     @Column(name = "emp_ssn", nullable = false)
     private String empSsn;
 
-    @Column(name = "emp_num", nullable = false)
-    private String empNum;
+    @Column(name = "emp_phone", nullable = false)
+    private String empPhone;
 
     @Column(name = "emp_address")
     private String empAddress;
@@ -68,4 +70,7 @@ public class Employee {
 
     @Column(name = "emp_auth", nullable = false)
     private String empAuth;
-}
+    
+   
+
+    }

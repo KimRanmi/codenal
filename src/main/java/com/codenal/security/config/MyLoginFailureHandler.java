@@ -14,6 +14,6 @@ public class MyLoginFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        response.sendRedirect("/login?error=true");
+        response.sendRedirect("/auth-signin-basic?error=true");
     }
 }
