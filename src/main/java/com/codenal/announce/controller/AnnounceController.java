@@ -12,5 +12,25 @@ public class AnnounceController {
 		return "apps/announce";
 	}
 	
+	@GetMapping("/announce/detail")
+	public String apps_projects_overview() {
+		return "apps/announce_detail";
+	}
+
+	
+	
+	@GetMapping("/announce/create")
+	public String apps_projects_create() {
+		return "apps/announce_create";
+	}
+	
+	
+//	@GetMapping("/apps-projects-list")
+//	public String apps_projects_list() {
+//		return "apps/projects-list";
+//	}
+//	
+
+	
 	
 }
