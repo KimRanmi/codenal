@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ChatController {
 
 	
-	@GetMapping("/chat")
+	@GetMapping("/chatList")
 	public String chat(Model model) {
 		model.addAttribute("page","appchat");
 		return "apps/chat";
