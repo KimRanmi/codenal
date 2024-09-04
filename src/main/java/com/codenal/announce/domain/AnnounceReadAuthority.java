@@ -31,7 +31,7 @@ public class AnnounceReadAuthority {
 	private Long announceNo;
 	
 	@ManyToOne
-	@JoinColumn(name="announce_no")
+	@JoinColumn(name="parent_announce_no")
 	private Announce announce;
 	
 	
