@@ -34,7 +34,7 @@ public class CodenalApplication {
                 String rawPassword = employee.getEmpPw();
                 String encodedPassword = passwordEncoder.encode(rawPassword);
                 employee.setEmpPw(encodedPassword);
-                employeeRepository.save(employee);
+                employeeRepository.save(employee);	
             }
         }
     }
