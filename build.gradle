@@ -31,7 +31,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC 드라이버 추가
-	     implementation 'mysql:mysql-connector-java:8.0.32' //mysqll jdbc 드라이버 추가 
 	
 	
 	compileOnly 'org.projectlombok:lombok'
