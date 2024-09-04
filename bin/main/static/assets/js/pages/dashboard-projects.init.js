@@ -264,3 +264,7 @@ function scrollToBottom(id) {
             });
     }, 100);
 }
+
+const date=new Date();
+const month=date.getMonth()+1;
+document.getElementById("month").innerHTML = month;
