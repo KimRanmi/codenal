@@ -89,19 +89,29 @@
 									</tr>
 								</thead>
 								<tbody class="">
-									<tr th:each="announce, stat : ${announceList}">
-<!--체크박스 										<th scope="row">
-											<div class="form-check">
-												<input class="form-check-input" type="checkbox" name="chk_child"
-													value="option1">
-											</div>
-										</th> -->
-										<td th:text="${stat.count}"></td>
-										<td th:text="${announce.view_count}"></td>
-										<td th:text="${announce.announce_title}"><a href="/announce/detail"></a></td>
-										<td th:text="${announce.announce_writer}">작성자이름 </td>
-										<td th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>
-									</tr>
+									<!-- announceList 꺼내기(게시글 존재x) -->
+									<th:block th:if="${#lists.isEmpty(announceList.content)}">
+										<tr>
+											<td colspan="5">해당하는 게시글이 없습니다.</td>
+										</tr>
+									</th:block>
+									<!-- announceList 꺼내기(게시글 존재o) -->
+									<th:block th:if="${!#lists.isEmpty(announceList.content)}">
+										<tr th:each="announce, stat : ${announceList}">
+	<!--체크박스 										<th scope="row">
+												<div class="form-check">
+													<input class="form-check-input" type="checkbox" name="chk_child"
+														value="option1">
+												</div>
+											</th> -->
+											<!-- pageable 활용한 게시글 번호 수정 -->
+											<td th:text="${announceList.pageable.pageSize)*(announceList.pageable.pageNumber)+stat.count}"></td>
+											<td th:text="${announce.view_count}"></td>
+											<td th:text="${announce.announce_title}"><a href="/announce/detail"></a></td>
+											<td th:text="${announce.announce_writer}">작성자이름 </td>
+											<td th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>
+										</tr>
+									</th:block>
 								</tbody>
 							</table>
 							<!--end table-->

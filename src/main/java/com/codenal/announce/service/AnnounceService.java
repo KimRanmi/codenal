@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.codenal.announce.domain.Announce;
@@ -21,14 +24,32 @@ public class AnnounceService {
 		this.announceRepository = announceRepository;
 	}
 	
-	public List<AnnounceDto> selectAnnounceList(AnnounceDto searchDto){
-		List<Announce> announceList = announceRepository.findAll();
-		List<AnnounceDto> announceDtoList = new ArrayList<AnnounceDto>();
-		for(Announce announce : announceList) {
-			AnnounceDto announceDto = new AnnounceDto().toDto(announce);
-			announceDtoList.add(announceDto);
+	public Page<AnnounceDto> selectAnnounceList(AnnounceDto searchDto, Pageable pageable){
+		Page<Announce> announceList = null;
+		String searchText = searchDto.getSearch_text();
+		if(searchText != null && "".equals(searchText) == false) {
+			int searchType = searchDto.getSearch_type();
+			switch(searchType) {
+			case 1:
+				announceList = announceRepository.findByAnnounceTitleContaining(searchText, pageable);
+				break;
+			case 2:
+				announceList = announceRepository.findByAnnounceWriterContaining(searchText, pageable);
+				break;
+			case 3:
+				announceList = announceRepository.findByAnnounceTitleOrAnnounceWriterContaining(searchText, pageable);
+			}
+			
+		} else {
+			announceList = announceRepository.findAll(pageable);
 		}
 		
-		return announceDtoList;
+		List<AnnounceDto> announceDtoList = new ArrayList<AnnounceDto>();
+		for(Announce a : announceList) {
+			AnnounceDto dto = new AnnounceDto().toDto(a);
+			announceDtoList.add(dto);
+		}
+		
+		return new PageImpl<>(announceDtoList, pageable, announceList.getTotalElements());
 	}
 }

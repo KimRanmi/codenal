@@ -3,6 +3,8 @@ package com.codenal.announce.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -25,10 +27,13 @@ public class AnnounceController {
 	}
 	
 	@GetMapping("/announce")
-	public String apps_tasks_list_view(Model model, AnnounceDto searchDto) {
-		List<AnnounceDto> announceList = announceService.selectAnnounceList(searchDto);
+	public String apps_tasks_list_view(Model model
+			, @PageableDefault(page=0, size=10, sort="regDate", direction  = Sort.Direction.DESC) Pageable pageable
+			, AnnounceDto searchDto) {
+		Page<AnnounceDto> announceList = announceService.selectAnnounceList(searchDto, pageable);
 		System.out.println(announceList);
 		model.addAttribute("announceList",announceList);
+		model.addAttribute("searchDto",searchDto);
 		return "apps/announce";
 	}
 	

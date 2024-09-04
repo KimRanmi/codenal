@@ -26,6 +26,9 @@ public class AnnounceDto {
 	private int view_count;
 	private char read_authority_status;
 	
+	private int search_type = 1;
+	private String search_text;
+	
 	
 	public Announce toEntity() {
 		return Announce.builder()
