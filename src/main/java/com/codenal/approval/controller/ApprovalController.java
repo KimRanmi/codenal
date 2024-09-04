@@ -10,4 +10,9 @@ public class ApprovalController {
 	public String createApproval() {
 		return "apps/approval/approval_create";
 	}
+	
+	@GetMapping("/approval/list")
+	public String listApproval() {
+		return "apps/approval/approval_list";
+	}
 }
