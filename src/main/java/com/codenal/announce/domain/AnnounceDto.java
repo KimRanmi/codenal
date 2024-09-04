@@ -17,10 +17,10 @@ import lombok.ToString;
 @Builder
 public class AnnounceDto {
 
-	private int announce_no;
+	private Long announce_no;
 	private int announce_writer;
 	private String announce_title;
-	private Long announce_content;
+	private String announce_content;
 	private LocalDateTime reg_date;
 	private LocalDateTime mod_date;
 	private int view_count;

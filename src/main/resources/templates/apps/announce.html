@@ -81,6 +81,7 @@
 													value="option">
 											</div>
 										</th> -->
+										<th></th>
 										<th>번호</th>
 										<th>조회수</th>
 										<th>제목</th>
@@ -105,7 +106,8 @@
 												</div>
 											</th> -->
 											<!-- pageable 활용한 게시글 번호 수정 -->
-											<td th:text="${announceList.pageable.pageSize)*(announceList.pageable.pageNumber)+stat.count}"></td>
+											<td></td>
+											<td th:text="${(announceList.pageable.pageSize) * (announceList.pageable.pageNumber)+stat.count}"></td>
 											<td th:text="${announce.view_count}"></td>
 											<td th:text="${announce.announce_title}"><a href="/announce/detail"></a></td>
 											<td th:text="${announce.announce_writer}">작성자이름 </td>
@@ -117,8 +119,41 @@
 							<!--end table-->
 							
 						</div>
-						<!--페이징 -->
-						<div class="d-flex justify-content-end mt-2">
+						<!--페이징 로직-->
+						<div class="d-flex justify-content-end mt-2" th:if="${!announceList.isEmpty()}">
+							<ul class="pagination"
+								th:with="
+								pageNumber = ${announceList.pageable.pageNumber},
+								pageSize = ${announceList.pageable.pageSize},
+								totalPages = ${announceList.totalPages},
+								startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+								tempEndPage = ${startPage + pageSize - 1},
+								endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+								">
+								<!-- 이전 -->
+								<th:block th:if="${!announceList.first}">
+									<li class="page-item">
+									<a class="page-link" th:href="${announceList.first} ? '#' : @{/announce(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;이전</a>
+									</li>
+								</th:block>
+								<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용-->
+								<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+									<li class="page-item">
+									<a class="page-link" th:text="${page}" th:href="@{/announce(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}" 
+									th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
+									</li>
+								</th:block>
+								<ul class="pagination listjs-pagination mb-0"></ul>
+								<!-- 이후 -->
+								<th:block th:if="${!announceList.last}">
+									<li class="page-item">
+									<a class="page-link" th:href="${announceList.last} ? '#' : @{/announce(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;이후</a>
+									</li>
+								</th:block>
+							</ul>
+						</div>
+						
+<!-- 						<div class="d-flex justify-content-end mt-2">
 							<div class="pagination-wrap hstack gap-2">
 								<a class="page-item pagination-prev disabled" href="#">
 									이전
@@ -128,7 +163,7 @@
 									이후
 								</a>
 							</div>
-						</div>
+						</div> -->
 					</div>
 					<!--end card-body-->
 				</div>

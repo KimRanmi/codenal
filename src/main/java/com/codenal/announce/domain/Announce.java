@@ -27,7 +27,7 @@ public class Announce {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="announce_no")
-	private int announceNo;
+	private Long announceNo;
 	
 	
 //	FK 연결하기! many, 다대일
@@ -38,7 +38,7 @@ public class Announce {
 	private String announceTitle;
 
 	@Column(name="announce_content")
-	private Long announceContent;
+	private String announceContent;
 	
 	@Column(name="reg_date")
 	private LocalDateTime regDate;

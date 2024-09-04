@@ -33,11 +33,11 @@ public class AnnounceService {
 			case 1:
 				announceList = announceRepository.findByAnnounceTitleContaining(searchText, pageable);
 				break;
-			case 2:
-				announceList = announceRepository.findByAnnounceWriterContaining(searchText, pageable);
-				break;
-			case 3:
-				announceList = announceRepository.findByAnnounceTitleOrAnnounceWriterContaining(searchText, pageable);
+//			case 2:
+//				announceList = announceRepository.findByAnnounceWriterContaining(searchText, pageable);
+//				break;
+//			case 3:
+//				announceList = announceRepository.findByAnnounceTitleOrAnnounceWriterContaining(searchText, pageable);
 			}
 			
 		} else {
