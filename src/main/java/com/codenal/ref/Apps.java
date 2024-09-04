@@ -15,7 +15,7 @@ public class Apps {
 	@GetMapping("/apps-chat")
 	public String apps_chat(Model model) {
 		model.addAttribute("page","appchat");
-		return "chat";
+		return "apps/chat";
 	}
 	
 	@GetMapping("/apps-mailbox")

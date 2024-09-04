@@ -32,6 +32,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC 드라이버 추가
 	
+	
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
