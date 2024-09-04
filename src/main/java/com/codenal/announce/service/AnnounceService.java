@@ -52,4 +52,19 @@ public class AnnounceService {
 		
 		return new PageImpl<>(announceDtoList, pageable, announceList.getTotalElements());
 	}
+	
+	
+	public List<AnnounceDto> selectAnnounceDetail(){
+		List<Announce> announceList = announceRepository.findAll();  // 작성자 이름하고 권한, 파일 가져와야함 -> 도메인 만들기
+		List<AnnounceDto> announceDtoList = new ArrayList<AnnounceDto>();
+		for(Announce announce : announceList) {
+			AnnounceDto announceDto = new AnnounceDto().toDto(announce);
+			announceDtoList.add(announceDto);
+		for(Announce a : announceList) {
+			AnnounceDto dto = new AnnounceDto().toDto(a);
+			announceDtoList.add(dto);
+		}
+		return announceDtoList;
+	}
+	}
 }

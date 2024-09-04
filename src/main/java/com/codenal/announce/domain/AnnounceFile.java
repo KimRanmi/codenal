@@ -1,12 +1,12 @@
 package com.codenal.announce.domain;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,12 +24,14 @@ import lombok.Setter;
 @Builder
 public class AnnounceFile {
 
-//	FK 연결하기!
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="announce_no")
 	private Long announceNo;
 	
+	@ManyToOne
+	@JoinColumn(name="announce_no")
+	private Announce announce;
 
 	@Column(name="file_ori_name")
 	private String fileOriName;

@@ -23,5 +23,5 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long>{
 //					+ "OR a.announceWriter LIKE CONCAT('%',?1,'%') ")
 //	Page<Announce> findByAnnounceTitleOrAnnounceWriterContaining(String keyword, Pageable pageable);
 //	
-	Announce findByAnnounceNo(Long announceNo);
+	Announce findByAnnounceNo(Long announce_no);
 }

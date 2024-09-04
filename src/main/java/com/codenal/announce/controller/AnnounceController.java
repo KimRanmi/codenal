@@ -27,25 +27,27 @@ public class AnnounceController {
 	}
 	
 	@GetMapping("/announce")
-	public String apps_tasks_list_view(Model model
+	public String announceList_view(Model model
 			, @PageableDefault(page=0, size=10, sort="regDate", direction  = Sort.Direction.DESC) Pageable pageable
 			, AnnounceDto searchDto) {
 		Page<AnnounceDto> announceList = announceService.selectAnnounceList(searchDto, pageable);
-		System.out.println(announceList);
 		model.addAttribute("announceList",announceList);
 		model.addAttribute("searchDto",searchDto);
 		return "apps/announce";
 	}
 	
 	@GetMapping("/announce/detail")
-	public String apps_projects_overview() {
+	public String announceListDetail_view(Model model) {
+		List<AnnounceDto> resultList = announceService.selectAnnounceDetail();
+		System.out.println(resultList);
+		model.addAttribute("announceList",resultList);
 		return "apps/announce_detail";
 	}
 
 	
 	
 	@GetMapping("/announce/create")
-	public String apps_projects_create() {
+	public String announceList_create() {
 		return "apps/announce_create";
 	}
 	

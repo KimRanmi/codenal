@@ -1,12 +1,14 @@
 package com.codenal.announce.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,11 @@ public class Announce {
 	@Column(name="announce_no")
 	private Long announceNo;
 	
+	@OneToMany(mappedBy = "announce")
+	private List<AnnounceFile> announces1;
+	
+	@OneToMany(mappedBy = "announce")
+	private List<AnnounceReadAuthority> announces2;
 	
 //	FK 연결하기! many, 다대일
 	@Column(name="announce_writer")
