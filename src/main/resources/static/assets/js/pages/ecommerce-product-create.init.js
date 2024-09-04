@@ -7,7 +7,7 @@ File: Ecommerce product create Js File
 */
 
 // ckeditor
-itemid = 13;
+//itemid = 13;
 ClassicEditor
     .create(document.querySelector('#ckeditor-classic'))
     .then(function (editor) {
@@ -184,4 +184,4 @@ var dropzone = new Dropzone(".dropzone", {
 
             }, false)
         })
-})()
+})()//
