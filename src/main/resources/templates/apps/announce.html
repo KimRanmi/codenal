@@ -27,8 +27,8 @@
 									<a href="/announce/create"><i class="ri-add-line align-bottom me-1"></i>
 										게시글 작성</a>
 										<!-- 게시글 체크박스 기능 안넣을거면 지우기 -->
-									<button class="btn btn-soft-danger" id="remove-actions"
-										onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+<!--체크박스 									<button class="btn btn-soft-danger" id="remove-actions"
+										onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
 								</div>
 							</div>
 						</div>
@@ -58,7 +58,8 @@
 								</div>
 								<!--end col-->
 								<div class="col-xxl-1 col-sm-4">
-									<button type="button" class="btn btn-primary w-100" onclick="SearchData();"> <i
+<!--onclick="SearchData(); JS파일에 있는거 지우기 -->
+									<button type="button" class="btn btn-primary w-100" onclick=""> <i
 											class="ri-equalizer-fill me-1 align-bottom"></i>
 										필터
 									</button>
@@ -74,40 +75,85 @@
 							<table class="table align-middle table-nowrap mb-0" id="tasksTable">
 								<thead class="table-light text-muted">
 									<tr>
-										<th style="width: 40px;">
+<!--체크박스 										<th style="width: 40px;">
 											<div class="form-check">
 												<input class="form-check-input" type="checkbox" id="checkAll"
 													value="option">
 											</div>
-										</th>
+										</th> -->
+										<th></th>
+										<th>번호</th>
 										<th>조회수</th>
-										<th>게시글 번호</th>
 										<th>제목</th>
 										<th>작성자</th>
 										<th>작성 날짜</th>
 									</tr>
 								</thead>
-								<tbody class="list form-check-all">
-									<tr>
-										<th scope="row">
-											<div class="form-check">
-												<input class="form-check-input" type="checkbox" name="chk_child"
-													value="option1">
-											</div>
-										</th>
-										<td>번호</td>
-										<td>조회숫자</td>
-										<td><a href="/announce/detail">제목</a></td>
-										<td>작성자이름 </td>
-										<td>작성날짜</td>
-									</tr>
+								<tbody class="">
+									<!-- announceList 꺼내기(게시글 존재x) -->
+									<th:block th:if="${#lists.isEmpty(announceList.content)}">
+										<tr>
+											<td colspan="5">해당하는 게시글이 없습니다.</td>
+										</tr>
+									</th:block>
+									<!-- announceList 꺼내기(게시글 존재o) -->
+									<th:block th:if="${!#lists.isEmpty(announceList.content)}">
+										<tr th:each="announce, stat : ${announceList}">
+	<!--체크박스 										<th scope="row">
+												<div class="form-check">
+													<input class="form-check-input" type="checkbox" name="chk_child"
+														value="option1">
+												</div>
+											</th> -->
+											<!-- pageable 활용한 게시글 번호 수정 -->
+											<td></td>
+											<td th:text="${(announceList.pageable.pageSize) * (announceList.pageable.pageNumber)+stat.count}"></td>
+											<td th:text="${announce.view_count}"></td>
+											<td th:text="${announce.announce_title}"><a href="/announce/detail"></a></td>
+											<td th:text="${announce.announce_writer}">작성자이름 </td>
+											<td th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>
+										</tr>
+									</th:block>
 								</tbody>
 							</table>
 							<!--end table-->
 							
 						</div>
-						<!--페이징 -->
-						<div class="d-flex justify-content-end mt-2">
+						<!--페이징 로직-->
+						<div class="d-flex justify-content-end mt-2" th:if="${!announceList.isEmpty()}">
+							<ul class="pagination"
+								th:with="
+								pageNumber = ${announceList.pageable.pageNumber},
+								pageSize = ${announceList.pageable.pageSize},
+								totalPages = ${announceList.totalPages},
+								startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+								tempEndPage = ${startPage + pageSize - 1},
+								endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+								">
+								<!-- 이전 -->
+								<th:block th:if="${!announceList.first}">
+									<li class="page-item">
+									<a class="page-link" th:href="${announceList.first} ? '#' : @{/announce(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;이전</a>
+									</li>
+								</th:block>
+								<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용-->
+								<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+									<li class="page-item">
+									<a class="page-link" th:text="${page}" th:href="@{/announce(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}" 
+									th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
+									</li>
+								</th:block>
+								<ul class="pagination listjs-pagination mb-0"></ul>
+								<!-- 이후 -->
+								<th:block th:if="${!announceList.last}">
+									<li class="page-item">
+									<a class="page-link" th:href="${announceList.last} ? '#' : @{/announce(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;이후</a>
+									</li>
+								</th:block>
+							</ul>
+						</div>
+						
+<!-- 						<div class="d-flex justify-content-end mt-2">
 							<div class="pagination-wrap hstack gap-2">
 								<a class="page-item pagination-prev disabled" href="#">
 									이전
@@ -117,7 +163,7 @@
 									이후
 								</a>
 							</div>
-						</div>
+						</div> -->
 					</div>
 					<!--end card-body-->
 				</div>
@@ -128,6 +174,18 @@
 		<!--end row-->
 
 	</div>
+
+
+<!-- JS -->
+<script>
+
+
+
+
+
+</script>
+
+
 
 
 		<!-- list.js min js -->
@@ -142,6 +200,11 @@
     <!-- Sweet Alerts js -->
     <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 	</th:block>
+	
+	
+	
+	
+	
 </body>
 
 </html>
