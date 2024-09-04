@@ -8,6 +8,6 @@ public class ApprovalController {
 	
 	@GetMapping("/approval/create")
 	public String createApproval() {
-		return "apps/approval/create_app";
+		return "apps/approval/approval_create";
 	}
 }

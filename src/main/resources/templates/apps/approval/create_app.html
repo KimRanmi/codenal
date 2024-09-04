@@ -1,27 +1,107 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<!DOCTYPE html>
+<html lang="utf-8" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
+	data-sidebar-image="none" data-preloader="disable">
 <head>
-    <!-- Meta and Bootstrap CSS -->
     <meta charset="UTF-8">
-    <title>전자결재 등록</title>
-    <link href="partials/sidebar.css">
-    <link href="partials/topbar.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Page CSS -->
+    <div th:replace="partials/head-css :: head-css"></div>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Dropzone CSS -->
+    <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
     <!-- CKEditor Script -->
     <script src="https://cdn.ckeditor.com/ckeditor5/31.1.0/classic/ckeditor.js"></script>
-    <style>
-    	#approval_edit {
-    		width: 800px;
-    		height: 900px; /* 원하는 높이로 조정 */
-    		border: 1px solid #ddd; /* 테두리 추가로 높이 확인 */
-		}
-    </style>
 </head>
-<body>
-	<th:block th:replace="~{partials/topbar :: topbar}"></th:block>
-	<th:block th:replace="~{partials/sidebar :: sidebar}"></th:block>
-
-	<div style="background-color:white; height:800px; width:800px; margin-top:50px; margin-left:50px;">
+<body >
+	<th:block layout:fragment="modal" />
+	<div th:replace="partials/customizer :: customizer"></div>
 	
-	</div>
-	
+	<div th:replace="partials/vendor-scripts :: scripts"></div>
+    <header>
+        <div th:replace="partials/topbar :: topbar"></div>
+    </header>
+    
+    <nav>
+        <div th:replace="partials/sidebar :: sidebar"></div>
+    </nav>
+    
+     <div>
+        <div th:replace="partials/page-title :: page-title('전자결재 작성 - 근태신청서', '전자결재')"></div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div style="background-color:white; width:1300px; height:850px;">
+                    <div style="margin-left:20px; margin-top:10px;">
+                        <!-- Form fields -->
+                        <div class="mb-3" style="width:600px; margin-top:10px;">
+                            <label class="form-label" for="project-title-input">제목</label>
+                            <input type="text" class="form-control" id="project-title-input" placeholder="Enter project title" style="width:500px;">
+                        </div>
+                        <div class="mb-3" style="width:600px;">
+                            <label class="form-label" for="project-author-input">기안자</label>
+                            <input type="text" class="form-control" id="project-author-input" placeholder="Enter author name" style="width:500px;">
+                        </div>
+                        <div class="mb-3" style="width:600px;">
+                            <label class="form-label" for="project-date-input">기안일</label>
+                            <input type="text" class="form-control" id="project-date-input" placeholder="Enter date" style="width:500px;">
+                        </div>
+                        <div class="mb-3" style="width:600px;">
+                            <label class="form-label" for="project-thumbnail-img">파일첨부</label>
+                            <input class="form-control" id="project-thumbnail-img" type="file" accept="image/png, image/gif, image/jpeg" style="width:500px;">
+                        </div>
+                        <!-- CKEditor Container -->
+                         <div class="col-lg-8" style="height:600px;">
+    						<div class="custom-ckeditor-container">
+        					<div id="approval_edit"></div>
+    						</div>
+						</div>
+                        <!-- Buttons -->
+                        <div style="margin-left:750px;">
+                            <button type="submit" class="btn btn-secondary w-sm">올리기</button>
+                            <button type="submit" class="btn btn-danger w-sm">취소</button>
+                        </div>
+                        <!-- Sign-off and Approval Tables -->
+                        <div style="margin-top:-640px; margin-left:600px;">
+                            <label>합의자</label>
+                            <table>
+                                <tr>
+                                    <td style="border: 1px solid #b9b9b9; width: 100px; height: 100px;"></td>
+                                    <td style="border: 1px solid #b9b9b9; width: 100px; height: 100px;">
+                                        <input type="button" value="선택" style="text-align:center; background-color:white; border:white;">
+                                    </td>
+                                    <td style="border: 1px solid #b9b9b9; width: 100px; height: 100px;"></td>
+                                </tr>
+                            </table>
+                            <br>
+                            <label>결재자</label>
+                            <table>
+                                <tr>
+                                    <td style="border: 1px solid #b9b9b9; width: 100px; height: 100px;"></td>
+                                    <td style="border: 1px solid #b9b9b9; width: 100px; height: 100px;"></td>
+                                    <td style="border: 1px solid #b9b9b9; width: 100px; height: 100px;"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- end card body -->
+            </div>
+            <!-- end card -->
+        </div>
+	    <script type="text/javascript">
+	        	document.addEventListener('DOMContentLoaded', function () {
+	            ClassicEditor
+	                .create(document.querySelector('#approval_edit'))
+	                .then(editor => {
+	                    console.log('성공');
+	                    window.editor = editor;
+	                })
+	                .catch(error => {
+	                    console.error('There was a problem initializing the editor:', error);
+	                });
+	        });
+	    </script>
+    </div>
 </body>
+</html>
