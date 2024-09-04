@@ -64,7 +64,7 @@ public class AnnounceService {
 			AnnounceDto dto = new AnnounceDto().toDto(a);
 			announceDtoList.add(dto);
 		}
-		return announceDtoList;
 	}
+		return announceDtoList;
 	}
 }
