@@ -9667,11 +9667,11 @@ div.code-toolbar > .toolbar button:hover {
   background: transparent !important;
 }
 .ck.ck-editor__main > .ck-editor__editable {
-  border-top: 0 ;
-  background-color: var(--vz-card-bg-custom) ;
-  border-color: var(--vz-input-border) ;
-  -webkit-box-shadow: none ;
-          box-shadow: none ;
+  border-top: 0 !important;
+  background-color: var(--vz-card-bg-custom) !important;
+  border-color: var(--vz-input-border) !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
 }
 .ck.ck-dropdown__panel {
   background: var(--vz-choices-bg) !important;
@@ -9732,7 +9732,9 @@ a.ck.ck-button.ck-on {
   border-top-right-radius: 0 !important;
 }
 
-
+.ck-editor__editable {
+  min-height: 245px !important;
+}
 
 .ck[class*=ck-heading_heading] {
   font-weight: 500 !important;
