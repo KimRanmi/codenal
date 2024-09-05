@@ -1,4 +1,4 @@
-<html data-sidebar="light">
+<html data-sidebar="light" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <body>
 	<div th:fragment="sidebar" th:remove="tag">
@@ -531,15 +531,15 @@
 										<div class="collapse menu-dropdown" id="sidebarApprovalList">
 											<ul class="nav nav-sm flex-column">
 												<li class="nav-item">
-													<a href="#" class="nav-link"> 근태 신청서
+													<a th:href="@{/approval/create/1}" class="nav-link"> 근태 신청서
 													</a>
 												</li>
 												<li class="nav-item">
-													<a href="#" class="nav-link"> 요청서
+													<a th:href="@{/approval/create/2}" class="nav-link"> 요청서
 													</a>
 												</li>
 												<li class="nav-item">
-													<a href="#" class="nav-link"> 품의서
+													<a th:href="@{/approval/create/3}" class="nav-link"> 품의서
 													</a>
 												</li>
 											</ul>
@@ -551,7 +551,7 @@
 										<div class="collapse menu-dropdown" id="sidebarApprovalManager">
 											<ul class="nav nav-sm flex-column">
 												<li class="nav-item">
-													<a href="#" class="nav-link"> 대기/진행중
+													<a th:href="@{/approval/list}" class="nav-link"> 대기/진행중
 													</a>
 												</li>
 												<li class="nav-item">
