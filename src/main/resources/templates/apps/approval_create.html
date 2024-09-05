@@ -80,7 +80,7 @@
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-date-input">기안일</label>
-                            <input type="text" class="form-control" id="project-date-input" disabled style="width:500px;">
+                            <input type="text" class="form-control" id="project-date-input" th:value="${ldt}" disabled style="width:500px;">
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-thumbnail-img">파일첨부</label>
@@ -92,11 +92,31 @@
     					</div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-thumbnail-img">양식</label><br>
-                            <select class="form-control" id="project-thumbnail-img" style="width:500px;">
-                            	<option></option>
-                            	<option></option>
-                            	<option></option>
+                            <!-- 근태신청서의 경우 -->
+                            <div th:if="${no == 1}">
+	                            <select class="form-control" id="project-thumbnail-img" style="width:200px;">
+	                            	<option>-- 선택하세요 -- </option>
+	                            	<option>반차</option>
+	                            	<option>연차</option>
+	                            	<option>경조휴가</option>
+	                            	<option>?</option>
+	                            </select>
+	                            <div style="margin-top:-30px; margin-left:230px; color:#b9b9b9">내 잔여연차 : </div>
+                            </div>
+                            <!-- 요청서 -->
+                            <div th:if="${no == 2}">
+                            	<select class="form-control" id="project-thumbnail-img" style="width:500px;">
+                            	<option>-- 선택하세요 -- </option>
+                            	<option>지각 정상 처리 요청서</option>
                             </select>
+                            </div>
+                            <!-- 품의서 -->
+                            <div th:if="${no == 3}">
+                            	<select class="form-control" id="project-thumbnail-img" style="width:500px;">
+                            	<option>-- 선택하세요 --</option>
+                            	<option>~~품의서</option>
+                            </select>
+                            </div>
                         </div>
                         <br>
                         <!-- 토스트 api -->
@@ -184,6 +204,9 @@
     		});
     	</script>
     	
+    	<script>
+    		const date = document.getElementById('project-date-input');
+    	</script>
     	
     	<!-- 모달 관련 script -->
     	<script>
