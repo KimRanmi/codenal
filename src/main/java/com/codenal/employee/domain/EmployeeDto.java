@@ -77,7 +77,7 @@ public class EmployeeDto {
                 .empSignImage(empSignImage)
                 .deptNo(deptNo)
                 .jobNo(jobNo)
-                .empAuth(empAuth)
+                .empAuth(empAuth != null ? empAuth : "USER")
                 .build();
     }
 
