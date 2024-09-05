@@ -57,14 +57,11 @@ public class AnnounceService {
 	public List<AnnounceDto> selectAnnounceDetail(Long no){
 		List<Announce> announceList = announceRepository.findByAnnounceListOne(no);  // 작성자 이름하고 권한, 파일 가져와야함
 		List<AnnounceDto> announceDtoList = new ArrayList<AnnounceDto>();
-		for(Announce announce : announceList) {
-			AnnounceDto announceDto = new AnnounceDto().toDto(announce);
-			announceDtoList.add(announceDto);
 		for(Announce a : announceList) {
 			AnnounceDto dto = new AnnounceDto().toDto(a);
 			announceDtoList.add(dto);
 		}
-	}
+
 		return announceDtoList;
 	}
 }
