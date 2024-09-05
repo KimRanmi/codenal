@@ -1,6 +1,9 @@
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,10 +47,12 @@ public class Employee {
 
     @Column(name = "emp_address_detail")
     private String empAddressDetail;
-
+    
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "emp_hire")
     private LocalDate empHire;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "emp_end")
     private LocalDate empEnd;
 

@@ -45,17 +45,7 @@ public class AdminApiController {
 		return resultMap;
 	}
 
-	// 입사일 datePicker DB에 넣기
-	 //@PostMapping("/addEmpHire")
-	 //   public String addEmpHire(@RequestParam("emp_hire") String empHire) {
-	        // 입력받은 날짜 문자열을 LocalDate로 변환
-	 //       LocalDate hireDate = LocalDate.parse(empHire);
-	        
-	        // 서비스로 날짜 전달 후 저장 처리
-	   //     adminService.saveHireDate(hireDate);
-
-	   //     return "Employee added successfully!";
-	//    }
+	
 	
 }
 

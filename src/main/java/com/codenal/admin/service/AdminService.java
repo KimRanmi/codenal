@@ -80,11 +80,4 @@ public class AdminService {
 		
 	}
 
-	// 입사일 datePicker DB에 넣기
-//	public void saveHireDate(LocalDate hireDate) {
-	//	Employee employee = Employee.builder()
-		//							.empHire(hireDate) // 고용일 설정
-			//						.build();
-		//adminRepository.save(employee);  // JPA를 통해 DB에 저장
-	//}
 }
