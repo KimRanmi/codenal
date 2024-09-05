@@ -46,11 +46,19 @@ public class AdminService {
 				dto.setJobNo(1); // 적절한 기본 직책 번호 설정
 			}
 
-			 // 비밀번호가 제공되었을 때만 암호화 (비밀번호가 null이 아닌 경우)
-	        if (dto.getEmpPw() != null && !dto.getEmpPw().isEmpty()) {
-	            String encodedPassword = passwordEncoder.encode(dto.getEmpPw());
-	            dto.setEmpPw(encodedPassword);
-	        }
+            // 기본 비밀번호 'work1234'암호화
+            if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
+                String defaultPassword = passwordEncoder.encode("work1234");
+                dto.setEmpPw(defaultPassword);
+            } else {
+                // 비밀번호가 제공되었을 경우 암호화
+                dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+            }
+            
+         // emp_status 기본 값 설정 ('Y'로 설정) 계속 null이 뜨길래..
+            if (dto.getEmpStatus() == null || dto.getEmpStatus().isEmpty()) {
+                dto.setEmpStatus("Y");  
+            }
 
 	        // 1. emp_hire 날짜를 기반으로 6자리 값 생성 (YYMMDD)
 	        LocalDate hireDate = dto.getEmpHire();  // DTO에서 `emp_hire` 값을 가져옴
