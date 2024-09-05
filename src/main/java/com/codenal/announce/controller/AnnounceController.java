@@ -10,6 +10,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.codenal.announce.domain.Announce;
 import com.codenal.announce.domain.AnnounceDto;
@@ -36,14 +37,21 @@ public class AnnounceController {
 		return "apps/announce";
 	}
 	
-	@GetMapping("/announce/detail")
-	public String announceListDetail_view(Model model) {
-		List<AnnounceDto> resultList = announceService.selectAnnounceDetail();
+	@GetMapping("/announce/detail/{no}")
+	public String announceListDetail_view(@PathVariable("no") Long no, Model model) {
+		List<AnnounceDto> resultList = announceService.selectAnnounceDetail(no);
 		System.out.println(resultList);
 		model.addAttribute("announceList",resultList);
 		return "apps/announce_detail";
 	}
-
+	
+	@GetMapping("/announce/update/{no}")
+	public String announceListUpdate_view(@PathVariable("no") Long no, Model model) {
+//		List<AnnounceDto> resultList = announceService.selectAnnounceDetail();
+//		System.out.println(resultList);
+//		model.addAttribute("announceList",resultList);
+		return "apps/announce_update";
+	}
 	
 	
 	@GetMapping("/announce/create")
