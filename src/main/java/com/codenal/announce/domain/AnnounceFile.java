@@ -30,7 +30,7 @@ public class AnnounceFile {
 	private Long announceNo;
 	
 	@ManyToOne
-	@JoinColumn(name="announce_no")
+	@JoinColumn(name="parent_announce_no")
 	private Announce announce;
 
 	@Column(name="file_ori_name")
