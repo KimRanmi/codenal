@@ -239,13 +239,15 @@
 	    }
 	
 	    // 서버로 전송할 데이터 객체
+	    const emp_auth = 'USER';  // 직원 USER 고정 NULL 안 되게 해놓기
 	    const obj = {
 		    empName: emp_name,
 		    empPhone: emp_phone,
 		    empSsn: emp_ssn,
 		    deptNo: dept_no,
 		    jobNo: job_no,
-		    empHire: emp_hire
+		    empHire: emp_hire,
+		    empAuth: emp_auth
 		};
 
 	
@@ -282,7 +284,7 @@
 	                confirmButtonText: "닫기"
 	            });
 	        }
-	        console.log(emp_hire);
+	       
 	    });
 	});
 	</script>
