@@ -25,13 +25,15 @@ import lombok.Setter;
 public class AnnounceReadAuthority {
 	
 	
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name="announce_no")
+//	private Long announceNo;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="announce_no")
-	private Long announceNo;
-	
 	@ManyToOne
-	@JoinColumn(name="parent_announce_no")
+	@JoinColumn(name="announce_no")
 	private Announce announce;
 	
 	

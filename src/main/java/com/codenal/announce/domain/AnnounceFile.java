@@ -26,19 +26,16 @@ public class AnnounceFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="announce_no")
-	private Long announceNo;
-	
+	@Column(name="file_no")
+	private Long fileNo;
+
 	@ManyToOne
-	@JoinColumn(name="parent_announce_no")
+	@JoinColumn(name="announce_no")
 	private Announce announce;
 
 	@Column(name="file_ori_name")
 	private String fileOriName;
 	
-	@Column(name="announce_title")
-	private String announceTitle;
-
 	@Column(name="file_new_name")
 	private String fileNewName;
 	

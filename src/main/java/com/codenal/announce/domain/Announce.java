@@ -32,10 +32,10 @@ public class Announce {
 	private Long announceNo;
 	
 	@OneToMany(mappedBy = "announce")
-	private List<AnnounceFile> announces1;
+	private List<AnnounceFile> files;
 	
 	@OneToMany(mappedBy = "announce")
-	private List<AnnounceReadAuthority> announces2;
+	private List<AnnounceReadAuthority> readAuthorities;
 
 
 	@Column(name="announce_writer")

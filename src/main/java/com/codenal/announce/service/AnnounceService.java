@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.codenal.announce.domain.Announce;
 import com.codenal.announce.domain.AnnounceDto;
+import com.codenal.announce.domain.AnnounceFile;
+import com.codenal.announce.domain.AnnounceFileDto;
+import com.codenal.announce.repository.AnnounceFileRepository;
 import com.codenal.announce.repository.AnnounceRepository;
 
 @Service
@@ -18,10 +21,12 @@ public class AnnounceService {
 
 	
 	private final AnnounceRepository announceRepository;
+	private final AnnounceFileRepository announceFileRepository;
 	
 	@Autowired
-	public AnnounceService(AnnounceRepository announceRepository) {
+	public AnnounceService(AnnounceRepository announceRepository, AnnounceFileRepository announceFileRepository) {
 		this.announceRepository = announceRepository;
+		this.announceFileRepository = announceFileRepository;
 	}
 	
 	public Page<AnnounceDto> selectAnnounceList(AnnounceDto searchDto, Pageable pageable){
@@ -55,13 +60,26 @@ public class AnnounceService {
 	
 	
 	public List<AnnounceDto> selectAnnounceDetail(Long no){
+		
 		List<Announce> announceList = announceRepository.findByAnnounceListOne(no);  // 작성자 이름하고 권한, 파일 가져와야함
 		List<AnnounceDto> announceDtoList = new ArrayList<AnnounceDto>();
+		AnnounceFile aFile = announceFileRepository.findByAnnounceNo(no);
+		System.out.println("aFile 정보: "+aFile);
+//		List<Object[]> aFile = announceFileRepository.findFilesWithAnnounceTitleByAnnounceNo(no);
+//		System.out.println("aFile 정보: "+aFile);
+		
 		for(Announce a : announceList) {
 			AnnounceDto dto = new AnnounceDto().toDto(a);
 			announceDtoList.add(dto);
 		}
+		System.out.println("dtoList 최종 정보: "+announceDtoList);
+		
 
 		return announceDtoList;
 	}
+
+//	public List<AnnounceFile> findByannounceNo(Long announceNo) {
+//        return announceFileRepository.findByannounceNo(announceNo);
+//
+//	}
 }

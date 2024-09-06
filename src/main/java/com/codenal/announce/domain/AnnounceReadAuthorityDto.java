@@ -15,14 +15,14 @@ import lombok.ToString;
 @Builder
 public class AnnounceReadAuthorityDto {
 
-	private Long announce_no;
+	private Announce announce_no;
 	private int dept_no;
 	private int job_no;
 	
 	
 	public AnnounceReadAuthority toEntity() {
 		return AnnounceReadAuthority.builder()
-				.announceNo(announce_no)
+				.announce(announce_no)
 				.deptNo(dept_no)
 				.jobNo(job_no)
 				.build();
