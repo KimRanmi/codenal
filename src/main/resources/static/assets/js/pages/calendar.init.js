@@ -30,196 +30,42 @@ document.addEventListener("DOMContentLoaded", function () {
     var y = date.getFullYear();
     var Draggable = FullCalendar.Draggable;
     var externalEventContainerEl = document.getElementById('external-events');
-    var defaultEvents = [{
-            id: 1,
-            title: "World Braille Day",
-            start: "2022-01-04",
-            className: "bg-soft-info",
-            allDay: true
-
-        },
-        {
-            id: 2,
-            title: "World Leprosy Day",
-            start: "2022-01-30",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 3,
-            title: "International Mother Language Day",
-            start: "2022-02-21",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 4,
-            title: "International Women's Day",
-            start: "2022-03-08",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 5,
-            title: "World Thinking Day",
-            start: "2022-02-22",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 6,
-            title: "International Mother Language Day",
-            start: "2022-03-21",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 7,
-            title: "World Water Day",
-            start: "2022-03-22",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 8,
-            title: "World Health Day",
-            start: "2022-04-07",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-
-        {
-            id: 9,
-            title: "International Special Librarians Day",
-            start: "2022-04-16",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 10,
-            title: "Earth Day",
-            start: "2022-04-22",
-            className: "bg-soft-info",
-            allDay: true
-        },
-        {
-            id: 153,
-            title: 'All Day Event',
-            start: new Date(y, m, 1),
-            className: 'bg-soft-primary',
-            location: 'San Francisco, US',
-            allDay: true,
-            extendedProps: {
-                department: 'All Day Event'
-            },
-            description: 'An all-day event is an event that lasts an entire day or longer'
-        },
-        {
-            id: 136,
-            title: 'Visit Online Course',
-            start: new Date(y, m, d - 5),
-            end: new Date(y, m, d - 2),
-            allDay: true,
-            className: 'bg-soft-warning',
-            extendedProps: {
-                department: 'Long Event'
-            },
-            description: 'Long Term Event means an incident that last longer than 12 hours.'
-        },
-        {
-            id: 999,
-            title: 'Client Meeting with Alexis',
-            start: new Date(y, m, d + 22, 20, 0),
-            end: new Date(y, m, d + 24, 16, 0),
-            allDay: true,
-            className: 'bg-soft-danger',
-            location: 'California, US',
-            extendedProps: {
-                department: 'Meeting with Alexis'
-            },
-            description: 'A meeting is a gathering of two or more people that has been convened for the purpose of achieving a common goal through verbal interaction, such as sharing information or reaching agreement.'
-        },
-        {
-            id: 991,
-            title: 'Repeating Event',
-            start: new Date(y, m, d + 4, 16, 0),
-            end: new Date(y, m, d + 9, 16, 0),
-            allDay: true,
-            className: 'bg-soft-primary',
-            location: 'Las Vegas, US',
-            extendedProps: {
-                department: 'Repeating Event'
-            },
-            description: 'A recurring or repeating event is simply any event that you will occur more than once on your calendar. ',
-        },
-        {
-            id: 112,
-            title: 'Meeting With Designer',
-            start: new Date(y, m, d, 12, 30),
-            allDay: true,
-            className: 'bg-soft-success',
-            location: 'Head Office, US',
-            extendedProps: {
-                department: 'Meeting'
-            },
-            description: 'Tell how to boost website traffic'
-        },
-        {
-            id: 113,
-            title: 'Weekly Strategy Planning',
-            start: new Date(y, m, d + 9),
-            end: new Date(y, m, d + 11),
-            allDay: true,
-            className: 'bg-soft-danger',
-            location: 'Head Office, US',
-            extendedProps: {
-                department: 'Lunch'
-            },
-            description: 'Strategies for Creating Your Weekly Schedule'
-        },
-        {
-            id: 875,
-            title: 'Birthday Party',
-            start: new Date(y, m, d + 1, 19, 0),
-            allDay: true,
-            className: 'bg-soft-success',
-            location: 'Los Angeles, US',
-            extendedProps: {
-                department: 'Birthday Party'
-            },
-            description: 'Family slumber party – Bring out the blankets and pillows and have a family slumber party! Play silly party games, share special snacks and wind down the fun with a special movie.'
-        },
-        {
-            id: 783,
-            title: 'Click for Google',
-            start: new Date(y, m, 28),
-            end: new Date(y, m, 29),
-            allDay: true,
-            url: 'http://google.com/',
-            className: 'bg-soft-dark',
-        },
-        {
-            id: 456,
-            title: 'Velzon Project Discussion with Team',
-            start: new Date(y, m, d + 23, 20, 0),
-            end: new Date(y, m, d + 24, 16, 0),
-            allDay: true,
-            className: 'bg-soft-info',
-            location: 'Head Office, US',
-            extendedProps: {
-                department: 'Discussion'
-            },
-            description: 'Tell how to boost website traffic'
-        },
-    ];
+	var defaultEvents = [];
+	
+	const dataList=(result)=>{
+		
+	}
+    fetch('/eventList',{
+	        	method:'POST',
+	            headers: {
+					"Content-Type": "application/json;charset=utf-8", 
+					"Accept": "application/json"
+				}
+	        })
+	        .then(response => response.json())
+	        .then(data=>{
+	        	/*alert(data.res_msg);*/
+	        	console.log(data.eventList[0]);
+	        	dataList = data.eventList;
+	        	console.log(dataList);
+	        	console.log(dataList[0].calendar_schedule_no);
+	        })
+	console.log(dataList);
+	
+    /*for(let i=0; i<1; i++){
+		defaultEvents[i] = {
+					id: dataList[0].calendar_schedule_no,
+					category: dataList[i].calendar_schedule_category,
+			        title: dataList[i].calendar_schedule_title,
+			        start: '2024-09-16',
+			        end: '2024-09-18',
+			        className: 'bg-soft-primary',
+			        location: dataList[i].calendar_schedule_location,
+			        description: dataList[i].calendar_schedule_content,
+			        writer: dataList[i].calendar_schedule_writer,
+			        color: dataList[i].calendar_schedule_color
+				}
+	};*/
 
     // init draggable
     new Draggable(externalEventContainerEl, {
@@ -287,6 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return x.id == info.event.id
             });
             if (defaultEvents[indexOfSelectedEvent]) {
+				defaultEvents[indexOfSelectedEvent].category = info.event.category;
                 defaultEvents[indexOfSelectedEvent].title = info.event.title;
                 defaultEvents[indexOfSelectedEvent].start = info.event.start;
                 defaultEvents[indexOfSelectedEvent].end = (info.event.end) ? info.event.end : null;
@@ -294,6 +141,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 defaultEvents[indexOfSelectedEvent].className = info.event.classNames[0];
                 defaultEvents[indexOfSelectedEvent].description = (info.event._def.extendedProps.description) ? info.event._def.extendedProps.description : '';
                 defaultEvents[indexOfSelectedEvent].location = (info.event._def.extendedProps.location) ? info.event._def.extendedProps.location : '';
+                defaultEvents[indexOfSelectedEvent].writer = info.event.writer;
+                defaultEvents[indexOfSelectedEvent].color = info.event.color;
             }
             upcomingEvent(defaultEvents);
         },
@@ -432,6 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return x.id == info.event.id
             });
             if (defaultEvents[indexOfSelectedEvent]) {
+				defaultEvents[indexOfSelectedEvent].category = info.event.category;
                 defaultEvents[indexOfSelectedEvent].title = info.event.title;
                 defaultEvents[indexOfSelectedEvent].start = info.event.start;
                 defaultEvents[indexOfSelectedEvent].end = (info.event.end) ? info.event.end : null;
@@ -439,6 +289,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 defaultEvents[indexOfSelectedEvent].className = info.event.classNames[0];
                 defaultEvents[indexOfSelectedEvent].description = (info.event._def.extendedProps.description) ? info.event._def.extendedProps.description : '';
                 defaultEvents[indexOfSelectedEvent].location = (info.event._def.extendedProps.location) ? info.event._def.extendedProps.location : '';
+                defaultEvents[indexOfSelectedEvent].writer = info.event.writer;
+                defaultEvents[indexOfSelectedEvent].color = info.event.color;
             }
             upcomingEvent(defaultEvents);
         }
@@ -488,8 +340,9 @@ document.addEventListener("DOMContentLoaded", function () {
             end_date = new Date(e_date + "T" + end_time);
         }
         var e_id = defaultEvents.length + 1;
-        
-        	const payload = new FormData();
+         
+         	
+        	/*const payload = new FormData();
         	payload.append('calendar_schedule_category' , categoryNo);
         	payload.append('calendar_schedule_title' , updatedTitle);
         	payload.append('calendar_schedule_location' , event_location);
@@ -497,9 +350,9 @@ document.addEventListener("DOMContentLoaded", function () {
         	payload.append('calendar_schedule_writer' , 1);
         	payload.append('calendar_schedule_start_date' , updateStartDate);
         	payload.append('calendar_schedule_end_date' , updateEndDate);
-	    
+	    	payload;*/
 	    	
-	        /*const payload = {
+	        const payload = {
 				calendar_schedule_category : categoryNo,
 				calendar_schedule_title : updatedTitle,
 				calendar_schedule_location : event_location,
@@ -507,16 +360,52 @@ document.addEventListener("DOMContentLoaded", function () {
 				calendar_schedule_writer : 1,
 				calendar_schedule_start_date : updateStartDate,
 				calendar_schedule_end_date : updateEndDate
-			}*/
+			}
+	    	console.log(payload);
+	    	
+	    	
+            // JSON 객체 생성
+            /*let obj = {
+                calendar_schedule_title: updatedTitle
+            };
+            let jsonData = JSON.stringify(obj);
+            // fetch를 사용하여 서버에 POST 요청 보내기
+            fetch('/create/event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('전송 성공: ' + JSON.stringify(data));
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+                alert('전송 실패: ' + error.message);
+            });*/
+        
+	    	
 			/*const data = {
 				method:'POST',
 	            body:payload
 			}*/
 			
-			const ggg = 1;
+			const jsonData = JSON.stringify(updatedTitle);
+			const ttt = "yyy";
 	        fetch('/create/event',{
 	        	method:'POST',
-	            body:JSON.stringify(payload)
+	            body:payload,
+	            headers: {
+					"Content-Type": "application/json;charset=utf-8", 
+					"Accept": "application/json"
+				}
 	        })
 	        .then(response => response.json())
 	        .then(data=>{
@@ -531,11 +420,11 @@ document.addEventListener("DOMContentLoaded", function () {
 						alert('성공');
 					}
 				}
-				let writer = 1;
+				let writer = 12345678;
 				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");*/
-				/*xhr.send("category="+categoryNo+",title="+updatedTitle+",location="+event_location
-				+",content="+eventDescription+",writer="+writer+",start_date="+updateStartDate+",end_date="+updateEndDate);*/
-				/*xhr.send("category=10 ||"+"title=ttt");*/
+				/*xhr.send("category="+categoryNo+"& title="+updatedTitle+"& location="+event_location
+				+"& content="+eventDescription+"& writer="+writer+"& start_date="+updateStartDate+"& end_date="+updateEndDate);*/
+				/*xhr.send(JSON.stringify(payload));*/
 
         // validation
         if (forms[0].checkValidity() === false) {
@@ -543,6 +432,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             if (selectedEvent) {
                 selectedEvent.setProp("id", eventid);
+                selectedEvent.setProp("category", categoryNo);
                 selectedEvent.setProp("title", updatedTitle);
                 selectedEvent.setProp("classNames", [updatedCategory]);
                 selectedEvent.setStart(updateStartDate);

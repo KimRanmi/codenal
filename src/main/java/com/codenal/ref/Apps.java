@@ -1,14 +1,30 @@
 package com.codenal.ref;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.codenal.calendar.domain.Calendar;
+import com.codenal.calendar.service.CalendarService;
+
 @Controller
 public class Apps {
+	
+	private final CalendarService calendarService;
+	
+	@Autowired
+	public Apps(CalendarService calendarService) {
+		this.calendarService = calendarService;
+	}
 
 	@GetMapping("/apps-calendar")
 	public String apps_calendar() {
+		
 		return "apps/calendar";
 	}
 	

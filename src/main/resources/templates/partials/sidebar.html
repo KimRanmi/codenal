@@ -1,5 +1,16 @@
 <html data-sidebar="light">
 
+<style>
+.nav-link {
+	color: #abb9e8;
+
+}
+.nav-link.active {
+	color: #ffffff;
+	background-color: #abb9e8;
+}
+</style>
+
 <body>
 	<div th:fragment="sidebar" th:remove="tag">
 		<!-- ========== App Menu ========== -->
@@ -505,10 +516,12 @@
 						<!-- 사이드바 커스텀(단일) -->
 						
 						<li class="nav-item">
-							<a href="/apps-calendar" class="nav-link menu-link">
+							<a href="/apps-calendar" class="nav-link">
 								<i class="ri-calendar-line"></i> <span>캘린더</span>
 							</a>
 						</li>
+						
+						
 						
 						<li class="nav-item">
 							<a href="/apps-file-manager" class="nav-link menu-link">

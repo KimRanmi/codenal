@@ -167,6 +167,70 @@
 												<div class="invalid-feedback">일정 제목을 입력해주세요.</div>
 											</div>
 										</div>
+										<div class="col-xl-12">
+													<div class="mb-3">
+														<h5 class="fs-14">Colors :</h5>
+														<div class="d-flex flex-wrap gap-2">
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="Out of Stock">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-primary"
+																	disabled>
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="03 Items Available">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-secondary">
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="03 Items Available">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-success">
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="02 Items Available">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-info">
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="01 Items Available">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-warning">
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="04 Items Available">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-danger">
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="03 Items Available">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-light">
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+															<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+																data-bs-placement="top" title="04 Items Available">
+																<button type="button"
+																	class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-dark">
+																	<i class="ri-checkbox-blank-circle-fill"></i>
+																</button>
+															</div>
+														</div>
+													</div>
+												</div>
 										<!--end col-->
 										<div class="col-12">
 											<div class="mb-3">
@@ -251,6 +315,27 @@
 
 		 <!-- calendar min js -->
     <script src="/assets/libs/fullcalendar/main.min.js"></script>
+    
+    <script type="text/javascript">
+    /* const payload = {
+			calendar_schedule_category : 1,
+			calendar_schedule_title : 'updatedTitle',
+			calendar_schedule_location : 'event_location',
+			calendar_schedule_content : 'eventDescription',
+			calendar_schedule_writer : 1
+		}
+    	console.log(payload);
+    const jsonData = JSON.stringify(payload);
+
+    fetch('/create/event',{
+    	method:'POST',
+        body:jsonData
+    })
+    .then(response => response.json())
+    .then(data=>{
+    	alert(data.res_msg);
+    }) */
+	</script>
 
     <!-- Calendar init -->
     <script src="/assets/js/pages/calendar.init.js"></script>
