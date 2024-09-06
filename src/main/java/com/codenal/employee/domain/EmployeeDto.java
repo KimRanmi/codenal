@@ -20,7 +20,7 @@ import lombok.ToString;
 @Builder
 public class EmployeeDto {
 
-    private int empId;
+    private Long empId;
     private String empPw;
     private String empName;
     private String empSsn;
@@ -79,4 +79,8 @@ public class EmployeeDto {
                 .empAuth(empAuth)
                 .build();
     }
+    
+    
+   
+
 }

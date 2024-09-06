@@ -25,20 +25,19 @@ import lombok.Setter;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "emp_id")
-    private int empId;
+    private Long empId;
 
-    @Column(name = "emp_pw", nullable = false)
+    @Column(name = "emp_pw")
     private String empPw;
 
-    @Column(name = "emp_name", nullable = false)
+    @Column(name = "emp_name")	
     private String empName;
 
-    @Column(name = "emp_ssn", nullable = false)
+    @Column(name = "emp_ssn")
     private String empSsn;
 
-    @Column(name = "emp_phone", nullable = false)
+    @Column(name = "emp_phone")
     private String empPhone;
 
     @Column(name = "emp_address")
@@ -47,13 +46,13 @@ public class Employee {
     @Column(name = "emp_address_detail")
     private String empAddressDetail;
 
-    @Column(name = "emp_hire", nullable = false)
+    @Column(name = "emp_hire")
     private Date empHire;
 
     @Column(name = "emp_end")
     private Date empEnd;
 
-    @Column(name = "emp_status", nullable = false)
+    @Column(name = "emp_status")
     private String empStatus;
 
     @Column(name = "emp_profile_picture")
@@ -62,13 +61,13 @@ public class Employee {
     @Column(name = "emp_sign_image")
     private String empSignImage;
 
-    @Column(name = "dept_no", nullable = false)
+    @Column(name = "dept_no")
     private Integer deptNo;
 
-    @Column(name = "job_no", nullable = false)
+    @Column(name = "job_no")
     private Integer jobNo;
 
-    @Column(name = "emp_auth", nullable = false)
+    @Column(name = "emp_auth")
     private String empAuth;
     
    
