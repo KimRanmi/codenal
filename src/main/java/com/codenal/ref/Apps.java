@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class Apps {
 	
 
-	@GetMapping("/admin-join")
-	public String admin_join() {
-		return "admin/join";
+	@GetMapping("/admin-employeeList")
+	public String admin_employeeList() {
+		return "admin/employeeList";
 	}
 
 	@GetMapping("/apps-calendar")

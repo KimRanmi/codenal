@@ -56,9 +56,9 @@ public class AdminService {
             }
             
          // emp_status 기본 값 설정 ('Y'로 설정) 계속 null이 뜨길래..
-            if (dto.getEmpStatus() == null || dto.getEmpStatus().isEmpty()) {
-                dto.setEmpStatus("Y");  
-            }
+          //  if (dto.getEmpStatus() == null || dto.getEmpStatus().isEmpty()) {
+          //      dto.setEmpStatus("Y");  
+         //   }
 
 	        // 1. emp_hire 날짜를 기반으로 6자리 값 생성 (YYMMDD)
 	        LocalDate hireDate = dto.getEmpHire();  // DTO에서 `emp_hire` 값을 가져옴

@@ -207,6 +207,9 @@
 	    const dept_no = document.getElementById("admin-new-dept").value;
 	    const job_no = document.getElementById("admin-new-job").value;
 	    const emp_hire = document.getElementById("admin-new-hire").value;
+	    const emp_address = document.getElementById("admin-new-address").value;
+	    const emp_address_detail = document.getElementById("admin-new-address-detail").value;
+
 	    
 	    if (emp_name === '') {
 	        vali_text = "이름을 입력하세요";
@@ -240,13 +243,17 @@
 	
 	    // 서버로 전송할 데이터 객체
 	    const emp_auth = 'USER';  // 직원 USER 고정 NULL 안 되게 해놓기
+	    const emp_status = 'Y';
 	    const obj = {
 		    empName: emp_name,
 		    empPhone: emp_phone,
 		    empSsn: emp_ssn,
+		    empAddress: emp_address,
+		    empAddressDetail: emp_address_detail,
 		    deptNo: dept_no,
 		    jobNo: job_no,
 		    empHire: emp_hire,
+		    empStatus : emp_status,
 		    empAuth: emp_auth
 		};
 
