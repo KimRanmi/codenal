@@ -1,3 +1,5 @@
+
+
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
@@ -74,3 +76,4 @@ public class Employee {
     @Column(name = "emp_auth")
     private String empAuth;
 }
+
