@@ -1,9 +1,11 @@
 package com.codenal.security.vo;
 
 import java.util.Collections;
-import org.springframework.security.core.GrantedAuthority;
+
 import org.springframework.security.core.userdetails.User;
+
 import com.codenal.employee.domain.EmployeeDto;
+
 import lombok.Getter;
 
 @Getter

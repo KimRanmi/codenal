@@ -26,6 +26,7 @@ public class EmployeeService {
         Employee employee = employeeDto.toEntity();
         employeeRepository.save(employee);
     }
+
     public void saveEmployee(Employee employee) {
         employeeRepository.save(employee); // 데이터베이스에 변경 사항 저장
     }
@@ -39,4 +40,5 @@ public class EmployeeService {
 
 
   
+
 }

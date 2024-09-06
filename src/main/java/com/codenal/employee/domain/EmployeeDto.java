@@ -1,6 +1,7 @@
+
 package com.codenal.employee.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -27,8 +28,8 @@ public class EmployeeDto {
     private String empPhone;
     private String empAddress;
     private String empAddressDetail;
-    private Date empHire;
-    private Date empEnd;
+    private LocalDate empHire;
+    private LocalDate empEnd;
     private String empStatus;
     private String empProfilePicture;
     private String empSignImage;
@@ -48,7 +49,7 @@ public class EmployeeDto {
                 .empPhone(employee.getEmpPhone())
                 .empAddress(employee.getEmpAddress())
                 .empAddressDetail(employee.getEmpAddressDetail())
-                .empHire(employee.getEmpHire())
+                .empHire(employee.getEmpHire()) 
                 .empEnd(employee.getEmpEnd())
                 .empStatus(employee.getEmpStatus())
                 .empProfilePicture(employee.getEmpProfilePicture())
@@ -59,12 +60,12 @@ public class EmployeeDto {
                 .build();
     }
 
-    // DTO를 엔터티로 변환하는 메서드
+ // DTO를 엔터티로 변환하는 메서드
     public Employee toEntity() {
         return Employee.builder()
                 .empId(empId)
                 .empPw(empPw)
-                .empName(empName)
+                .empName(empName)  
                 .empSsn(empSsn)
                 .empPhone(empPhone)
                 .empAddress(empAddress)
@@ -76,11 +77,9 @@ public class EmployeeDto {
                 .empSignImage(empSignImage)
                 .deptNo(deptNo)
                 .jobNo(jobNo)
-                .empAuth(empAuth)
+                .empAuth(empAuth != null ? empAuth : "USER")
                 .build();
     }
-    
-    
-   
 
 }
+

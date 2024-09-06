@@ -12,6 +12,7 @@ import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.repository.EmployeeRepository;
 import com.codenal.security.vo.SecurityUser;
 
+
 @Service
 @Primary 
 public class SecurityService implements UserDetailsService {
@@ -37,4 +38,3 @@ public class SecurityService implements UserDetailsService {
         return new SecurityUser(employeeDto); // SecurityUser로 반환
     }
     }
-

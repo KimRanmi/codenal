@@ -6,6 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class Apps {
+	
+
+	@GetMapping("/admin-join")
+	public String admin_join() {
+		return "admin/join";
+	}
 
 	@GetMapping("/apps-calendar")
 	public String apps_calendar() {
@@ -47,11 +53,7 @@ public class Apps {
 	public String apps_ecommerce_add_product() {
 		return "apps/ecommerce-add-product";
 	}
-	
-	@GetMapping("/apps-ecommerce-orders")
-	public String apps_ecommerce_orders() {
-		return "apps/ecommerce-orders";
-	}
+
 	
 	@GetMapping("/apps-ecommerce-order-details")
 	public String apps_ecommerce_orders_details() {

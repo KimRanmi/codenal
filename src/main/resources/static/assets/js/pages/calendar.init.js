@@ -489,17 +489,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         var e_id = defaultEvents.length + 1;
         
-        	/*const payload = new FormData();
-        	payload.set('calendar_schedule_category' , categoryNo);
-        	payload.set('calendar_schedule_title' , updatedTitle);
-        	payload.set('calendar_schedule_location' , event_location);
-        	payload.set('calendar_schedule_content' , eventDescription);
-        	payload.set('calendar_schedule_writer' , 1);
-        	payload.set('calendar_schedule_start_date' , updateStartDate);
-        	payload.set('calendar_schedule_end_date' , updateEndDate);*/
+        	const payload = new FormData();
+        	payload.append('calendar_schedule_category' , categoryNo);
+        	payload.append('calendar_schedule_title' , updatedTitle);
+        	payload.append('calendar_schedule_location' , event_location);
+        	payload.append('calendar_schedule_content' , eventDescription);
+        	payload.append('calendar_schedule_writer' , 1);
+        	payload.append('calendar_schedule_start_date' , updateStartDate);
+        	payload.append('calendar_schedule_end_date' , updateEndDate);
 	    
 	    	
-	        const payload = {
+	        /*const payload = {
 				calendar_schedule_category : categoryNo,
 				calendar_schedule_title : updatedTitle,
 				calendar_schedule_location : event_location,
@@ -507,20 +507,35 @@ document.addEventListener("DOMContentLoaded", function () {
 				calendar_schedule_writer : 1,
 				calendar_schedule_start_date : updateStartDate,
 				calendar_schedule_end_date : updateEndDate
-			}
+			}*/
 			/*const data = {
 				method:'POST',
 	            body:payload
 			}*/
+			
 			const ggg = 1;
 	        fetch('/create/event',{
 	        	method:'POST',
-	            body:JSON.stringify(ggg)
+	            body:JSON.stringify(payload)
 	        })
 	        .then(response => response.json())
 	        .then(data=>{
 	        	alert(data.res_msg);
 	        })
+	        
+	        
+				/*const xhr = new XMLHttpRequest();
+				xhr.open("post","/create/event",true);
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState == 4 && xhr.status == 200){ // 200: 정상적으로 작동한다는 뜻
+						alert('성공');
+					}
+				}
+				let writer = 1;
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");*/
+				/*xhr.send("category="+categoryNo+",title="+updatedTitle+",location="+event_location
+				+",content="+eventDescription+",writer="+writer+",start_date="+updateStartDate+",end_date="+updateEndDate);*/
+				/*xhr.send("category=10 ||"+"title=ttt");*/
 
         // validation
         if (forms[0].checkValidity() === false) {
