@@ -18,13 +18,14 @@
 <body>
 	<div layout:fragment="content">
 		<div
-			th:replace="partials/page-title :: page-title('Orders','Ecommerce')"></div>
+			th:replace="partials/page-title :: page-title('직원 관리','직원 정보 관리')"></div>
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card" id="orderList">
+
 					<div class="card-header border-0">
 						<div class="row align-items-center gy-3">
-							<div class="card-body" style="border-bottom: 1px dashed #d3d3d3;">
+							<div class="card-body" style="border-bottom: 2px dashed #d3d3d3;">
 								<form>
 									<!-- -------------------신규 직원 등록---------------------------- -->
 									<div class="row g-3">
@@ -44,15 +45,10 @@
 											<div>
 												<select class="form-control" data-choices
 													data-choices-search-false name="choices-single-default"
-													id="idStatus" style="font-size: 18px;">
-													<option value="">Status</option>
-													<option value="all" selected>All</option>
-													<option value="Pending">Pending</option>
-													<option value="Inprogress">Inprogress</option>
-													<option value="Cancelled">Cancelled</option>
-													<option value="Pickups">Pickups</option>
-													<option value="Returns">Returns</option>
-													<option value="Delivered">Delivered</option>
+													id="idStatus">
+													<option value="">근무 상태</option>
+													<option value="Pending" selected>재직</option>
+													<option value="Inprogress">퇴사</option>
 												</select>
 											</div>
 										</div>
@@ -62,18 +58,18 @@
 												<select class="form-control" data-choices
 													data-choices-search-false name="choices-single-default"
 													id="idPayment">
-													<option value="">Select Payment</option>
-													<option value="all" selected>All</option>
-													<option value="Mastercard">Mastercard</option>
-													<option value="Paypal">Paypal</option>
-													<option value="Visa">Visa</option>
-													<option value="COD">COD</option>
+													<option value="" selected>선택</option>
+													<option value="Mastercard">사번</option>
+													<option value="Paypal">직원명</option>
+													<option value="Visa">부서명</option>
+													<option value="COD">직급명</option>
+													<option value="COD">전화번호</option>
 												</select>
 											</div>
 										</div>
 										<!-- -------------------검색 입력란---------------------------- -->
 										<div class="col-xxl-3 col-sm-5">
-											<div class="search-box" >
+											<div class="search-box">
 												<input type="text" class="form-control search"
 													placeholder="검색어를 입력해 주세요." style="font-size: 18px;">
 												<i class="ri-search-line search-icon"></i>
@@ -88,67 +84,29 @@
 												</button>
 											</div>
 										</div>
-										<!--end col-->
 									</div>
-									<!--end row-->
 								</form>
 							</div>
 						</div>
-
 					</div>
 
+					<!-- -------------------목록---------------------------- -->
 					<div class="card-body pt-0">
 						<div>
-							<ul class="nav nav-tabs nav-tabs-custom nav-success mb-3"
-								role="tablist">
-								<li class="nav-item"><a class="nav-link active All py-3"
-									data-bs-toggle="tab" id="All" href="#home1" role="tab"
-									aria-selected="true"> <i
-										class="ri-store-2-fill me-1 align-bottom"></i> All Orders
-								</a></li>
-								<li class="nav-item"><a class="nav-link py-3 Delivered"
-									data-bs-toggle="tab" id="Delivered" href="#delivered"
-									role="tab" aria-selected="false"> <i
-										class="ri-checkbox-circle-line me-1 align-bottom"></i>
-										Delivered
-								</a></li>
-								<li class="nav-item"><a class="nav-link py-3 Pickups"
-									data-bs-toggle="tab" id="Pickups" href="#pickups" role="tab"
-									aria-selected="false"> <i
-										class="ri-truck-line me-1 align-bottom"></i> Pickups <span
-										class="badge bg-danger align-middle ms-1">2</span>
-								</a></li>
-								<li class="nav-item"><a class="nav-link py-3 Returns"
-									data-bs-toggle="tab" id="Returns" href="#returns" role="tab"
-									aria-selected="false"> <i
-										class="ri-arrow-left-right-fill me-1 align-bottom"></i>
-										Returns
-								</a></li>
-								<li class="nav-item"><a class="nav-link py-3 Cancelled"
-									data-bs-toggle="tab" id="Cancelled" href="#cancelled"
-									role="tab" aria-selected="false"> <i
-										class="ri-close-circle-line me-1 align-bottom"></i> Cancelled
-								</a></li>
-							</ul>
-
 							<div class="table-responsive table-card mb-1">
 								<table class="table table-nowrap align-middle" id="orderTable">
 									<thead class="text-muted table-light">
 										<tr class="text-uppercase">
 											<th scope="col" style="width: 25px;">
-												<div class="form-check">
-													<input class="form-check-input" type="checkbox"
-														id="checkAll" value="option">
-												</div>
+												
 											</th>
-											<th class="sort" data-sort="id">Order ID</th>
-											<th class="sort" data-sort="customer_name">Customer</th>
-											<th class="sort" data-sort="product_name">Product</th>
-											<th class="sort" data-sort="date">Order Date</th>
-											<th class="sort" data-sort="amount">Amount</th>
-											<th class="sort" data-sort="payment">Payment Method</th>
-											<th class="sort" data-sort="status">Delivery Status</th>
-											<th class="sort" data-sort="city">Action</th>
+											<th class="sort" data-sort="id">사번</th>
+											<th class="sort" data-sort="customer_name">직원명</th>
+											<th class="sort" data-sort="product_name">부서명</th>
+											<th class="sort" data-sort="amount">직급명</th>
+											<th class="sort" data-sort="payment">전화번호</th>
+											<th class="sort" data-sort="status">재직/퇴사</th>
+											<th class="sort" data-sort="city"></th>
 										</tr>
 									</thead>
 									<tbody class="list form-check-all">
