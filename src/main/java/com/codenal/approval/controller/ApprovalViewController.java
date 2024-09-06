@@ -30,7 +30,7 @@ public class ApprovalViewController {
 		this.approvalService = approvalService;
 	}
 	
-	// 생성 nav에서 숫자값을 받아와서 create로 전달
+	// 생성 nav에서 숫자값을 받아와서 create로 전달(휴가신청서는 따로 관리)
 	@GetMapping("/approval/create/{no}")
 	public String createApproval(Model model, @PathVariable("no")int no) {
 		LocalDate ldt = LocalDate.now();
@@ -38,6 +38,14 @@ public class ApprovalViewController {
 		model.addAttribute("no",no);
 		return "apps/approval_create";
 	}
+	
+	// 휴가신청서로 이동
+	@GetMapping("/approval/leave_create")
+	public String createLeaveApproval(Model model) {
+		LocalDate ldt = LocalDate.now();
+		model.addAttribute("ldt",ldt);
+		return "apps/approval_leave_create";
+	} 
 	
 	// 리스트 조회 (수정해야함)
 	@GetMapping("/approval/list")

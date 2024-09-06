@@ -1,14 +1,16 @@
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.approval.domain.Approval;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -73,4 +75,12 @@ public class Employee {
 
     @Column(name = "emp_auth")
     private String empAuth;
+    
+    //전자결재
+    @OneToMany(mappedBy = "employee")
+    private List<Approval> approvals;
+    
+    //연차사용내역
+    @OneToMany(mappedBy = "employee")
+    private List<AnnualLeaveManage> annualLeaveManages;
 }

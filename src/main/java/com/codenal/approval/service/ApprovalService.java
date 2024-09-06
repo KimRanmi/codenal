@@ -40,12 +40,10 @@ public class ApprovalService {
 		
 		ApprovalDto dto = ApprovalDto.builder()
 							.approval_no(approval.getApprovalNo())
-							.cate_code(approval.getCateCode())
 							.approval_title(approval.getApprovalTitle())
 							.approval_content(approval.getApprovalContent())
 							.approval_reg_date(approval.getApprovalRegDate())
 							.approval_status(approval.getApprovalStatus())
-							.annual_usage_no(approval.getAnnualUsageNo())
 							.build();
 		return dto;
 	}
