@@ -2,13 +2,16 @@ package com.codenal.employee.domain;
 
 import java.time.LocalDate;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -65,11 +68,13 @@ public class Employee {
     @Column(name = "emp_sign_image")
     private String empSignImage;
 
-    @Column(name = "dept_no")
-    private Integer deptNo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_no", nullable = false)
+    private Departments department;
 
-    @Column(name = "job_no")
-    private Integer jobNo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_no", nullable = false)
+    private Jobs job;
 
     @Column(name = "emp_auth")
     private String empAuth;

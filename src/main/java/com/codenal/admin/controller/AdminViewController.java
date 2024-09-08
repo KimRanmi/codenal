@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminViewController {
 	
 	// 신규 직원 등록
-	//@GetMapping("/join")
-	//public String joinPage() {
-	//	return "admin/join";
-	//}
+	@GetMapping("/join")
+	public String joinPage() {
+		return "admin/join";
+	}
 
 	// 직원 목록
 	@GetMapping("/employeeList")
