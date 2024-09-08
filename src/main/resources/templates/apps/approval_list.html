@@ -32,7 +32,7 @@
 									</select>
 								<input type="text" value="제목" disabled style= "margin-left:5px; height:37.67px; width:70px; border:1px solid #d3d3d3;  border-radius:4px; text-align:center;">								
 								<div class="search-box" style="width:300px; margin-left:190px; margin-top:-38px; height:37.67px;" >
-									<input type="text" class="form-control search" placeholder="검색하세요">
+									<input type="text" class="form-control search">
 									<i class="ri-search-line search-icon"></i>
 								</div>
 							</div>
@@ -63,16 +63,17 @@
 									<tbody class="list form-check-all" style="text-align:center;">
 										<th:block th:if="!${#lists.isEmpty(resultList.content)}" scope="row">
 											<tr th:each="approval : ${resultList.content}">
-												<td th:text=${approval.approval_no}></td>
-												<td th:switch="${approval.cate_code}">
-													<span th:case="1">근태신청서</span>
-													<span th:case="2">요청서</span>
-													<span th:case="3">품의서</span>
+												<td th:text="${approval['approval'].approvalNo}"></td>
+												<td th:text="${approval['formType'].approvalBaseFormType.baseFormName}">
+													
 												</td>
 												<td>
-													<a th:href="@{/approval/{no}(no=${approval.approval_no})}" th:text=${approval.approval_title}></a>
+													<a th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}" th:text="${approval['approval'].approvalTitle}"></a>
 												</td>
-												<td th:text=${approval.approval_status}>
+												<td th:switch="${approval['approval'].approvalStatus}">
+													<span th:case="0">대기</span>
+												</td>
+												<!-- 밑에 처리 해야함 -->
 												<td>결재자</td>
 												<td>처리날짜</td> 
 											<tr>
@@ -81,7 +82,7 @@
 								</table>
 								
 							</div>
-							
+						
 						</div>
 						<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel"
 							aria-hidden="true">
@@ -213,7 +214,6 @@
 							</div>
 						</div>
 						<!--end add modal-->
-
 					</div>
 				</div>
 				<!--end card-->

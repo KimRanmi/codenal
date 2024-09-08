@@ -4,6 +4,8 @@ import com.codenal.employee.domain.Employee;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -23,11 +25,15 @@ import lombok.NoArgsConstructor;
 
 public class Referrer {
 	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+	
 	@ManyToOne
 	@JoinColumn(name="approval_no")
 	private Approval approval;
 	
 	@ManyToOne
-	@Column(name="referrer_id")
+	@JoinColumn(name="referrer_id")
 	private Employee employee;
 }

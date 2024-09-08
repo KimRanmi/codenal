@@ -110,6 +110,28 @@
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
 									class="selectedName3">
 							</div>
+							<div class="mb-3" style="width:600px;">
+                            <label class="form-label" for="project-thumbnail-img">양식</label><br>
+                            <!-- 근태신청서의 경우 -->
+                            <div>
+	                            <select class="form-control" id="selectType" disabled style="width:200px;">
+								    <option value="1" th:if="${dto.baseForm.baseFormCode == 1}" th:text="'반차'">반차</option>
+								    <option value="2" th:if="${dto.baseForm.baseFormCode == 2}" th:text="'연차'">연차</option>
+								    <option value="3" th:if="${dto.baseForm.baseFormCode == 3}" th:text="'경조휴가'">경조휴가</option>
+								    <option value="4" th:if="${dto.baseForm.baseFormCode == 4}" th:text="'병가'">병가</option>
+								</select>
+								<div style="margin-top:-30px; margin-left:230px; color:#b9b9b9">내 잔여연차 : </div>
+								<div style="margin-top: 30px; margin-bottom:10px;">날짜</div>
+								<div id="dateContent" style="width:1000px;">
+									<input type="date" value="" style="width:200px;" id="startDate">
+                                    <select style="margin-left:10px; width:150px;">
+                                    	<option>오전</option>
+                                    	<option>오후</option>
+                                    </select>
+                            	</div>
+                        	</div>
+                            
+                        </div>
 							<br>
 							<div th:text="${dto.approval.approvalContent}" style="display: none"
 								id="contentDiv"></div>
@@ -125,7 +147,7 @@
 								<button type="submit" class="btn btn-danger w-sm">반려</button>
 							</div>
 							<!-- Sign-off and Approval Tables -->
-							<div style="margin-top: -1000px; margin-left: 600px;">
+							<div style="margin-top:-1138px; margin-left:600px;">
 
 								<label>합의자</label>
 								<table

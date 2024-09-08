@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.Referrer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -83,4 +84,8 @@ public class Employee {
     //연차사용내역
     @OneToMany(mappedBy = "employee")
     private List<AnnualLeaveManage> annualLeaveManages;
+    
+    //수신참조자
+    @OneToMany(mappedBy = "employee")
+    private List<Referrer> referrers;
 }

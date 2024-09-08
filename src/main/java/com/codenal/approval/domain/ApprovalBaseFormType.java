@@ -33,5 +33,5 @@ public class ApprovalBaseFormType {
 	private String baseFormName;
 	
 	@OneToMany(mappedBy="approvalBaseFormType")
-	private List<ApprovalBaseFormType> approvalBaseFormTypes;
+	private List<ApprovalForm> approvalForms;
 }
