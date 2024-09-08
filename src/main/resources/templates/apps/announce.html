@@ -112,7 +112,7 @@
 											<td>
 											  <a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}" th:text="${announce.announce_title}"></a>
 											</td>											
-											<td th:text="${announce.announce_writer}">작성자이름 </td>
+											<td th:text="${announce.employee.empName}">작성자이름 </td>
 											<td th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>
 										</tr>
 									</th:block>

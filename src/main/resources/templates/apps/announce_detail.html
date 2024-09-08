@@ -14,7 +14,6 @@
 
 <body>
 	<div layout:fragment="content">
-
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card mt-n4 mx-n4">
@@ -32,30 +31,30 @@
 										</div>
 										<div class="col-md">
 											<div>
-												<h2 class="fw-bold" ></h2>
+												<h2 class="fw-bold" th:text="${announceList.announce_title}"></h2>
 												<br>
+												
 												<div class="hstack gap-3 flex-wrap">
-													<div><i class="ri-user-3-fill align-bottom me-1"></i>작성자
+													<div><i class="ri-user-3-fill align-bottom me-1"></i>
+													작성자 : <span class="fw-medium" th:text="${announceList.employee.empName}"></span>
 													</div>
 													<div>개발팀<span class="fw-medium">대리</span></div>
 													<div class="vr"></div>
 													<div><i class="ri-user-settings-line align-bottom me-1"></i>
 													읽기 권한 :  <span class="fw-medium">전직원</span></div>
-												</div>
 												<br>
 												<div class="hstack gap-3 flex-wrap">
 													<div><i class="ri-pencil-fill align-bottom me-1"></i>
-													작성일 :  <span class="fw-medium" ></span></div>
+													작성일 : <span class="fw-medium" th:text="${#temporals.format(announceList.reg_date, 'yy-MM-dd HH:mm:ss')}"></span></div>
 													<div><i class="ri-eraser-line align-bottom me-1"></i>
-													수정일 : <span class="fw-medium" ></span></div>
+													수정일 : <span class="fw-medium" th:text="${#temporals.format(announceList.mod_date, 'yy-MM-dd HH:mm:ss')}"></span></div>
 												</div>
 												<br>
 												<div class="hstack gap-3 flex-wrap">
 												<div><i class="ri-eye-line align-bottom me-1"></i>
-													조회수 <span class="fw-medium" ></span></div>
+													조회수 <span class="fw-medium" th:text="${announceList.view_count}"></span></div>
 												</div>
 											</div>
-										</div>
 									</div>
 								</div>
 								
@@ -106,6 +105,7 @@
 								<!--TOAST UI Editor-->
 						        <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 									
+									
 									<!-- TOAST UI Editor가 들어갈 div태그 -->
 									    <div id="viewer"></div>
 									<!-- TOAST UI Editor 생성 JavaScript 코드 -->
@@ -116,82 +116,56 @@
 								            initialValue: content
 								        });
 								    </script>
+									<span th:text="${announceList.announce_content}"></span>
 											
 											
-											
-											<!-- 파일 조회1 -->
-
-											<div class="pt-3 border-top border-top-dashed mt-4">
-												<h6 class="mb-3 fw-semibold text-uppercase"><i class="ri-download-cloud-2-line align-bottom me-1"></i>첨부 파일</h6>
-												<div class="row g-3">
-													<div class="col-xxl-4 col-lg-6">
-														<div class="border rounded border-dashed p-2">
-															<div class="d-flex align-items-center">
-																<div class="flex-shrink-0 me-3">
-																	<div class="avatar-sm">
-																		<div
-																			class="avatar-title bg-light text-secondary rounded fs-24">
-																			<i class="ri-folder-zip-line"></i>
-																		</div>
-																	</div>
-																</div>
-																<div class="flex-grow-1 overflow-hidden">
-																	<h5 class="fs-13 mb-1"><a href="#"
-																			class="text-body text-truncate d-block">App
-																			pages.zip</a></h5>
-																	<div>2.0GB</div>
-																</div>
-																<div class="flex-shrink-0 ms-2">
-																	<div class="d-flex gap-1">
-																		<button type="button"
-																			class="btn btn-icon text-muted btn-sm fs-18"><i
-																				class="ri-download-2-line"></i></button>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<!-- 파일 조회2 -->
-													<div class="col-xxl-4 col-lg-6">
-														<div class="border rounded border-dashed p-2">
-															<div class="d-flex align-items-center">
-																<div class="flex-shrink-0 me-3">
-																	<div class="avatar-sm">
-																		<div
-																			class="avatar-title bg-light text-secondary rounded fs-24">
-																			<i class="ri-file-ppt-2-line"></i>
-																		</div>
-																	</div>
-																</div>
-																<div class="flex-grow-1 overflow-hidden">
-																	<h5 class="fs-13 mb-1"><a href="#"
-																			class="text-body text-truncate d-block">Velzon
-																			admin.ppt</a></h5>
-																	<div>2.4MB</div>
-																</div>
-																<div class="flex-shrink-0 ms-2">
-																	<div class="d-flex gap-1">
-																		<button type="button"
-																			class="btn btn-icon text-muted btn-sm fs-18"><i
-																				class="ri-download-2-line"></i></button>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-												</div>
-												<!-- end row -->
-											</div>
+									<!-- 파일 조회 -->
+	
+									<div class="pt-3 border-top border-top-dashed mt-4">
+									    <h6 class="mb-3 fw-semibold text-uppercase"><i class="ri-download-cloud-2-line align-bottom me-1"></i>첨부 파일</h6>
+									    <div class="row g-3">
+									        <!-- 파일 목록 반복 -->
+									        <div th:each="file : ${announceList.announceFile}">
+									            <div class="col-xxl-4 col-lg-6">
+									                <div class="border rounded border-dashed p-2">
+									                    <div class="d-flex align-items-center">
+									                        <div class="flex-shrink-0 me-3">
+									                            <div class="avatar-sm">
+									                                <div class="avatar-title bg-light text-secondary rounded fs-24">
+									                                    <i class="ri-folder-zip-line"></i> <!-- 파일 아이콘을 동적으로 변경할 수 있습니다. -->
+									                                </div>
+									                            </div>
+									                        </div>
+									                        <div class="flex-grow-1 overflow-hidden">
+									                            <h5 class="fs-13 mb-1">
+									                                <a class="text-body text-truncate d-block" th:text="${file.fileOriName}"></a>
+									                            </h5>
+									                        </div>
+									                        <div class="flex-shrink-0 ms-2">
+									                            <div class="d-flex gap-1">
+									                                <button type="button" class="btn btn-icon text-muted btn-sm fs-18">
+									                                    <i class="ri-download-2-line"></i>
+									                                </button>
+									                            </div>
+									                        </div>
+									                    </div>
+									                </div>
+									            </div>
+									        </div>
+									        <!-- end col -->
+									    </div>
+									    <!-- end row -->
+									</div>
+								
+								
 										</div>
 									</div>
 									<!-- end card body -->
 								</div>
 								<!-- end card -->
 				<!-- end card -->
-			
 		</div>
+
 		<!-- end row -->
 <!-- 댓글
 								<div class="card">
@@ -342,15 +316,20 @@
 			<!-- end col -->
 		</div>
 		<div style="text-align: center">
-		<button type="button" class="btn rounded-pill btn-primary waves-effect waves-light btn-lg">
+		<button type="button" class="btn rounded-pill btn-primary waves-effect waves-light btn-lg" onclick="goBack()">
 			<i class="ri-clipboard-line align-bottom me-1"></i>
 			조회 완료
 		</button></div>
 		
+		<script>
+	        function goBack() {
+	            window.history.back();
+	        }
+	    </script>
+		
 		<!--  container-fluid 위치-->
 		<!--end row-->
 	</div>
-
 	</th:block>
 	
 	
@@ -360,6 +339,7 @@
 		<script src="/assets/js/pages/project-overview.init.js"></script>
 
 	</th:block>
+
 </body>
 
 </html>

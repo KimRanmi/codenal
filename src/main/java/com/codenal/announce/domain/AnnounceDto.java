@@ -1,6 +1,9 @@
 package com.codenal.announce.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.codenal.employee.domain.Employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +22,11 @@ public class AnnounceDto {
 
 	private Long announce_no;
 	private int announce_writer;
+	private Employee employee;
+	private List<AnnounceFile> announceFile;
+	private List<AnnounceReadAuthority> announceReadAuthority;
+//	private Jobs job;    생성해야함
+//	private Department department;
 	private String announce_title;
 	private String announce_content;
 	private LocalDateTime reg_date;
@@ -33,13 +41,16 @@ public class AnnounceDto {
 	public Announce toEntity() {
 		return Announce.builder()
 				.announceNo(announce_no)
-				.announceWriter(announce_writer)
+//				.announceWriter(announce_writer)
 				.announceTitle(announce_title)
 				.announceContent(announce_content)
 				.regDate(reg_date)
 				.modDate(mod_date)
 				.viewCount(view_count)
 				.readAuthorityStatus(read_authority_status)
+				.employee(employee)
+				.files(announceFile)
+				.readAuthorities(announceReadAuthority)
 				.build();
 		 
 	}
@@ -47,13 +58,15 @@ public class AnnounceDto {
 	public AnnounceDto toDto(Announce announce) {
 		return AnnounceDto.builder()
 				.announce_no(announce.getAnnounceNo())
-				.announce_writer(announce.getAnnounceWriter())
 				.announce_title(announce.getAnnounceTitle())
 				.announce_content(announce.getAnnounceContent())
 				.reg_date(announce.getRegDate())
 				.mod_date(announce.getModDate())
 				.view_count(announce.getViewCount())
 				.read_authority_status(announce.getReadAuthorityStatus())
+				.employee(announce.getEmployee())
+				.announceFile(announce.getFiles())
+				.announceReadAuthority(announce.getReadAuthorities())
 				.build();
 	}
 	

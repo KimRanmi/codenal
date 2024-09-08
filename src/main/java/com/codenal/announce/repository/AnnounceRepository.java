@@ -1,11 +1,11 @@
 package com.codenal.announce.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.announce.domain.Announce;
 
@@ -22,8 +22,11 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long>{
 //					+ "WHERE a.announceTitle LIKE CONCAT('%',?1,'%') "
 //					+ "OR a.announceWriter LIKE CONCAT('%',?1,'%') ")
 //	Page<Announce> findByAnnounceTitleOrAnnounceWriterContaining(String keyword, Pageable pageable);
-//	
-	@Query(value="SELECT a FROM Announce a "
-			+ "WHERE a.announceNo = ?1")
-	List<Announce> findByAnnounceListOne(Long announce_no);
+
+    
+
+    Announce findByAnnounceNo(Long announceNo);
+    
+    
+    
 }

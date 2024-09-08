@@ -11,22 +11,28 @@ import org.springframework.stereotype.Service;
 
 import com.codenal.announce.domain.Announce;
 import com.codenal.announce.domain.AnnounceDto;
-import com.codenal.announce.domain.AnnounceFile;
-import com.codenal.announce.domain.AnnounceFileDto;
 import com.codenal.announce.repository.AnnounceFileRepository;
+import com.codenal.announce.repository.AnnounceReadAuthorityRepository;
 import com.codenal.announce.repository.AnnounceRepository;
+import com.codenal.employee.repository.EmployeeRepository;
+
 
 @Service
 public class AnnounceService {
 
 	
 	private final AnnounceRepository announceRepository;
-	private final AnnounceFileRepository announceFileRepository;
+//	private final AnnounceFileRepository announceFileRepository;
+//	private final AnnounceReadAuthorityRepository announceReadAuthorityRepository;
+//	private final EmployeeRepository employeeRepository;
 	
 	@Autowired
-	public AnnounceService(AnnounceRepository announceRepository, AnnounceFileRepository announceFileRepository) {
+	public AnnounceService(AnnounceRepository announceRepository, AnnounceFileRepository announceFileRepository
+			,AnnounceReadAuthorityRepository announceReadAuthorityRepository, EmployeeRepository employeeRepository) {
 		this.announceRepository = announceRepository;
-		this.announceFileRepository = announceFileRepository;
+//		this.announceFileRepository = announceFileRepository;
+//		this.announceReadAuthorityRepository = announceReadAuthorityRepository;
+//		this.employeeRepository = employeeRepository;
 	}
 	
 	public Page<AnnounceDto> selectAnnounceList(AnnounceDto searchDto, Pageable pageable){
@@ -59,27 +65,11 @@ public class AnnounceService {
 	}
 	
 	
-	public List<AnnounceDto> selectAnnounceDetail(Long no){
-		
-		List<Announce> announceList = announceRepository.findByAnnounceListOne(no);  // 작성자 이름하고 권한, 파일 가져와야함
-		List<AnnounceDto> announceDtoList = new ArrayList<AnnounceDto>();
-		AnnounceFile aFile = announceFileRepository.findByAnnounceNo(no);
-		System.out.println("aFile 정보: "+aFile);
-//		List<Object[]> aFile = announceFileRepository.findFilesWithAnnounceTitleByAnnounceNo(no);
-//		System.out.println("aFile 정보: "+aFile);
-		
-		for(Announce a : announceList) {
-			AnnounceDto dto = new AnnounceDto().toDto(a);
-			announceDtoList.add(dto);
-		}
-		System.out.println("dtoList 최종 정보: "+announceDtoList);
-		
-
-		return announceDtoList;
-	}
-
-//	public List<AnnounceFile> findByannounceNo(Long announceNo) {
-//        return announceFileRepository.findByannounceNo(announceNo);
-//
-//	}
+    public AnnounceDto selectAnnounceDetail(Long announceNo) {
+        Announce announce = announceRepository.findByAnnounceNo(announceNo);
+        AnnounceDto dto = new AnnounceDto().toDto(announce);
+        return dto;
+    }
+	
+    
 }
