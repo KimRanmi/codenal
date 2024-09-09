@@ -75,9 +75,8 @@ public class EmployeeDto {
                 .empStatus(employee.getEmpStatus() != null ? employee.getEmpStatus() : "Y")
                 .empProfilePicture(employee.getEmpProfilePicture())
                 .empSignImage(employee.getEmpSignImage())
-                .deptNo(employee.getDepartment() != null ? employee.getDepartment().getDeptNo() : null) // 부서 번호 가져오기
-                .jobNo(employee.getJob() != null ? employee.getJob().getJobNo() : null) // 직급 번호 가져오기
-                .empAuth(employee.getEmpAuth())
+                .deptNo(employee.getDepartment() != null ? employee.getDepartment().getDeptNo() : null)
+                .jobNo(employee.getJob() != null ? employee.getJob().getJobNo() : null)
                 .build();
     }
 

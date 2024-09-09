@@ -18,49 +18,54 @@ import com.codenal.employee.domain.EmployeeDto;
 @Controller
 public class EmployeeListViewController {
 
-    private final EmployeeListService employeeListService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeListViewController.class);
+	private final EmployeeListService employeeListService;
+	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeListViewController.class);
 
-    @Autowired
-    public EmployeeListViewController(EmployeeListService employeeListService) {
-        this.employeeListService = employeeListService;
-    }
+	@Autowired
+	public EmployeeListViewController(EmployeeListService employeeListService) {
+		this.employeeListService = employeeListService;
+	}
 
-    // 직원 목록 검색 (재직/퇴사 + 직원 정보)
-    @GetMapping("/admin/employeeList")
-    public String selectEmployeeList(Model model,
-            @PageableDefault(page = 0, size = 10, sort = "regDate", direction = Sort.Direction.DESC) Pageable pageable,
-            @ModelAttribute("searchDto") EmployeeDto searchDto) { 
-        
-        if (searchDto == null) {
-            searchDto = new EmployeeDto();
-        }
-    	
-        Page<EmployeeDto> employeeList = employeeListService.selectEmployeeListOne(searchDto, pageable);
-      
-        LOGGER.debug(employeeList.toString());
-        
-        model.addAttribute("employeeList", employeeList);
-        model.addAttribute("searchDto", searchDto);
-        
-        return "admin/employeeList";
-    }
+	// 직원 목록 검색 (재직/퇴사 + 직원 정보)
+	@GetMapping("/admin/employeeList")
+	public String selectEmployeeList(Model model,
+			@PageableDefault(page = 0, size = 10, sort = "regDate", direction = Sort.Direction.DESC) Pageable pageable,
+			@ModelAttribute("searchDto") EmployeeDto searchDto) { 
+
+		// 재직/퇴사 상태와 직원 정보 검색 구분
+		Page<EmployeeDto> employeeList = Page.empty();  
+		if (searchDto.getSearch_type() == 0) {
+			// 재직/퇴사 검색
+			employeeList = employeeListService.searchByStatus(searchDto, pageable);
+		} else {
+			// 직원 정보 검색
+			employeeList = employeeListService.searchByEmployeeInfo(searchDto, pageable);
+		}
 
 
-	
+		LOGGER.debug(employeeList.toString());
+
+		model.addAttribute("employeeList", employeeList);
+		model.addAttribute("searchDto", searchDto);
+
+		return "admin/employeeList";
+	}
+
+
+
 
 	// 직원 정보 상세 조회
 	//@GetMapping("/admin/employeeListDetail/{employee_id}")
-//	public String employeeListDetail(@PathVariable("id") Long id, Model model) {
+	//	public String employeeListDetail(@PathVariable("id") Long id, Model model) {
 	//    EmployeeDto employeeList = employeeListService.selectEmployeeListDetail(id);
 	//    model.addAttribute("employeeList", employeeList);
-	    
+
 	//    return "admin/employeeListDetail";
 	//}
-	
+
 	// 직원 정보 수정
 	//@GetMapping("/admin/employeeListUpdate/{employee_id}")
-//	public String employeeListUpdate(@PathVariable("id") Long id, Model model) {
+	//	public String employeeListUpdate(@PathVariable("id") Long id, Model model) {
 
 	//	EmployeeDto employeeList = employeeListService.selectEmployeeListUpdate(id);
 	//    model.addAttribute("employeeList", employeeList);

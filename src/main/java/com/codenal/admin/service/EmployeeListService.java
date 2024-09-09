@@ -24,68 +24,54 @@ public class EmployeeListService {
 	}
 
 	// 직원 목록 검색 1 (재직 or 퇴사)
-	public Page<EmployeeDto> selectEmployeeListOne(EmployeeDto searchDto, Pageable pageable) {
-		Page<Employee> employeeList = null;
+	public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
+	    Page<Employee> employeeListOne = employeeListRepository.findByEmpStatus(searchDto.getEmpStatus(), pageable);
 
-		String empStatus = searchDto.getEmpStatus();
-		String statusCode = "재직".equals(empStatus) ? "Y" : "N";
-
-		if(empStatus != null && "".equals(empStatus) == false) {
-			int empStatusType = searchDto.getSearch_type();
-			switch(empStatusType) {
-			case 1 : 
-				employeeList = employeeListRepository.findByEmpStatus(statusCode, pageable);
-				break;
-			}
-		} else {
-			employeeList = employeeListRepository.findAll(pageable);
-		}
-		List<EmployeeDto> employeeDtoList = new ArrayList<EmployeeDto>();
-		for(Employee e : employeeList) {
-			EmployeeDto dto = new EmployeeDto().fromEntity(e);
-			employeeDtoList.add(dto);
-		}
-		return new PageImpl<>(employeeDtoList,pageable,employeeList.getTotalElements());
+	    List<EmployeeDto> employeeDtoList = new ArrayList<>();
+	    for (Employee e : employeeListOne) {
+	        employeeDtoList.add(EmployeeDto.fromEntity(e));
+	    }
+	    return new PageImpl<>(employeeDtoList, pageable, employeeListOne.getTotalElements());
 	}
 
 
 	// 직원 목록 검색 2 (직원 정보)
-	public Page<EmployeeDto> selectEmployeeListTwo(EmployeeDto searchDto, Pageable pageable) {
-		Page<Employee> employeeList = null;
+	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
+		Page<Employee> employeeListTwo = null;
 
 		String searchText = searchDto.getSearch_text();
 
-		if (searchText != null && !searchText.isEmpty()) {
+		if (searchText != null && "".equals(searchText) == false) {
 			int searchType = searchDto.getSearch_type();
 			switch (searchType) {
 			case 1:
-				employeeList = employeeListRepository.findByEmpIdContaining(searchText, pageable);
+				employeeListTwo = employeeListRepository.findByEmpIdContaining(searchText, pageable);
 				break;
 			case 2:
-				employeeList = employeeListRepository.findByEmpNameContaining(searchText, pageable);
+				employeeListTwo = employeeListRepository.findByEmpNameContaining(searchText, pageable);
 				break;
 			case 3:
-				employeeList = employeeListRepository.findByDepartment_DeptNameContaining(searchText, pageable);
+				employeeListTwo = employeeListRepository.findByDepartment_DeptNameContaining(searchText, pageable);
 				break;
 			case 4:
-				employeeList = employeeListRepository.findByJob_JobNameContaining(searchText, pageable);
+				employeeListTwo = employeeListRepository.findByJob_JobNameContaining(searchText, pageable);
 				break;
 			case 5:
-				employeeList = employeeListRepository.findByEmpPhoneContaining(searchText, pageable);
+				employeeListTwo = employeeListRepository.findByEmpPhoneContaining(searchText, pageable);
 				break;
 			default:
-				employeeList = employeeListRepository.findAll(pageable);
+				employeeListTwo = employeeListRepository.findAll(pageable);
 				break;
 			}
 		} else {
-			employeeList = employeeListRepository.findAll(pageable);
+			employeeListTwo = employeeListRepository.findAll(pageable);
 		}
 		List<EmployeeDto> employeeDtoList = new ArrayList<EmployeeDto>();
-		for(Employee e : employeeList) {
+		for(Employee e : employeeListTwo) {
 			EmployeeDto dto = new EmployeeDto().fromEntity(e);
 			employeeDtoList.add(dto);
 		}
-		return new PageImpl<>(employeeDtoList,pageable,employeeList.getTotalElements());
+		return new PageImpl<>(employeeDtoList,pageable,employeeListTwo.getTotalElements());
 	}
 
 	// 직원 정보 상세 조회
