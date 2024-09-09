@@ -13,8 +13,8 @@ public class AdminViewController {
 	}
 
 	// 직원 목록
-	@GetMapping("/employeeList")
-	public String employeeList() {
-		return "admin/employeeList";
-	}
+//	@GetMapping("/employeeList")
+//	public String employeeList() {
+//		return "admin/employeeList";
+//	}
 }

@@ -18,7 +18,7 @@
 <body>
 	<div layout:fragment="content">
 		<div
-			th:replace="partials/page-title :: page-title('직원 관리','직원 정보 관리')"></div>
+			th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card" id="orderList">
@@ -26,9 +26,11 @@
 					<div class="card-header border-0">
 						<div class="row align-items-center gy-3">
 							<div class="card-body" style="border-bottom: 2px dashed #d3d3d3;">
-								<form>
-									<!-- -------------------신규 직원 등록---------------------------- -->
+
+								<!-- -------------------신규 직원 등록---------------------------- -->
+								<form th:action="@{/admin/employeeList}" th:object="${searchDto}" method="get">
 									<div class="row g-3">
+										<!-- 신규 직원 등록 버튼 -->
 										<div class="col-xxl-3 col-sm-7">
 											<a href="/join"
 												class="btn btn-success add-btn d-flex align-items-center justify-content-center"
@@ -38,56 +40,67 @@
 											</a>
 										</div>
 
-										<!-- -------------------페이크---------------------------- -->
+										<!-- 빈 공간 -->
 										<div class="col-xxl-3 col-sm-7">
 											<div></div>
 										</div>
-										<!-- -------------------재직 퇴사 셀렉트---------------------------- -->
+
+										<!-- 재직 상태 선택 -->
 										<div class="col-xxl-1 col-sm-4">
 											<div>
-												<select class="form-control" data-choices
-													data-choices-search-false name="choices-single-default"
-													id="idStatus">
-													<option value="">근무 상태</option>
-													<option value="Pending" selected>재직</option>
-													<option value="Inprogress">퇴사</option>
+												<select class="form-control" name="empStatus" id="idStatus"
+													th:value="${searchDto.search_type}">
+													<option value="">재직 상태</option>
+													<option value="재직"
+														th:selected="${searchDto.empStatus == '재직'}">재직</option>
+													<option value="퇴사"
+														th:selected="${searchDto.empStatus == '퇴사'}">퇴사</option>
 												</select>
 											</div>
 										</div>
-										<!-- -------------------직원 정보 셀렉트---------------------------- -->
+
+										<!-- 직원 정보 선택 -->
 										<div class="col-xxl-1 col-sm-4">
 											<div>
-												<select class="form-control" data-choices
-													data-choices-search-false name="choices-single-default"
-													id="idPayment">
-													<option value="">직원 정보</option>
-													<option value="All" selected>전체</option>
-													<option value="Mastercard">사번</option>
-													<option value="Paypal">직원명</option>
-													<option value="Visa">부서명</option>
-													<option value="COD">직급명</option>
-													<option value="COD">전화번호</option>
+												<select class="form-control" name="search_type"
+													id="idPayment" th:value="${searchDto.search_type}">
+													<option value="0"
+														th:selected="${searchDto.search_type == 0}">전체</option>
+													<option value="1"
+														th:selected="${searchDto.search_type == 1}">사번</option>
+													<option value="2"
+														th:selected="${searchDto.search_type == 2}">직원명</option>
+													<option value="3"
+														th:selected="${searchDto.search_type == 3}">부서명</option>
+													<option value="4"
+														th:selected="${searchDto.search_type == 4}">직급명</option>
+													<option value="5"
+														th:selected="${searchDto.search_type == 5}">전화번호</option>
 												</select>
 											</div>
 										</div>
-										<!-- -------------------검색 입력란---------------------------- -->
+
+										<!-- 검색어 입력란 -->
 										<div class="col-xxl-3 col-sm-5">
 											<div class="search-box">
-												<input type="text" class="form-control search"
-													placeholder="검색어를 입력해 주세요."> <i
+												<input type="text" class="form-control" name="search_text"
+													placeholder="검색어를 입력해 주세요."
+													th:value="${searchDto.search_text}"> <i
 													class="ri-search-line search-icon"></i>
 											</div>
 										</div>
-										<!-- -------------------검색 버튼---------------------------- -->
+
+										<!-- 검색 버튼 -->
 										<div class="col-xxl-1 col-sm-4">
 											<div>
-												<button type="button" class="btn btn-primary w-100"
-													onclick="SearchData();"
+												<button type="submit" class="btn btn-primary w-100"
 													style="font-size: 18px; padding: 3px;">검색</button>
 											</div>
 										</div>
 									</div>
 								</form>
+
+
 							</div>
 						</div>
 					</div>
@@ -109,27 +122,56 @@
 									</thead>
 
 									<!-- ----------------------목록 내역-------------------------------- -->
-									<tbody>
-										<th:block th:if="${#lists.isEmpty(employees)}">
-											<tr>
-												<td colspan="6" style="text-align: center;">No
-													직원 목록이 없습니다.</td>
-											</tr>
-										</th:block>
-										<th:block th:each="employee : ${employees}"> 
-											<tr>
-												<td th:text="${employee.empId}"></td>
-												<td th:text="${employee.empName}"></td>
-												<td th:text="${employee.department.deptName}"></td>
-												<td th:text="${employee.job.jobName}"></td>
-												<td th:text="${employee.empPhone}"></td>
-												<td th:text="${employee.empStatus}"></td>
-											</tr>
-										</th:block>
-									</tbody>
+
+									<th:block th:if="${#lists.isEmpty(employeeList.content)}">
+										<tr>
+											<td colspan="6" style="text-align: center;">직원 목록이 없습니다.</td>
+										</tr>
+									</th:block>
+
+									<th:block th:if="${!#lists.isEmpty(employeeList.content)}">
+										<tr th:each="employee : ${employeeList.content}">
+											<td th:text="${employee.empId}"></td>
+											<td th:text="${employee.empName}"></td>
+											<td th:text="${employee.deptName}"></td>
+											<td th:text="${employee.jobName}"></td>
+											<td th:text="${employee.empPhone}"></td>
+											<td th:text="${employee.empStatus}"></td>
+										</tr>
+									</th:block>
 
 
 								</table>
+								</br>
+								<div class="center" th:if="${!employeeList.empty}">
+									<div class="pagination"
+										th:with="
+							        pageNumber = ${employeeList.pageable.pageNumber},
+							        pageSize = ${employeeList.pageable.pageSize},
+							        totalPages = ${employeeList.totalPages},
+							        startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+							        tempEndPage = ${startPage + pageSize - 1},
+							        endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+							        ">
+										<th:block th:if="${!employeeList.first}">
+											<a
+												th:href="@{/employeeList(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a>
+										</th:block>
+
+										<th:block
+											th:each="page: ${#numbers.sequence(startPage, endPage)}">
+											<a th:text="${page}"
+												th:href="@{/employeeList(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}"
+												th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
+										</th:block>
+
+										<th:block th:if="${!employeeList.last}">
+											<a
+												th:href="@{/employeeList(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a>
+										</th:block>
+									</div>
+								</div>
+
 
 							</div>
 						</div>
