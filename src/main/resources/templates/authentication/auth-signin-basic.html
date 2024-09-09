@@ -9,6 +9,9 @@
     <!-- Page CSS -->
     <div th:replace="partials/head-css :: head-css"></div>
     
+    <meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    
     <!-- SweetAlert2 CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
@@ -163,6 +166,9 @@
         var rememberMeCheckbox = document.getElementById("auth-remember-check");
         var empIdInput = document.getElementById("emp_id");
         
+        var token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        
         if (rememberMeCheckbox.checked) {	
             localStorage.setItem("savedId", empIdInput.value); // ID 저장
         } else {
@@ -173,7 +179,8 @@
             method: "POST",
             body: formData,
             headers: {
-                "X-Requested-With": "XMLHttpRequest"
+                "X-Requested-With": "XMLHttpRequest",
+                [header]: token
             }
         }).then(function(response) {
             if (response.ok) {

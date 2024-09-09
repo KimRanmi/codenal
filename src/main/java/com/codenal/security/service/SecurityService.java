@@ -26,15 +26,14 @@ public class SecurityService implements UserDetailsService {
         try {
             empId = Integer.parseInt(username); // String을 int로 변환
         } catch (NumberFormatException e) {
-            throw new UsernameNotFoundException("Invalid ID format: " + username);
+            throw new UsernameNotFoundException("잘못된 ID형식입니다. : " + username);
         }
 
         Employee employee = employeeRepository.findByEmpId(empId);
         if (employee == null) {
-            throw new UsernameNotFoundException("User not found with ID: " + empId);
+            throw new UsernameNotFoundException("ID가 존재하지 않습니다. : " + empId);
         }
 
-        EmployeeDto employeeDto = EmployeeDto.fromEntity(employee);
-        return new SecurityUser(employeeDto); // SecurityUser로 반환
+        return new SecurityUser(EmployeeDto.fromEntity(employee));  // SecurityUser로 반환
     }
     }
