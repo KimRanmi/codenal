@@ -16,8 +16,8 @@ import lombok.ToString;
 
 public class ApprovalCategoryDto {
 	
-	private Long cate_code;
-	private Long form_code;
+	private int cate_code;
+	private int form_code;
 	
 	public ApprovalCategory toEntity() {
 		return ApprovalCategory.builder()

@@ -29,7 +29,7 @@ public class ApprovalCategory {
 	@Id
 	@Column(name="cate_code")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long cateCode;
+	private int cateCode;
 	
 	// 외래키
 	@ManyToOne

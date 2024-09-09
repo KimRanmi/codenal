@@ -3,22 +3,21 @@ package com.codenal.approval.controller;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.service.ApprovalService;
-import com.codenal.employee.domain.Employee;
-import com.codenal.ref.Authentication;
 import com.codenal.security.service.SecurityService;
 
 @Controller
@@ -57,15 +56,22 @@ public class ApprovalViewController {
 		return "apps/approval_leave_create";
 	} 
 	
-	// 리스트 조회 (수정해야함)
 	@GetMapping("/approval/list")
 	public String listApproval(Model model,
-	        @PageableDefault(page=0, size=10, sort="approvalNo",
-	        direction=Sort.Direction.DESC) Pageable pageable) {
+	                           @RequestParam(value = "num", defaultValue = "0") int num,
+	                           @PageableDefault(page = 0, size = 10, sort = "approvalNo",
+	                                            direction = Sort.Direction.DESC) Pageable pageable) {
+	    // 서비스에서 승인 리스트를 조회
 	    Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable);
+	    
+	    // 모델에 데이터 추가
 	    model.addAttribute("resultList", resultList);
+	    model.addAttribute("num", num);
+	    
+	    // 템플릿 이름
 	    return "apps/approval_list";
 	}
+
 
 	
 	// 상세 조회

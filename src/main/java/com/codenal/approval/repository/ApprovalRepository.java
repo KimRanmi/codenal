@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.ApprovalCategory;
 
 public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		
@@ -29,6 +30,6 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 			       "JOIN f.approvalBaseFormType t "+
 			       "WHERE a.approvalNo = ?1")
 		List<Object[]> selectByapprovalNo(Long approvalNo);
-
-
+		
+		
 }

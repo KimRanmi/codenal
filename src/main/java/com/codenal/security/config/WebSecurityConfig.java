@@ -38,11 +38,10 @@ public class WebSecurityConfig {
 		http
 		.cors(Customizer.withDefaults())  // CORS 설정 추가
 		.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
-				 .requestMatchers("/join").permitAll()  // "/join" 경로 허용
+				.requestMatchers("/auth-signin-basic", "/assets/**","/js/**", "/css/**", "/images/**").permitAll()
+				.requestMatchers("/join").permitAll()  // "/join" 경로 허용
 				.anyRequest().authenticated()
 				)
-		
 		.formLogin(login ->
 		login.loginPage("/auth-signin-basic")
 		.loginProcessingUrl("/auth-signin-basic")

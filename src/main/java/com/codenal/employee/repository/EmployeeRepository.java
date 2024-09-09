@@ -5,4 +5,6 @@ import com.codenal.employee.domain.Employee;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Employee findByEmpId(int empId);
+    
+    Employee findByempId(Long empId);
 }
