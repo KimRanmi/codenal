@@ -18,7 +18,7 @@ public class Pages {
 	
 	@GetMapping("/pages-profile-settings")
 	public String profile_settings() {
-		return "pages/profile-settings";
+		return "pages/mypage";
 	}
 	
 	@GetMapping("/pages-team")
