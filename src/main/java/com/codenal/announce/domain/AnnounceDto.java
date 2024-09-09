@@ -28,8 +28,6 @@ public class AnnounceDto {
 	private List<AnnounceFile> announceFile;
 	private List<AnnounceReadAuthority> announceReadAuthority;
 
-//	private Jobs job;    생성해야함
-//	private Department department;
 	private String announce_title;
 	private String announce_content;
 	private LocalDateTime reg_date;
@@ -44,7 +42,6 @@ public class AnnounceDto {
 	public Announce toEntity() {
 		return Announce.builder()
 				.announceNo(announce_no)
-//				.announceWriter(announce_writer)
 				.announceTitle(announce_title)
 				.announceContent(announce_content)
 				.regDate(reg_date)

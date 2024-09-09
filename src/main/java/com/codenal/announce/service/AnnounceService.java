@@ -19,6 +19,8 @@ import com.codenal.announce.repository.AnnounceRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
+import jakarta.transaction.Transactional;
+
 
 @Service
 public class AnnounceService {
@@ -73,17 +75,35 @@ public class AnnounceService {
         AnnounceDto dto = new AnnounceDto().toDto(announce);
         return dto;
     }
-	
+    
+    @Transactional
     public Announce createAnnounce(AnnounceDto dto, AnnounceFileDto fileDto) {
-    	int announceWriter = dto.getAnnounce_writer();
-    	Employee emp = employeeRepository.findByEmpId(announceWriter);
-    	Announce announce = Announce.builder()
-    			.announceTitle(dto.getAnnounce_title())
-    			.announceContent(dto.getAnnounce_content())
-    			.readAuthorityStatus(dto.getRead_authority_status())
-    			.employee(emp)
-    			.build();
-    	return announceRepository.save(announce);
+        // Announce 객체 생성 및 저장
+        int announceWriter = dto.getAnnounce_writer();
+        Employee emp = employeeRepository.findByEmpId(announceWriter);
+        Announce announce = Announce.builder()
+                .announceTitle(dto.getAnnounce_title())
+                .announceContent(dto.getAnnounce_content())
+                .readAuthorityStatus(dto.getRead_authority_status())
+                .employee(emp)
+                .build();
+        
+        // Announce 저장
+        Announce savedAnnounce = announceRepository.save(announce);
+        
+        // AnnounceFile 객체 생성 및 저장
+        AnnounceFile aFile = AnnounceFile.builder()
+                .announce(savedAnnounce) // Announce와 연관 설정
+                .fileOriName(fileDto.getFile_ori_name())
+                .fileNewName(fileDto.getFile_new_name())
+                .filePath(fileDto.getFile_path())
+                .build();
+        
+        // AnnounceFile 저장
+        announceFileRepository.save(aFile);
+        
+        // 저장된 Announce 객체 반환
+        return savedAnnounce;
     }
     
 }

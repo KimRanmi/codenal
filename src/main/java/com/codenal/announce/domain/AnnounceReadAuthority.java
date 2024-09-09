@@ -25,12 +25,6 @@ import lombok.Setter;
 @Builder
 public class AnnounceReadAuthority {
 	
-	
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name="read_no")
-//	private Long readNo;
-	
 	@Id
     private Long id;
 	

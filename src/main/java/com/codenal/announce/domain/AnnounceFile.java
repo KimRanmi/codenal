@@ -2,11 +2,10 @@ package com.codenal.announce.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,12 +22,16 @@ import lombok.Setter;
 @Setter
 @Builder
 public class AnnounceFile {
-
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="file_no")
-	private Long fileNo;
+    private Long id;
+	
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name="file_no")
+//	private Long fileNo;
 
+	@MapsId
 	@ManyToOne
 	@JoinColumn(name="announce_no")
 	private Announce announce;

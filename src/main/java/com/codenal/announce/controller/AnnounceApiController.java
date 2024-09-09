@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.codenal.announce.domain.Announce;
 import com.codenal.announce.domain.AnnounceDto;
 import com.codenal.announce.domain.AnnounceFileDto;
 import com.codenal.announce.service.AnnounceService;
@@ -34,25 +35,42 @@ public class AnnounceApiController {
 	public Map<String, String> createAnnounce(AnnounceDto dto,
             @RequestParam("file") MultipartFile file) {
 		
-		// dto 파싱 후 resultMap에 코드 담아서 보내는 작업 
-		Map<String,String> resultMap = new HashMap<String,String>();
-		resultMap.put("res_code", "404");
-		resultMap.put("res_msg", "생성중 오류가 발생하였습니다.");
-		
-		String savedFileName = fileService.upload(file);
-		if(savedFileName != null) {
-			AnnounceFileDto fileDto = new AnnounceFileDto();
-			fileDto.setFile_ori_name(file.getOriginalFilename());
-			fileDto.setFile_new_name(savedFileName);
-			fileDto.setFile_path("C:\\codenal\\announce\\upload\\");
-			if(announceService.createAnnounce(dto, fileDto) != null) {
-				resultMap.put("res_code", "200");
-				resultMap.put("res_msg", "성공적으로 게시글을 작성했습니다.");
-			}
-		} else {
-			resultMap.put("res_msg", "파일 업로드에 실패했습니다.");
-		}
-		return resultMap;
+	    Map<String, String> resultMap = new HashMap<>();
+	    
+	    try {
+	        // 파일 업로드 처리
+	        String savedFileName = fileService.upload(file);
+	        if (savedFileName == null) {
+	            resultMap.put("res_code", "500");
+	            resultMap.put("res_msg", "파일 업로드에 실패했습니다.");
+	            return resultMap;
+	        }
+	        
+	        // AnnounceFileDto 생성
+	        AnnounceFileDto fileDto = new AnnounceFileDto();
+	        fileDto.setFile_ori_name(file.getOriginalFilename());
+	        fileDto.setFile_new_name(savedFileName);
+	        fileDto.setFile_path("C:\\codenal\\announce\\upload\\"+file.getName());
+	        
+	        // Announce 및 AnnounceFile 저장
+	        Announce savedAnnounce = announceService.createAnnounce(dto, fileDto);
+	        if (savedAnnounce == null) {
+	            resultMap.put("res_code", "500");
+	            resultMap.put("res_msg", "Announce 저장에 실패했습니다.");
+	            return resultMap;
+	        }
+	        
+	        // 성공 응답
+	        resultMap.put("res_code", "200");
+	        resultMap.put("res_msg", "성공적으로 게시글을 작성했습니다.");
+	        resultMap.put("announceNo", savedAnnounce.getAnnounceNo().toString()); // Long을 String으로 변환하여 추가
+	    } catch (Exception e) {
+	        resultMap.put("res_code", "500");
+	        resultMap.put("res_msg", "서버 오류: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    
+	    return resultMap;
 	}
 	
 	

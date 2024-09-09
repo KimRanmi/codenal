@@ -17,11 +17,11 @@
                     <div class="card-body">
                     
 					<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
-					<input type="hidden" id="announce_writer" name="announce_writer" th:value="${username}">
+					<input type="hidden" id="announce_writer" th:value="${username}">
 					
 					    <div class="mb-3">
-                           <label class="form-label" for="project-title-input">제목</label>
-                           <input type="text" class="form-control" id="announce_title" name="announce_title"
+                           <label class="form-label" for="announce_title">제목</label>
+                           <input type="text" class="form-control" id="announce_title"
                                        placeholder="제목을 입력하세요.">
 
                         </div>
@@ -32,7 +32,7 @@
                             const editor = new toastui.Editor({
                                 el: document.querySelector('#editor'),
                                 height: '500px',                        // 에디터 영역의 높이 값 (OOOpx || auto)
-                                initialEditType: 'markdown',            // 최초로 보여줄 에디터 타입 (markdown || wysiwyg)
+                                initialEditType: 'wysiwyg',            // 최초로 보여줄 에디터 타입 (markdown || wysiwyg)
                                 initialValue: '',                       // 내용의 초기 값으로, 반드시 마크다운 문자열 형태여야 함
                                 previewStyle: 'vertical',               // 마크다운 프리뷰 스타일 (tab || vertical)
                                 /* start of hooks */
@@ -87,14 +87,14 @@
                                 <div class="fallback">
                                     <input id="file" name="file" type="file" multiple="multiple">
                                 </div>
-<!--                                  <div class="dz-message needsclick">
+<!--                                   <div class="dz-message needsclick">
                                     <div class="mb-3">
                                         <i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
                                     </div>
                                     <h6>이곳을 클릭하거나 올릴 파일을 드래그하세요.</h6>
                                 </div> -->
                             </div>
-<!--dropzone으로 하면 파일업로드 불가능함                             <ul class="list-unstyled mb-0" id="dropzone-preview">
+<!--                             <ul class="list-unstyled mb-0" id="dropzone-preview">
                                 <li class="mt-2" id="dropzone-preview-list">
                                     <div class="border rounded">
                                         <div class="d-flex p-2">
@@ -123,6 +123,8 @@
                 </div>
             </div>
 
+
+
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
@@ -134,18 +136,20 @@
                             <input type="radio" id="all" name="read_authority_status" value="N"><label for="all">전직원</label>
                             <input type="radio" id="select" name="read_authority_status" value="Y"><label for="select">권한 직접 설정</label>
                         </div>
+                        <!-- 조직도를 표시할 div -->
+						<div id="organization-chart" style="display: none;">
+						    <!-- 조직도 내용이 동적으로 삽입할 예정 -->
+						</div>
                     </div>
                 </div>
                 <div class="text-end mb-4">
                     <button type="button" class="btn btn-danger w-sm">이전으로</button>
-                    <button type="submit" class="btn btn-success w-sm" id="create-btn"  onclick="announceCreate()">작성 완료</button>
+                    <button type="submit" class="btn btn-success w-sm" id="create-btn">작성 완료</button>
                 </div>
             </div>
         </div>
         </form>
     </div>
-
-
 
       <th:block layout:fragment="pagejs">
         <script src="/assets/libs/dropzone/dropzone-min.js"></script>
