@@ -22,7 +22,7 @@ public class AdminApiController {
 	@Autowired
 	public AdminApiController(AdminService adminService) {
 		this.adminService = adminService;
-	}
+	} 
  
 	// 신규 직원 등록
 	@ResponseBody 
