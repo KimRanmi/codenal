@@ -16,6 +16,7 @@
 	<div layout:fragment="content">
 		<div th:replace="partials/page-title :: page-title('게시판 조회','게시판')"></div>
 
+
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card" id="tasksList">
@@ -25,7 +26,8 @@
 							<div class="flex-shrink-0">
 								<div class="d-flex flex-wrap gap-2">
 									<a href="/announce/create"><i class="ri-add-line align-bottom me-1"></i>
-										게시글 작성</a>
+										게시글 작성	
+										</a>
 										<!-- 게시글 체크박스 기능 안넣을거면 지우기 -->
 <!--체크박스 									<button class="btn btn-soft-danger" id="remove-actions"
 										onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
@@ -35,6 +37,7 @@
 					</div>
 					<div class="card-body border border-dashed border-end-0 border-start-0">
 						<form>
+						 	<input type="hidden" th:value="${username}"></input>
 							<div class="row g-3">
 								<div class="col-xxl-5 col-sm-12">
 									<div class="search-box">

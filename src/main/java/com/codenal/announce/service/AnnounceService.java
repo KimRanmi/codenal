@@ -11,9 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.codenal.announce.domain.Announce;
 import com.codenal.announce.domain.AnnounceDto;
+import com.codenal.announce.domain.AnnounceFile;
+import com.codenal.announce.domain.AnnounceFileDto;
 import com.codenal.announce.repository.AnnounceFileRepository;
 import com.codenal.announce.repository.AnnounceReadAuthorityRepository;
 import com.codenal.announce.repository.AnnounceRepository;
+import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
 
@@ -22,17 +25,17 @@ public class AnnounceService {
 
 	
 	private final AnnounceRepository announceRepository;
-//	private final AnnounceFileRepository announceFileRepository;
-//	private final AnnounceReadAuthorityRepository announceReadAuthorityRepository;
-//	private final EmployeeRepository employeeRepository;
+	private final AnnounceFileRepository announceFileRepository;
+	private final AnnounceReadAuthorityRepository announceReadAuthorityRepository;
+	private final EmployeeRepository employeeRepository;
 	
 	@Autowired
 	public AnnounceService(AnnounceRepository announceRepository, AnnounceFileRepository announceFileRepository
 			,AnnounceReadAuthorityRepository announceReadAuthorityRepository, EmployeeRepository employeeRepository) {
 		this.announceRepository = announceRepository;
-//		this.announceFileRepository = announceFileRepository;
-//		this.announceReadAuthorityRepository = announceReadAuthorityRepository;
-//		this.employeeRepository = employeeRepository;
+		this.announceFileRepository = announceFileRepository;
+		this.announceReadAuthorityRepository = announceReadAuthorityRepository;
+		this.employeeRepository = employeeRepository;
 	}
 	
 	public Page<AnnounceDto> selectAnnounceList(AnnounceDto searchDto, Pageable pageable){
@@ -71,5 +74,16 @@ public class AnnounceService {
         return dto;
     }
 	
+    public Announce createAnnounce(AnnounceDto dto, AnnounceFileDto fileDto) {
+    	int announceWriter = dto.getAnnounce_writer();
+    	Employee emp = employeeRepository.findByEmpId(announceWriter);
+    	Announce announce = Announce.builder()
+    			.announceTitle(dto.getAnnounce_title())
+    			.announceContent(dto.getAnnounce_content())
+    			.readAuthorityStatus(dto.getRead_authority_status())
+    			.employee(emp)
+    			.build();
+    	return announceRepository.save(announce);
+    }
     
 }

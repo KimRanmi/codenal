@@ -16,12 +16,7 @@ import lombok.ToString;
 public class AnnounceFileDto {
 
 	private Long file_no;
-	
 	private Announce announce;
-	
-//	private String announce_writer;
-//	private String announce_title;
-	
 	private String file_ori_name;
 	private String file_new_name;
 	private String file_path;

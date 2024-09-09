@@ -10,15 +10,18 @@
 <body>
     <div layout:fragment="content">
         <div th:replace="partials/page-title :: page-title('게시글 작성','게시판')"></div>
-<form>
+<form id="announceForm" method="post" enctype="multipart/form-data">
         <div class="row">
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-body">
                     
-					<input type="hidden" id="csrf_token" th:value="${_csrf.token}">                        <div class="mb-3">
-                                <label class="form-label" for="project-title-input">제목</label>
-                                <input type="text" class="form-control" id="project-title-input"
+					<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
+					<input type="hidden" id="announce_writer" name="announce_writer" th:value="${username}">
+					
+					    <div class="mb-3">
+                           <label class="form-label" for="project-title-input">제목</label>
+                           <input type="text" class="form-control" id="announce_title" name="announce_title"
                                        placeholder="제목을 입력하세요.">
 
                         </div>
@@ -80,18 +83,18 @@
                     <div class="card-body">
                         <div>
                             <p class="text-muted">첨부할 파일을 이곳에 첨부하세요.</p>
-                            <div class="dropzone">
+                            <div class="dropzone" id="fileDropzone">
                                 <div class="fallback">
                                     <input id="file" name="file" type="file" multiple="multiple">
                                 </div>
-                                <div class="dz-message needsclick">
+<!--                                  <div class="dz-message needsclick">
                                     <div class="mb-3">
                                         <i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
                                     </div>
                                     <h6>이곳을 클릭하거나 올릴 파일을 드래그하세요.</h6>
-                                </div>
+                                </div> -->
                             </div>
-                            <ul class="list-unstyled mb-0" id="dropzone-preview">
+<!--dropzone으로 하면 파일업로드 불가능함                             <ul class="list-unstyled mb-0" id="dropzone-preview">
                                 <li class="mt-2" id="dropzone-preview-list">
                                     <div class="border rounded">
                                         <div class="d-flex p-2">
@@ -114,7 +117,7 @@
                                         </div>
                                     </div>
                                 </li>
-                            </ul>
+                            </ul> -->
                         </div>
                     </div>
                 </div>
@@ -128,14 +131,14 @@
                     <div class="card-body" style="height:100%">
                         <div>
                             <label for="choices-privacy-status-input" class="form-label"></label>
-                            <input type="radio" id="all" name="read-auth" value="N"><label for="all">전직원</label>
-                            <input type="radio" id="select" name="read-auth" value="Y"><label for="select">권한 직접 설정</label>
+                            <input type="radio" id="all" name="read_authority_status" value="N"><label for="all">전직원</label>
+                            <input type="radio" id="select" name="read_authority_status" value="Y"><label for="select">권한 직접 설정</label>
                         </div>
                     </div>
                 </div>
                 <div class="text-end mb-4">
                     <button type="button" class="btn btn-danger w-sm">이전으로</button>
-                    <button type="button" class="btn btn-success w-sm" id="create-btn"  onclick="announceCreate()">작성 완료</button>
+                    <button type="submit" class="btn btn-success w-sm" id="create-btn"  onclick="announceCreate()">작성 완료</button>
                 </div>
             </div>
         </div>

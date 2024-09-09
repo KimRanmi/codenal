@@ -1,6 +1,8 @@
 package com.codenal.announce.domain;
 
-import jakarta.persistence.Column;
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -37,11 +39,11 @@ public class AnnounceReadAuthority {
 	@JoinColumn(name="announce_no")
 	private Announce announce;
 	
-	
-//	FK 연결하기!
-	@Column(name="dept_no")
-	private int deptNo;
-//	FK 연결하기!
-	@Column(name="job_no")
-	private int jobNo;
+	@ManyToOne
+	@JoinColumn(name="dept_no")
+	private Departments department;
+
+	@ManyToOne
+	@JoinColumn(name="job_no")
+	private Jobs job;
 }

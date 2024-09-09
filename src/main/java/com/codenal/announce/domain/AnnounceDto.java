@@ -3,6 +3,8 @@ package com.codenal.announce.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.codenal.employee.domain.Employee;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ public class AnnounceDto {
 	private Employee employee;
 	private List<AnnounceFile> announceFile;
 	private List<AnnounceReadAuthority> announceReadAuthority;
+
 //	private Jobs job;    생성해야함
 //	private Department department;
 	private String announce_title;

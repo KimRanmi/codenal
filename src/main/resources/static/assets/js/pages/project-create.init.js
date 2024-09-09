@@ -20,33 +20,34 @@ if (dropzonePreviewNode) {
         previewsContainer: "#dropzone-preview",
     });
 
+}
 
-function announceCreate() {
-    // 입력 필드의 값을 가져오기
-    let aTitle = document.getElementById('project-title-input').value;
-    let aContent = document.getElementById('editor').value;
-    let readAuth = document.querySelector('input[name="read-auth"]:checked').value;
-    
-    // JSON 객체 생성
-    let obj = {
-        announce_title: aTitle,
-        announce_content: editor.getHTML(),
-        read_authority_status: readAuth
-    };
-    let jsonData = JSON.stringify(obj);
+document.addEventListener('DOMContentLoaded', () => {
 
-	const csrfToken = document.getElementById("csrf_token").value;
+const form = document.getElementById("announceForm");
+const fileInput = document.getElementById("file");
 
-    // fetch를 사용하여 서버에 POST 요청 보내기
+form.addEventListener('submit', (e) => {
+    e.preventDefault(); // 기본 폼 제출 동작 방지
+
+    // FormData 객체를 생성하여 폼 데이터를 가져옴
+    const formData = new FormData(form);
+
+    // 추가적으로 필요한 데이터를 FormData에 추가
+    formData.append('announce_writer', document.getElementById('announce_writer').value);
+    formData.append('announce_title', document.getElementById('announce_title').value);
+    formData.append('announce_content', editor.getHTML());
+    formData.append('read_authority_status', document.querySelector('input[name="read_authority_status"]:checked')?.value);
+	formData.append('file', fileInput);
+	
+    const csrfToken = document.getElementById("csrf_token").value;
+
     fetch('/announce/createEnd', {
         method: 'POST',
         headers: {
-           "Content-Type": "application/json;charset=utf-8",
-	       "Accept": "application/json",
-	       'X-CSRF-TOKEN': csrfToken
-
+            'X-CSRF-TOKEN': csrfToken // CSRF 토큰을 헤더에 포함
         },
-        body: jsonData
+        body: formData // FormData 객체를 body에 포함하여 전송
     })
     .then(response => {
         if (!response.ok) {
@@ -57,14 +58,22 @@ function announceCreate() {
         return response.json();
     })
     .then(data => {
-        console.log('서버 응답 데이터:', data);
-        alert('전송 성공: ' + JSON.stringify(data));
+        if (data.res_code === '200') {
+            Swal.fire({
+                icon: 'success',
+                title: '성공',
+                text: data.res_msg
+            }).then((result) => {
+                location.href = "/announce";
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: '실패',
+                text: data.res_msg
+            });
+        }
     })
-    .catch(error => {
-        console.error('There was a problem with your fetch operation:', error);
-        alert('전송 실패: ' + error.message);
-    });
-}
-
-
-}
+    .catch(error => console.error('Error:', error));
+});
+});

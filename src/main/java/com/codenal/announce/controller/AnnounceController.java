@@ -1,11 +1,12 @@
 package com.codenal.announce.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,10 @@ public class AnnounceController {
 	public String announceList_view(Model model
 			, @PageableDefault(page=0, size=10, sort="regDate", direction  = Sort.Direction.DESC) Pageable pageable
 			, AnnounceDto searchDto) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        model.addAttribute("username", username);
+        
 		Page<AnnounceDto> announceList = announceService.selectAnnounceList(searchDto, pageable);
 		model.addAttribute("announceList",announceList);
 		model.addAttribute("searchDto",searchDto);
@@ -54,7 +59,11 @@ public class AnnounceController {
 	
 	
 	@GetMapping("/announce/create")
-	public String announceList_create_view() {
+	public String announceList_create_view(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        model.addAttribute("username", username);
+        System.out.println(username);
 		return "apps/announce_create";
 	}
 	
