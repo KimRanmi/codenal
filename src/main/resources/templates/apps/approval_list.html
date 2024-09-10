@@ -82,7 +82,7 @@
 										<tbody class="list form-check-all" style="text-align: center;">
 											<!-- 대기/진행중 상태 -->
 											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 1 and (approval['approval'].approvalStatus == 0 or approval['approval'].approvalStatus == 1)}">
+												th:if="${num == 0 and (approval['approval'].approvalStatus == 0)}">
 												<td th:text="${approval['approval'].approvalNo}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
@@ -95,7 +95,21 @@
 												<td>결재자</td>
 												<td>처리날짜</td>
 											</tr>
-
+											<!-- 진행 -->
+											<tr th:each="approval : ${resultList.content}"
+												th:if="${num == 1 and approval['approval'].approvalStatus == 1}">
+												<td th:text="${approval['approval'].approvalNo}"></td>
+												<td
+													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
+												<td><a
+													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
+													th:text="${approval['approval'].approvalTitle}"></a></td>
+												<td th:switch="${approval['approval'].approvalStatus}">
+													<span th:case="0">대기</span> <span th:case="1">진행중</span>
+												</td>
+												<td>결재자</td>
+												<td>처리날짜</td>
+											</tr>
 											<!-- 완료 상태 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 2 and approval['approval'].approvalStatus == 2}">

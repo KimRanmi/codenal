@@ -2,8 +2,9 @@ package com.codenal.approval.controller;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.codenal.approval.domain.ApprovalBaseFormType;
+import com.codenal.approval.domain.ApprovalFormDto;
+import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.service.ApprovalService;
 import com.codenal.security.service.SecurityService;
 
@@ -24,12 +27,10 @@ import com.codenal.security.service.SecurityService;
 public class ApprovalViewController {
 	
 	private final ApprovalService approvalService;
-	private final SecurityService securityService;
 	
 	@Autowired
 	public ApprovalViewController(ApprovalService approvalService, SecurityService securityService) {
 		this.approvalService = approvalService;
-		this.securityService = securityService;
 	}
 	
 	
@@ -38,37 +39,42 @@ public class ApprovalViewController {
 	@GetMapping("/approval/create/{no}")
 	public String createApproval(Model model, @PathVariable("no")int no) {
 		LocalDate ldt = LocalDate.now();
-		/*
-		 * Authentication authentication =
-		 * SecurityContextHolder.getContext().getAuthentication(); Employee emp =
-		 * (Employee)authentication.getPrincipal(); String memId = emp.getUsername();
-		 */
+		
+		List<ApprovalFormDto> cateList = new ArrayList<ApprovalFormDto>();
+		cateList = approvalService.selectApprovalCateList(no);
+		
 		model.addAttribute("ldt",ldt);
 		model.addAttribute("no",no);
+		model.addAttribute("cateList",cateList);
 		return "apps/approval_create";
 	}
+	
 	
 	// 휴가신청서로 이동
 	@GetMapping("/approval/leave_create")
 	public String createLeaveApproval(Model model) {
 		LocalDate ldt = LocalDate.now();
+		
+		System.out.println("종료");
 		model.addAttribute("ldt",ldt);
 		return "apps/approval_leave_create";
 	} 
 	
+	
+	// 리스트
 	@GetMapping("/approval/list")
 	public String listApproval(Model model,
 	                           @RequestParam(value = "num", defaultValue = "0") int num,
 	                           @PageableDefault(page = 0, size = 10, sort = "approvalNo",
 	                                            direction = Sort.Direction.DESC) Pageable pageable) {
-	    // 서비스에서 승인 리스트를 조회
-	    Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable);
 	    
-	    // 모델에 데이터 추가
+	    Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable,num);
+	    
+	    
 	    model.addAttribute("resultList", resultList);
 	    model.addAttribute("num", num);
 	    
-	    // 템플릿 이름
+	    
 	    return "apps/approval_list";
 	}
 

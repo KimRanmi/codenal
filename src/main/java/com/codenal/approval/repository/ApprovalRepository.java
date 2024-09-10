@@ -15,12 +15,14 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		@Query(value="SELECT a,f FROM Approval a "
 				 + "JOIN a.employee e "
 		         + "JOIN a.approvalCategory c "
-		         + "JOIN c.approvalForm f ",
+		         + "JOIN c.approvalForm f "
+		         + "where a.approvalStatus = ?1 ",
 		         countQuery = "SELECT count(a) FROM Approval a "
 		         +"JOIN a.employee e "
 		         +"JOIN a.approvalCategory c "
-		         +"JOIN c.approvalForm f ")
-		Page<Object[]> findList(Pageable pageable);
+		         +"JOIN c.approvalForm f "
+		         + "where a.approvalStatus = ?1")
+		Page<Object[]> findList(int num,Pageable pageable);
 	
 		@Query("SELECT a, e, t " +
 			       "FROM Approval a " +

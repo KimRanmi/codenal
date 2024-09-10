@@ -10,7 +10,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,7 +37,8 @@ public class WebSecurityConfig {
 		http
 		.cors(Customizer.withDefaults())  // CORS 설정 추가
 		.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/auth-signin-basic", "/assets/**","/js/**", "/css/**", "/images/**").permitAll()
+				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
+				.requestMatchers("/approval/**").authenticated()
 				.requestMatchers("/join").permitAll()  // "/join" 경로 허용
 				.anyRequest().authenticated()
 				)
@@ -61,12 +61,14 @@ public class WebSecurityConfig {
 				.key("uniqueAndSecret")
 				.tokenValiditySeconds(86400*7)
 				.userDetailsService(securityService)
+				.tokenRepository(tokenRepository())
 				);
-
+		
 
 		return http.build();
 	}
 
+	
 	@Bean
 	public CorsFilter corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -109,4 +111,5 @@ public class WebSecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
 }

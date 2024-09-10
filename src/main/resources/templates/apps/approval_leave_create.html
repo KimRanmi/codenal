@@ -79,11 +79,11 @@
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-author-input">기안자</label>
-                            <input type="text" class="form-control" id="project-author-input" disabled style="width:500px;">
+                            <input type="text" class="form-control" id="project-author-input" readonly th:value="${#authentication.name}" style="width:500px;">
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-date-input">기안일</label>
-                            <input type="text" class="form-control" id="project-date-input" th:value="${ldt}" disabled style="width:500px;">
+                            <input type="text" class="form-control" id="project-date-input" th:value="${ldt}" readonly style="width:500px;">
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-thumbnail-img">파일첨부</label>
@@ -125,7 +125,6 @@
                         <br>
                         <div style="margin-left:950px;">
                             <button type="submit" class="btn btn-secondary w-sm">올리기</button>
-                            <button type="submit" class="btn btn-danger w-sm">취소</button>
                         </div>
                         
                         <div style="margin-top:-1138px; margin-left:600px;">
@@ -234,6 +233,56 @@
 		      previewStyle: 'vertical',
 		      hideModeSwitch: true
     		});
+	    
+		      function updateEditorContent() {
+			        const selectElement = document.getElementById('category-select');
+			        const selectedOption = selectElement.options[selectElement.selectedIndex];
+			        const formContent = selectedOption.getAttribute('data-content');
+
+			        // 토스트 에디터 내용 저장한 값 불러옴
+			        contentEditor.setHTML(formContent);
+			    }
+
+			    // 페이지 로드 시 기본 내용 설정
+			    document.addEventListener('DOMContentLoaded', () => {
+			        updateEditorContent();
+			    });
+			
+			    const form = document.getElementById("approvalForm");
+			    form.addEventListener('submit', (e) => {
+			        e.preventDefault();
+			        const payload = new FormData(form);
+			        const csrfToken = document.getElementById('csrf_token').value;
+					const content = contentEditor.getHTML();
+					payload.append("approval_content",content);
+			        
+			        fetch('/approval', {
+			            method: 'POST',
+			            headers: {
+			                'X-CSRF-TOKEN': csrfToken
+			            },
+			            body: payload 
+			        })
+			        .then(response => response.json())
+			        .then(data => {
+			            console.log(data.res_msg);
+			            if (data.res_code === '200') {
+			                Swal.fire({
+			                    icon: 'success',
+			                    title: "성공",
+			                    text: data.reg_msg
+			                }).then(() => {
+			                    location.href = "/approval/list?num=1";
+			                });
+			            } else {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: '실패',
+			                    text: data.reg_msg
+			                });
+			            }
+			        })
+			    });
     	</script>
     	
     	<!-- 모달 관련 script -->

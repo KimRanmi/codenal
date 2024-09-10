@@ -5,6 +5,7 @@
 <head>
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <title>전자결재 등록11</title>
 <!-- Bootstrap CSS -->
 <th:block layout:fragment="pagetitle" />
@@ -20,57 +21,57 @@
 <script
 	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <style>
-#modal {
-	position: fixed;
-	display: none;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 400px;
-	height: 400px;
-	background-color: white;
-	border: 1px solid #b9b9b9;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-	box-sizing: border-box;
-	overflow: hidden;
-}
-
-.modal-content {
-	display: flex;
-	flex-wrap: wrap;
-	padding: 20px;
-	height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
-	box-sizing: border-box;
-	overflow-y: auto;
-}
-
-.modal-item {
-	border: 1px solid #b9b9b9;
-	width: 20px;
-	height: 20px;
-	display: contents;
-	align-items: center;
-	justify-content: center;
-	margin: 5px;
-	cursor: pointer;
-	user-select: none;
-}
-
-.modal-item.selected {
-	color: cornflowerblue;
-}
-
-.modal-footer {
-	display: flex;
-	justify-content: center;
-	padding: 10px;
-	border-top: 1px solid #b9b9b9;
-}
-
-.modal-item.disabled {
-	color: #b9b9b9;
-	cursor: not-allowed;
-}
+	#modal {
+		position: fixed;
+		display: none;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 400px;
+		height: 400px;
+		background-color: white;
+		border: 1px solid #b9b9b9;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		box-sizing: border-box;
+		overflow: hidden;
+	}
+	
+	.modal-content {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 20px;
+		height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
+		box-sizing: border-box;
+		overflow-y: auto;
+	}
+	
+	.modal-item {
+		border: 1px solid #b9b9b9;
+		width: 20px;
+		height: 20px;
+		display: contents;
+		align-items: center;
+		justify-content: center;
+		margin: 5px;
+		cursor: pointer;
+		user-select: none;
+	}
+	
+	.modal-item.selected {
+		color: cornflowerblue;
+	}
+	
+	.modal-footer {
+		display: flex;
+		justify-content: center;
+		padding: 10px;
+		border-top: 1px solid #b9b9b9;
+	}
+	
+	.modal-item.disabled {
+		color: #b9b9b9;
+		cursor: not-allowed;
+	}
 </style>
 </head>
 <body>
@@ -81,6 +82,8 @@
 				<div style="background-color: white; width: 1300px; height: 1150px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
+						<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
+						
 							<br>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-title-input">제목</label> 
@@ -89,13 +92,13 @@
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-author-input">기안자</label>
-								<input type="text" class="form-control" value="12345678"
-									id="project-author-input" disabled style="width: 500px;" name="emp_id">
+								<input type="text" class="form-control" th:value="${#authentication.name}"
+									id="project-author-input" readonly style="width: 500px;" name="emp_id" >
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-date-input">기안일</label> 
 								<input	type="text" class="form-control" id="project-date-input"
-									th:value="${ldt}" disabled style="width: 500px;" name="approval_reg_date">
+									th:value="${ldt}" readonly style="width: 500px;" name="approval_reg_date">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-thumbnail-img">파일첨부</label>
@@ -103,37 +106,42 @@
 									type="file" accept="image/png, image/gif, image/jpeg"
 									style="width: 500px;">
 							</div>
+							
 							<div class="mb-3">
 								<label class="form-label" for="references" >수신참조자</label><br>
 								<input id="references" type="text"
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-									class="selectedName3" name="referrer_id">
+									class="selectedName3">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-thumbnail-img">양식</label><br>
-
 								<!-- 요청서 -->
-								<div th:if="${no == 2}">
-									<select class="form-control" id="project-thumbnail-img"
-										style="width: 500px;" name="cate_code">
+								<div th:if="${no == 2}" >
+									<select class="form-control" id="category-select"
+										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
 										<option>-- 선택하세요 --</option>
-										<option>지각 정상 처리 요청서</option>
+										<option th:each="cate : ${cateList}" 
+                							th:text="${cate.form_name}" id="cateList" th:value="${cate.form_code}" th:data-content="${cate.form_content}">
+        								</option>
 									</select>
 								</div>
 								<!-- 품의서 -->
 								<div th:if="${no == 3}">
-									<select class="form-control" id="project-thumbnail-img"
-										style="width: 500px;" name="cate_code">
+									<select class="form-control" id="category-select"
+										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
 										<option>-- 선택하세요 --</option>
-										<option>~~품의서</option>
+										<option th:each="cate : ${cateList}" th:value="${cate.form_code}"
+                							th:text="${cate.form_name}" id="cateList" th:data-content="${cate.form_content}">
+        								</option>
 									</select>
+									
 								</div>
 							</div>
 							<br>
 							<!-- 토스트 api -->
 							<div class="col-lg-8" style="margin-left: -15px;">
 								<label>내용</label>
-								<div id="approval_edit"></div>
+								<div id="approval_edit" name="approval_content"></div>
 							</div>
 							<!-- Buttons -->
 							<br>
@@ -228,48 +236,68 @@
 				</div>
 			</div>
 		</div>
+		
 		<script>
-			const form = document.getElementById("approvalFrom");
-			form.addEventListener('submit',(e) =>{
-				e.preventDefault();
-				const payload = new FormData(form);
-				fetch('/approval',{
-					method : 'post',
-					body : payload
-				})
-				.then(response => response.json())
-				.then(data =>{
-					if(data.res_code == '200'){
-						Swal.fire({
-							icon : 'success',
-							title : "성공",
-							text : data.reg_msg
-						}).then((result)=>{
-							location.href="/approval/list?num=1"
-						});
-					}else{
-						Swal.fire({
-							icon : 'error',
-							title : '실패',
-							text : data.reg_msg
-						});
-					}
-				})
-			})
+		    const contentEditor = new toastui.Editor({
+		        el: document.querySelector('#approval_edit'),
+		        width: '100%',
+		        height: '500px',
+		        initialEditType: 'wysiwyg',
+		        previewStyle: 'vertical',
+		        hideModeSwitch: true
+		    });
+		    
+		    function updateEditorContent() {
+		        const selectElement = document.getElementById('category-select');
+		        const selectedOption = selectElement.options[selectElement.selectedIndex];
+		        const formContent = selectedOption.getAttribute('data-content');
+
+		        // 토스트 에디터 내용 저장한 값 불러옴
+		        contentEditor.setHTML(formContent);
+		    }
+
+		    // 페이지 로드 시 기본 내용 설정
+		    document.addEventListener('DOMContentLoaded', () => {
+		        updateEditorContent();
+		    });
+		
+		    const form = document.getElementById("approvalForm");
+		    form.addEventListener('submit', (e) => {
+		        e.preventDefault();
+		        const payload = new FormData(form);
+		        const csrfToken = document.getElementById('csrf_token').value;
+				const content = contentEditor.getHTML();
+				payload.append("approval_content",content);
+		        
+		        fetch('/approval', {
+		            method: 'POST',
+		            headers: {
+		                'X-CSRF-TOKEN': csrfToken
+		            },
+		            body: payload 
+		        })
+		        .then(response => response.json())
+		        .then(data => {
+		            console.log(data.res_msg);
+		            if (data.res_code === '200') {
+		                Swal.fire({
+		                    icon: 'success',
+		                    title: "성공",
+		                    text: data.reg_msg
+		                }).then(() => {
+		                    location.href = "/approval/list?num=1";
+		                });
+		            } else {
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: '실패',
+		                    text: data.reg_msg
+		                });
+		            }
+		        })
+		    });
 		</script>
 
-
-
-		<script> /* 토스트 api 설정 */
-		const contentEditor = new toastui.Editor({
-            el: document.querySelector('#approval_edit'),
-            width: '100%',
-            height: '500px',
-            initialEditType: 'wysiwyg',
-            previewStyle: 'vertical',
-            hideModeSwitch: true
-        });
-    	</script>
 
 
 

@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
-import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalForm;
+import com.codenal.approval.domain.ApprovalFormDto;
+import com.codenal.approval.repository.ApprovalBaseFormTypeRepository;
 import com.codenal.approval.repository.ApprovalCategoryRepository;
+import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
@@ -27,18 +29,25 @@ public class ApprovalService {
 	private final ApprovalRepository approvalRepository;
 	private final EmployeeRepository employeeRepository;
 	private final ApprovalCategoryRepository approvalCategoryRepository;
+	private final ApprovalFormRepository approvalFormRepository;
+	private final ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository;
 
 	@Autowired
-	public ApprovalService(ApprovalRepository approvalRepository, EmployeeRepository employeeRepository,
-			ApprovalCategoryRepository approvalCategoryRepository) {
+	public ApprovalService(ApprovalRepository approvalRepository, 
+			EmployeeRepository employeeRepository,
+			ApprovalCategoryRepository approvalCategoryRepository,
+			ApprovalFormRepository approvalFormRepository,
+			ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository) {
 		this.approvalRepository = approvalRepository;
 		this.employeeRepository = employeeRepository;
 		this.approvalCategoryRepository = approvalCategoryRepository;
+		this.approvalFormRepository = approvalFormRepository;
+		this.approvalBaseFormTypeRepository = approvalBaseFormTypeRepository;
 	}
 
 	// 리스트 조회
-	public Page<Map<String, Object>> selectApprovalList(Pageable pageable) {
-		Page<Object[]> approvalList = approvalRepository.findList(pageable);
+	public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2) {
+		Page<Object[]> approvalList = approvalRepository.findList(num2,pageable);
 
 		List<Map<String, Object>> responseList = new ArrayList<>();
 		for (Object[] objects : approvalList.getContent()) {
@@ -73,19 +82,47 @@ public class ApprovalService {
 	}
 
 	// 전자결재 저장
-	public Approval createApproval(ApprovalDto dto) {
-		Long empId = dto.getEmp_id();
-		int cateCode = dto.getCate_code();
-		Employee emp = employeeRepository.findByempId(empId);
-		ApprovalCategory ac = approvalCategoryRepository.findByCateCode(cateCode);
+	public Approval createApproval(Map<String,Object> obj) {
+		
+		Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+		System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+		
+		ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+		System.out.println("카테고리 출력 : "+ac);
 		Approval approval = Approval.builder()
-							.approvalTitle(dto.getApproval_title())
-							.approvalContent(dto.getApproval_content())
+							.approvalTitle((String)obj.get("제목"))
+							.approvalContent((String)obj.get("내용"))
 							.approvalCategory(ac)
 							.employee(emp)
 							.build();
 
 		return approvalRepository.save(approval);
 	}
+	
+	// 카테고리 값 가져오기
+	public List<ApprovalFormDto> selectApprovalCateList(int no){
+		
+		ApprovalBaseFormType at = approvalBaseFormTypeRepository.findByBaseFormCode(no);
+		
+		List<ApprovalForm> ac = approvalFormRepository.findByApprovalBaseFormType_BaseFormCode(at.getBaseFormCode());
+		
+		List<ApprovalFormDto> list = new ArrayList<ApprovalFormDto>();
+		
+		
+		 for(ApprovalForm a : ac) { 
+			 ApprovalFormDto dto = ApprovalFormDto.builder()
+					 					.form_code(a.getFormCode())
+					 					.base_form_code(at.getBaseFormCode())
+					 					.form_name(a.getFormName())
+					 					.form_content(a.getFormContent())
+					 					.build();
+			 		list.add(dto); 					
+		 }
+		 
+		 
+		
+		return list;
+	}
+	 
 
 }

@@ -26,7 +26,7 @@ public class ApprovalForm {
 	@Id
 	@Column(name="form_code")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long formCode;
+	private int formCode;
 	
 	@Column(name="form_name")
 	private String formName;

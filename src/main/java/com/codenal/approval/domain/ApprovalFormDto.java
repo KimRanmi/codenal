@@ -16,7 +16,7 @@ import lombok.ToString;
 
 public class ApprovalFormDto {
 	
-	private Long form_code;
+	private int form_code;
 	private int base_form_code;
 	private String form_name;
 	private String form_content;
