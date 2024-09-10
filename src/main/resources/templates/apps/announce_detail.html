@@ -10,9 +10,11 @@
 <head>
     <!--TOAST UI Editor CSS-->
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+
 </head>
 
 <body>
+<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-lg-12">
@@ -31,6 +33,7 @@
 										</div>
 										<div class="col-md">
 											<div>
+												<input type="hidden" th:value="${announceList.announce_no}" id="aNo">
 												<h2 class="fw-bold" th:text="${announceList.announce_title}"></h2>
 												<br>
 												
@@ -46,8 +49,8 @@
 												<div class="hstack gap-3 flex-wrap">
 													<div><i class="ri-pencil-fill align-bottom me-1"></i>
 													작성일 : <span class="fw-medium" th:text="${#temporals.format(announceList.reg_date, 'yy-MM-dd HH:mm:ss')}"></span></div>
-													<div><i class="ri-eraser-line align-bottom me-1"></i>
-													수정일 : <span class="fw-medium" th:text="${#temporals.format(announceList.mod_date, 'yy-MM-dd HH:mm:ss')}"></span></div>
+													<div id="modDate_div"><i class="ri-eraser-line align-bottom me-1"></i>
+													수정일 : <span id="modDate" class="fw-medium" th:text="${#temporals.format(announceList.mod_date, 'yy-MM-dd HH:mm:ss')}"></span></div>
 												</div>
 												<br>
 												<div class="hstack gap-3 flex-wrap">
@@ -103,21 +106,31 @@
 											<h6 class="mb-3 fw-semibold text-uppercase">게시글 내용</h6>
 											
 								<!--TOAST UI Editor-->
-						        <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-									
-									
-									<!-- TOAST UI Editor가 들어갈 div태그 -->
-									    <div id="viewer"></div>
-									<!-- TOAST UI Editor 생성 JavaScript 코드 -->
-								    <script>
+						        <script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.js"></script>
+
+
+								<!-- 서버에서 렌더링된 내용이 포함된 div -->
+								<div id="acontent" style="display: none;" th:text="${announceList.announce_content}"></div>
+								
+								
+								<!-- TOAST UI Editor가 들어갈 div 태그 -->
+								<div id="editorContent">
+								</div>
+								
+								<script>
+
+								    document.addEventListener('DOMContentLoaded', function () {
+								        // 서버에서 렌더링된 HTML 콘텐츠를 가져오기
+								        const content = document.querySelector('#acontent').textContent;
+								
+								        // TOAST UI Editor 인스턴스 생성
 								        const editor = new toastui.Editor({
-								            el: document.querySelector('#viewer'),
-								            height: '500px',
-								            initialValue: content
+								            el: document.querySelector('#editorContent'),
+								            viewer: true, // 읽기 전용 모드
+								            initialValue: content // 서버에서 가져온 HTML 콘텐츠 설정
 								        });
-								    </script>
-									<span th:text="${announceList.announce_content}"></span>
-											
+								    });
+								</script>
 											
 									<!-- 파일 조회 -->
 	
@@ -325,13 +338,23 @@
 	        function goBack() {
 	            window.history.back();
 	        }
+	        
+	        // 'modDate' 요소의 텍스트 내용 가져오기
+	        const modDate = document.getElementById('modDate').textContent.trim();   // <span id="modDate"> </span> 공백 포함이기 때문에 공백 문자 제거후 판단
+	        const modDate_div = document.getElementById('modDate_div');
+	        
+	        // 만약 'modDate' 텍스트가 비어있다면 'modDate_div' 숨기기
+	        if (modDate.length < 1) {
+	          modDate_div.style.display = 'none';
+	        }
 	    </script>
 		
 		<!--  container-fluid 위치-->
 		<!--end row-->
 	</div>
 	</th:block>
-	
+  </div>
+</div>
 	
 
 	<th:block layout:fragment="pagejs">
