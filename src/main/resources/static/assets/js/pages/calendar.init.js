@@ -30,42 +30,90 @@ document.addEventListener("DOMContentLoaded", function () {
     var y = date.getFullYear();
     var Draggable = FullCalendar.Draggable;
     var externalEventContainerEl = document.getElementById('external-events');
+	var eventSelect = [];
 	var defaultEvents = [];
+	defaultEvents = [
+		{
+			id: 13,
+			category: 1,
+			title: "[전체] 전체 일정",
+			start: "2024-09-13",
+			end: "2024-09-13",
+			className: 'bg-soft-primary',
+			location: "location",
+			description: "content1",
+			writer: 12345678,
+			color: null
+		},
+		{
+			id: 10,
+			category: 1,
+			title: "[개인] 일본 여행",
+			start: "2024-10-10",
+			end: "2024-10-13",
+			className: 'bg-soft-success',
+			location: "시부야, 신주쿠, 긴zㅏ",
+			description: "오호호호홓",
+			writer: 12345678,
+			color: null
+		},
+		{
+			
+		}
+	]
+	/*if(document.getElementById("sss").checked){
+		console.log(document.getElementById("sss").value);
+		for(let i=0; i<=defaultEvents.length; i++){
+			if(defaultEvents[i].title == document.getElementById("sss").value){
+				defaultEvents[i] = '';
+			}
+		}
+	}*/
 	
-	const dataList=(result)=>{
-		
-	}
-    fetch('/eventList',{
-	        	method:'POST',
-	            headers: {
-					"Content-Type": "application/json;charset=utf-8", 
-					"Accept": "application/json"
-				}
-	        })
-	        .then(response => response.json())
-	        .then(data=>{
-	        	/*alert(data.res_msg);*/
-	        	console.log(data.eventList[0]);
-	        	dataList = data.eventList;
-	        	console.log(dataList);
-	        	console.log(dataList[0].calendar_schedule_no);
-	        })
-	console.log(dataList);
-	
-    /*for(let i=0; i<1; i++){
-		defaultEvents[i] = {
-					id: dataList[0].calendar_schedule_no,
-					category: dataList[i].calendar_schedule_category,
-			        title: dataList[i].calendar_schedule_title,
-			        start: '2024-09-16',
-			        end: '2024-09-18',
+	function ddd(fetchInfo, successCallback){
+		const sss = fetch('/eventList', {
+			method: 'POST'
+		})
+		.then(response => response.json())
+		.then(data => {
+			for(let i=0; i<=data.eventList.length; i++){
+				data[i] = {
+					id: data.eventList[i].calendar_schedule_no,
+					category: data.eventList[i].calendar_schedule_category,
+			        title: data.eventList[i].calendar_schedule_title,
+			        start: data.eventList[i].calendar_schedule_start_date,
+			        end: data.eventList[i].calendar_schedule_end_date,
 			        className: 'bg-soft-primary',
-			        location: dataList[i].calendar_schedule_location,
-			        description: dataList[i].calendar_schedule_content,
-			        writer: dataList[i].calendar_schedule_writer,
-			        color: dataList[i].calendar_schedule_color
+			        location: data.eventList[i].calendar_schedule_location,
+			        description: data.eventList[i].calendar_schedule_content,
+			        writer: data.eventList[i].calendar_schedule_writer,
+			        color: data.eventList[i].calendar_schedule_color
 				}
-	};*/
+				defaultEvents[i] = data[i];
+				/*console.log(defaultEvents[i]);*/
+			}
+			successCallback(defaultEvents);
+		})
+	}
+	ddd();
+	console.log(defaultEvents);
+	for(let i=0; i<=5; i++){
+		/*console.log(defaultEvents[i]);*/
+		/*defaultEvents[i] = {
+				id: i,
+				category: 1,
+				title: "title1",
+				start: "2024-09-0"+(i+1)+"T00:00:00",
+				end: "2024-09-0"+(i+3)+"T00:00:00",
+				className: 'bg-soft-primary',
+				location: "location",
+				description: "content1",
+				writer: 12345678,
+				color: null
+			}*/
+	}
+	
+
 
     // init draggable
     new Draggable(externalEventContainerEl, {
@@ -110,13 +158,13 @@ document.addEventListener("DOMContentLoaded", function () {
     var eventCategoryChoice = new Choices("#event-category", {
         searchEnabled: false
     });
-
     var calendar = new FullCalendar.Calendar(calendarEl, {
         timeZone: 'local',
         editable: true,
         droppable: true,
         selectable: true,
         navLinks: true,
+        
         initialView: getInitialView(),
         themeSystem: 'bootstrap',
         headerToolbar: {
@@ -127,23 +175,15 @@ document.addEventListener("DOMContentLoaded", function () {
         windowResize: function (view) {
             var newView = getInitialView();
             calendar.changeView(newView);
-        },
+		},
         eventResize: function(info) {
             var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
                 return x.id == info.event.id
             });
             if (defaultEvents[indexOfSelectedEvent]) {
-				defaultEvents[indexOfSelectedEvent].category = info.event.category;
-                defaultEvents[indexOfSelectedEvent].title = info.event.title;
-                defaultEvents[indexOfSelectedEvent].start = info.event.start;
-                defaultEvents[indexOfSelectedEvent].end = (info.event.end) ? info.event.end : null;
-                defaultEvents[indexOfSelectedEvent].allDay = info.event.allDay;
-                defaultEvents[indexOfSelectedEvent].className = info.event.classNames[0];
-                defaultEvents[indexOfSelectedEvent].description = (info.event._def.extendedProps.description) ? info.event._def.extendedProps.description : '';
-                defaultEvents[indexOfSelectedEvent].location = (info.event._def.extendedProps.location) ? info.event._def.extendedProps.location : '';
-                defaultEvents[indexOfSelectedEvent].writer = info.event.writer;
-                defaultEvents[indexOfSelectedEvent].color = info.event.color;
+				
             }
+            console.log(defaultEvents);
             upcomingEvent(defaultEvents);
         },
         eventClick: function (info) {
@@ -310,8 +350,9 @@ document.addEventListener("DOMContentLoaded", function () {
         var categoryNo = 0;
         switch(updatedCategory){
 			case 'bg-soft-success' : categoryNo = 1; break; /*개인일정*/
-			case 'bg-soft-primary' : categoryNo = 2; break; /*부서일정*/
-			case 'bg-soft-info' : categoryNo = 3; break; /*전체일정*/
+			case 'bg-soft-info' : categoryNo = 2; break; /*부서일정*/
+			case 'bg-soft-warning' : categoryNo = 3; break; /*전체일정*/
+			case 'bg-soft-primary' : categoryNo = 4; break; /*연차일정*/
 		}
 		
         var start_date = (document.getElementById("event-start-date").value).split("to");
@@ -399,6 +440,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			
 			const jsonData = JSON.stringify(updatedTitle);
 			const ttt = "yyy";
+			var allEvent = calendar.getEvents();
+			console.log(allEvent);
 	        fetch('/create/event',{
 	        	method:'POST',
 	            body:payload,
@@ -413,7 +456,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	        })
 	        
 	        
-				/*const xhr = new XMLHttpRequest();
+				const xhr = new XMLHttpRequest();
 				xhr.open("post","/create/event",true);
 				xhr.onreadystatechange = function() {
 					if(xhr.readyState == 4 && xhr.status == 200){ // 200: 정상적으로 작동한다는 뜻
@@ -421,9 +464,17 @@ document.addEventListener("DOMContentLoaded", function () {
 					}
 				}
 				let writer = 12345678;
-				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");*/
-				/*xhr.send("category="+categoryNo+"& title="+updatedTitle+"& location="+event_location
-				+"& content="+eventDescription+"& writer="+writer+"& start_date="+updateStartDate+"& end_date="+updateEndDate);*/
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				updateStartDate = updateStartDate.getFullYear()+'-0'+(updateStartDate.getMonth()+1)+'-'+updateStartDate.getDate()
+				+' 0'+updateStartDate.getHours()+':0'+updateStartDate.getMinutes();
+				console.log(updateStartDate);
+				
+				updateEndDate = updateEndDate.getFullYear()+'-0'+(updateEndDate.getMonth()+1)+'-'+updateEndDate.getDate()
+				+' 0'+updateEndDate.getHours()+':0'+updateEndDate.getMinutes();
+				console.log(updateEndDate);
+				
+				xhr.send("category="+categoryNo+"&title="+updatedTitle+"&location="+event_location
+				+"&content="+eventDescription+"&writer="+writer+"&start_date="+updateStartDate+"&end_date="+updateEndDate);
 				/*xhr.send(JSON.stringify(payload));*/
 
         // validation
@@ -597,10 +648,13 @@ function eventTyped() {
 
 // upcoming Event
 function upcomingEvent(a) {
+	console.log(a);
     a.sort(function (o1, o2) {
         return (new Date(o1.start)) - (new Date(o2.start));
     });
     document.getElementById("upcoming-event-list").innerHTML = null;
+    document.getElementById("upcoming-event-list2").innerHTML = null;
+    document.getElementById("upcoming-event-list3").innerHTML = null;
     Array.from(a).forEach(function (element) {
         var title = element.title;
         if (element.end) {
@@ -642,7 +696,17 @@ function upcomingEvent(a) {
         }
 
         var end_dt = (e_dt) ? " ~ " + e_dt : '';
-        var category = (element.className).split("-");
+        var category = '';
+        if(element.className.includes('bg-soft-success')){
+			category = '[개인]';
+		} else if(element.className.includes('bg-soft-info')){
+			category = '[부서]';
+		} else if(element.className.includes('bg-soft-warning')){
+			category = '[전체]';
+		} else {
+			category = '[연차]';
+		}
+        /*var category = (element.className).split("-");*/
         var description = (element.description) ? element.description : "";
         var e_time_s = tConvert(getTime(element.start));
         var e_time_e = tConvert(getTime(updatedDay));
@@ -654,22 +718,32 @@ function upcomingEvent(a) {
         let nowDate = new Date();
         nowDate = nowDate.getFullYear()+'-'+(nowDate.getMonth()+1)+'-'+nowDate.getDate();
         let toDay = new Date(nowDate);
-		if(e_dt == null && element.start >= toDay || e_dt != null && element.end >= toDay){
-			
-        u_event = "<div class='card mb-3'>\
-                        <div class='card-body'>\
-                            <div class='d-flex mb-3'>\
-                                <div class='flex-grow-1'><i class='mdi mdi-checkbox-blank-circle me-2 text-" + category[2] + "'></i><span class='fw-medium'>" + startDate + end_dt + " </span></div>\
-                                <div class='flex-shrink-0'><small class='badge badge-soft-primary ms-auto'>" + e_time_s + e_time_e + "</small></div>\
-                            </div>\
-                            <h6 class='card-title fs-16'> " + title + "</h6>\
-                            <p class='text-muted text-truncate-two-lines mb-0'> " + description + "</p>\
-                        </div>\
-                    </div>";
-        document.getElementById("upcoming-event-list").innerHTML += u_event;
+		if (e_dt == null && element.start >= toDay || e_dt != null && element.end >= toDay) {
+			if (element.className.includes('bg-soft-success')) {
+				u_event = "<div class='ms-2 mt-2 mb-2'>\
+						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
+							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
+					</div>";
+				document.getElementById("upcoming-event-list").innerHTML += u_event;
+
+			} else if(element.className.includes('bg-soft-info')) {
+				u_event = "<div class='ms-2 mt-2 mb-2'>\
+						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
+							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
+					</div>";
+				document.getElementById("upcoming-event-list2").innerHTML += u_event;
+			} else if(element.className.includes('bg-soft-warning')) {
+				u_event = "<div class='ms-2 mt-2 mb-2'>\
+						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
+							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
+					</div>";
+				document.getElementById("upcoming-event-list3").innerHTML += u_event;
+			}
 		}
     });
 };
+
+
 
 function getTime(params) {
     params = new Date(params);

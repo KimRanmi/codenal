@@ -43,12 +43,12 @@ public class Calendar {
 	@Column(name = "calendar_schedule_content")
 	private String calendarScheduleContent;
 	
-//	@Column(name = "calendar_schedule_writer")
-//	private Long calendarScheduleWriter;
+	@Column(name = "calendar_schedule_writer")
+	private int calendarScheduleWriter;
 	
-	@ManyToOne
-	@JoinColumn(name = "calendar_schedule_writer")
-	private Employee employee;
+//	@ManyToOne
+//	@JoinColumn(name = "calendar_schedule_writer")
+//	private Employee employee;
 	
 	@Column(name = "calendar_schedule_start_date")
 	private LocalDateTime calendarScheduleStartDate;

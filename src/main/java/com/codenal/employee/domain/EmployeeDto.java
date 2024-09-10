@@ -1,10 +1,10 @@
+
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
-//import org.springframework.security.core.GrantedAuthority;
+// import org.springframework.security.core.GrantedAuthority;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +37,7 @@ public class EmployeeDto {
     private Integer jobNo;
     private String empAuth;
 
-//    private List<GrantedAuthority> authorities;
+    // private List<GrantedAuthority> authorities;
 
     // 엔터티를 DTO로 변환하는 메서드
     public static EmployeeDto fromEntity(Employee employee) {

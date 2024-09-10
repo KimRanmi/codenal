@@ -3,8 +3,8 @@ package com.codenal.employee.domain;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.codenal.calendar.domain.Calendar;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.codenal.calendar.domain.Calendar;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -68,15 +68,15 @@ public class Employee {
     @Column(name = "emp_sign_image")
     private String empSignImage;
 
-    @Column(name = "emp_dept_no")
+    @Column(name = "dept_no")
     private Integer deptNo;
 
-    @Column(name = "emp_job_no")
+    @Column(name = "job_no")
     private Integer jobNo;
 
     @Column(name = "emp_auth")
     private String empAuth;
     
-    @OneToMany(mappedBy = "employee")
-	private List<Calendar> Calendar;
+//    @OneToMany(mappedBy = "employee")
+//	private List<Calendar> Calendar;
 }

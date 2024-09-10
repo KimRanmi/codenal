@@ -22,7 +22,7 @@ public class CalendarDto {
 	private String calendar_schedule_title;
 	private String calendar_schedule_location;
 	private String calendar_schedule_content;
-	private Long calendar_schedule_writer;
+	private int calendar_schedule_writer;
 	private String calendar_schedule_writer_name;
 	private LocalDateTime calendar_schedule_start_date;
 	private LocalDateTime calendar_schedule_end_date;
@@ -35,6 +35,7 @@ public class CalendarDto {
 				.calendarScheduleTitle(calendar_schedule_title)
 				.calendarScheduleLocation(calendar_schedule_location)
 				.calendarScheduleContent(calendar_schedule_content)
+				.calendarScheduleWriter(calendar_schedule_writer)
 				.calendarScheduleStartDate(calendar_schedule_start_date)
 				.calendarScheduleEndDate(calendar_schedule_end_date)
 				.calendarScheduleColor(calendar_schedule_color)
@@ -48,6 +49,7 @@ public class CalendarDto {
 				.calendar_schedule_title(calendar.getCalendarScheduleTitle())
 				.calendar_schedule_location(calendar.getCalendarScheduleLocation())
 				.calendar_schedule_content(calendar.getCalendarScheduleContent())
+				.calendar_schedule_writer(calendar.getCalendarScheduleWriter())
 				.calendar_schedule_start_date(calendar.getCalendarScheduleStartDate())
 				.calendar_schedule_end_date(calendar.getCalendarScheduleEndDate())
 				.calendar_schedule_color(calendar.getCalendarScheduleColor())
