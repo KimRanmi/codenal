@@ -51,12 +51,16 @@ public class ApprovalViewController {
 	
 	
 	// 휴가신청서로 이동
-	@GetMapping("/approval/leave_create")
-	public String createLeaveApproval(Model model) {
+	@GetMapping("/approval/leave_create/{no}")
+	public String createLeaveApproval(Model model, @PathVariable("no")int no) {
 		LocalDate ldt = LocalDate.now();
 		
-		System.out.println("종료");
+		List<ApprovalFormDto> cateList = new ArrayList<ApprovalFormDto>();
+		cateList = approvalService.selectApprovalCateList(no);
+		
 		model.addAttribute("ldt",ldt);
+		model.addAttribute("no",no);
+		model.addAttribute("cateList",cateList);
 		return "apps/approval_leave_create";
 	} 
 	

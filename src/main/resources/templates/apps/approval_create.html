@@ -6,7 +6,7 @@
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<title>전자결재 등록11</title>
+<title>전자결재 등록</title>
 <!-- Bootstrap CSS -->
 <th:block layout:fragment="pagetitle" />
 <link
@@ -285,7 +285,7 @@
 		                    title: "성공",
 		                    text: data.reg_msg
 		                }).then(() => {
-		                    location.href = "/approval/list?num=1";
+		                    location.href = "/approval/list?num=0";
 		                });
 		            } else {
 		                Swal.fire({

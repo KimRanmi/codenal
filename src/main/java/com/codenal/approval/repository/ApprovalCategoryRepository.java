@@ -10,4 +10,5 @@ public interface ApprovalCategoryRepository extends JpaRepository<ApprovalCatego
 	
 	@Query(value="select c from ApprovalCategory c where c.cateCode = ?1")
 	ApprovalCategory findByCateCode(int cateCode);
+	
 }

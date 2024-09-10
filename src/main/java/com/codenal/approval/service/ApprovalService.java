@@ -1,5 +1,6 @@
 package com.codenal.approval.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.codenal.annual.AnnualLeaveUsageRepositroy;
+import com.codenal.annual.domain.AnnualLeaveUsage;
+import com.codenal.annual.domain.AnnualLeaveUsageDto;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
@@ -31,18 +35,21 @@ public class ApprovalService {
 	private final ApprovalCategoryRepository approvalCategoryRepository;
 	private final ApprovalFormRepository approvalFormRepository;
 	private final ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository;
+	private final AnnualLeaveUsageRepositroy annualLeaveUsageRepositroy;
 
 	@Autowired
 	public ApprovalService(ApprovalRepository approvalRepository, 
 			EmployeeRepository employeeRepository,
 			ApprovalCategoryRepository approvalCategoryRepository,
 			ApprovalFormRepository approvalFormRepository,
-			ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository) {
+			ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository,
+			AnnualLeaveUsageRepositroy annualLeaveUsageRepositroy) {
 		this.approvalRepository = approvalRepository;
 		this.employeeRepository = employeeRepository;
 		this.approvalCategoryRepository = approvalCategoryRepository;
 		this.approvalFormRepository = approvalFormRepository;
 		this.approvalBaseFormTypeRepository = approvalBaseFormTypeRepository;
+		this.annualLeaveUsageRepositroy = annualLeaveUsageRepositroy;
 	}
 
 	// 리스트 조회
@@ -98,6 +105,53 @@ public class ApprovalService {
 
 		return approvalRepository.save(approval);
 	}
+	
+	// 전자결재(휴가신청서) 저장
+	public Approval createApprovalLeave(Map<String,Object> obj) {
+			
+			Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+			System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+			
+			ApprovalForm af = approvalFormRepository.findByApprovalFormCode((Integer)obj.get("폼코드"));
+			
+			int type = 0;
+			switch (af.getFormName()) {
+            case "반차":
+                type = 1;
+                break;
+            case "연차":
+                type = 2;
+                break;
+            case "경조사휴가":
+                type = 3;
+                break;
+            case "병가":
+                type = 4;
+                break; 
+			}
+			
+			AnnualLeaveUsage annual = AnnualLeaveUsage.builder()
+										.annualType(type)
+										.employee(emp)
+										.annualUsageStartDate((LocalDate)obj.get("시작일자"))
+										.annualUsageEndDate((LocalDate)obj.get("종료일자"))
+										.build();
+										
+			
+			AnnualLeaveUsage au = annualLeaveUsageRepositroy.save(annual);
+			ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+			System.out.println("카테고리 출력 : "+ac);
+			Approval approval = Approval.builder()
+								.approvalTitle((String)obj.get("제목"))
+								.approvalContent((String)obj.get("내용"))
+								.approvalCategory(ac)
+								.employee(emp)
+								.annualLeaveUsage(annual)
+								.build();
+	
+			return approvalRepository.save(approval);
+		}
+	
 	
 	// 카테고리 값 가져오기
 	public List<ApprovalFormDto> selectApprovalCateList(int no){

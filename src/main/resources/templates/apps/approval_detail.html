@@ -20,57 +20,60 @@
 <script
 	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <style>
-#modal {
-	position: fixed;
-	display: none;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 400px;
-	height: 400px;
-	background-color: white;
-	border: 1px solid #b9b9b9;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-	box-sizing: border-box;
-	overflow: hidden;
-}
-
-.modal-content {
-	display: flex;
-	flex-wrap: wrap;
-	padding: 20px;
-	height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
-	box-sizing: border-box;
-	overflow-y: auto;
-}
-
-.modal-item {
-	border: 1px solid #b9b9b9;
-	width: 20px;
-	height: 20px;
-	display: contents;
-	align-items: center;
-	justify-content: center;
-	margin: 5px;
-	cursor: pointer;
-	user-select: none;
-}
-
-.modal-item.selected {
-	color: cornflowerblue;
-}
-
-.modal-footer {
-	display: flex;
-	justify-content: center;
-	padding: 10px;
-	border-top: 1px solid #b9b9b9;
-}
-
-.modal-item.disabled {
-	color: #b9b9b9;
-	cursor: not-allowed;
-}
+	#modal {
+		position: fixed;
+		display: none;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 400px;
+		height: 400px;
+		background-color: white;
+		border: 1px solid #b9b9b9;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		box-sizing: border-box;
+		overflow: hidden;
+	}
+	
+	.modal-content {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 20px;
+		height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
+		box-sizing: border-box;
+		overflow-y: auto;
+	}
+	
+	.modal-item {
+		border: 1px solid #b9b9b9;
+		width: 20px;
+		height: 20px;
+		display: contents;
+		align-items: center;
+		justify-content: center;
+		margin: 5px;
+		cursor: pointer;
+		user-select: none;
+	}
+	
+	.modal-item.selected {
+		color: cornflowerblue;
+	}
+	
+	.modal-footer {
+		display: flex;
+		justify-content: center;
+		padding: 10px;
+		border-top: 1px solid #b9b9b9;
+	}
+	
+	.modal-item.disabled {
+		color: #b9b9b9;
+		cursor: not-allowed;
+	}
+	select, input[type=date] {
+				border:1px solid #d3d3d3; border-radius:4px; height: 35px;
+			}
 </style>
 </head>
 <body>

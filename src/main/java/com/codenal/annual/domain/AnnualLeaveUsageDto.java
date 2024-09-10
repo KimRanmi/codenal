@@ -29,7 +29,6 @@ public class AnnualLeaveUsageDto {
 				.annualUsageNo(annual_usage_no)
 				.annualUsageStartDate(annual_usage_start_date)
 				.annualUsageEndDate(annual_usage_end_date)
-				.empId(emp_id)
 				.annualType(annual_type)
 				.build();
 	}
@@ -39,7 +38,6 @@ public class AnnualLeaveUsageDto {
 				.annual_usage_no(alu.getAnnualUsageNo())
 				.annual_usage_start_date(alu.getAnnualUsageStartDate())
 				.annual_usage_end_date(alu.getAnnualUsageEndDate())
-				.emp_id(alu.getEmpId())
 				.annual_type(alu.getAnnualType())
 				.build();
 	}
