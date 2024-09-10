@@ -12,9 +12,4 @@ public class AdminViewController {
 		return "admin/join";
 	}
 
-	// 직원 목록
-//	@GetMapping("/employeeList")
-//	public String employeeList() {
-//		return "admin/employeeList";
-//	}
 }

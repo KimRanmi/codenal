@@ -1,0 +1,132 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}">
+
+<th:block layout:fragment="pagetitle">
+	<!--page title-->
+	<div th:replace="partials/title-meta :: title-meta('주소록')"></div>
+</th:block>
+
+<head>
+<!-- Sweet Alert css-->
+<link href="/assets/libs/sweetalert2/sweetalert2.min.css"
+	rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<div th:replace="partials/page-title ::  title-meta('주소록')"></div>
+
+		<div class="row">
+			<!--------------------------------- 조직도 ----------------------------------------------->
+			<div class="col-xxl-3">
+				<div class="card" id="contact-view-detail">
+				<!-- 조직도 이름 -->
+					<div class="card-header border-0">
+						<div class="col-sm">
+							<h5 class="card-title mb-0"
+								style="font-size: 18px; font-weight: 900;">조직도</h5>
+						</div>
+					</div>
+					<!-- 조직도 Api -->
+					<div
+						class="card-body border border-dashed border-end-0 border-start-0">
+							<!-- 조직도 Api 여기에 넣기 -->
+					</div>
+
+				</div>
+			</div>
+
+			<!---------------------------------주소록 목록----------------------------------------------->
+			<div class="col-xxl-9">
+				<div class="card" id="contactList">
+					<!----------목록 이름------------>
+					<div class="card-header border-0">
+						<div class="col-sm">
+							<h5 class="card-title mb-0"
+								style="font-size: 18px; font-weight: 900;">부서 목록</h5>
+						</div>
+					</div>
+					<!----------목록 상단------------>
+					<div
+						class="card-body border border-dashed border-end-0 border-start-0">
+						<div class="row g-3">
+							<div class="col-md-4">
+								<button class="btn btn-info add-btn" data-bs-toggle="modal"
+									data-bs-target="#showModal"
+									style="width: 50%; font-size: 18px; padding: 3px;">
+									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
+								</button>
+							</div>
+							<div class="col-md-3"></div>
+							<div class="col-md-4">
+								<div class="search-box">
+									<input type="text" class="form-control search"
+										placeholder="검색어를 입력해 주세요."> <i
+										class="ri-search-line search-icon"></i>
+								</div>
+							</div>
+							<!-- 검색 버튼 -->
+							<div class="col-md-1">
+								<div>
+									<button type="submit" class="btn btn-primary w-100"
+										style="font-size: 18px; padding: 3px;">검색</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!----------목록 조회------------>
+					<div class="card-body">
+						<div>
+							<div class="table-responsive table-card mb-3">
+								<table class="table align-middle table-nowrap mb-0" id="customerTable">
+									<thead class="table-light">
+										<tr>
+											<th scope="col" style="text-align: center;">번호</th>
+											<th scope="col" style="text-align: center;">부서명</th>
+											<th scope="col" style="text-align: center;">인원 수</th>
+											<th scope="col" style="text-align: center;">개설일</th>
+											<th scope="col" style="text-align: center;">수정/삭제</th>
+										</tr>
+									</thead>
+								</table>
+								<div class="noresult" style="display: none">
+									<div class="text-center">
+										<lord-icon src="https://cdn.lordicon.com/msoeawqm.json"
+											trigger="loop" colors="primary:#121331,secondary:#08a88a"
+											style="width:75px;height:75px"> </lord-icon>
+										<h5 class="mt-2">Sorry! No Result Found</h5>
+										<p class="text-muted mb-0">We've searched more than 150+
+											contacts We did not find any contacts for you search.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--end card-->
+			</div>
+
+		</div>
+		<!--end row-->
+	</div>
+
+
+
+
+	<th:block layout:fragment="pagejs">
+
+		<!-- list.js min js -->
+		<script src="/assets/libs/list.js/list.min.js"></script>
+		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+
+		<script src="/assets/js/pages/crm-contact.init.js"></script>
+
+		<!-- Sweet Alerts js -->
+		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	</th:block>
+</body>
+
+</html>

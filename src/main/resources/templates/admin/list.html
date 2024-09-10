@@ -1,0 +1,187 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<th:block layout:fragment="pagetitle">
+	<!--page title-->
+	<div th:replace="partials/title-meta :: title-meta('직원 정보 관리')"></div>
+</th:block>
+
+<head>
+<!-- Sweet Alert css-->
+<link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+	<th:block layout:fragment="content">
+		<div th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="card" id="orderList">
+
+					<div class="card-header border-0">
+						<div class="row align-items-center gy-3">
+							<div class="card-body" style="border-bottom: 2px dashed #d3d3d3;" >
+
+								<!-- -------------------신규 직원 등록---------------------------- -->
+
+								<div class="row g-3">
+									<!-- 신규 직원 등록 버튼 -->
+									<div class="col-xxl-3 col-sm-7">
+										<a th:href="@{/join}" class="btn btn-success add-btn d-flex align-items-center justify-content-center" id="create-btn" style="width: 60%; font-size: 18px; padding: 3px;"> <i class="ri-add-line align-bottom me-1"></i> 신규 직원 등록
+										</a>
+									</div>
+
+									<!-- 빈 공간 -->
+									<div class="col-xxl-3 col-sm-7">
+										<div></div>
+									</div>
+
+									<!-- 재직 상태 선택 -->
+									<form th:action="@{/admin/list}" th:object="${searchDto}" method="get" th:if="${searchDto != null}">
+										<div class="col-xxl-1 col-sm-4">
+											<div>
+												<select class="form-control" name="empStatus" id="idStatus">
+													<option th:value="">재직 상태</option>
+													<option th:value="Y" th:selected="${searchDto.empStatus} =='Y'">재직</option>
+													<option th:value="N" th:selected="${searchDto.empStatus} == 'N'">퇴사</option>
+												</select>
+											</div>
+										</div>
+
+										<!--  직원 정보 선택-->
+										<div class="col-xxl-1 col-sm-4">
+											<div>
+												<select class="form-control" name="search_type" id="idPayment" th:value="${searchDto.search_type}">
+													<option th:value="0" th:selected="${searchDto.search_type} == 0">전체</option>
+													<option th:value="1" th:selected="${searchDto.search_type} == 1">사번</option>
+													<option th:value="2" th:selected="${searchDto.search_type} == 2">직원명</option>
+													<option th:value="3" th:selected="${searchDto.search_type} == 3">부서명</option>
+													<option th:value="4" th:selected="${searchDto.search_type} == 4">직급명</option>
+													<option th:value="5" th:selected="${searchDto.search_type} == 5">전화번호</option>
+												</select>
+											</div>
+										</div>
+										<!--  검색어 입력란 -->
+
+										<div class="col-xxl-3 col-sm-5">
+											<div class="search-box">
+												<input type="text" class="form-control" name="search_text" placeholder="검색어를 입력해 주세요." th:value="${searchDto.search_text}">
+												 <i class="ri-search-line search-icon"></i>
+											</div>
+										</div>
+
+										<!-- 검색 버튼 -->
+										<div class="col-xxl-1 col-sm-4">
+											<div>
+												<input type="submit" value="검색" class="btn btn-primary w-100" style="font-size: 18px; padding: 3px;">
+											</div>
+										</div>
+
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- -------------------목록---------------------------- -->
+					<div class="card-body pt-0">
+						<div>
+							<div class="table-responsive table-card mb-1">
+								<table class="table align-middle position-relative table-nowrap">
+									<thead class="table-active">
+										<tr>
+											<th scope="col" style="text-align: center;">사번</th>
+											<th scope="col" style="text-align: center;">직원명</th>
+											<th scope="col" style="text-align: center;">부서명</th>
+											<th scope="col" style="text-align: center;">직급명</th>
+											<th scope="col" style="text-align: center;">전화번호</th>
+											<th scope="col" style="text-align: center;">재직 상태</th>
+											<th scope="col" style="text-align: center;"></th>
+										</tr>
+									</thead>
+
+									<!-- ----------------------목록 내역-------------------------------- -->
+									<tbody>
+										<!-- 직원 목록이 비어 있을 때 -->
+										<th:block th:if="${#lists.isEmpty(resultList.content)}">
+											<tr>
+												<td colspan="6" style="text-align: center;">직원 목록이 없습니다.</td>
+											</tr>
+										</th:block>
+
+										<!-- 직원 목록 표시 -->
+										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
+											<tr th:each="employee, employeeStat : ${resultList.content}">
+												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}"></td>
+												<td th:text="${employee.emp_id}"></td>
+												<td th:text="${employee.emp_name}"></td>
+												<td th:text="${employee.dept_no}"></td>
+												<td th:text="${employee.job_no}"></td>
+												<td th:text="${employee.emp_phone}"></td>
+												<td th:text="${employee.emp_status eq 'Y' ? '재직' : '퇴사'}"></td>
+											</tr>
+										</th:block>
+									</tbody>
+								</table>
+								</br>
+								<!-- 	<div class="d-flex justify-content-end">
+								<div class="pagination-wrap hstack gap-2">
+									<a class="page-item pagination-prev disabled" href="#">
+										Previous
+									</a>
+									<ul class="pagination listjs-pagination mb-0"></ul>
+									<a class="page-item pagination-next" href="#">
+										Next
+									</a>
+								</div>
+							</div> -->
+								<!-- ----------------------페이징------------------------------- -->
+								<div class="center" th:if="${!resultList.isEmpty()}">
+									<div class="pagination" th:with="
+										pageNumber = ${resultList.pageable.pageNumber},
+										pageSize = ${resultList.pageable.pageSize},
+										totalPages = ${resultList.totalPages},
+										startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+										tempEndPage = ${startPage + pageSize - 1},
+										endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+										">
+										<th:block th:if="${!resultList.first}">
+											<a th:href="${resultList.first} ? '#' : @{/admin/list(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;</a>
+										</th:block>
+										<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용 -->
+										<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+											<a th:text="${page}" th:href="@{/admin/list(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
+										</th:block>
+										<th:block th:if="${!resultList.last}">
+											<a th:href="${resultList.last} ? '#' : @{/admin/list(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;</a>
+										</th:block>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- -------------------------------------------- -->
+				</div>
+			</div>
+		</div>
+	</th:block>
+
+
+	<th:block layout:fragment="pagejs">
+		<!-- ckeditor -->
+		<!-- list.js min js -->
+		<script src="/assets/libs/list.js/list.min.js"></script>
+
+		<!--list pagination js-->
+		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+
+		<!-- ecommerce-order init js -->
+		<script src="/assets/js/pages/ecommerce-order.init.js"></script>
+
+		<!-- Sweet Alerts js -->
+		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	</th:block>
+</body>
+
+</html>

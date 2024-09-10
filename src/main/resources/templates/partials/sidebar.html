@@ -1,4 +1,5 @@
-<html data-sidebar="light">
+<html data-sidebar="light" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="https://www.ultraq.net.nz/tymeleaf/layout">
 
 <body>
 	<div th:fragment="sidebar" th:remove="tag">
@@ -594,7 +595,7 @@
 						</li>
 						
 						<li class="nav-item">
-							<a href="#" class="nav-link menu-link">
+							<a href="/addressBook" class="nav-link menu-link">
 								<i class="bx bx-user"></i> <span>주소록</span>
 							</a>
 						</li>
@@ -662,9 +663,11 @@
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
 									</li>
-										<a href="/admin-employeeList" class="nav-link"> 직원 정보 관리 </a>
+									<li>
+										<a th:href="@{/admin/list}" class="nav-link"> 직원 정보 관리 </a>
+									</li>
 									<li class="nav-item">
-										<a href="/apps-ecommerce-add-product" class="nav-link"> 부서 관리 </a>
+										<a href="/admin-dept" class="nav-link"> 부서 관리 </a>
 									</li>
 								</ul>
 							</div>

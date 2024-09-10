@@ -8,9 +8,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class Apps {
 	
 
-	@GetMapping("/admin-employeeList")
-	public String admin_employeeList() {
-		return "admin/employeeList";
+	@GetMapping("/employee-addressBook")
+	public String employee_addressBook() {
+		return "employee/addressBook";
+	}
+	
+	@GetMapping("/admin-list")
+	public String admin_list() {
+		return "admin/list";
+	}
+	
+	@GetMapping("/admin-dept")
+	public String admin_detail() {
+		return "admin/dept";
 	}
 
 	@GetMapping("/apps-calendar")

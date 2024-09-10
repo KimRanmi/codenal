@@ -1,5 +1,10 @@
 package com.codenal.admin.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,44 +13,45 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.codenal.admin.service.EmployeeListService;
 import com.codenal.employee.domain.EmployeeDto;
 
+
 @Controller
 public class EmployeeListViewController {
 
-    private final EmployeeListService employeeListService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeListViewController.class);
 
-    @Autowired
-    public EmployeeListViewController(EmployeeListService employeeListService) {
-        this.employeeListService = employeeListService;
-    }
+	private final EmployeeListService employeeListService;
+	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeListViewController.class);
 
-    // 직원 목록 검색 (재직/퇴사 + 직원 정보)
-    @GetMapping("/admin/employeeList")
-    public String searchAll(Model model,
-            @PageableDefault(page = 0, size = 10, sort = "regDate", direction = Sort.Direction.DESC) Pageable pageable,
-            @ModelAttribute("searchDto") EmployeeDto searchDto) { 
+	@Autowired
+	public EmployeeListViewController(EmployeeListService employeeListService) {
+		this.employeeListService = employeeListService;
+	}
 
-        // 셀렉트 박스 통합
-        Page<EmployeeDto> resultList = employeeListService.searchAll(searchDto, pageable);
+	// 직원 목록 검색 (재직/퇴사 + 직원 정보)
+	@GetMapping("/admin/list")
+	public String searchAll(Model model,
+			@PageableDefault(page = 0, size = 10, sort = "empHire", direction = Sort.Direction.DESC) Pageable pageable,
+			@ModelAttribute("searchDto") EmployeeDto searchDto) { 
+		
+		System.out.println("냥1 : " + searchDto);
 
-        if (resultList == null) {
-            resultList = Page.empty();
-        }
-        
-        LOGGER.debug(resultList.toString());
+		// 셀렉트 박스 통합
+		Page<EmployeeDto> resultList = employeeListService.searchAll(searchDto, pageable);
 
-        model.addAttribute("resultList", resultList);
-        model.addAttribute("searchDto", searchDto);
+		  System.out.println("냥2 : " + resultList);
+		  
+		LOGGER.debug(resultList.toString());
 
-        return "admin/employeeList";
-    }
+		model.addAttribute("resultList", resultList);
+		model.addAttribute("searchDto", searchDto);
+		return "admin/list";
+	}
 
 
 

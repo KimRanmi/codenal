@@ -1,9 +1,10 @@
 package com.codenal.admin.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,96 +14,100 @@ import com.codenal.admin.repository.EmployeeListRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 
+
 @Service
 public class EmployeeListService {
 
-    private final EmployeeListRepository employeeListRepository;
+	private final EmployeeListRepository employeeListRepository;
 
-    @Autowired
-    public EmployeeListService(EmployeeListRepository employeeListRepository) {
-        this.employeeListRepository = employeeListRepository;
-    }
+	@Autowired
+	public EmployeeListService(EmployeeListRepository employeeListRepository) {
+		this.employeeListRepository = employeeListRepository;
+	}  
 
-    // 직원 목록 검색 1 (재직 or 퇴사)
-    public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
-        Page<Employee> employeeListOne = null;
-        
-        String empStatus = searchDto.getEmpStatus();  // 'Y' or 'N'
-        if (empStatus != null && !"".equals(empStatus)) {
-            employeeListOne = employeeListRepository.findByEmpStatus(empStatus, pageable);  
-        } else {
-            employeeListOne = employeeListRepository.findAll(pageable);  
-        }
 
-        // null!!
-        if (employeeListOne == null) {
-            employeeListOne = Page.empty();
-        }
+	//    // 직원 목록 검색 1 (재직 or 퇴사)
+	public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
+		Page<Employee> employeeListOne = null;
 
-        List<EmployeeDto> employeeDtoList = new ArrayList<>();
-        for (Employee e : employeeListOne) {
-            EmployeeDto dto = new EmployeeDto().fromEntity(e);
-            employeeDtoList.add(dto);
-        }
-        
-        return new PageImpl<>(employeeDtoList, pageable, employeeListOne.getTotalElements());
-    }
 
-    
-    // 직원 목록 검색 2 (직원 정보)
-    public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
-        Page<Employee> employeeListTwo = null;
+		String empStatus = searchDto.getEmpStatus();  // 'Y' or 'N'
+		System.out.println("(서비스1) 받은 empStatus: " + empStatus); 
+		if (empStatus != null && !"".equals(empStatus)) {
+			employeeListOne = employeeListRepository.findByEmpStatus(empStatus, pageable);  
+		} else {
+			employeeListOne = employeeListRepository.findAll(pageable);  
+		}
 
-        String searchText = searchDto.getSearch_text();
+		System.out.println("(서비스2) 조회된 직원 목록 크기: " + employeeListOne.getTotalElements());
 
-        if (searchText != null && !"".equals(searchText)) {
-            int searchType = searchDto.getSearch_type();
-            switch (searchType) {
-                case 1:
-                    employeeListTwo = employeeListRepository.findByEmpIdContaining(searchText, pageable);
-                    break;
-                case 2:
-                    employeeListTwo = employeeListRepository.findByEmpNameContaining(searchText, pageable);
-                    break;
-                case 3:
-                    employeeListTwo = employeeListRepository.findByDepartment_DeptNameContaining(searchText, pageable);
-                    break;
-                case 4:
-                    employeeListTwo = employeeListRepository.findByJob_JobNameContaining(searchText, pageable);
-                    break;
-                case 5:
-                    employeeListTwo = employeeListRepository.findByEmpPhoneContaining(searchText, pageable);
-                    break;
-            }
-        } else {
-            employeeListTwo = employeeListRepository.findAll(pageable);
-        }
-        
-        // null!!
-        if (employeeListTwo == null) {
-            employeeListTwo = Page.empty();
-        }
+		List<EmployeeDto> employeeDtoList = new ArrayList<>();
+		for (Employee e : employeeListOne) {
+			EmployeeDto dto = new EmployeeDto().fromEntity(e);
+			employeeDtoList.add(dto);
+		}
 
-        List<EmployeeDto> employeeDtoList = new ArrayList<EmployeeDto>();
-        for (Employee e : employeeListTwo) {
-            EmployeeDto dto = new EmployeeDto().fromEntity(e);
-            employeeDtoList.add(dto);
-        }
+		return new PageImpl<>(employeeDtoList, pageable, employeeListOne.getTotalElements());
+	}
 
-        return new PageImpl<>(employeeDtoList, pageable, employeeListTwo.getTotalElements());
-    }
-    
 
-    // 직원 검색 (재직/퇴사 + 직원 정보)
-    public Page<EmployeeDto> searchAll(EmployeeDto searchDto, Pageable pageable) {
-        if (searchDto.getSearch_type() == 0) {
-            // 재직 상태 검색
-            return searchByStatus(searchDto, pageable);
-        } else {
-            // 직원 정보 검색
-            return searchByEmployeeInfo(searchDto, pageable);
-        }
-    }
+	// 직원 목록 검색 2 (직원 정보)
+	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
+		Page<Employee> employeeListTwo = null;
+
+		String searchText = searchDto.getSearch_text();
+		System.out.println("(서비스3) 받은 searchText: " + searchText); 
+
+		if (searchText != null && !"".equals(searchText)) {
+			int searchType = searchDto.getSearch_type();
+			System.out.println("(서비스4)검색 타입: " + searchType); 
+			switch (searchType) {
+			case 1:
+				employeeListTwo = employeeListRepository.findByEmpIdContaining(searchText, pageable);
+				break;
+			case 2:
+				employeeListTwo = employeeListRepository.findByEmpNameContaining(searchText, pageable);
+				break;
+			case 3:
+				employeeListTwo = employeeListRepository.findByDepartment_DeptNameContaining(searchText, pageable);
+				break;
+			case 4:
+				employeeListTwo = employeeListRepository.findByJob_JobNameContaining(searchText, pageable);
+				break;
+			case 5:
+				employeeListTwo = employeeListRepository.findByEmpPhoneContaining(searchText, pageable);
+				break;
+			}
+		} else {
+			employeeListTwo = employeeListRepository.findAll(pageable);
+		}
+
+		System.out.println("(서비스6)조회된 직원 목록 크기: " + employeeListTwo.getTotalElements());
+		 
+		List<EmployeeDto> employeeDtoList = new ArrayList<EmployeeDto>();
+		for (Employee e : employeeListTwo) {
+			EmployeeDto dto = new EmployeeDto().fromEntity(e);
+			employeeDtoList.add(dto);
+		}
+
+		return new PageImpl<>(employeeDtoList, pageable, employeeListTwo.getTotalElements());
+	}
+
+
+	// 직원 검색 통합 (재직/퇴사 + 직원 정보)
+	public Page<EmployeeDto> searchAll(EmployeeDto searchDto, Pageable pageable) {
+		if (searchDto.getSearch_type() == 0) {
+			// 재직 상태 검색
+			return searchByStatus(searchDto, pageable);
+		} else {
+			// 직원 정보 검색
+			return searchByEmployeeInfo(searchDto, pageable);
+		}
+	}
+
+
+
+
 
 
 	// 직원 정보 상세 조회
