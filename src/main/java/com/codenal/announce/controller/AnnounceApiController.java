@@ -55,7 +55,7 @@ public class AnnounceApiController {
 	        AnnounceFileDto fileDto = new AnnounceFileDto();
 	        fileDto.setFile_ori_name(file.getOriginalFilename());
 	        fileDto.setFile_new_name(savedFileName);
-	        fileDto.setFile_path("C:\\codenal\\announce\\upload\\"+file.getName());
+	        fileDto.setFile_path("C:\\codenal\\announce\\upload\\");
 	        
 	        // Announce 및 AnnounceFile 저장
 	        Announce savedAnnounce = announceService.createAnnounce(dto, fileDto);
@@ -90,8 +90,15 @@ public class AnnounceApiController {
 		Map<String,String> map = new HashMap<String,String>();
 		map.put("res_code", "404");
 		map.put("res_msg", "게시글 삭제 중 오류가 발생했습니다.");
-		if(fileService.deletefile(announceNo) > 0) {
-			map.put("res_msg", "기존 파일이 정상적으로 삭제되었습니다.");
+		if(announceService.selectAnnounceDetail(announceNo).getAnnounceFile() != null) {
+			if(fileService.deletefile(announceNo) > 0) {
+				map.put("res_msg", "기존 파일이 정상적으로 삭제되었습니다.");
+					if(announceService.deleteAnnounce(announceNo) > 0) {
+						map.put("res_code", "200");
+						map.put("res_msg", "정상적으로 게시글이 삭제되었습니다.");
+					}	
+				}
+		} else {
 			if(announceService.deleteAnnounce(announceNo) > 0) {
 				map.put("res_code", "200");
 				map.put("res_msg", "정상적으로 게시글이 삭제되었습니다.");

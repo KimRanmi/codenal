@@ -70,11 +70,6 @@ public class Announce {
 		this.regDate = LocalDateTime.now();
 	}
 	
-    @PreUpdate
-    public void preUpdate() {
-        this.modDate = LocalDateTime.now();
-    }
-    
 	@Column(name="view_count")
 	private int viewCount;
 	

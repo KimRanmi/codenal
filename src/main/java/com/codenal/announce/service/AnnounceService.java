@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.codenal.announce.domain.Announce;
@@ -69,17 +71,19 @@ public class AnnounceService {
 		return new PageImpl<>(announceDtoList, pageable, announceList.getTotalElements());
 	}
 	
+	@Transactional
+	public void updateViewCount(Long announceNo, String username) {
+		Long userId = Long.parseLong(username);
+		Employee empId = Employee.builder()
+				.empId(userId)
+				.build();
+		announceRepository.updateViewCount(announceNo,empId);
+	}
 	
-    public AnnounceDto selectAnnounceDetail(Long announceNo, String username) {
+	@Transactional
+    public AnnounceDto selectAnnounceDetail(Long announceNo) {
         Announce announce = announceRepository.findByAnnounceNo(announceNo);
         AnnounceDto dto = new AnnounceDto().toDto(announce);
-//        if(!announce.getEmployee().getEmpId().equals(username)) {
-//        	announceRepository.updateViewCount(announceNo);
-//        	announce = announceRepository.findByAnnounceNo(announceNo);
-//            dto = new AnnounceDto().toDto(announce);
-//        } else {
-//        	dto = new AnnounceDto().toDto(announce);
-//        }
         return dto;
     }
     

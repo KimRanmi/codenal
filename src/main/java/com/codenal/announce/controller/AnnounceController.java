@@ -47,7 +47,8 @@ public class AnnounceController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         model.addAttribute("username", username);
-		AnnounceDto announceDetail = announceService.selectAnnounceDetail(no, username);
+        announceService.updateViewCount(no, username);
+		AnnounceDto announceDetail = announceService.selectAnnounceDetail(no);
         model.addAttribute("announceList", announceDetail);
         return "apps/announce_detail";
 	}

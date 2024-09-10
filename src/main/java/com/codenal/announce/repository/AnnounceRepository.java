@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.announce.domain.Announce;
+import com.codenal.employee.domain.Employee;
 
 public interface AnnounceRepository extends JpaRepository<Announce, Long>{
 
@@ -25,10 +26,10 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long>{
     
 
     Announce findByAnnounceNo(Long announceNo);
-    
-//    @Modifying
-//    @Query("update announce a set a.viewCount = a.viewCount + 1 where a.announceNo = ?1")
-//    void updateViewCount(Long announceNo);
+
+    @Modifying
+    @Query("UPDATE Announce a SET a.viewCount = a.viewCount + 1 WHERE a.announceNo = ?1 AND a.employee != ?2")
+	void updateViewCount(Long announceNo, Employee empId);
     
     
 }

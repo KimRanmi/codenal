@@ -14,6 +14,8 @@ import com.codenal.announce.domain.AnnounceFile;
 import com.codenal.announce.repository.AnnounceFileRepository;
 import com.codenal.announce.repository.AnnounceRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class FileService {
 	
@@ -58,12 +60,15 @@ public class FileService {
 		return newFileName;
 	}
 
+	@Transactional
 	public int deletefile(Long announceNo) {
 		int result = -1;
 		
 		Announce announce = announceRepository.findByAnnounceNo(announceNo);
 		try {
-			String newFileName = announce.getFiles().get(0).getFileNewName();	// UUID
+			String newFile = announce.getFiles().get(0).getFileNewName();
+			String newFileName = newFile.substring(0,newFile.indexOf("."));	// UUID
+			System.out.println(newFileName);
 			String oriFileName = announce.getFiles().get(0).getFileOriName();	// 사용자가 아는 파일명
 			String resultDir = fileDir + URLDecoder.decode(newFileName,"UTF-8");
 			if(resultDir != null && resultDir.isEmpty() == false) {
