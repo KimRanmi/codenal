@@ -27,10 +27,10 @@ public class Jobs {
     @Column(name = "job_no")
     private Integer jobNo; // 직급 번호
 
-    @Column(name = "job_name", nullable = false)
+    @Column(name = "job_name")
     private String jobName; // 직급명
 
-    @Column(name = "job_priority", nullable = false)
+    @Column(name = "job_priority")
     private Integer jobPriority; // 우선순위
 }
 

@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
 				// .requestMatchers("/join").permitAll()  // "/join" 경로 허용
-				.requestMatchers("/employeeList").permitAll()
+				.requestMatchers("/admin/employeeList").permitAll()
 				.anyRequest().authenticated()
 				)
 		

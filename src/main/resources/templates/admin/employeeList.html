@@ -54,9 +54,9 @@
 												<select class="form-control" name="empStatus" id="idStatus">
 													<option th:value="">재직 상태</option>
 													<option th:value="Y"
-														th:selected="${searchDto.empStatus eq 'Y'}">재직</option>
+														th:selected="${searchDto.empStatus} =='Y'">재직</option>
 													<option th:value="N"
-														th:selected="${searchDto.empStatus eq 'N'}">퇴사</option>
+														th:selected="${searchDto.empStatus} == 'N'">퇴사</option>
 												</select>
 											</div>
 										</div>
@@ -123,17 +123,8 @@
 
 									<!-- ----------------------목록 내역-------------------------------- -->
 									<tbody>
-										<!-- 직원 목록이 없을 때 -->
-										<th:block th:if="${employeeList == null}">
-											<tr>
-												<td colspan="6" style="text-align: center;">직원 목록을 불러올
-													수 없습니다.</td>
-											</tr>
-										</th:block>
-
-										<th:block th:if="${employeeList != null}">
 											<!-- 직원 목록이 비어 있을 때 -->
-											<th:block th:if="${employeeList.empty}">
+											<th:block th:if="${!#lists.isEmpty(resultList.content)}">
 												<tr>
 													<td colspan="6" style="text-align: center;">직원 목록이
 														없습니다.</td>
@@ -141,8 +132,8 @@
 											</th:block>
 
 											<!-- 직원 목록 표시 -->
-											<th:block th:if="${!employeeList.empty}">
-												<tr th:each="employee : ${employeeList.content}">
+											<th:block th:if="${!#lists.isEmpty(resultList.content)}">
+												<tr th:each="employee, employeeStat : ${resultList.content}">
 													<td th:text="${employee.empId}"></td>
 													<td th:text="${employee.empName}"></td>
 													<td th:text="${employee.deptName}"></td>
@@ -158,32 +149,26 @@
 								</table>
 								</br>
 								<!-- ----------------------페이징------------------------------- -->
-								<div class="center" th:if="${!employeeList.empty}">
+								 <div class="center" th:if="${!resultList.isEmpty()}">
 									<div class="pagination"
 										th:with="
-							        pageNumber = ${employeeList.pageable.pageNumber},
-							        pageSize = ${employeeList.pageable.pageSize},
-							        totalPages = ${employeeList.totalPages},
-							        startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-							        tempEndPage = ${startPage + pageSize - 1},
-							        endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
-							        ">
-										<!-- 이전 페이지 -->
-										<th:block th:if="${!employeeList.first}">
-											<a
-												th:href="@{/employeeList(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a>
+										pageNumber = ${resultList.pageable.pageNumber},
+										pageSize = ${resultList.pageable.pageSize},
+										totalPages = ${resultList.totalPages},
+										startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+										tempEndPage = ${startPage + pageSize - 1},
+										endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+										">
+										<th:block th:if="${!resultList.first}">
+											<a th:href="${resultList.first} ? '#' : @{/admin/employeeList(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;</a>
 										</th:block>
-										<!-- 페이지 번호 -->
-										<th:block
-											th:each="page: ${#numbers.sequence(startPage, endPage)}">
-											<a th:text="${page}"
-												th:href="@{/employeeList(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}"
-												th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
+										<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용-->
+										<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+											<a th:text="${page}" th:href="@{/admin/employeeList(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}" 
+											th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
 										</th:block>
-										<!-- 다음 페이지 -->
-										<th:block th:if="${!employeeList.last}">
-											<a
-												th:href="@{/employeeList(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a>
+										<th:block th:if="${!resultList.last}">
+											<a th:href="${resultList.last} ? '#' : @{/admin/employeeList(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;</a>
 										</th:block>
 									</div>
 								</div>

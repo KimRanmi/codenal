@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 
+import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AccessLevel;
@@ -31,10 +32,11 @@ public class Departments {
     @Column(name = "dept_no")
     private Integer deptNo; 
 
-    @Column(name = "dept_name", nullable = false)
+    @Column(name = "dept_name")
     private String deptName;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "dept_create_date")
+    @CreationTimestamp
     private LocalDate deptCreateDate;
 }
