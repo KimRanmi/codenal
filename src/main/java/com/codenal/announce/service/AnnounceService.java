@@ -70,11 +70,26 @@ public class AnnounceService {
 	}
 	
 	
-    public AnnounceDto selectAnnounceDetail(Long announceNo) {
+    public AnnounceDto selectAnnounceDetail(Long announceNo, String username) {
+        Announce announce = announceRepository.findByAnnounceNo(announceNo);
+        AnnounceDto dto = new AnnounceDto().toDto(announce);
+//        if(!announce.getEmployee().getEmpId().equals(username)) {
+//        	announceRepository.updateViewCount(announceNo);
+//        	announce = announceRepository.findByAnnounceNo(announceNo);
+//            dto = new AnnounceDto().toDto(announce);
+//        } else {
+//        	dto = new AnnounceDto().toDto(announce);
+//        }
+        return dto;
+    }
+    
+    
+    public AnnounceDto selectAnnounceUpdateView(Long announceNo) {
         Announce announce = announceRepository.findByAnnounceNo(announceNo);
         AnnounceDto dto = new AnnounceDto().toDto(announce);
         return dto;
     }
+    
     
     @Transactional
     public Announce createAnnounce(AnnounceDto dto, AnnounceFileDto fileDto) {
@@ -105,5 +120,17 @@ public class AnnounceService {
         // 저장된 Announce 객체 반환
         return savedAnnounce;
     }
+
+	public int deleteAnnounce(Long no) {
+		int result = 0;
+		try {
+			announceRepository.deleteById(no);
+			result = 1;
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
     
 }

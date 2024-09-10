@@ -1,11 +1,10 @@
 package com.codenal.announce.repository;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.announce.domain.Announce;
 
@@ -27,6 +26,9 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long>{
 
     Announce findByAnnounceNo(Long announceNo);
     
+//    @Modifying
+//    @Query("update announce a set a.viewCount = a.viewCount + 1 where a.announceNo = ?1")
+//    void updateViewCount(Long announceNo);
     
     
 }

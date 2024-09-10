@@ -42,6 +42,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
 				 .requestMatchers("/join").permitAll()  // "/join" 경로 허용
 				 .requestMatchers("/announce/createEnd").permitAll()
+				 .requestMatchers("/announce/delete/**").permitAll()
 				 .anyRequest().authenticated()
 				)
 		

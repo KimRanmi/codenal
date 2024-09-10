@@ -15,8 +15,8 @@
 </head>
 
 <body>
-
 	<div layout:fragment="content">
+      <form id="announceUpdateForm" method="post" enctype="multipart/form-data">
 		<div th:replace="partials/page-title :: page-title('게시글 수정','게시판')"></div>
 
 		<div class="row">
@@ -24,29 +24,36 @@
 				<div class="card">
 					<div class="card-body">
 						<div class="mb-3">
-							<label class="form-label" for="project-title-input">제목</label>
-							<input type="text" class="form-control" id="project-title-input"
-								placeholder="수정할 제목을 입력하세요.">
+							<label class="form-label" for="atitle">제목</label>
+							<input type="text" class="form-control" id="atitle"
+							th:value="${announceList.announce_title}">
 						</div>
 						
 							<label class="form-label">내용</label>
 						        <!--TOAST UI Editor-->
 						        <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 									
+								<!-- 서버에서 렌더링된 내용이 포함된 div -->
+								<div id="acontent" style="display: none;" th:text="${announceList.announce_content}"></div>
+									
 									<!-- TOAST UI Editor가 들어갈 div태그 -->
-									    <div id="editor"></div>
+									    <div id="editor">
+									    </div>
 									    
 								    <!-- TOAST UI Editor 생성 JavaScript 코드 -->
 								    <script>
+								        // 서버에서 렌더링된 HTML 콘텐츠를 가져오기
+								        const content = document.querySelector('#acontent').textContent;
 								        const editor = new toastui.Editor({
 								            el: document.querySelector('#editor'),
 								            previewStyle: 'vertical',
 								            height: '500px',
-								            initialValue: '',
+								            initialValue: content, // 서버에서 가져온 HTML 콘텐츠 설정
 								            initialEditType: 'wysiwyg'
 								        });
 								    </script>
-								    
+								
+								
 						
 
 					</div>
@@ -65,42 +72,12 @@
 							<div class="dropzone">
 								<div class="fallback">
 									<input name="file" type="file" multiple="multiple">
-								</div>
-								<div class="dz-message needsclick">
-									<div class="mb-3">
-										<i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
+									<div th:each="file : ${announceList.announceFile}">
+									<span th:text="${file.fileOriName}"></span>     <!-- 파일 원본 정보 가져와서 삭제 누르면, 직접 삭제 가능하게 하기 -->
 									</div>
-
-									<h6>이곳을 클릭하거나 올릴 파일을 드래그하세요.</h6>
 								</div>
 							</div>
 
-							<ul class="list-unstyled mb-0" id="dropzone-preview">
-								<li class="mt-2" id="dropzone-preview-list">
-									<!-- This is used as the file preview template -->
-									<div class="border rounded">
-										<div class="d-flex p-2">
-											<div class="flex-shrink-0 me-3">
-												<div class="avatar-sm bg-light rounded">
-													<img src="#" alt="Project-Image" data-dz-thumbnail
-														class="img-fluid rounded d-block" />
-												</div>
-											</div>
-											<div class="flex-grow-1">
-												<div class="pt-1">
-													<h5 class="fs-14 mb-1" data-dz-name>&nbsp;</h5>
-													<p class="fs-13 text-muted mb-0" data-dz-size></p>
-													<strong class="error text-danger" data-dz-errormessage></strong>
-												</div>
-											</div>
-											<div class="flex-shrink-0 ms-3">
-												<button data-dz-remove class="btn btn-sm btn-danger">Delete</button>
-											</div>
-										</div>
-									</div>
-								</li>
-							</ul>
-							<!-- end dropzon-preview -->
 						</div>
 					</div>
 				</div>
@@ -111,43 +88,39 @@
 			<!-- 조직도 불러올 자리...radio로 권한 설정 클릭시 체크 가능하도록 ! -->
 			<div class="col-lg-4">
 				<div class="card">
-					<div class="card-header">
-						<h5 class="card-title mb-0">읽기 권한 설정</h5>
-					</div>
-					<div class="card-body" style="height:100%">
-						<div>
-							<label for="choices-privacy-status-input" class="form-label"></label>
-							<input type="radio" id="all" name="read-auth" value="1"><label for="all">전직원</label>
-							<input type="radio" id="select" name="read-auth" value="2"><label for="select">권한 직접 설정</label>
-
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">읽기 권한 설정</h5>
+                    </div>
+                    <div class="card-body" style="height:100%">
+                        <div>
+                            <label for="choices-privacy-status-input" class="form-label"></label>
+                            <input type="radio" id="all" name="read_authority_status" value="N"><label for="all">전직원</label>
+                            <input type="radio" id="select" name="read_authority_status" value="Y"><label for="select">권한 직접 설정</label>
+                        </div>
+                        <!-- 조직도를 표시할 div -->
+						<div id="organization-chart" style="display: none;">
+						    <!-- 조직도 내용이 동적으로 삽입할 예정 -->
 						</div>
-					</div>
-					<!-- end card body -->
-				</div>
+                    </div>
+                </div>
 				<!-- end card -->
 				<div class="text-end mb-4">
 					<button type="button" class="btn btn-danger w-sm">이전으로</button>
-					<button type="submit" class="btn btn-success w-sm">작성 완료</button>
+					<button type="submit" class="btn btn-success w-sm">수정 완료</button>
 				</div>
 			</div>
 			<!-- end col -->
 		</div>
+	  </form>
 	</div>
 
 
-	<th:block layout:fragment="modal">
-
-	</th:block>
 
 	<th:block layout:fragment="pagejs">
-
-		<!-- ckeditor -->
-		<script src="/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
-
 		<!-- dropzone js -->
 		<script src="/assets/libs/dropzone/dropzone-min.js"></script>
 		<!-- project-create init -->
-		<script src="/assets/js/pages/project-create.init.js"></script>
+ 		<script src="/assets/js/pages/project-create.init.js"></script>
 
 	</th:block>
 </body>

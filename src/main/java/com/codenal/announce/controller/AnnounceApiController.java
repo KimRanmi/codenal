@@ -4,7 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -74,5 +79,25 @@ public class AnnounceApiController {
 	}
 	
 	
+	
+	@ResponseBody
+	@DeleteMapping("/announce/delete/{announceNo}")
+	public Map<String,String> deleteAnnounce(@PathVariable("announceNo") Long announceNo, Model model){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        model.addAttribute("username", username);
+        
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("res_code", "404");
+		map.put("res_msg", "게시글 삭제 중 오류가 발생했습니다.");
+		if(fileService.deletefile(announceNo) > 0) {
+			map.put("res_msg", "기존 파일이 정상적으로 삭제되었습니다.");
+			if(announceService.deleteAnnounce(announceNo) > 0) {
+				map.put("res_code", "200");
+				map.put("res_msg", "정상적으로 게시글이 삭제되었습니다.");
+			}
+		}
+		return map;
+	}
 	
 }
