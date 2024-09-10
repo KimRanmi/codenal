@@ -20,39 +20,41 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.codenal.admin.service.EmployeeListService;
 import com.codenal.employee.domain.EmployeeDto;
 
-
 @Controller
 public class EmployeeListViewController {
 
+    private final EmployeeListService employeeListService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeListViewController.class);
 
-	private final EmployeeListService employeeListService;
-	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeListViewController.class);
+    @Autowired
+    public EmployeeListViewController(EmployeeListService employeeListService) {
+        this.employeeListService = employeeListService;
+    }
 
-	@Autowired
-	public EmployeeListViewController(EmployeeListService employeeListService) {
-		this.employeeListService = employeeListService;
-	}
+    // 직원 목록 검색 (재직/퇴사 + 직원 정보)
+    @GetMapping("/admin/list")
+    public String searchAll(Model model,
+            @PageableDefault(page = 0, size = 10, sort = "empId", direction = Sort.Direction.DESC) Pageable pageable,
+            @ModelAttribute("searchDto") EmployeeDto searchDto) {
 
-	// 직원 목록 검색 (재직/퇴사 + 직원 정보)
-	@GetMapping("/admin/list")
-	public String searchAll(Model model,
-			@PageableDefault(page = 0, size = 10, sort = "empHire", direction = Sort.Direction.DESC) Pageable pageable,
-			@ModelAttribute("searchDto") EmployeeDto searchDto) { 
-		
-		System.out.println("냥1 : " + searchDto);
+        System.out.println("(컨트롤러1) 받은 searchDto: " + searchDto);
+        System.out.println("(컨트롤러2) 페이지 정보 - page: " + pageable.getPageNumber() + ", size: " + pageable.getPageSize());
 
-		// 셀렉트 박스 통합
-		Page<EmployeeDto> resultList = employeeListService.searchAll(searchDto, pageable);
+        // 셀렉트 박스 통합
+        Page<EmployeeDto> resultList = employeeListService.searchAll(searchDto, pageable);
 
-		  System.out.println("냥2 : " + resultList);
-		  
-		LOGGER.debug(resultList.toString());
+        System.out.println("(컨트롤러3) 검색 결과 리스트: " + resultList.getContent());
+        System.out.println("(컨트롤러4) 총 직원 수: " + resultList.getTotalElements());
 
-		model.addAttribute("resultList", resultList);
-		model.addAttribute("searchDto", searchDto);
-		return "admin/list";
-	}
+        // 로그 출력
+        LOGGER.debug(resultList.toString());
 
+        // 모델에 검색 결과와 검색 조건 추가
+        model.addAttribute("resultList", resultList);
+        model.addAttribute("searchDto", searchDto);
+
+        return "admin/list";
+    }
 
 
 

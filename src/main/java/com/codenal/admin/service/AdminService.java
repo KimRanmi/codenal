@@ -38,14 +38,6 @@ public class AdminService {
 		try {
 			System.out.println("Received hireDate: 2. " + dto.getEmpHire());
 
-			if (dto.getDeptNo() == null) {
-				dto.setDeptNo(1); // 적절한 기본 부서 번호 설정
-			}
-
-			if (dto.getJobNo() == null) {
-				dto.setJobNo(1); // 적절한 기본 직책 번호 설정
-			}
-
             // 기본 비밀번호 'work1234'암호화
             if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
                 String defaultPassword = passwordEncoder.encode("work1234");
