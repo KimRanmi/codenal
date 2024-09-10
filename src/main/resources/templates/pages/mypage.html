@@ -98,7 +98,7 @@
 								th:text="${employee != null ? employee.empName : '직원 이름 없음'}">직원
 								이름 표시</h5>
 							<p class="text-muted mb-0"
-								th:text="${employee != null ? employee.departments.deptName + '팀 / ' + employee.jobs.jobName : '직원 정보 없음'}">
+								th:text="${employee != null ? employee.departments.deptName + ' / ' + employee.jobs.jobName : '직원 정보 없음'}">
 								팀/직급 정보 없음</p>
 						</div>
 					</div>
