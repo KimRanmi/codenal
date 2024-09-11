@@ -44,7 +44,7 @@ public class Calendar {
 	private String calendarScheduleContent;
 	
 	@Column(name = "calendar_schedule_writer")
-	private int calendarScheduleWriter;
+	private Long calendarScheduleWriter;
 	
 //	@ManyToOne
 //	@JoinColumn(name = "calendar_schedule_writer")
