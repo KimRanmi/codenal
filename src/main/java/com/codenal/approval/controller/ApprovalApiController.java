@@ -27,7 +27,7 @@ public class ApprovalApiController {
 	}
 	
 	
-	// 등록
+	// 등록1
 	@ResponseBody
 	@PostMapping("/approval")
 	public Map<String,String> createApproval(
