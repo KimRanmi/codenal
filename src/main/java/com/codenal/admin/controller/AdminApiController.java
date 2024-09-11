@@ -33,7 +33,7 @@ public class AdminApiController {
 
 		if(adminService.createEmployee(dto) > 0) {
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "신규 직원 등록이 성공적으로 등록되었습니다.");
+			resultMap.put("res_msg", "신규 직원이 성공적으로 등록되었습니다.");
 		};
 
 		return resultMap;
