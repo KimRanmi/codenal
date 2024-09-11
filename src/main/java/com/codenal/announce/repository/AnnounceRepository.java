@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.codenal.announce.domain.Announce;
 import com.codenal.employee.domain.Employee;
 
-public interface AnnounceRepository extends JpaRepository<Announce, Long>{
+public interface AnnounceRepository extends JpaRepository<Announce, Integer>{
 
 	Page<Announce> findByAnnounceTitleContaining(String keyword, Pageable pageable);
 //	Page<Announce> findByAnnounceWriterContaining(String keyword, Pageable pageable);
@@ -25,11 +25,11 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long>{
 
     
 
-    Announce findByAnnounceNo(Long announceNo);
+    Announce findByAnnounceNo(int announceNo);
 
     @Modifying
     @Query("UPDATE Announce a SET a.viewCount = a.viewCount + 1 WHERE a.announceNo = ?1 AND a.employee != ?2")
-	void updateViewCount(Long announceNo, Employee empId);
+	void updateViewCount(int announceNo, Employee empId);
     
     
 }

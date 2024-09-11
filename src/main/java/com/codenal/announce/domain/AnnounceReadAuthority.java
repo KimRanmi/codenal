@@ -26,7 +26,7 @@ import lombok.Setter;
 public class AnnounceReadAuthority {
 	
 	@Id
-    private Long id;
+    private int id;
 	
 	@MapsId
 	@ManyToOne

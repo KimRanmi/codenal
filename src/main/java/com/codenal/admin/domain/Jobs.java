@@ -3,6 +3,7 @@ package com.codenal.admin.domain;
 import java.util.List;
 
 import com.codenal.announce.domain.AnnounceReadAuthority;
+import com.codenal.employee.domain.Employee;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,4 +41,7 @@ public class Jobs {
     
     @OneToMany(mappedBy = "job")
     private List<AnnounceReadAuthority> readAuthorities;
+    
+    @OneToMany(mappedBy = "job")
+    private List<Employee> employee;
 }

@@ -60,7 +60,6 @@ function loadOrganizationChart() {
 document.addEventListener('DOMContentLoaded', () => {
 
 const form = document.getElementById("announceForm");
-const fileInput = document.getElementById("file");
 
 form.addEventListener('submit', (e) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
@@ -78,7 +77,7 @@ form.addEventListener('submit', (e) => {
     formData.append('announce_title', document.getElementById('announce_title').value);
     formData.append('announce_content', editor.getHTML());
     formData.append('read_authority_status', document.querySelector('input[name="read_authority_status"]:checked')?.value);
-	formData.append('file', fileInput);
+
 	
     const csrfToken = document.getElementById("csrf_token").value;
 

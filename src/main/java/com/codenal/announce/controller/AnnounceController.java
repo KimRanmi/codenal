@@ -43,7 +43,7 @@ public class AnnounceController {
 
 	
 	@GetMapping("/announce/detail/{no}")
-	public String announceListDetail_view(@PathVariable("no") Long no, Model model) {
+	public String announceListDetail_view(@PathVariable("no") int no, Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         model.addAttribute("username", username);
@@ -55,7 +55,7 @@ public class AnnounceController {
 
 	
 	@GetMapping("/announce/update/{no}")
-	public String announceListUpdate_view(@PathVariable("no") Long no, Model model) {
+	public String announceListUpdate_view(@PathVariable("no") int no, Model model) {
 		AnnounceDto announceList = announceService.selectAnnounceUpdateView(no);
 		model.addAttribute("announceList",announceList);
 		return "apps/announce_update";

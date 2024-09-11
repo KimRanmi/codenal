@@ -72,7 +72,7 @@ public class AnnounceService {
 	}
 	
 	@Transactional
-	public void updateViewCount(Long announceNo, String username) {
+	public void updateViewCount(int announceNo, String username) {
 		Long userId = Long.parseLong(username);
 		Employee empId = Employee.builder()
 				.empId(userId)
@@ -81,51 +81,74 @@ public class AnnounceService {
 	}
 	
 	@Transactional
-    public AnnounceDto selectAnnounceDetail(Long announceNo) {
+    public AnnounceDto selectAnnounceDetail(int announceNo) {
         Announce announce = announceRepository.findByAnnounceNo(announceNo);
         AnnounceDto dto = new AnnounceDto().toDto(announce);
         return dto;
     }
     
     
-    public AnnounceDto selectAnnounceUpdateView(Long announceNo) {
+    public AnnounceDto selectAnnounceUpdateView(int announceNo) {
         Announce announce = announceRepository.findByAnnounceNo(announceNo);
         AnnounceDto dto = new AnnounceDto().toDto(announce);
         return dto;
     }
-    
-    
-    @Transactional
-    public Announce createAnnounce(AnnounceDto dto, AnnounceFileDto fileDto) {
+
+    // 게시글 단일 저장 로직
+    public Announce createAnnounce(AnnounceDto dto) {
         // Announce 객체 생성 및 저장
-        int announceWriter = dto.getAnnounce_writer();
-        Employee emp = employeeRepository.findByEmpId(announceWriter);
+//        Long announceWriter = dto.getAnnounce_writer();
+//        Employee emp = employeeRepository.findByEmpId(announceWriter);
         Announce announce = Announce.builder()
+        		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
                 .announceContent(dto.getAnnounce_content())
                 .readAuthorityStatus(dto.getRead_authority_status())
-                .employee(emp)
                 .build();
         
         // Announce 저장
         Announce savedAnnounce = announceRepository.save(announce);
         
-        // AnnounceFile 객체 생성 및 저장
-        AnnounceFile aFile = AnnounceFile.builder()
-                .announce(savedAnnounce) // Announce와 연관 설정
-                .fileOriName(fileDto.getFile_ori_name())
-                .fileNewName(fileDto.getFile_new_name())
-                .filePath(fileDto.getFile_path())
+        // 저장된 Announce 객체 반환
+        return savedAnnounce;
+    }
+    
+    
+    // 게시글+File 저장 로직
+    @Transactional
+    public Announce createAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos) {
+        // Announce 객체 생성 및 저장
+//        Long announceWriter = dto.getAnnounce_writer();
+//        Employee emp = employeeRepository.findByEmpId(announceWriter);
+        Announce announce = Announce.builder()
+        		.announceWriter(dto.getAnnounce_writer())
+                .announceTitle(dto.getAnnounce_title())
+                .announceContent(dto.getAnnounce_content())
+                .readAuthorityStatus(dto.getRead_authority_status())
                 .build();
         
-        // AnnounceFile 저장
-        announceFileRepository.save(aFile);
+        // Announce 저장
+        Announce savedAnnounce = announceRepository.save(announce);
+        
+     // AnnounceFile 객체 생성 및 저장
+        for(AnnounceFileDto fileDto : fileDtos) {
+            AnnounceFile aFile = AnnounceFile.builder()
+                    .announce(savedAnnounce) // Announce와 연관 설정
+                    .fileOriName(fileDto.getFile_ori_name())
+                    .fileNewName(fileDto.getFile_new_name())
+                    .filePath(fileDto.getFile_path())
+                    .build();
+
+            // AnnounceFile 저장
+            announceFileRepository.save(aFile);
+        }
         
         // 저장된 Announce 객체 반환
         return savedAnnounce;
     }
 
-	public int deleteAnnounce(Long no) {
+    @Transactional
+	public int deleteAnnounce(int no) {
 		int result = 0;
 		try {
 			announceRepository.deleteById(no);
@@ -137,4 +160,64 @@ public class AnnounceService {
 		return result;
 	}
     
+    
+    
+    
+    
+    
+    
+    
+// update......................................하는중
+    // 게시글 단일 저장 로직
+    public Announce updateAnnounce(AnnounceDto dto) {
+        // Announce 객체 생성 및 저장
+//        Long announceWriter = dto.getAnnounce_writer();
+//        Employee emp = employeeRepository.findByEmpId(announceWriter);
+        Announce announce = Announce.builder()
+        		.announceWriter(dto.getAnnounce_writer())
+                .announceTitle(dto.getAnnounce_title())
+                .announceContent(dto.getAnnounce_content())
+                .readAuthorityStatus(dto.getRead_authority_status())
+                .build();
+        
+        // Announce 저장
+        Announce savedAnnounce = announceRepository.save(announce);
+        
+        // 저장된 Announce 객체 반환
+        return savedAnnounce;
+    }
+    
+
+    // 게시글+File 저장 로직
+    @Transactional
+    public Announce updateAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos) {
+        // Announce 객체 생성 및 저장
+//        Long announceWriter = dto.getAnnounce_writer();
+//        Employee emp = employeeRepository.findByEmpId(announceWriter);
+        Announce announce = Announce.builder()
+        		.announceWriter(dto.getAnnounce_writer())
+                .announceTitle(dto.getAnnounce_title())
+                .announceContent(dto.getAnnounce_content())
+                .readAuthorityStatus(dto.getRead_authority_status())
+                .build();
+        
+        // Announce 저장
+        Announce savedAnnounce = announceRepository.save(announce);
+        
+     // AnnounceFile 객체 생성 및 저장
+        for(AnnounceFileDto fileDto : fileDtos) {
+            AnnounceFile aFile = AnnounceFile.builder()
+                    .announce(savedAnnounce) // Announce와 연관 설정
+                    .fileOriName(fileDto.getFile_ori_name())
+                    .fileNewName(fileDto.getFile_new_name())
+                    .filePath(fileDto.getFile_path())
+                    .build();
+
+            // AnnounceFile 저장
+            announceFileRepository.save(aFile);
+        }
+        
+        // 저장된 Announce 객체 반환
+        return savedAnnounce;
+    }
 }

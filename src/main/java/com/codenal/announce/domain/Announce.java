@@ -35,7 +35,7 @@ public class Announce {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="announce_no")
-	private Long announceNo;
+	private int announceNo;
 
 	
 	@OneToMany(mappedBy = "announce")
@@ -45,11 +45,11 @@ public class Announce {
 	private List<AnnounceReadAuthority> readAuthorities;
 
 
-//	@Column(name="announce_writer")
-//	private int announceWriter;
+	@Column(name="announce_writer")
+	private Long announceWriter;
 	
 	@ManyToOne
-	@JoinColumn(name="announce_writer")
+	@JoinColumn(name="announce_writer", insertable = false, updatable = false)
 	private Employee employee;
 
 	@Column(name="announce_title")

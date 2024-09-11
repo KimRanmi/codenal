@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.codenal.announce.domain.AnnounceReadAuthority;
+import com.codenal.employee.domain.Employee;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -43,4 +44,8 @@ public class Departments {
     
     @OneToMany(mappedBy = "department")
     private List<AnnounceReadAuthority> readAuthorities;
+
+    @OneToMany(mappedBy = "department")
+    private List<Employee> employee;
+
 }

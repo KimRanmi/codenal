@@ -1,7 +1,9 @@
 package com.codenal.announce.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.codenal.announce.domain.Announce;
-import com.codenal.announce.domain.AnnounceDto;
 import com.codenal.announce.domain.AnnounceFile;
 import com.codenal.announce.repository.AnnounceFileRepository;
 import com.codenal.announce.repository.AnnounceRepository;
@@ -34,7 +35,6 @@ public class FileService {
 
 		String newFileName = null;
 
-		try {
 			// 1. 파일 원래 이름
 			String oriFileName = file.getOriginalFilename();
 			// 2. 파일 자르기
@@ -53,35 +53,57 @@ public class FileService {
 				saveFile.mkdirs();
 			}
 			// 9. 껍데기에 파일 정보 복제
-			file.transferTo(saveFile);
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+			try {
+				file.transferTo(saveFile);
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+				
 		return newFileName;
+		
 	}
 
 	@Transactional
-	public int deletefile(Long announceNo) {
-		int result = -1;
-		
-		Announce announce = announceRepository.findByAnnounceNo(announceNo);
-		try {
-			String newFile = announce.getFiles().get(0).getFileNewName();
-			String newFileName = newFile.substring(0,newFile.indexOf("."));	// UUID
-			System.out.println(newFileName);
-			String oriFileName = announce.getFiles().get(0).getFileOriName();	// 사용자가 아는 파일명
-			String resultDir = fileDir + URLDecoder.decode(newFileName,"UTF-8");
-			if(resultDir != null && resultDir.isEmpty() == false) {
-				File file = new File(resultDir);
-				if(file.exists()) {
-					file.delete();
-					result = 1;
-				}	
-			}	
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return result;
+	public int deletefile(int announceNo) {
+	    int result = -1;
+
+	    try {
+	        Announce announce = announceRepository.findByAnnounceNo(announceNo);
+	        if (announce == null || announce.getFiles().isEmpty()) {
+	            return result; // Announce 또는 파일이 없는 경우
+	        }
+
+	        // 파일 처리
+	        
+	        for (AnnounceFile file : announce.getFiles()) {
+	            String newFileName = file.getFileNewName();
+	            String oriFileName = file.getFileOriName();
+	            String resultDir = fileDir + newFileName;
+	            System.out.println("디코딩된 파일 경로: " + resultDir);
+
+	        if (resultDir != null && !resultDir.isEmpty()) {
+	            File fileToDelete  = new File(resultDir);
+	            if (fileToDelete .exists()) {
+	                if (fileToDelete .delete()) {
+	                    result = 1; // 삭제 성공
+	                } else {
+	                    result = 0; // 삭제 실패
+	                    System.err.println("파일 삭제에 실패했습니다: " + resultDir);
+	                }
+	            } else {
+	                result = 0; // 파일이 존재하지 않음
+	                System.err.println("파일이 존재하지 않습니다: " + resultDir);
+	            }
+	        }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result = -1; // 예외 발생
+	    }
+
+	    return result;
 	}
 	
 	

@@ -22,8 +22,8 @@ import lombok.ToString;
 @Builder
 public class AnnounceDto {
 
-	private Long announce_no;
-	private int announce_writer;
+	private int announce_no;
+	private Long announce_writer;
 	private Employee employee;
 	private List<AnnounceFile> announceFile;
 	private List<AnnounceReadAuthority> announceReadAuthority;
@@ -42,6 +42,7 @@ public class AnnounceDto {
 	public Announce toEntity() {
 		return Announce.builder()
 				.announceNo(announce_no)
+				.announceWriter(announce_writer)
 				.announceTitle(announce_title)
 				.announceContent(announce_content)
 				.regDate(reg_date)
@@ -58,6 +59,7 @@ public class AnnounceDto {
 	public AnnounceDto toDto(Announce announce) {
 		return AnnounceDto.builder()
 				.announce_no(announce.getAnnounceNo())
+				.announce_writer(announce.getAnnounceWriter())
 				.announce_title(announce.getAnnounceTitle())
 				.announce_content(announce.getAnnounceContent())
 				.reg_date(announce.getRegDate())

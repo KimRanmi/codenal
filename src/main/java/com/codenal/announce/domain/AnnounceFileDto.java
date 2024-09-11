@@ -14,7 +14,8 @@ import lombok.ToString;
 @ToString
 @Builder
 public class AnnounceFileDto {
-
+	
+	private int file_no;
 	private Announce announce;
 	private String file_ori_name;
 	private String file_new_name;
@@ -23,6 +24,7 @@ public class AnnounceFileDto {
 	
 	public AnnounceFile toEntity() {
 		return AnnounceFile.builder()
+				.fileNo(file_no)
 				.announce(announce)
 				.fileOriName(file_ori_name)
 				.fileNewName(file_new_name)
@@ -33,6 +35,7 @@ public class AnnounceFileDto {
 	
 	public AnnounceFileDto toDto(AnnounceFile announceFile) {
 		return AnnounceFileDto.builder()
+				.file_no(announceFile.getFileNo())
 				.announce(announceFile.getAnnounce())
 				.file_ori_name(announceFile.getFileOriName())
 				.file_new_name(announceFile.getFileNewName())

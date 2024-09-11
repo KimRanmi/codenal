@@ -41,20 +41,19 @@
 												<!-- 상세 조회 시작 -->
 												<h2 class="fw-bold" th:text="${announceList.announce_title}"></h2>
 												<br>
-
 												<div class="hstack gap-3 flex-wrap">
 													<div>
 														<i class="ri-user-3-fill align-bottom me-1"></i> 작성자 : <span
 															class="fw-medium"
 															th:text="${announceList.employee.empName}"></span>
 													</div>
-													<div>
-														개발팀<span class="fw-medium">대리</span>
+													<div th:text="${announceList.employee.department.deptName}">
+													<span class="fw-medium" th:text="${announceList.employee.jobs.jobName}"></span>
 													</div>
 													<div class="vr"></div>
 													<div>
 														<i class="ri-user-settings-line align-bottom me-1"></i> 읽기
-														권한 : <span class="fw-medium">전직원</span>
+														권한 : <span class="fw-medium" th:text="${(announceList.read_authority_status != null and #strings.trim(announceList.read_authority_status).toUpperCase() == 'N') ? '전직원' : '권한 설정 상태'}"></span>
 													</div>
 													<br>
 													<div class="hstack gap-3 flex-wrap">
@@ -104,7 +103,7 @@
 										<li class="nav-item"><a
 											class="nav-link active fw-semibold" data-bs-toggle="tab"
 											href="#announce_content_view" role="tab"> 게시글 내용 </a></li>
-										<li class="nav-item"><a class="nav-link fw-semibold"
+										<li class="nav-item" th:if="${announceList.announceFile != null and !#lists.isEmpty(announceList.announceFile)}"><a class="nav-link fw-semibold"
 											data-bs-toggle="tab" href="#announce_file_view" role="tab">
 												첨부 파일 </a></li>
 									</ul>
@@ -154,7 +153,7 @@
 								<!-- end row -->
 							</div>
 							<div class="tab-pane fade" id="announce_file_view"
-								role="tabpanel">
+								role="tabpanel" th:if="${announceList.announceFile != null and !#lists.isEmpty(announceList.announceFile)}">
 								<div class="row">
 									<div class="card">
 										<div class="card-body">
@@ -187,7 +186,7 @@
 																	</div>
 																	<div class="flex-shrink-0 ms-2">
 																		<div class="d-flex gap-1">
-																			<button type="button"
+																			<button type="button" id="file_download"
 																				class="btn btn-icon text-muted btn-sm fs-18">
 																				<i class="ri-download-2-line"></i>
 																			</button>
