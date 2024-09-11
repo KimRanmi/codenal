@@ -29,26 +29,26 @@ import lombok.NoArgsConstructor;
 @Table(name="annual_leave_usage")
 
 public class AnnualLeaveUsage {
-	
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Id
-	@Column(name="annual_usage_no")
-	private Long annualUsageNo;
-	
-	@Column(name="annual_usage_start_date")
-	private LocalDate annualUsageStartDate;
-	
-	@Column(name="annual_usage_end_date")
-	private LocalDate annualUsageEndDate;
-	
-	@ManyToOne
+   
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Id
+   @Column(name="annual_usage_no")
+   private Long annualUsageNo;
+   
+   @Column(name="annual_usage_start_date")
+   private LocalDate annualUsageStartDate;
+   
+   @Column(name="annual_usage_end_date")
+   private LocalDate annualUsageEndDate;
+   
+   @ManyToOne
     @JoinColumn(name="emp_id")
     private Employee employee;
-	
-	// 반차인지 연차인지 나타내는 컬럼
-	@Column(name="annual_type")
-	private int annualType;
-	
-	@OneToMany(mappedBy="annualLeaveUsage")
-	private List<Approval> approvals;
+   
+   // 반차인지 연차인지 나타내는 컬럼
+   @Column(name="annual_type")
+   private int annualType;
+   
+   @OneToMany(mappedBy="annualLeaveUsage")
+   private List<Approval> approvals;
 }

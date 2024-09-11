@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class ApprovalFile {
 	@Column(name="file_path")
 	private String filePath;
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name="approval_no")
 	private Approval approval;
 }
