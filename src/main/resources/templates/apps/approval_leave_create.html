@@ -3,7 +3,8 @@
 <head>
     <!-- Meta and Bootstrap CSS -->
     <meta charset="UTF-8">
-    <title>전자결잳 등록(휴가신청서)</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>전자결재 등록(휴가신청서)</title>
     <!-- Bootstrap CSS -->
     <th:block layout:fragment="pagetitle" />
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -71,19 +72,21 @@
             <div class="col-lg-8">
                 <div style="background-color:white; width:1300px; height:1250px;">
                     <div style="margin-left:50px; margin-top:-20px;">
-                        <form>
+                        <form id="approvalForm">
+                        <input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
                         <br>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-title-input">제목</label>
-                            <input type="text" class="form-control" id="project-title-input" placeholder="제목을 입력하세요" style="width:500px;">
+                            <input type="text" class="form-control" id="project-title-input" placeholder="제목을 입력하세요" style="width:500px;" name="approval_title">
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-author-input">기안자</label>
-                            <input type="text" class="form-control" id="project-author-input" readonly th:value="${#authentication.name}" style="width:500px;">
+                            <input type="text" class="form-control"
+                            id="project-author-input" readonly th:value="${#authentication.name}" style="width:500px;" name="emp_id">
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-date-input">기안일</label>
-                            <input type="text" class="form-control" id="project-date-input" th:value="${ldt}" readonly style="width:500px;">
+                            <input type="text" class="form-control" id="project-date-input" th:value="${ldt}" readonly style="width:500px;" name="approval_reg_date">
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-thumbnail-img">파일첨부</label>
@@ -94,19 +97,20 @@
 					        <input id="references" type="text" style="width:500px; height:35px; border:1px solid #d3d3d3; border-radius:4px;" class="selectedName3">
     					</div>
                         <div class="mb-3" style="width:600px;">
-                            <label class="form-label" for="project-thumbnail-img">양식(선택하세요)</label><br>
+                            <label class="form-label" for="project-thumbnail-img">양식</label><br>
                             <!-- 근태신청서의 경우 -->
-                            <div>
-	                            <select class="form-control" id="selectType" style="width:200px;">
-									<option value=1>반차</option>
-									<option value=2>연차</option>
-									<option value=3>경조휴가</option>
-									<option value=4>병가</option>
-								</select>
+                            <div th:if="${no == 1}">
+									<select class="form-control" id="category-select"
+										style="width: 200px;" name="form_code" onchange="updateEditorContent()">
+										<option>-- 선택하세요 --</option>
+										<option th:each="cate : ${cateList}" 
+                							th:text="${cate.form_name}" id="cateList" th:value="${cate.form_code}" th:data-content="${cate.form_content}">
+        								</option>
+									</select>
 								<div style="margin-top:-30px; margin-left:230px; color:#b9b9b9">내 잔여연차 : </div>
 								<div style="margin-top: 30px; margin-bottom:10px;">날짜</div>
-								<div id="dateContent" style="width:1000px;">
-									<input type="date" value="" style="width:200px;" id="startDate">
+								<div id="dateContent" style="width:1000px;" >
+									<input type="date" style="width:200px;" id="startDate">
                                     <select style="margin-left:10px; width:150px;">
                                     	<option>오전</option>
                                     	<option>오후</option>
@@ -193,24 +197,24 @@
         <!-- 날짜 생성 스크립트 설정 -->
         <script>
             
-                const select = document.getElementById('selectType');
+                const select = document.getElementById('category-select');
                 const content = document.getElementById('dateContent');
             
                 // select 값이 변경될 때마다 실행되는 이벤트 리스너
                 select.addEventListener('change', function() {
                     const selectedValue = select.value;
                     if (selectedValue == '1') {
-                        content.innerHTML = '<input type="date" value="" style="width:200px;" id="startDate">' +
+                        content.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date">' +
                                             '<select style="margin-left:10px; width:150px;"><option>선택하세요</option><option>오전</option><option>오후</option></select>';
                     } else {
-                        content.innerHTML = '<input type="date" style="width:200px;" id="startDate"> ~ ' +
-                                            '<input type="date" style="width:200px;" id="endDate">';
+                        content.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> ~ ' +
+                                            '<input type="date" style="width:200px;" id="endDate" name="end_date">';
                     }
 
                     // 새롭게 생성된 요소를 가져와서 이벤트 리스너 추가
                     const start = document.getElementById('startDate');
                     const end = document.getElementById('endDate');
-
+                    
                     if (end) {
                         end.addEventListener('change', function() {
                             if (start.value > end.value) {
@@ -253,10 +257,15 @@
 			        e.preventDefault();
 			        const payload = new FormData(form);
 			        const csrfToken = document.getElementById('csrf_token').value;
+			        const endElement = document.getElementById('endDate');
+			        const startElement = document.getElementById("startDate");
+			        const end = endElement ? endElement.value : '';
+			        
 					const content = contentEditor.getHTML();
 					payload.append("approval_content",content);
-			        
-			        fetch('/approval', {
+					payload.append("end_date", end);
+					
+			        fetch('/approval_leave', {
 			            method: 'POST',
 			            headers: {
 			                'X-CSRF-TOKEN': csrfToken
@@ -272,7 +281,7 @@
 			                    title: "성공",
 			                    text: data.reg_msg
 			                }).then(() => {
-			                    location.href = "/approval/list?num=1";
+			                    location.href = "/approval/list?num=0";
 			                });
 			            } else {
 			                Swal.fire({
