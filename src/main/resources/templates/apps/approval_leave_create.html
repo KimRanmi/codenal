@@ -90,7 +90,7 @@
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-thumbnail-img">파일첨부</label>
-                            <input class="form-control" id="project-thumbnail-img" type="file" accept="image/png, image/gif, image/jpeg" style="width:500px;">
+                            <input class="form-control" id="project-thumbnail-img" name="file" type="file" accept="image/png, image/gif, image/jpeg" style="width:500px;">
                         </div>
                         <div class="mb-3">
 					        <label class="form-label" for="references">수신참조자</label><br>
@@ -259,7 +259,7 @@
 			        const csrfToken = document.getElementById('csrf_token').value;
 			        const endElement = document.getElementById('endDate');
 			        const startElement = document.getElementById("startDate");
-			        const end = endElement ? endElement.value : '';
+			        const end = endElement ? endElement.value : startElement.value;
 			        
 					const content = contentEditor.getHTML();
 					payload.append("approval_content",content);

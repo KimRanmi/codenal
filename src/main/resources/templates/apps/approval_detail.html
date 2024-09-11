@@ -71,6 +71,9 @@
 	color: #b9b9b9;
 	cursor: not-allowed;
 }
+.project-thumbnail-img{
+			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
+		}
 </style>
 </head>
 <body>
@@ -98,11 +101,16 @@
 									disabled style="width: 500px;"
 									th:value=${dto.approval.approvalRegDate}>
 							</div>
-							<div class="mb-3" style="width: 600px;">
+							<div class="mb-3" style="width: 600px;" th:if="${dto.file == null}">
 								<label class="form-label" for="project-thumbnail-img">파일첨부</label>
 								<input class="form-control" id="project-thumbnail-img"
 									type="file" accept="image/png, image/gif, image/jpeg"
-									style="width: 500px;">
+									style="width: 500px;" disabled>
+							</div>
+							<div class="mb-3" style="width: 500px;" th:if="${dto.file != null}">
+								<label class="form-label" for="project-thumbnail-img">파일첨부</label>
+								<a id="project-thumbnail-img" class="form-control"  th:text="${dto.file.fileOriName}" 
+								th:href="@{/download/{no}(no=${dto.approval.approvalNo})}"></a>
 							</div>
 							<div class="mb-3">
 								<label class="form-label" for="references">수신참조자</label><br>

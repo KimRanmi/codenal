@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -62,8 +63,8 @@ public class Approval {
     @JoinColumn(name="annual_usage_no")
     private AnnualLeaveUsage annualLeaveUsage;
     
-    @OneToMany(mappedBy="approval")
-    private List<ApprovalFile> approvalFiles;
+    @OneToOne(mappedBy="approval")
+    private ApprovalFile approvalFiles;
     
     @OneToMany(mappedBy="approval")
     private List<Approver> approvers;

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.Referrer;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -88,4 +89,7 @@ public class Employee {
     //수신참조자
     @OneToMany(mappedBy = "employee")
     private List<Referrer> referrers;
+    
+    @OneToMany(mappedBy = "employee")
+    private List<AnnualLeaveUsage> annualLeaveUsages;
 }

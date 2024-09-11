@@ -4,12 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.codenal.approval.domain.Approval;
+import com.codenal.employee.domain.Employee;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -26,25 +29,26 @@ import lombok.NoArgsConstructor;
 @Table(name="annual_leave_usage")
 
 public class AnnualLeaveUsage {
-	
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Id
-	@Column(name="annual_usage_no")
-	private Long annualUsageNo;
-	
-	@Column(name="annual_usage_start_date")
-	private LocalDate annualUsageStartDate;
-	
-	@Column(name="annual_usage_end_date")
-	private LocalDate annualUsageEndDate;
-	
-	@Column(name="emp_id")
-	private Long empId;
-	
-	// 반차인지 연차인지 나타내는 컬럼
-	@Column(name="annual_type")
-	private int annualType;
-	
-	@OneToMany(mappedBy="annualLeaveUsage")
-	private List<Approval> approvals;
+   
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Id
+   @Column(name="annual_usage_no")
+   private Long annualUsageNo;
+   
+   @Column(name="annual_usage_start_date")
+   private LocalDate annualUsageStartDate;
+   
+   @Column(name="annual_usage_end_date")
+   private LocalDate annualUsageEndDate;
+   
+   @ManyToOne
+    @JoinColumn(name="emp_id")
+    private Employee employee;
+   
+   // 반차인지 연차인지 나타내는 컬럼
+   @Column(name="annual_type")
+   private int annualType;
+   
+   @OneToMany(mappedBy="annualLeaveUsage")
+   private List<Approval> approvals;
 }
