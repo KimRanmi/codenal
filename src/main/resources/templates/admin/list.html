@@ -41,9 +41,9 @@
 										<div class="col-xxl-1 col-sm-4">
 											<div>
 												<select class="form-select mb-3" aria-label="Default select example" name="empStatus" id="idStatus" th:field="*{empStatus}">
-													<option th:value="ALL" th:selected="${searchDto.empStatus == 'Y' or searchDto.empStatus == 'N'}" style="color: #999999;">재직 상태</option>
-													<option th:value="Y" th:selected="${searchDto.empStatus} == 'Y'">재직</option>
-													<option th:value="N" th:selected="${searchDto.empStatus} == 'N'">퇴사</option>
+													<option th:value="All" th:selected="${searchDto.empStatus == 'Y' or searchDto.empStatus == 'N'}" style="color: #999999;">재직 상태</option>
+													<option th:value="Y" th:selected="${searchDto.empStatus == 'Y'}">재직</option>
+													<option th:value="N" th:selected="${searchDto.empStatus == 'N'}">퇴사</option>
 												</select>
 											</div>
 										</div>
@@ -181,26 +181,18 @@
 										</th:block>
 									</tbody>
 								</table>
-								</br>
-								<!-- 페이징 골라놓음 -->
-							<!-- 	<nav aria-label="Page navigation example">
-								    <ul class="pagination">
-								        <li class="page-item">
-								            <a class="page-link" href="#" aria-label="Previous">
-								                <i class="mdi mdi-chevron-left"></i>
-								            </a>
-								        </li>
-								        <li class="page-item"><a class="page-link" href="#">1</a></li>
-								        <li class="page-item"><a class="page-link" href="#">2</a></li>
-								        <li class="page-item"><a class="page-link" href="#">3</a></li>
-								        <li class="page-item">
-								            <a class="page-link" href="#" aria-label="Next">
-								                <i class="mdi mdi-chevron-right"></i>
-								            </a>
-								        </li>
-								    </ul>
-								</nav> -->
-							
+								<br>
+								<!-- 	<div class="d-flex justify-content-end">
+								<div class="pagination-wrap hstack gap-2">
+									<a class="page-item pagination-prev disabled" href="#">
+										Previous
+									</a>
+									<ul class="pagination listjs-pagination mb-0"></ul>
+									<a class="page-item pagination-next" href="#">
+										Next
+									</a>
+								</div>
+							</div> -->
 								<!-- ----------------------페이징------------------------------- -->
 								<div class="center" th:if="${!resultList.isEmpty()}">
 									<div class="pagination" th:with="
@@ -223,7 +215,6 @@
 										</th:block>
 									</div>
 								</div>
-								
 							</div>
 						</div>
 					</div>
@@ -243,7 +234,9 @@
 
 		<!-- ecommerce-order init js -->
 		<script src="/assets/js/pages/ecommerce-order.init.js"></script>
-	
+
+		<!-- Sweet Alerts js -->
+		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 	</th:block>
 </body>
 
