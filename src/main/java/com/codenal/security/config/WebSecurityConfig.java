@@ -39,8 +39,7 @@ public class WebSecurityConfig {
 		.cors(Customizer.withDefaults())  // CORS 설정 추가
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
-				// .requestMatchers("/join").permitAll()  // "/join" 경로 허용
-				.requestMatchers("/admin/list").authenticated() // 서형
+				.requestMatchers("/admin/list").permitAll()
 				.anyRequest().authenticated()
 				)
 		

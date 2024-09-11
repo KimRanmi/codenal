@@ -1,10 +1,17 @@
 package com.codenal.admin.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.codenal.employee.domain.Employee;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,12 +32,15 @@ public class Jobs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "job_no")
-    private Integer jobNo; // 직급 번호
+    private int jobNo; // 직급 번호
 
     @Column(name = "job_name")
     private String jobName; // 직급명
 
     @Column(name = "job_priority")
-    private Integer jobPriority; // 우선순위
+    private int jobPriority; // 우선순위
+    
+    @OneToMany(mappedBy = "jobs")
+    private List<Employee> employee = new ArrayList<Employee>();
 }
 

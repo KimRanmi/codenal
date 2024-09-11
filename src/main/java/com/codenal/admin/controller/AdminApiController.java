@@ -26,7 +26,7 @@ public class AdminApiController {
 	@ResponseBody 
 	@PostMapping("/admin/join")
 	public Map<String,String> joinEmployee(@RequestBody EmployeeDto dto) {
-		System.out.println("Received DTO: " + dto);
+		
 		Map<String,String> resultMap = new HashMap<String,String>();
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "등록 중 오류가 발생했습니다.");

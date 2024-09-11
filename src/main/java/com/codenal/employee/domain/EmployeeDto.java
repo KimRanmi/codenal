@@ -45,17 +45,7 @@ public class EmployeeDto {
     private String search_text;
 
     private List<GrantedAuthority> authorities;
-
-//    // 생성자
-//    public EmployeeDto(Long empId, String empName, String deptName, String jobName, String empPhone) {
-//        this.empId = empId;
-//        this.empName = empName;
-//        this.deptName = deptName;
-//        this.jobName = jobName;
-//        this.empPhone = empPhone;
-//    }
-
-
+    
     // DTO를 엔터티로 변환하는 메서드
     public Employee toEntity() {
         return Employee.builder()
@@ -68,11 +58,11 @@ public class EmployeeDto {
                 .empAddressDetail(empAddressDetail)
                 .empHire(empHire)
                 .empEnd(empEnd)
-                .empStatus(empAuth != null ? empAuth : "Y") 
+                .empStatus(empStatus != null ? empStatus : "Y") 
                 .empProfilePicture(empProfilePicture)
                 .empSignImage(empSignImage)
-                .department(Departments.builder().deptNo(deptNo).build()) // 부서 객체 설정
-                .job(Jobs.builder().jobNo(jobNo).build())  // 직급 객체 설정
+                .departments(Departments.builder().deptNo(deptNo).build()) 
+                .jobs(Jobs.builder().jobNo(jobNo).build())  
                 .empAuth(empAuth != null ? empAuth : "USER")
                 .build();
     }
@@ -92,8 +82,10 @@ public class EmployeeDto {
     			.empStatus(employee.getEmpStatus() != null ? employee.getEmpStatus() : "Y")
     			.empProfilePicture(employee.getEmpProfilePicture())
     			.empSignImage(employee.getEmpSignImage())
-    			.deptNo(employee.getDepartment() != null ? employee.getDepartment().getDeptNo() : null)
-    			.jobNo(employee.getJob() != null ? employee.getJob().getJobNo() : null)
+    			.deptNo(employee.getDepartments().getDeptNo())
+                .deptName(employee.getDepartments().getDeptName()) 
+                .jobNo(employee.getJobs().getJobNo())
+                .jobName(employee.getJobs().getJobName())
     			.build();
     }
 }

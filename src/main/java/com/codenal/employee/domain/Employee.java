@@ -68,13 +68,13 @@ public class Employee {
     @Column(name = "emp_sign_image")
     private String empSignImage;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dept_no", nullable = false)
-    private Departments department;
+    @ManyToOne
+    @JoinColumn(name = "dept_no", referencedColumnName = "dept_no")
+    private Departments departments;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_no", nullable = false)
-    private Jobs job;
+    @ManyToOne
+    @JoinColumn(name = "job_no",  referencedColumnName = "job_no")
+    private Jobs jobs;
 
     @Column(name = "emp_auth")
     private String empAuth;
