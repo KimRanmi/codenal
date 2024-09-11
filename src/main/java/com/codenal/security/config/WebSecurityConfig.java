@@ -43,6 +43,7 @@ public class WebSecurityConfig {
 				 .requestMatchers("/join").permitAll()  // "/join" 경로 허용
 				 .requestMatchers("/announce/createEnd").permitAll()
 				 .requestMatchers("/announce/delete/**").permitAll()
+				 .requestMatchers("/announce/updateEnd/**").permitAll()
 				 .anyRequest().authenticated()
 				)
 		

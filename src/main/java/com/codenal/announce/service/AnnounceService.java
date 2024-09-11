@@ -1,5 +1,6 @@
 package com.codenal.announce.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,9 +97,6 @@ public class AnnounceService {
 
     // 게시글 단일 저장 로직
     public Announce createAnnounce(AnnounceDto dto) {
-        // Announce 객체 생성 및 저장
-//        Long announceWriter = dto.getAnnounce_writer();
-//        Employee emp = employeeRepository.findByEmpId(announceWriter);
         Announce announce = Announce.builder()
         		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
@@ -117,9 +115,6 @@ public class AnnounceService {
     // 게시글+File 저장 로직
     @Transactional
     public Announce createAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos) {
-        // Announce 객체 생성 및 저장
-//        Long announceWriter = dto.getAnnounce_writer();
-//        Employee emp = employeeRepository.findByEmpId(announceWriter);
         Announce announce = Announce.builder()
         		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
@@ -170,9 +165,6 @@ public class AnnounceService {
 // update......................................하는중
     // 게시글 단일 저장 로직
     public Announce updateAnnounce(AnnounceDto dto) {
-        // Announce 객체 생성 및 저장
-//        Long announceWriter = dto.getAnnounce_writer();
-//        Employee emp = employeeRepository.findByEmpId(announceWriter);
         Announce announce = Announce.builder()
         		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
@@ -191,13 +183,13 @@ public class AnnounceService {
     // 게시글+File 저장 로직
     @Transactional
     public Announce updateAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos) {
-        // Announce 객체 생성 및 저장
-//        Long announceWriter = dto.getAnnounce_writer();
-//        Employee emp = employeeRepository.findByEmpId(announceWriter);
         Announce announce = Announce.builder()
+        		.announceNo(dto.getAnnounce_no())
         		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
                 .announceContent(dto.getAnnounce_content())
+                .regDate(dto.getReg_date())
+                .modDate(LocalDateTime.now())
                 .readAuthorityStatus(dto.getRead_authority_status())
                 .build();
         

@@ -1,12 +1,21 @@
 package com.codenal.announce.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.List;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -106,5 +115,27 @@ public class FileService {
 	    return result;
 	}
 	
+	public ResponseEntity<Object> announceFiledownload(int file_no) {
+	    try {
+	        AnnounceFile a = announceFileRepository.findById(file_no)
+	            .orElseThrow(() -> new FileNotFoundException("파일을 찾을 수 없습니다: " + file_no));
+	        
+	        String newFileName = a.getFileNewName();
+	        String oriFileName = URLEncoder.encode(a.getFileOriName(), "UTF-8");
+	        String downDir = fileDir + newFileName;
+	        
+	        Path filePath = Paths.get(downDir);
+	        Resource resource = new InputStreamResource(Files.newInputStream(filePath));
+	        
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(oriFileName).build());
+	        
+	        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+	    }
+	}
 	
 }

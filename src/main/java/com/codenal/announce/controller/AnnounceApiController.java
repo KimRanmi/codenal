@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -134,85 +133,88 @@ public class AnnounceApiController {
 	
 	
 	
-//	// update................................ 하는중
-//	@ResponseBody
-//	@PostMapping("/announce/updateEnd/{announceNo}")
-//	public Map<String, String> updateAnnounce(AnnounceDto dto,
-//	        @RequestParam(name="file", required=false) List<MultipartFile> files) {
-//		System.out.println(files);
-//	    List<AnnounceFileDto> fileDtos = new ArrayList<>();
-//	    Map<String, String> resultMap = new HashMap<>();
-//
-//	    if (files != null && !files.isEmpty()) {
-//	        // 파일이 있을 때 처리 로직
-//	        for (MultipartFile file : files) {
-//	            System.out.println(file);
-//	            if (!file.isEmpty()) { // 파일이 실제로 비어있지 않은 경우
-//	                // 파일 처리 로직
-//	                System.out.println("File name: " + file.getOriginalFilename());
-//
-//	                try {
-//	                    // 파일 업로드 처리
-//	                    String savedFileName = fileService.upload(file);
-//	                    if (savedFileName == null) {
-//	                        resultMap.put("res_code", "500");
-//	                        resultMap.put("res_msg", "파일 업로드에 실패했습니다.");
-//	                        return resultMap;
-//	                    }
-//
-//	                    // AnnounceFileDto 생성
-//	                    AnnounceFileDto fileDto = new AnnounceFileDto();
-//	                    fileDto.setFile_ori_name(file.getOriginalFilename());
-//	                    fileDto.setFile_new_name(savedFileName);
-//	                    fileDto.setFile_path("C:\\codenal\\announce\\upload\\");
-//	                    fileDtos.add(fileDto);
-//	                } catch (Exception e) {
-//	                    resultMap.put("res_code", "500");
-//	                    resultMap.put("res_msg", "서버 오류: " + e.getMessage());
-//	                    e.printStackTrace();
-//	                    return resultMap;
-//	                }
-//	            }
-//	        }
-//
-//	        // 모든 파일 처리 후 Announce 및 AnnounceFile 저장
-//	        try {
-//	            Announce savedAnnounce = announceService.updateAnnounceAndFile(dto, fileDtos);
-//	            if (savedAnnounce == null) {
-//	                resultMap.put("res_code", "500");
-//	                resultMap.put("res_msg", "Announce 저장에 실패했습니다.");
-//	                return resultMap;
-//	            }
-//
-//	            // 성공 응답
-//	            resultMap.put("res_code", "200");
-//	            resultMap.put("res_msg", "성공적으로 게시글을 작성했습니다.");
-//	            resultMap.put("announceNo", String.valueOf(savedAnnounce.getAnnounceNo()));
-//	        } catch (Exception e) {
-//	            resultMap.put("res_code", "500");
-//	            resultMap.put("res_msg", "서버 오류: " + e.getMessage());
-//	            e.printStackTrace();
-//	            return resultMap;
-//	        }
-//	    } else {
-//	        // 파일이 없을 때 단일 Announce 저장
-//	        Announce savedAnnounce = announceService.updateAnnounce(dto);
-//	        if (savedAnnounce == null) {
-//	            resultMap.put("res_code", "500");
-//	            resultMap.put("res_msg", "Announce 저장에 실패했습니다.");
-//	            return resultMap;
-//	        }
-//
-//	        // 성공 응답
-//	        resultMap.put("res_code", "200");
-//	        resultMap.put("res_msg", "성공적으로 게시글을 작성했습니다.");
-//	        resultMap.put("announceNo", String.valueOf(savedAnnounce.getAnnounceNo()));
-//	    }
-//
-//	    return resultMap;
-//	}
-//
-//	}
+	@ResponseBody
+	@PostMapping("/announce/updateEnd/{announceNo}")
+	public Map<String, String> updateAnnounce(AnnounceDto dto,
+	        @RequestParam(name="file", required=false) List<MultipartFile> files) {
+		System.out.println(files);
+	    List<AnnounceFileDto> fileDtos = new ArrayList<>();
+	    Map<String, String> resultMap = new HashMap<>();
+
+	    if (files != null && !files.isEmpty()) {
+	        // 파일이 있을 때 처리 로직
+	        for (MultipartFile file : files) {
+	            System.out.println(file);
+	            if (!file.isEmpty()) { // 파일이 실제로 비어있지 않은 경우
+	                // 파일 처리 로직
+	                System.out.println("File name: " + file.getOriginalFilename());
+
+	                try {
+	                    // 파일 업로드 처리
+	                    String savedFileName = fileService.upload(file);
+	                    if (savedFileName == null) {
+	                        resultMap.put("res_code", "500");
+	                        resultMap.put("res_msg", "파일 업로드에 실패했습니다.");
+	                        return resultMap;
+	                    }
+
+	                    // AnnounceFileDto 생성
+	                    AnnounceFileDto fileDto = new AnnounceFileDto();
+	                    fileDto.setFile_ori_name(file.getOriginalFilename());
+	                    fileDto.setFile_new_name(savedFileName);
+	                    fileDto.setFile_path("C:\\codenal\\announce\\upload\\");
+	                    fileDtos.add(fileDto);
+	                } catch (Exception e) {
+	                    resultMap.put("res_code", "500");
+	                    resultMap.put("res_msg", "서버 오류: " + e.getMessage());
+	                    e.printStackTrace();
+	                    return resultMap;
+	                }
+	            }
+	        }
+
+	        // 모든 파일 처리 후 Announce 및 AnnounceFile 저장
+	        try {
+	            Announce savedAnnounce = announceService.updateAnnounceAndFile(dto, fileDtos);
+	            if (savedAnnounce == null) {
+	                resultMap.put("res_code", "500");
+	                resultMap.put("res_msg", "게시글 저장에 실패했습니다.");
+	                return resultMap;
+	            }
+
+	            // 성공 응답
+	            resultMap.put("res_code", "200");
+	            resultMap.put("res_msg", "성공적으로 게시글을 작성했습니다.");
+	            resultMap.put("announceNo", String.valueOf(savedAnnounce.getAnnounceNo()));
+	        } catch (Exception e) {
+	            resultMap.put("res_code", "500");
+	            resultMap.put("res_msg", "서버 오류: " + e.getMessage());
+	            e.printStackTrace();
+	            return resultMap;
+	        }
+	    } else {
+	        // 파일이 없을 때 단일 Announce 저장
+	        Announce savedAnnounce = announceService.updateAnnounce(dto);
+	        if (savedAnnounce == null) {
+	            resultMap.put("res_code", "500");
+	            resultMap.put("res_msg", "게시글 저장에 실패했습니다.");
+	            return resultMap;
+	        }
+
+	        // 성공 응답
+	        resultMap.put("res_code", "200");
+	        resultMap.put("res_msg", "성공적으로 게시글을 작성했습니다.");
+	        resultMap.put("announceNo", String.valueOf(savedAnnounce.getAnnounceNo()));
+	    }
+
+	    return resultMap;
+	}
+
+	@GetMapping("/download/{no}")
+	public ResponseEntity<Object> announceFileDownload(
+		@PathVariable("no") int file_no){
+			return fileService.announceFiledownload(file_no);
+		}
 
 
 }

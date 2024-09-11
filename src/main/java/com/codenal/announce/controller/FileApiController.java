@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileApiController {
 
     // 파일을 업로드할 디렉터리 경로
-    private final String uploadDir = Paths.get("C:", "tui-editor", "upload").toString();
+    private final String uploadDir = Paths.get("C:\\codenal\\announce\\", "tui-editor", "upload").toString();
 
     /**
      * 에디터 이미지 업로드
