@@ -16,13 +16,13 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 				 + "JOIN a.employee e "
 		         + "JOIN a.approvalCategory c "
 		         + "JOIN c.approvalForm f "
-		         + "where a.approvalStatus = ?1 ",
+		         + "where a.approvalStatus = ?1 and e.empId = ?2",
 		         countQuery = "SELECT count(DISTINCT a) FROM Approval a "
 		         +"JOIN a.employee e "
 		         +"JOIN a.approvalCategory c "
 		         +"JOIN c.approvalForm f "
-		         + "where a.approvalStatus = ?1")
-		Page<Object[]> findList(int num,Pageable pageable);
+		         +"WHERE a.approvalStatus = ?1 and e.empId = ?2 ")
+		Page<Object[]> findList(int num,Long id,Pageable pageable);
 		
 		
 		// usage값이 null일 수도 있어서 left join 처리

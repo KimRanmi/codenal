@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -79,14 +80,14 @@ public class ApprovalApiController {
    @ResponseBody
    @PostMapping("/approval_leave")
    public Map<String,String> createApprovalLeave(
-         @RequestPart("approval_content") String approvalContent,
+		   	@RequestPart("approval_content") String approvalContent,
             @RequestParam("approval_title") String approvalTitle,
             @RequestParam("emp_id") String empId,
             @RequestParam("approval_reg_date") String approvalRegDate,
             @RequestParam("start_date") LocalDate startDate,
-            @RequestParam("end_date") LocalDate endDate,
+            @RequestPart(value="date", required=false) LocalDate endDate,
             @RequestParam("form_code") String formCode,
-            @RequestPart(value="file",required = false) MultipartFile file){
+            @RequestParam(value="end_date",required = false) MultipartFile file){
       Map<String,String> resultMap = new HashMap<String,String>();
       System.out.println("시작");
       resultMap.put("res_code", "404");

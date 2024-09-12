@@ -20,62 +20,7 @@
 <script
 	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <style>
-<<<<<<< HEAD
-	#modal {
-		position: fixed;
-		display: none;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 400px;
-		height: 400px;
-		background-color: white;
-		border: 1px solid #b9b9b9;
-		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-		box-sizing: border-box;
-		overflow: hidden;
-	}
-	
-	.modal-content {
-		display: flex;
-		flex-wrap: wrap;
-		padding: 20px;
-		height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
-		box-sizing: border-box;
-		overflow-y: auto;
-	}
-	
-	.modal-item {
-		border: 1px solid #b9b9b9;
-		width: 20px;
-		height: 20px;
-		display: contents;
-		align-items: center;
-		justify-content: center;
-		margin: 5px;
-		cursor: pointer;
-		user-select: none;
-	}
-	
-	.modal-item.selected {
-		color: cornflowerblue;
-	}
-	
-	.modal-footer {
-		display: flex;
-		justify-content: center;
-		padding: 10px;
-		border-top: 1px solid #b9b9b9;
-	}
-	
-	.modal-item.disabled {
-		color: #b9b9b9;
-		cursor: not-allowed;
-	}
-	select, input[type=date] {
-				border:1px solid #d3d3d3; border-radius:4px; height: 35px;
-			}
-=======
+
 #modal {
 	position: fixed;
 	display: none;
@@ -130,7 +75,7 @@
 .project-thumbnail-img{
 			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
 		}
->>>>>>> branch 'rmk' of https://github.com/KimRanmi/codenal.git
+
 </style>
 </head>
 <body>
@@ -138,7 +83,7 @@
 		<div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
 		<div class="row" style="margin-left: 30px;">
 			<div class="col-lg-8">
-				<div style="background-color: white; width: 1300px; height: 1150px;">
+				<div style="background-color: white; width: 2150px; height: 1150px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form>
 							<br>
@@ -185,7 +130,10 @@
 							</div>
 							<!-- Buttons -->
 							<br>
-							<div style="margin-left: 950px;">
+							<div style="margin-left: 950px;" th:if=${dto.employee.empId}==${#authentication.name}>
+								<button type="submit" class="btn btn-secondary w-sm" style="margin-left:100px;">회수</button>
+							</div>
+							<div style="margin-left: 950px;" th:if=${dto.employee.empId}!=${#authentication.name}>
 								<button type="submit" class="btn btn-secondary w-sm">승인</button>
 								<button type="submit" class="btn btn-danger w-sm">반려</button>
 							</div>

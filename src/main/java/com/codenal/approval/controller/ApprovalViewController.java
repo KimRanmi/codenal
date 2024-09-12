@@ -64,19 +64,19 @@ public class ApprovalViewController {
    } 
    
    
-   // 리스트
+   // 상신 리스트
    @GetMapping("/approval/list")
    public String listApproval(Model model,
+		   					  @RequestParam(value="id") Long id,
                               @RequestParam(value = "num", defaultValue = "0") int num,
                               @PageableDefault(page = 0, size = 10, sort = "approvalNo",
                                                direction = Sort.Direction.DESC) Pageable pageable) {
        
-       Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable,num);
+       Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable,num,id);
        
        
        model.addAttribute("resultList", resultList);
        model.addAttribute("num", num);
-       
        
        return "apps/approval_list";
    }

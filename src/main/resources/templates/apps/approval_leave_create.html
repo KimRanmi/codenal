@@ -4,11 +4,7 @@
     <!-- Meta and Bootstrap CSS -->
     <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<<<<<<< HEAD
-    <title>전자결재 등록(휴가신청서)!</title>
-=======
     <title>전자결재 등록(휴가신청서)</title>
->>>>>>> branch 'rmk' of https://github.com/KimRanmi/codenal.git
     <!-- Bootstrap CSS -->
     <th:block layout:fragment="pagetitle" />
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -74,7 +70,7 @@
         <div th:replace="partials/page-title :: page-title('전자결재 작성', '전자결재')"></div>
         <div class="row" style="margin-left:30px;">
             <div class="col-lg-8">
-                <div style="background-color:white; width:1300px; height:1250px;">
+                <div style="background-color:white; width:2150px; height:1250px;">
                     <div style="margin-left:50px; margin-top:-20px;">
                         <form id="approvalForm">
                         <input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
@@ -85,12 +81,8 @@
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-author-input">기안자</label>
-<<<<<<< HEAD
-                            <input type="text" class="form-control" id="project-author-input" readonly th:value="11111111" style="width:500px;" name="emp_id">
-=======
                             <input type="text" class="form-control"
                             id="project-author-input" readonly th:value="${#authentication.name}" style="width:500px;" name="emp_id">
->>>>>>> branch 'rmk' of https://github.com/KimRanmi/codenal.git
                         </div>
                         <div class="mb-3" style="width:600px;">
                             <label class="form-label" for="project-date-input">기안일</label>
@@ -265,17 +257,9 @@
 			        e.preventDefault();
 			        const payload = new FormData(form);
 			        const csrfToken = document.getElementById('csrf_token').value;
-			        const endElement = document.getElementById('endDate');
-			        const startElement = document.getElementById("startDate");
-<<<<<<< HEAD
-			        const end = endElement ? endElement.value : '';
-=======
-			        const end = endElement ? endElement.value : startElement.value;
->>>>>>> branch 'rmk' of https://github.com/KimRanmi/codenal.git
 			        
 					const content = contentEditor.getHTML();
 					payload.append("approval_content",content);
-					payload.append("end_date", end);
 					
 			        fetch('/approval_leave', {
 			            method: 'POST',

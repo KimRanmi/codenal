@@ -59,8 +59,10 @@ public class ApprovalService {
    }
 
    // 리스트 조회
-   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2) {
-      Page<Object[]> approvalList = approvalRepository.findList(num2,pageable);
+   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id) {
+	  
+	  Employee emp = employeeRepository.findByempName(id);
+      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),pageable);
 
       List<Map<String, Object>> responseList = new ArrayList<>();
       for (Object[] objects : approvalList.getContent()) {
@@ -73,7 +75,6 @@ public class ApprovalService {
          map.put("num", num);
          responseList.add(map);
       }
-
       return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
 
