@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class Apps {
 	
+	@GetMapping("/admin/detail")
+	public String admin_detail() {
+		return "admin/detail";
+	}
 
 	@GetMapping("/employee-addressBook")
 	public String employee_addressBook() {
@@ -19,7 +23,7 @@ public class Apps {
 	}
 	
 	@GetMapping("/admin-dept")
-	public String admin_detail() {
+	public String admin_dept() {
 		return "admin/dept";
 	}
 
