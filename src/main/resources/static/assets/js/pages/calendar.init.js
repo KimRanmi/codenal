@@ -12,39 +12,43 @@ var timepicker1 = document.getElementById("timepicker1");
 var timepicker2 = document.getElementById("timepicker2");
 var date_range = null;
 var T_check = null;
-var eventId = null;
-
+var eventContent = null;
 var defaultEvents = [];
-function eventList(){
-		return new Promise(function(resolve,reject){
-			
-		fetch('/eventList', {
-			method: 'POST'
-		})
-		.then(response => response.json())
-		.then(data => {
-			for(let i=0; i<=data.eventList.length; i++){
-				data[i] = {
-					id: data.eventList[i].calendar_schedule_no,
-					category: data.eventList[i].calendar_schedule_category,
-			        title: data.eventList[i].calendar_schedule_title,
-			        start: data.eventList[i].calendar_schedule_start_date,
-			        end: data.eventList[i].calendar_schedule_end_date,
-			        className: 'bg-soft-primary',
-			        location: data.eventList[i].calendar_schedule_location,
-			        description: data.eventList[i].calendar_schedule_content,
-			        writer: data.eventList[i].calendar_schedule_writer,
-			        color: data.eventList[i].calendar_schedule_color
+
+const fetchEventList = () => {
+		return new Promise((resolve,reject)=>{
+			fetch('/eventList', {
+				method: 'POST'
+			})
+			.then(response => response.json())
+			.then(data => {
+				defaultEvents = [];
+				for(let i=0; i<data.eventList.length; i++){
+					switch (data.eventList[i].calendar_schedule_category) {
+						case 1 : data.eventList[i].calendar_schedule_category = 'bg-soft-success'; break;
+						case 2 : data.eventList[i].calendar_schedule_category = 'bg-soft-info'; break;
+						case 3 : data.eventList[i].calendar_schedule_category = 'bg-soft-warning'; break;
+						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
+						case 5 : data.eventList[i].calendar_schedule_category = 'bg-soft-danger'; break;
+					}
+
+					data[i] = {
+						id: data.eventList[i].calendar_schedule_no,
+				        title: data.eventList[i].calendar_schedule_title,
+				        start: new Date(data.eventList[i].calendar_schedule_start_date),
+				        end: new Date(data.eventList[i].calendar_schedule_end_date),
+				        className: data.eventList[i].calendar_schedule_category,
+				        location: data.eventList[i].calendar_schedule_location,
+				        description: data.eventList[i].calendar_schedule_content,
+				        writer: data.eventList[i].calendar_schedule_writer,
+				        color: data.eventList[i].calendar_schedule_color
+					}
+					defaultEvents[i] = data[i];
 				}
-				defaultEvents[i] = data[i];
-				console.log(defaultEvents[i])
-			}
-			resolve(defaultEvents);
-		})
+				resolve(defaultEvents);
+			})
 		})
 	}
-	
-eventList();
 
 document.addEventListener("DOMContentLoaded", function () {
     flatPickrInit();
@@ -66,31 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var externalEventContainerEl = document.getElementById('external-events');
 	var eventSelect = [];
 	/*var defaultEvents = [];*/
-	defaultEvents = [
-		{
-			id: 13,
-			category: 1,
-			title: "[전체] 전체 일정",
-			start: new Date("2024-09-13"),
-			end: new Date("2024-09-13"),
-			className: 'bg-soft-warning',
-			location: "location",
-			description: "content1",
-			writer: 12345678,
-			color: null
-		},
-		{
-			id: 10,
-			category: 1,
-			title: "[개인] 일본 여행",
-			start: new Date("2024-10-10"),
-			end: new Date("2024-10-13"),
-			className: 'bg-soft-success',
-			location: "시부야, 신주쿠, 긴zㅏ",
-			description: "오호호호홓",
-			writer: 12345678,
-			color: null
-		},
+	/*defaultEvents = [
 		{
 			id: 10,
             title: "추석",
@@ -99,19 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
             className: "bg-soft-danger",
             allDay: true
 		},
-		{
-			id: 20,
-			category: 4,
-			title: "ㅇㅇ",
-			start: new Date("2024-09-16"),
-			end: new Date("2024-09-18"),
-			className: 'bg-soft-success',
-			location: "시부야, 신주쿠, 긴zㅏ",
-			description: "오호호호홓",
-			writer: 12345678,
-			color: null
-		},
-	]
+		
+	]*/
 	/*if(document.getElementById("sss").checked){
 		console.log(document.getElementById("sss").value);
 		for(let i=0; i<=defaultEvents.length; i++){
@@ -120,6 +89,46 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 		}
 	}*/
+	
+	/*const fetchEventList = () => {
+		return new Promise((resolve,reject)=>{
+			fetch('/eventList', {
+				method: 'POST'
+			})
+			.then(response => response.json())
+			.then(data => {
+				defaultEvents = [];
+				for(let i=0; i<data.eventList.length; i++){
+					
+					console.log(data.eventList[i].calendar_schedule_category);
+					switch (data.eventList[i].calendar_schedule_category) {
+						case 1 : data.eventList[i].calendar_schedule_category = 'bg-soft-success'; break;
+						case 2 : data.eventList[i].calendar_schedule_category = 'bg-soft-info'; break;
+						case 3 : data.eventList[i].calendar_schedule_category = 'bg-soft-warning'; break;
+						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
+					}
+					console.log(data.eventList[i].calendar_schedule_category);
+
+					data[i] = {
+						id: data.eventList[i].calendar_schedule_no,
+				        title: data.eventList[i].calendar_schedule_title,
+				        start: new Date(data.eventList[i].calendar_schedule_start_date),
+				        end: new Date(data.eventList[i].calendar_schedule_end_date),
+				        className: data.eventList[i].calendar_schedule_category,
+				        location: data.eventList[i].calendar_schedule_location,
+				        description: data.eventList[i].calendar_schedule_content,
+				        writer: data.eventList[i].calendar_schedule_writer,
+				        color: data.eventList[i].calendar_schedule_color
+					}
+					defaultEvents[i] = data[i];
+					
+				}
+				resolve(defaultEvents);
+			})
+		})
+	}*/
+	
+	
 	
 	/*function eventList(){
 		return new Promise(function(resolve,reject){
@@ -143,20 +152,19 @@ document.addEventListener("DOMContentLoaded", function () {
 			        color: data.eventList[i].calendar_schedule_color
 				}
 				defaultEvents[i] = data[i];
-				console.log(defaultEvents[i])
 			}
 			resolve(defaultEvents);
 		})
 		})
-	}*/
+	}
+	eventList();*/
 	
-	
-		console.log(defaultEvents[0]);
+	/*	console.log(defaultEvents[0]);
 	for(let i=0; i<=5; i++){
 		
-		/*console.log(defaultEvents[i]);*/
-		/*defaultEvents[i] = {
-				id: i,
+		console.log(defaultEvents[i]);
+		defaultEvents[i] = {
+				id: defaultEvents[i],
 				category: 1,
 				title: "title1",
 				start: "2024-09-0"+(i+1)+"T00:00:00",
@@ -166,8 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				description: "content1",
 				writer: 12345678,
 				color: null
-			}*/
-	}
+			}
+	}*/
 	
 
 
@@ -175,6 +183,26 @@ document.addEventListener("DOMContentLoaded", function () {
     new Draggable(externalEventContainerEl, {
         itemSelector: '.external-event',
         eventData: function (eventEl) {
+			
+			let writer = 12345678;
+			let categoryNo = 0;
+			switch (eventEl.getAttribute('data-class')) {
+				case 'bg-soft-success': categoryNo = 1; break; /*개인일정*/
+				case 'bg-soft-info': categoryNo = 2; break; /*부서일정*/
+				case 'bg-soft-warning': categoryNo = 3; break; /*전체일정*/
+				case 'bg-soft-primary': categoryNo = 4; break; /*연차일정*/
+			}
+			startDate = new Date().getFullYear()+'-'+(new Date().getMonth()+1).toString().padStart(2, '0')+'-'+new Date().getDate().toString().padStart(2, '0')
+				+' '+new Date().getHours().toString().padStart(2, '0')+':'+new Date().getMinutes().toString().padStart(2, '0');
+			
+			const xhr = new XMLHttpRequest();
+			xhr.open("post", "/create/event", true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+				}
+			}
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			xhr.send("category="+categoryNo+"&title="+eventEl.innerText+"&writer="+writer+"&start_date="+startDate);
             return {
                 id: Math.floor(Math.random() * 11000),
                 title: eventEl.innerText,
@@ -214,6 +242,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var eventCategoryChoice = new Choices("#event-category", {
         searchEnabled: false
     });
+    fetchEventList().then(function(data){
+		console.log(data);
     var calendar = new FullCalendar.Calendar(calendarEl, {
         timeZone: 'local',
         editable: true,
@@ -253,8 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
             addEvent.show();
             formEvent.reset();
             selectedEvent = info.event;
-            eventId = selectedEvent._def.publicId;
-            console.log(selectedEvent._def.publicId);
+            eventContent = selectedEvent._def;
 
             // First Modal
             document.getElementById("modal-title").innerHTML = "";
@@ -395,7 +424,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     calendar.render();
-
     upcomingEvent(defaultEvents);
     /*Add new event*/
     // Form to add new event
@@ -427,6 +455,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var event_location = document.getElementById("event-location").value;
         var eventDescription = document.getElementById("event-description").value;
         var eventid = document.getElementById("eventid").value;
+        console.log(eventid);
         var all_day = false;
         if (start_date.length > 1) {
 			
@@ -447,7 +476,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			
             start_date = new Date(start_date + "T" + start_time);
             end_date = new Date(e_date + "T" + end_time);
-         	console.log(updateStartDate);
         }
         var e_id = defaultEvents.length + 1;
          
@@ -523,7 +551,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	        	alert(data.res_msg);
 	        })*/
 	        
-	        
+	        if(eventContent == null){
+				console.log('생성');
 				const xhr = new XMLHttpRequest();
 				xhr.open("post","/create/event",true);
 				xhr.onreadystatechange = function() {
@@ -544,9 +573,32 @@ document.addEventListener("DOMContentLoaded", function () {
 					xhr.send("category="+categoryNo+"&title="+updatedTitle+"&location="+event_location
 					+"&content="+eventDescription+"&writer="+writer+"&start_date="+updateStartDate+"&end_date="+updateEndDate);
 				}
+			} else {
+				console.log('수정');
+				const xhr = new XMLHttpRequest();
+				xhr.open("post","/modify/event",true);
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState == 4 && xhr.status == 200){ // 200: 정상적으로 작동한다는 뜻
+						alert('성공');
+					}
+				}
+				let writer = 12345678;
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				updateStartDate = updateStartDate.getFullYear()+'-'+(updateStartDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateStartDate.getDate().toString().padStart(2, '0')
+				+' '+updateStartDate.getHours().toString().padStart(2, '0')+':'+updateStartDate.getMinutes().toString().padStart(2, '0');
+				
+				console.log(eventContent.publicId);
+				if(updateEndDate != null){
+					updateEndDate = updateEndDate.getFullYear()+'-'+(updateEndDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateEndDate.getDate().toString().padStart(2, '0')
+					+' '+updateEndDate.getHours().toString().padStart(2, '0')+':'+updateEndDate.getMinutes().toString().padStart(2, '0');
+					
+					xhr.send("eventId="+eventContent.publicId+"&category="+categoryNo+"&title="+updatedTitle+"&location="+event_location
+					+"&content="+eventDescription+"&writer="+writer+"&start_date="+updateStartDate+"&end_date="+updateEndDate);
+				}
+			}
 				
 				
-				/*xhr.send(JSON.stringify(payload));*/
+				
 
         // validation
         if (forms[0].checkValidity() === false) {
@@ -594,21 +646,25 @@ document.addEventListener("DOMContentLoaded", function () {
             upcomingEvent(defaultEvents);
         }
     });
+	});
+
 
     document.getElementById("btn-delete-event").addEventListener("click", function (e) {
         if (selectedEvent) {
 			if(confirm("정말 삭제하시겠습니까?")){
 				for (var i = 0; i < defaultEvents.length; i++) {
+				console.log(defaultEvents[i].id);
+				console.log(selectedEvent.id);
 					if (defaultEvents[i].id == selectedEvent.id) {
-						defaultEvents.splice(i, 1);
-						i--;
-						fetch('/delete/event' + (defaultEvents[i].id+1), {
+						fetch('/delete/event' + (defaultEvents[i].id), {
 							method: 'delete'
 						})
 						.then(response => response.json())
 						.then(data => {
 							
 						});
+						defaultEvents.splice(i, 1);
+						i--;
 					}
 				}
 	            upcomingEvent(defaultEvents);
@@ -702,9 +758,9 @@ function editEvent(data) {
         data.setAttribute("data-id", 'cancel-event');
         document.getElementById("btn-save-event").innerHTML = "일정 수정";
         data.removeAttribute("hidden");
-        console.log(eventId);
+        console.log(eventContent);
         eventTyped();
-        /*fetch('/modify/event'+eventId,{
+        /*fetch('/modify/event'+eventContent,{
 			method:'post'
 		})
 	    .then(response => response.json())
@@ -878,5 +934,3 @@ var str_dt = function formatDate(date) {
         day = '0' + day;
     return [day + " " + month, year].join(',');
 };
-
-console.log(defaultEvents);

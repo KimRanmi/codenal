@@ -44,9 +44,22 @@ public class CalendarApiController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/modify/event{calendar_schedule_no}")
-	public void modifyEvent(CalendarDto dto){
-		System.out.println(dto);
+	@PostMapping("/modify/event")
+	public void modifyEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		CalendarDto dto = new CalendarDto();
+		dto.setCalendar_schedule_no(Long.parseLong(request.getParameter("eventId")));
+		dto.setCalendar_schedule_category(Long.parseLong(request.getParameter("category")));
+		dto.setCalendar_schedule_title(request.getParameter("title"));
+		dto.setCalendar_schedule_location(request.getParameter("location"));
+		dto.setCalendar_schedule_content(request.getParameter("content"));
+		dto.setCalendar_schedule_writer(Long.parseLong(request.getParameter("writer")));
+		String startDate = request.getParameter("start_date");
+		String endDate = request.getParameter("end_date");
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		dto.setCalendar_schedule_start_date(LocalDateTime.parse(startDate, dtf));
+		if(endDate.equals("null") == false) {
+			dto.setCalendar_schedule_end_date(LocalDateTime.parse(endDate, dtf));
+		}
 		calendarService.modifyEvent(dto);
 	}
 	
@@ -104,7 +117,7 @@ public class CalendarApiController {
 		String endDate = request.getParameter("end_date");
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		dto.setCalendar_schedule_start_date(LocalDateTime.parse(startDate, dtf));
-		if(endDate.equals("null") == false) {
+		if(endDate != null && endDate.equals("null") == false) {
 			dto.setCalendar_schedule_end_date(LocalDateTime.parse(endDate, dtf));
 		}
 		calendarService.createEvent(dto);
