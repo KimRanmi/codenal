@@ -2,6 +2,8 @@ package com.codenal.approval.domain;
 
 import java.time.LocalDate;
 
+import com.codenal.employee.domain.Employee;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,8 +21,8 @@ import lombok.ToString;
 public class ApprovalDto {
 	
 	private Long approval_no;
-	private Long emp_id;
-	private int cate_code;
+	private Employee employee;
+	private ApprovalCategory approvalCategory;
 	private LocalDate approval_reg_date;
 	private String approval_title;
 	private String approval_content;
@@ -34,6 +36,8 @@ public class ApprovalDto {
 				.approvalContent(approval_content)
 				.approvalRegDate(approval_reg_date)
 				.approvalStatus(approval_status)
+				.approvalCategory(approvalCategory)
+				.employee(employee)
 				.build();
 	}
 	
@@ -44,6 +48,8 @@ public class ApprovalDto {
 				.approval_content(approval.getApprovalContent())
 				.approval_reg_date(approval.getApprovalRegDate())
 				.approval_status(approval.getApprovalStatus())
+				.approvalCategory(approvalCategory)
+				.employee(employee)
 				.build();
 	}
 }

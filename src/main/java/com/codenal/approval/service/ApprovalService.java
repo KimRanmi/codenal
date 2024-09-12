@@ -17,6 +17,7 @@ import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
+import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
@@ -96,8 +97,8 @@ public class ApprovalService {
           annualLeaveUsage = (AnnualLeaveUsage) obj[3];
       }
       
-      ApprovalForm af = (ApprovalForm) obj[4];
       
+      ApprovalForm af = (ApprovalForm) obj[4];
       
       result.put("approval", approval);
       result.put("employee", employee);
@@ -200,5 +201,39 @@ public class ApprovalService {
       return list;
    }
     
+   
+   // 회수함으로 이동
+   @Transactional
+   public int revoke(Long approvalNo) {
+	  int result = 4;
+	  int status = approvalRepository.updateStatus(result,approvalNo);
+	  
+	  return status;
+   }
+   
+   // 게시글 수정
+   @Transactional
+   public Approval updateApproval(Map<String,Object> obj,Long no) {
+	   
+	   Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+	   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+	      
+	   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+	   
+	   ApprovalDto dto = ApprovalDto.builder()
+			   				.approval_no(no)
+			   				.approval_title((String)obj.get("제목"))
+			   				.approval_content((String)obj.get("내용"))
+			   				.approval_status(0)
+			   				.employee(emp)
+			   				.approvalCategory(ac)
+			   				.build();
+			   				
+	   Approval approval = dto.toEntity();
+	   
+
+	   return approval;
+   }
+   
 
 }

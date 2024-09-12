@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,11 +69,14 @@ public class ApprovalViewController {
    // 상신 리스트
    @GetMapping("/approval/list")
    public String listApproval(Model model,
-		   					  @RequestParam(value="id") Long id,
                               @RequestParam(value = "num", defaultValue = "0") int num,
                               @PageableDefault(page = 0, size = 10, sort = "approvalNo",
                                                direction = Sort.Direction.DESC) Pageable pageable) {
-       
+       // 현재 인증된 사용자 정보 가져오기
+	   Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       String username = authentication.getName(); // 또는 getPrincipal()로 더 자세한 정보 가져오기
+       Long id = Long.parseLong(username);
+	   
        Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable,num,id);
        
        
@@ -110,11 +115,15 @@ public class ApprovalViewController {
           model.addAttribute("annualLeaveUsage", annualLeaveUsage);  // null이 아닐 경우 그대로 사용
       }
       
-      System.out.println("결과 : "+resultList.get("annualLeaveUsage"));
-      System.out.println("결과 2 : "+resultList.get("approvalForm"));
+      List<ApprovalFormDto> cateList = new ArrayList<ApprovalFormDto>();
+      cateList = approvalService.selectApprovalCateList(typeInt);
+      
+      
       
       model.addAttribute("dto",resultList);
       model.addAttribute("type",typeInt);
+      model.addAttribute("cateList",cateList);
       return "apps/"+returnResult;
    }
+   
 }

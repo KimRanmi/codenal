@@ -78,8 +78,8 @@
 	<div layout:fragment="content">
 		<div th:replace="partials/page-title :: page-title('전자결재 작성', '전자결재')"></div>
 		<div class="row" style="margin-left: 30px;">
-			<div class="col-lg-8">
-				<div style="background-color: white; width: 2150px; height: 1150px;">
+			<div class="col-lg-12">
+				<div style="background-color: white; width: 1750px; height: 1150px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
 						<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
@@ -139,18 +139,19 @@
 							</div>
 							<br>
 							<!-- 토스트 api -->
-							<div class="col-lg-8" style="margin-left: -15px;">
+							<div class="col-lg-11" style="margin-left: -15px;">
 								<label>내용</label>
 								<div id="approval_edit" name="approval_content"></div>
 							</div>
-							<!-- Buttons -->
+							<!-- 올리기 버튼 -->
 							<br>
-							<div style="margin-left: 950px;">
+							<div style="margin-left:1350px; margin-top:30px;">
 								<button type="submit" class="btn btn-secondary w-sm">올리기</button>
-								<!-- <button type="submit" class="btn btn-danger w-sm">취소</button> -->
+								<button type="submit" class="btn btn-danger w-sm" onclick="history.back()">취소</button>
 							</div>
-							<!-- Sign-off and Approval Tables -->
-							<div style="margin-top: -1048px; margin-left: 600px;">
+							
+							<!-- 합의자, 결재자 선택  -->
+							<div style="margin-top:-1080px; margin-left:900px;">
 
 								<label>합의자</label>
 								<table
@@ -266,7 +267,8 @@
 		        e.preventDefault();
 		        const payload = new FormData(form);
 		        const csrfToken = document.getElementById('csrf_token').value;
-				const content = contentEditor.getHTML();
+				/* 토스트 api 안에 값 저장 */
+		        const content = contentEditor.getHTML();
 				payload.append("approval_content",content);
 		        
 		        fetch('/approval', {

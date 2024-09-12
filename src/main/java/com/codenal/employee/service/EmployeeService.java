@@ -18,4 +18,10 @@ public class EmployeeService {
         Employee employee = employeeDto.toEntity();
         employeeRepository.save(employee);
     }
+    
+    public Employee selectEmpId(String empId) {
+    	Employee emp = employeeRepository.findByempId(empId);
+    	return emp;
+    }
+    
 }

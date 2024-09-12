@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.approval.domain.Approval;
@@ -37,4 +38,8 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		List<Object[]> selectByapprovalNo(Long approvalNo);
 		
 		Approval findByApprovalNo(Long approvalNo);
+		
+		@Modifying
+		@Query(value="update Approval a set a.approvalStatus = ?1 where a.approvalNo = ?2 ")
+		int updateStatus(int status,Long approvalNo);
 }

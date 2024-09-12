@@ -37,7 +37,7 @@
 				<div class="row">
 					<div class="col-xxl-9">
 						<div class="card" id="companyList">
-							<div class="card-header" style="height: 1000px; width: 2200px;">
+							<div class="card-header" style="height: 800px; width: 1840px;">
 								<div class="row g-2">
 									<div>
 										<div>
@@ -80,9 +80,9 @@
 										</thead>
 										<tbody class="list form-check-all" style="text-align: center;">
 											<!-- 대기/진행중 상태 -->
-											<tr th:each="approval : ${resultList.content}"
+											<tr th:each="approval, approvalStat : ${resultList.content}"
 												th:if="${num == 0 and (approval['approval'].approvalStatus == 0)}">
-												<td th:text="${approval['approval'].approvalNo}"></td>
+												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
@@ -97,7 +97,7 @@
 											<!-- 진행 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 1 and approval['approval'].approvalStatus == 1}">
-												<td th:text="${approval['approval'].approvalNo}"></td>
+												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
@@ -112,7 +112,7 @@
 											<!-- 완료 상태 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 2 and approval['approval'].approvalStatus == 2}">
-												<td th:text="${approval['approval'].approvalNo}"></td>
+												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
@@ -126,7 +126,7 @@
 											<!-- 반려 상태 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 3 and approval['approval'].approvalStatus == 3}">
-												<td th:text="${approval['approval'].approvalNo}"></td>
+												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
@@ -140,7 +140,7 @@
 											<!-- 회수 상태 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 4 and approval['approval'].approvalStatus == 4}">
-												<td th:text="${approval['approval'].approvalNo}"></td>
+												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
