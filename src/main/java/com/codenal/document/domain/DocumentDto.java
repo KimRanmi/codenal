@@ -21,7 +21,7 @@ public class DocumentDto {
     private Long docNo;
     private String docName;
     private String docNewName;
-    private String docStatus;
+    private int docStatus;
     private Date docCreatedDate;
     private String docPath;
     private BigDecimal docSize;
@@ -29,23 +29,22 @@ public class DocumentDto {
     private Long docShareEmpId;
 
     // 엔터티를 DTO로 변환하는 메서드
-    public static DocumentDto fromEntity(Document document) {
+    public static DocumentDto fromEntity(Documents documents) {
         return DocumentDto.builder()
-                .docNo(document.getDocNo())
-                .docName(document.getDocName())
-                .docNewName(document.getDocNewName())
-                .docStatus(document.getDocStatus())
-                .docCreatedDate(document.getDocCreatedDate())
-                .docPath(document.getDocPath())
-                .docSize(document.getDocSize())
-                .docEmpId(document.getDocEmpId())
-                .docShareEmpId(document.getDocShareEmpId())
+                .docNo(documents.getDocNo())
+                .docName(documents.getDocName())
+                .docNewName(documents.getDocNewName())
+                .docStatus(documents.getDocStatus())
+                .docCreatedDate(documents.getDocCreatedDate())
+                .docPath(documents.getDocPath())
+                .docSize(documents.getDocSize())
+                .docEmpId(documents.getDocEmpId())
                 .build();
     }
 
     // DTO를 엔터티로 변환하는 메서드
-    public Document toEntity() {
-        return Document.builder()
+    public Documents toEntity() {
+        return Documents.builder()
                 .docNo(docNo)
                 .docName(docName)
                 .docNewName(docNewName)
@@ -54,7 +53,6 @@ public class DocumentDto {
                 .docPath(docPath)
                 .docSize(docSize)
                 .docEmpId(docEmpId)
-                .docShareEmpId(docShareEmpId)
                 .build();
     }
 }

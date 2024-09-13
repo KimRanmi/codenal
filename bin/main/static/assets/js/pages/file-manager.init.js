@@ -77,22 +77,22 @@ var getJSON = function (jsonurl, callback) {
   xhr.send();
 };
 
-// get json
-getJSON("filemanager-filelist.json", function (err, data) {
-  if (err !== null) {
-    console.log("Something went wrong: " + err);
-  } else {
+fetch("/api/documents/list")
+  .then(response => response.json())
+  .then(data => {
     allFileList = data;
     loadFileData(allFileList);
-  }
-});
+  })
+  .catch(error => {
+    console.error("Something went wrong: ", error);
+  });
 
 // load product data
 function loadFileData(datas) {
   document.querySelector("#file-list").innerHTML = '';
   Array.from(datas).forEach(function (fileData, index) {
-    var fileIconElm
-    if (fileData.fileName.includes(".")) {
+    var fileIconElm;
+    if (fileData.fileName && fileData.fileName.includes(".")) { // fileName이 있는지 먼저 확인
       var fileIcon = fileData.fileName.split(".");
       function isStatus(val) {
         switch (val) {

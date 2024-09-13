@@ -38,9 +38,10 @@ public class WebSecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
-				 .requestMatchers("/join").permitAll() 
+				 .requestMatchers("/list").permitAll() 
 				 .requestMatchers("/mypage/**").authenticated()
-				.anyRequest().authenticated()
+				 .requestMatchers("/documents/**").authenticated() 
+				 .anyRequest().authenticated()
 				)
 		
 		.formLogin(login ->
