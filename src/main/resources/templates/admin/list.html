@@ -171,7 +171,9 @@
 
 										<!-- 직원 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-											<tr th:each="employee, employeeStat : ${resultList.content}">
+											<tr th:each="employee, employeeStat : ${resultList.content}" 
+												th:onclick="|location.href='@{/employee/{id}(id=${employee.empId})}'|"
+												style="cursor: pointer;">
 												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}" style="text-align: center;"></td>
 												<td th:text="${employee.empId}" style="text-align: center;"></td>
 												<td th:text="${employee.empName}" style="text-align: center;"></td>
@@ -182,6 +184,7 @@
 												<td></td>
 											</tr>
 										</th:block>
+
 									</tbody>
 								</table>
 								<br>
