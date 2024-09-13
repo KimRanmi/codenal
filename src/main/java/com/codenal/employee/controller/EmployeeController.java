@@ -1,9 +1,6 @@
 package com.codenal.employee.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +56,7 @@ public class EmployeeController {
 
                             
 
-                                Authentication authentication) {
+                                Authentication authentication,HttpSession session) {
         Long empId = Long.parseLong(authentication.getName());
 
         Map<String, Object> response = new HashMap<>();
