@@ -1,11 +1,11 @@
 package com.codenal.admin.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.codenal.announce.domain.AnnounceReadAuthority;
 import com.codenal.employee.domain.Employee;
 
-import jakarta.persistence.CascadeType;
+import lombok.Builder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,10 +15,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @Entity
 @Table(name = "jobs")
@@ -34,13 +34,15 @@ public class Jobs {
     @Column(name = "job_no")
     private int jobNo; // 직급 번호
 
-    @Column(name = "job_name")
+    @Column(name = "job_name", nullable = false)
     private String jobName; // 직급명
 
-    @Column(name = "job_priority")
+    @Column(name = "job_priority", nullable = false)
     private int jobPriority; // 우선순위
     
     @OneToMany(mappedBy = "jobs")
-    private List<Employee> employee = new ArrayList<Employee>();
+    private List<Employee> employee;
+    
+    @OneToMany(mappedBy = "jobs")
+    private List<AnnounceReadAuthority> readAuthorities;
 }
-

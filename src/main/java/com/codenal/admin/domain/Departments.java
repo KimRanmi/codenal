@@ -1,6 +1,5 @@
 package com.codenal.admin.domain;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,11 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.codenal.announce.domain.AnnounceReadAuthority;
 import com.codenal.employee.domain.Employee;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -38,7 +37,7 @@ public class Departments {
     @Column(name = "dept_no")
     private int deptNo;	// 부서 번호
 
-    @Column(name = "dept_name")
+    @Column(name = "dept_name", nullable = false)
     private String deptName;	// 부서명
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -47,6 +46,9 @@ public class Departments {
     private LocalDate deptCreateDate;	// 부서 개설일
     
     @OneToMany(mappedBy = "departments")
-    private List<Employee> employee = new ArrayList<Employee>();
+    private List<Employee> employee;
+    
+    @OneToMany(mappedBy = "departments")
+    private List<AnnounceReadAuthority> readAuthorities;
 
 }

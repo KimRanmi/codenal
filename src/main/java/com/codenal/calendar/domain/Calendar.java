@@ -2,11 +2,15 @@ package com.codenal.calendar.domain;
 
 import java.time.LocalDateTime;
 
+import com.codenal.employee.domain.Employee;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -41,6 +45,10 @@ public class Calendar {
 	
 	@Column(name = "calendar_schedule_writer")
 	private Long calendarScheduleWriter;
+	
+//	@ManyToOne
+//	@JoinColumn(name = "calendar_schedule_writer")
+//	private Employee employee;
 	
 	@Column(name = "calendar_schedule_start_date")
 	private LocalDateTime calendarScheduleStartDate;

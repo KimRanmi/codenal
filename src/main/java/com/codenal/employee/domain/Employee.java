@@ -1,17 +1,19 @@
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.Jobs;
+import com.codenal.announce.domain.Announce;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -69,13 +71,16 @@ public class Employee {
     private String empSignImage;
 
     @ManyToOne
-    @JoinColumn(name = "dept_no", referencedColumnName = "dept_no")
+    @JoinColumn(name = "dept_no", referencedColumnName = "dept_no", insertable = false, updatable = false)
     private Departments departments;
 
     @ManyToOne
-    @JoinColumn(name = "job_no",  referencedColumnName = "job_no")
+    @JoinColumn(name = "job_no",  referencedColumnName = "job_no", insertable = false, updatable = false)
     private Jobs jobs;
 
     @Column(name = "emp_auth")
     private String empAuth;
+	
+    @OneToMany(mappedBy = "employee")
+    private List<Announce> announces;
 }

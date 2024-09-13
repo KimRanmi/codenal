@@ -268,3 +268,86 @@ function scrollToBottom(id) {
 const date=new Date();
 const month=date.getMonth()+1;
 document.getElementById("month").innerHTML = month;
+
+
+
+const fetchEventList = () => {
+		return new Promise((resolve,reject)=>{
+			fetch('/eventList', {
+				method: 'POST'
+			})
+			.then(response => response.json())
+			.then(data => {
+				defaultEvents = [];
+				for(let i=0; i<data.eventList.length; i++){
+					switch (data.eventList[i].calendar_schedule_category) {
+						case 1 : data.eventList[i].calendar_schedule_category = 'bg-soft-success'; break;
+						case 2 : data.eventList[i].calendar_schedule_category = 'bg-soft-info'; break;
+						case 3 : data.eventList[i].calendar_schedule_category = 'bg-soft-warning'; break;
+						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
+						case 5 : data.eventList[i].calendar_schedule_category = 'bg-soft-danger'; break;
+					}
+
+					data[i] = {
+						id: data.eventList[i].calendar_schedule_no,
+				        title: data.eventList[i].calendar_schedule_title,
+				        start: new Date(data.eventList[i].calendar_schedule_start_date),
+				        end: new Date(data.eventList[i].calendar_schedule_end_date),
+				        className: data.eventList[i].calendar_schedule_category,
+				        location: data.eventList[i].calendar_schedule_location,
+				        description: data.eventList[i].calendar_schedule_content,
+				        writer: data.eventList[i].calendar_schedule_writer,
+				        color: data.eventList[i].calendar_schedule_color
+					}
+				}
+				resolve(data);
+			})
+		})
+	}
+	
+fetchEventList().then(function(data) {
+	console.log(data);
+
+	/*let nowDate = new Date();
+	nowDate = nowDate.getFullYear() + '-' + (nowDate.getMonth() + 1) + '-1';*/
+	let toDay = new Date();
+	let lastDate = new Date();
+	let lastDay = new Date(lastDate.getFullYear(), (lastDate.getMonth() + 1), 0);
+	for(let i = 0; i <= data.eventList.length; i++){
+		let startDate = new Date(data[i].start);
+		let endDate = new Date(data[i].end);
+		console.log(data[i].start);
+		
+		if (startDate >= toDay && startDate <= lastDay) {
+			let startAmpm = '';
+			let endAmpm = '';
+			if(startDate.getHours() < 12){
+				startAmpm = 'AM';
+			} else {
+				startAmpm = 'PM';
+			}
+			if(endDate.getHours() < 12){
+				endAmpm = 'AM';
+			} else {
+				endAmpm = 'PM';
+			}
+			console.log(endDate.getHours());
+				document.getElementById("eventList").innerHTML +=
+					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="mini-stat-icon avatar-title rounded-circle text-success bg-soft-success fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">'+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</div>';
+		}
+		
+	}
+});
+
+
