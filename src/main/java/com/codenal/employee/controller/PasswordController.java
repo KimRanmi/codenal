@@ -35,7 +35,7 @@ public class PasswordController {
                                 @RequestParam("confirmPassword") String confirmPassword,
                                 Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
-        int empId = Integer.parseInt(authentication.getName());
+        Long empId = Long.parseLong(authentication.getName());
 
         // 직원 정보 가져오기
         Employee employee = employeeService.getEmployeeById(empId);
