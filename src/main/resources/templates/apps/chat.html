@@ -1,7 +1,7 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
+	layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
@@ -27,7 +27,7 @@
 							<h5 class="mb-4">채팅방</h5>
 						</div>
 						<div class="flex-shrink-0">
-							<div data-bs-toggle="tooltip" data-bs-trigger="hover"
+							<div data-bs-toggle="modal" data-bs-target="#inviteMembersModal"
 								data-bs-placement="bottom" title="채팅방 초대">
 
 								<!-- 채팅방 추가 버튼 -->
@@ -389,9 +389,9 @@
 																href="#"><i
 																class="ri-user-2-fill align-bottom text-muted me-2"></i>
 																채팅방 메뉴</a> <a class="dropdown-item" href="#"><i
-																class="ri-delete-bin-5-line align-bottom text-muted me-2"></i>
+																class="ri-toggle-fill align-bottom text-muted me-2"></i>
 																알림 스위치</a> <a class="dropdown-item" href="#"><i
-																class="ri-delete-bin-5-line align-bottom text-muted me-2"></i>
+																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
 																채팅방 나가기</a>
 														</div>
 													</div>
@@ -405,12 +405,12 @@
 								<!-- 채팅 대화 시작 -->
 								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation"
 									data-simplebar>
-									<div id="elmLoader">
+									<!-- <div id="elmLoader">
 										<div class="spinner-border text-primary avatar-sm"
 											role="status">
 											<span class="visually-hidden">로딩중...</span>
 										</div>
-									</div>
+									</div> -->
 									<ul class="list-unstyled chat-conversation-list"
 										id="users-conversation">
 
@@ -537,13 +537,13 @@
 																href="#"><i
 																class="ri-user-2-fill align-bottom text-muted me-2"></i>
 																채팅방 메뉴</a> <a class="dropdown-item" href="#"><i
-																class="ri-inbox-archive-line align-bottom text-muted me-2"></i>
+																class="ri-toggle-fill align-bottom text-muted me-2"></i>
 																알림 스위치</a> <a class="dropdown-item" href="#"><i
-																class="ri-inbox-archive-line align-bottom text-muted me-2"></i>
+																class="ri-user-add-line align-bottom text-muted me-2"></i>
 																추가 초대하기</a> <a class="dropdown-item" href="#"><i
-																class="ri-mic-off-line align-bottom text-muted me-2"></i>
+																class=" ri-edit-2-line align-bottom text-muted me-2"></i>
 																채팅방 이름 변경</a> <a class="dropdown-item" href="#"><i
-																class="ri-delete-bin-5-line align-bottom text-muted me-2"></i>
+																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
 																채팅방 나가기</a>
 														</div>
 													</div>
@@ -633,6 +633,121 @@
 	</div>
 
 
+	<th:block layout:fragment="modal">
+		<div class="modal fade" id="inviteMembersModal" tabindex="-1" aria-labelledby="inviteMembersModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content border-0">
+					<div class="modal-header p-3 ps-4 bg-soft-success">
+						<h5 class="modal-title" id="inviteMembersModalLabel">채팅 상대 선택</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body p-4">
+						<div class="search-box mb-3">
+							<input type="text" class="form-control bg-light border-light" placeholder="이름 검색">
+							<i class="ri-search-line search-icon"></i>
+						</div>
+					
+
+						<form id="selectEmployeeForm">
+						<div class="mb-4 d-flex align-items-center">
+							<div class="me-2">
+								<h5 class="mb-0 fs-13">선택 직원 :</h5>
+							</div>
+							<!-- 선택한 직원 목록이 뜨는 곳 -->
+							<div class="avatar-group justify-content-center" id="selectEmp">
+							</div>
+						</div>
+						</form>
+						<!-- 직원 하나하나 불러오는 자리 -->
+						<!-- empList 꺼내기 -->
+						<div th:each="emp : ${employeeList}">
+						<div class="mx-n4 px-4" data-simplebar style="max-height: 300px;">
+							<div class="vstack gap-3">
+								<div class="d-flex align-items-center">
+									<div class="avatar-xs flex-shrink-0 me-3">
+										<img src="/assets/images/users/avatar-2.jpg" alt=""
+											class="img-fluid rounded-circle">
+									</div>
+									<div class="flex-grow-1">
+										<h5 class="fs-13 mb-0">
+										<div class="empName d-block" th:text="${emp.empName}"></div>
+										</h5>
+									</div>
+									<div class="flex-shrink-0">
+										<button type="button" class="btn btn-light btn-sm" onclick="employeeSelect_btn(this)" 
+                           				 th:attr="data-emp-name=${emp.empName}">선택</button>
+									</div>
+								</div>
+								<!-- end member item -->
+							</div>
+							<!-- end list -->
+						</div> <!-- empList 끝 -->
+						</div>
+					</div>
+									<script>
+										const employeeSelect_btn = function(button){
+											 const empName = button.getAttribute('data-emp-name');
+											    const view_div = document.getElementById('selectEmp');
+											    
+											    // 선택된 버튼의 정보를 view_div에 추가합니다.
+											    view_div.innerHTML += "<div id='selectEmpName' class='avatar-group-item' data-bs-toggle='tooltip' data-bs-trigger='hover' data-bs-placement='top' title='"+empName+"'>"
+											                        + "<div class='avatar-xs'>"
+											                        + "<img src='/assets/images/users/avatar-3.jpg' alt='' class='rounded-circle img-fluid'>"
+											                        + "</div>"
+											                        + "</div>";
+										}
+									</script>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-light w-xs" data-bs-dismiss="modal">취소</button>
+						<button type="submit" class="btn btn-success w-xs" onclick="employeeInvite_btn()">초대하기</button>
+					</div>
+					<script>
+					const form = document.getElementById("selectEmployeeForm");
+
+					form.addEventListener('submit', (e) => {
+					    e.preventDefault(); // 기본 폼 제출 동작 방지
+					    // 유효성 검사 하기 (직원을 선택하세요.)
+						
+					    // FormData 객체를 생성하여 폼 데이터를 가져옴
+					    const formData = new FormData(form);
+					
+					    // 추가적으로 필요한 데이터를 FormData에 추가
+					    formData.append('room_status','Y');
+					    formData.append('chat_name',document.getElementById('selectEmpName').value);
+					    formData.append('room_type','1');
+					    
+						const csrfToken = document.getElementById("csrf_token").value;
+						
+							    fetch("/chatList/chatRoom/create", {
+							        method: 'POST',
+							        headers: {
+						            'X-CSRF-TOKEN': csrfToken // CSRF 토큰을 헤더에 포함
+						        	},
+						        	body: formData
+							    })
+							    .then(response => {
+							        if (response.ok) {
+							            return response.json(); // JSON 응답을 반환
+							        } else {
+							            throw new Error(response.status); // 에러 상태 코드
+							        }
+							    })
+							    .then(data => callback(null, data))
+							    .catch(error => callback(error.message, null));
+	
+						}
+					</script>
+				</div>
+				<!-- end modal-content -->
+			</div>
+			<!-- modal-dialog -->
+		</div>
+		</form>
+	</th:block>
+
+
+
 	<th:block layout:fragment="pagejs">
 
 		<!-- glightbox js -->
@@ -643,6 +758,8 @@
 
 		<!-- chat init js -->
 		<script src="/assets/js/pages/chat.init2.js"></script>
+		
+		<script src="/assets/js/pages/project-overview.init.js"></script>
 	</th:block>
 </body>
 

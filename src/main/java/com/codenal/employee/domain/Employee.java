@@ -13,10 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-<<<<<<< HEAD
 import jakarta.persistence.OneToMany;
-=======
->>>>>>> branch 'cjw' of https://github.com/KimRanmi/codenal.git
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -85,12 +82,12 @@ public class Employee {
 
     @ManyToOne
     @JoinColumn(name = "dept_no", insertable = false, updatable = false)
-    private Departments departments;
+    private Departments department;
     
     // 직급 매핑
     @ManyToOne
     @JoinColumn(name = "job_no", insertable = false, updatable = false)
-    private Jobs jobs;
+    private Jobs job;
 	
     @OneToMany(mappedBy = "employee")
     private List<Announce> announces;
