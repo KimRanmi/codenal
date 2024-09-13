@@ -22,9 +22,9 @@ public class SecurityService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        int empId;
+        Long empId;
         try {
-            empId = Integer.parseInt(username); // String을 int로 변환
+             empId = Long.parseLong(username); // String을 int로 변환
         } catch (NumberFormatException e) {
             throw new UsernameNotFoundException("잘못된 ID형식입니다. : " + username);
         }

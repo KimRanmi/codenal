@@ -35,7 +35,7 @@ public class EmployeeController {
     @GetMapping("/mypage")
     public String showMyPage(Model model, Authentication authentication, HttpSession session) {
         // 로그인한 사용자의 ID를 가져온다고 가정 (이 예에서는 인증 객체에서 사용자 ID를 얻음)
-        int empId = Integer.parseInt(authentication.getName());
+        Long empId = Long.parseLong(authentication.getName());
 
         // 서비스에서 직원 정보 조회
         Employee employee = employeeService.getEmployeeById(empId);
@@ -56,8 +56,12 @@ public class EmployeeController {
                                 @RequestParam(value = "empAddress", required = false) String empAddress,
                                 @RequestParam(value = "empAddressDetail", required = false) String empAddressDetail,
                                 @RequestParam(value = "signatureImage",required = false) String signatureImage,
-                                Authentication authentication,HttpSession session) {
-        int empId = Integer.parseInt(authentication.getName());
+
+                            
+
+                                Authentication authentication) {
+        Long empId = Long.parseLong(authentication.getName());
+
         Map<String, Object> response = new HashMap<>();
         
         try {

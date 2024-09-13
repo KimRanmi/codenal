@@ -23,6 +23,7 @@ public class CalendarDto {
 	private String calendar_schedule_location;
 	private String calendar_schedule_content;
 	private Long calendar_schedule_writer;
+	private String calendar_schedule_writer_name;
 	private LocalDateTime calendar_schedule_start_date;
 	private LocalDateTime calendar_schedule_end_date;
 	private String calendar_schedule_color;

@@ -32,7 +32,7 @@ public class EmployeeService {
     }
     
     
-    public Employee getEmployeeById(int empId) {
+    public Employee getEmployeeById(Long empId) {
         return employeeRepository.findByEmpId(empId);
     }
 
