@@ -10,6 +10,7 @@ File: Calendar init js
 var start_date = document.getElementById("event-start-date");
 var timepicker1 = document.getElementById("timepicker1");
 var timepicker2 = document.getElementById("timepicker2");
+const csrfToken = document.getElementById('csrf_token').value;
 var date_range = null;
 var T_check = null;
 var eventContent = null;
@@ -18,10 +19,14 @@ var defaultEvents = [];
 const fetchEventList = () => {
 		return new Promise((resolve,reject)=>{
 			fetch('/eventList', {
-				method: 'POST'
+				method: 'POST',
+				headers: {
+		                'X-CSRF-TOKEN': csrfToken
+		            }
 			})
 			.then(response => response.json())
 			.then(data => {
+				console.log(data);
 				defaultEvents = [];
 				for(let i=0; i<data.eventList.length; i++){
 					switch (data.eventList[i].calendar_schedule_category) {
@@ -561,7 +566,9 @@ document.addEventListener("DOMContentLoaded", function () {
 					}
 				}
 				let writer = 12345678;
+				const header = document.getElementById("_csrf_header").value;
 				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				xhr.setRequestHeader(header, csrfToken);
 				updateStartDate = updateStartDate.getFullYear()+'-'+(updateStartDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateStartDate.getDate().toString().padStart(2, '0')
 				+' '+updateStartDate.getHours().toString().padStart(2, '0')+':'+updateStartDate.getMinutes().toString().padStart(2, '0');
 				
@@ -571,7 +578,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					+' '+updateEndDate.getHours().toString().padStart(2, '0')+':'+updateEndDate.getMinutes().toString().padStart(2, '0');
 					
 					xhr.send("category="+categoryNo+"&title="+updatedTitle+"&location="+event_location
-					+"&content="+eventDescription+"&writer="+writer+"&start_date="+updateStartDate+"&end_date="+updateEndDate);
+					+"&content="+eventDescription+"&writer="+writer+"&start_date="+updateStartDate+"&end_date="+updateEndDate+"&token="+csrfToken);
 				}
 			} else {
 				console.log('수정');
@@ -657,7 +664,10 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log(selectedEvent.id);
 					if (defaultEvents[i].id == selectedEvent.id) {
 						fetch('/delete/event' + (defaultEvents[i].id), {
-							method: 'delete'
+							method: 'delete',
+							headers: {
+								'X-CSRF-TOKEN': csrfToken
+							}
 						})
 						.then(response => response.json())
 						.then(data => {

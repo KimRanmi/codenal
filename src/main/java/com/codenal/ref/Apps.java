@@ -1,30 +1,20 @@
 package com.codenal.ref;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.codenal.calendar.domain.Calendar;
-import com.codenal.calendar.service.CalendarService;
-
 @Controller
 public class Apps {
 	
-	private final CalendarService calendarService;
-	
-	@Autowired
-	public Apps(CalendarService calendarService) {
-		this.calendarService = calendarService;
+
+	@GetMapping("/admin-join")
+	public String admin_join() {
+		return "admin/join";
 	}
 
 	@GetMapping("/apps-calendar")
 	public String apps_calendar() {
-		
 		return "apps/calendar";
 	}
 	
@@ -63,11 +53,7 @@ public class Apps {
 	public String apps_ecommerce_add_product() {
 		return "apps/ecommerce-add-product";
 	}
-	
-	@GetMapping("/apps-ecommerce-orders")
-	public String apps_ecommerce_orders() {
-		return "apps/ecommerce-orders";
-	}
+
 	
 	@GetMapping("/apps-ecommerce-order-details")
 	public String apps_ecommerce_orders_details() {

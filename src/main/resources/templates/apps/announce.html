@@ -27,7 +27,6 @@
 									<a href="/announce/create"><i class="ri-add-line align-bottom me-1"></i>
 										게시글 작성</a>
 										<!-- 게시글 체크박스 기능 안넣을거면 지우기 -->
-<<<<<<< HEAD
 <!--체크박스 									<button class="btn btn-soft-danger" id="remove-actions"
 										onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
 								</div>
@@ -110,7 +109,9 @@
 											<td></td>
 											<td th:text="${(announceList.pageable.pageSize) * (announceList.pageable.pageNumber)+stat.count}"></td>
 											<td th:text="${announce.view_count}"></td>
-											<td th:text="${announce.announce_title}"><a href="/announce/detail"></a></td>
+											<td>
+											  <a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}" th:text="${announce.announce_title}"></a>
+											</td>											
 											<td th:text="${announce.announce_writer}">작성자이름 </td>
 											<td th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>
 										</tr>
@@ -206,123 +207,6 @@
 	
 	
 	
-=======
-									<button class="btn btn-soft-danger" id="remove-actions"
-										onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="card-body border border-dashed border-end-0 border-start-0">
-						<form>
-							<div class="row g-3">
-								<div class="col-xxl-5 col-sm-12">
-									<div class="search-box">
-										<input type="text" class="form-control search bg-light border-light"
-											placeholder="검색어를 입력하세요.">
-										<i class="ri-search-line search-icon"></i>
-									</div>
-								</div>
-
-								<div class="col-xxl-3 col-sm-4">
-									<div class="input-light">
-										<select class="form-control" data-choices data-choices-search-false
-											name="choices-single-default" id="idStatus">
-											<option value="">정렬</option>
-											<option value="New" selected>최신순</option>
-											<option value="Old">오래된순</option>
-											<option value="Manyview">조회 높은순</option>
-											<option value="littleview">조회 낮은순</option>
-										</select>
-									</div>
-								</div>
-								<!--end col-->
-								<div class="col-xxl-1 col-sm-4">
-									<button type="button" class="btn btn-primary w-100" onclick="SearchData();"> <i
-											class="ri-equalizer-fill me-1 align-bottom"></i>
-										필터
-									</button>
-								</div>
-								<!--end col-->
-							</div>
-							<!--end row-->
-						</form>
-					</div>
-					<!--end card-body-->
-					<div class="card-body">
-						<div class="table-responsive table-card mb-4">
-							<table class="table align-middle table-nowrap mb-0" id="tasksTable">
-								<thead class="table-light text-muted">
-									<tr>
-										<th style="width: 40px;">
-											<div class="form-check">
-												<input class="form-check-input" type="checkbox" id="checkAll"
-													value="option">
-											</div>
-										</th>
-										<th>조회수</th>
-										<th>게시글 번호</th>
-										<th>제목</th>
-										<th>작성자</th>
-										<th>작성 날짜</th>
-									</tr>
-								</thead>
-								<tbody class="list form-check-all">
-									<tr>
-										<th scope="row">
-											<div class="form-check">
-												<input class="form-check-input" type="checkbox" name="chk_child"
-													value="option1">
-											</div>
-										</th>
-										<td>번호</td>
-										<td>조회숫자</td>
-										<td><a href="/announce/detail">제목</a></td>
-										<td>작성자이름 </td>
-										<td>작성날짜</td>
-									</tr>
-								</tbody>
-							</table>
-							<!--end table-->
-							
-						</div>
-						<!--페이징 -->
-						<div class="d-flex justify-content-end mt-2">
-							<div class="pagination-wrap hstack gap-2">
-								<a class="page-item pagination-prev disabled" href="#">
-									이전
-								</a>
-								<ul class="pagination listjs-pagination mb-0"></ul>
-								<a class="page-item pagination-next" href="#">
-									이후
-								</a>
-							</div>
-						</div>
-					</div>
-					<!--end card-body-->
-				</div>
-				<!--end card-->
-			</div>
-			<!--end col-->
-		</div>
-		<!--end row-->
-
-	</div>
-
-
-		<!-- list.js min js -->
-    <script src="/assets/libs/list.js/list.min.js"></script>
-
-    <!--list pagination js-->
-    <script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
-
-    <!-- titcket init js -->
-    <script src="/assets/js/pages/tasks-list.init.js"></script>
-
-    <!-- Sweet Alerts js -->
-    <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
-	</th:block>
->>>>>>> refs/remotes/origin/master
 </body>
 
 </html>

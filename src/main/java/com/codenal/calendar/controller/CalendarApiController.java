@@ -77,7 +77,7 @@ public class CalendarApiController {
 	public Map<String, Object> selectEvent() {
 		Map<String, Object> resultEvent = new HashMap<String, Object>();
 		List<CalendarDto> eventList = calendarService.selectEvent();
-		
+		System.out.println(eventList);
 		JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
  

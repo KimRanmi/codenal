@@ -23,5 +23,7 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long>{
 //					+ "OR a.announceWriter LIKE CONCAT('%',?1,'%') ")
 //	Page<Announce> findByAnnounceTitleOrAnnounceWriterContaining(String keyword, Pageable pageable);
 //	
-	Announce findByAnnounceNo(Long announce_no);
+	@Query(value="SELECT a FROM Announce a "
+			+ "WHERE a.announceNo = ?1")
+	List<Announce> findByAnnounceListOne(Long announce_no);
 }

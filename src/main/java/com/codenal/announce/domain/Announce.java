@@ -36,8 +36,8 @@ public class Announce {
 	
 	@OneToMany(mappedBy = "announce")
 	private List<AnnounceReadAuthority> announces2;
-	
-//	FK 연결하기! many, 다대일
+
+
 	@Column(name="announce_writer")
 	private int announceWriter;
 	

@@ -8,6 +8,7 @@
 	<div th:replace="partials/title-meta :: title-meta('Calendar')"></div>
 </th:block>
 
+
 <head>
 <!-- fullcalendar css -->
 <link href="/assets/libs/fullcalendar/main.min.css" rel="stylesheet"
@@ -18,7 +19,7 @@
 	<div layout:fragment="content">
 
 		<div th:replace="partials/page-title :: page-title('캘린더','Apps')"></div>
-
+			
 		<div class="row">
 			<div class="col-12">
 				<div class="row">
@@ -28,7 +29,9 @@
 								<button class="btn btn-primary w-100" id="btn-new-event">
 									<i class="mdi mdi-plus"></i> 새 일정 추가
 								</button>
-
+								
+								<input type="hidden" id="_csrf_header"  value="X-CSRF-Token"/>
+								<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
 								<div id="external-events">
 									<br>
 									<p class="text-muted">그래그 앤 드롭으로 일정을 추가해보세요.</p>

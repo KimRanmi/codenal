@@ -1,17 +1,16 @@
+
+
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.codenal.calendar.domain.Calendar;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -76,7 +75,5 @@ public class Employee {
 
     @Column(name = "emp_auth")
     private String empAuth;
-    
-//    @OneToMany(mappedBy = "employee")
-//	private List<Calendar> Calendar;
 }
+
