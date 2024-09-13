@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -75,5 +75,14 @@ public class Employee {
 
     @Column(name = "emp_auth")
     private String empAuth;
+    
+    @ManyToOne
+    @JoinColumn(name = "dept_no", insertable = false, updatable = false)
+    private Departments departments;
+    
+    // 직급 매핑
+    @ManyToOne
+    @JoinColumn(name = "job_no", insertable = false, updatable = false)
+    private Jobs jobs;
 }
 
