@@ -1,15 +1,15 @@
 package com.codenal.announce.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.announce.domain.Announce;
+import com.codenal.employee.domain.Employee;
 
-public interface AnnounceRepository extends JpaRepository<Announce, Long>{
+public interface AnnounceRepository extends JpaRepository<Announce, Integer>{
 
 	Page<Announce> findByAnnounceTitleContaining(String keyword, Pageable pageable);
 //	Page<Announce> findByAnnounceWriterContaining(String keyword, Pageable pageable);
@@ -22,8 +22,14 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long>{
 //					+ "WHERE a.announceTitle LIKE CONCAT('%',?1,'%') "
 //					+ "OR a.announceWriter LIKE CONCAT('%',?1,'%') ")
 //	Page<Announce> findByAnnounceTitleOrAnnounceWriterContaining(String keyword, Pageable pageable);
-//	
-	@Query(value="SELECT a FROM Announce a "
-			+ "WHERE a.announceNo = ?1")
-	List<Announce> findByAnnounceListOne(Long announce_no);
+
+    
+
+    Announce findByAnnounceNo(int announceNo);
+
+    @Modifying
+    @Query("UPDATE Announce a SET a.viewCount = a.viewCount + 1 WHERE a.announceNo = ?1 AND a.employee != ?2")
+	void updateViewCount(int announceNo, Employee empId);
+    
+    
 }

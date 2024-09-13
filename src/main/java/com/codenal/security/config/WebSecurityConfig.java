@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,6 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.codenal.security.service.SecurityService;
+
+import jakarta.servlet.MultipartConfigElement;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +41,10 @@ public class WebSecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
+				 .requestMatchers("/join").permitAll()  // "/join" 경로 허용
+				 .requestMatchers("/announce/createEnd").permitAll()
+				 .requestMatchers("/announce/delete/**").permitAll()
+				 .requestMatchers("/announce/updateEnd/**").permitAll()
 				 .requestMatchers("/list").permitAll() 
 				 .requestMatchers("/mypage/**").authenticated()
 				 .requestMatchers("/documents/**").authenticated() 

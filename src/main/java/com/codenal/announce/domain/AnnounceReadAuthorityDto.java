@@ -1,5 +1,8 @@
 package com.codenal.announce.domain;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,25 +18,24 @@ import lombok.ToString;
 @Builder
 public class AnnounceReadAuthorityDto {
 
-	private Long announce_no;
-	private int dept_no;
-	private int job_no;
-	
+	private Announce announce;
+	private Departments department;
+	private Jobs job;
 	
 	public AnnounceReadAuthority toEntity() {
 		return AnnounceReadAuthority.builder()
-				.announceNo(announce_no)
-				.deptNo(dept_no)
-				.jobNo(job_no)
+				.announce(announce)
+				.department(department)
+				.job(job)
 				.build();
 		 
 	}
 	
 	public AnnounceReadAuthorityDto toDto(AnnounceReadAuthority announceReadAuthority) {
 		return AnnounceReadAuthorityDto.builder()
-				.announce_no(getAnnounce_no())
-				.dept_no(getDept_no())
-				.job_no(getJob_no())
+				.announce(announceReadAuthority.getAnnounce())
+				.department(announceReadAuthority.getDepartment())
+				.job(announceReadAuthority.getJob())
 				.build();
 	}
 }

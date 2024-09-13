@@ -1,12 +1,13 @@
 package com.codenal.announce.domain;
 
-import jakarta.persistence.Column;
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,21 +25,19 @@ import lombok.Setter;
 @Builder
 public class AnnounceReadAuthority {
 	
-	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="announce_no")
-	private Long announceNo;
+    private int id;
 	
+	@MapsId
 	@ManyToOne
-	@JoinColumn(name="parent_announce_no")
+	@JoinColumn(name="announce_no")
 	private Announce announce;
 	
-	
-//	FK 연결하기!
-	@Column(name="dept_no")
-	private int deptNo;
-//	FK 연결하기!
-	@Column(name="job_no")
-	private int jobNo;
+	@ManyToOne
+	@JoinColumn(name="dept_no")
+	private Departments department;
+
+	@ManyToOne
+	@JoinColumn(name="job_no")
+	private Jobs job;
 }

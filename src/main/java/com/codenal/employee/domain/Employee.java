@@ -1,9 +1,11 @@
-
-
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+import com.codenal.announce.domain.Announce;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -11,6 +13,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+<<<<<<< HEAD
+import jakarta.persistence.OneToMany;
+=======
+>>>>>>> branch 'cjw' of https://github.com/KimRanmi/codenal.git
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -76,6 +82,7 @@ public class Employee {
     @Column(name = "emp_auth")
     private String empAuth;
     
+
     @ManyToOne
     @JoinColumn(name = "dept_no", insertable = false, updatable = false)
     private Departments departments;
@@ -84,5 +91,8 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "job_no", insertable = false, updatable = false)
     private Jobs jobs;
-}
+	
+    @OneToMany(mappedBy = "employee")
+    private List<Announce> announces;
 
+}

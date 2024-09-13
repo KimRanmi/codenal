@@ -59,29 +59,32 @@ function loadOrganizationChart() {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-const form = document.getElementById("announceForm");
+const form = document.getElementById("announceUpdateForm");
 
 form.addEventListener('submit', (e) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
     // 유효성 검사
 	if (editor.getMarkdown().length < 1) {
 	    alert('에디터 내용을 입력해 주세요.');
-	    throw new Error('editor content is required!');
+	    throw new Error('내용이 없습니다!');
 	}
 	
     // FormData 객체를 생성하여 폼 데이터를 가져옴
     const formData = new FormData(form);
 
     // 추가적으로 필요한 데이터를 FormData에 추가
+    formData.append('announce_no', document.getElementById('announce_no').value);
     formData.append('announce_writer', document.getElementById('announce_writer').value);
     formData.append('announce_title', document.getElementById('announce_title').value);
     formData.append('announce_content', editor.getHTML());
+    formData.append('reg_date', document.getElementById('reg_date').value);
     formData.append('read_authority_status', document.querySelector('input[name="read_authority_status"]:checked')?.value);
 
 	
-    const csrfToken = document.getElementById("csrf_token").value;
+    const csrfToken = document.getElementById('csrf_token').value;
+	const announceNo = document.getElementById('announce_no').value;
 
-    fetch('/announce/createEnd', {
+    fetch('/announce/updateEnd/'+announceNo, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': csrfToken // CSRF 토큰을 헤더에 포함
@@ -91,7 +94,7 @@ form.addEventListener('submit', (e) => {
      .then(response => response.json())
      .then(data => {
         if (data.res_code === '200') {
-            alert('성공적으로 생성이 완료되었습니다.');
+            alert('게시글 수정을 완료했습니다.');
             location.href = `/announce/detail/${data.announceNo}`; // 서버에서 받은 `announceNo`로 URL을 설정합니다.
         } else {
             alert('실패: ' + data.res_msg);

@@ -3,12 +3,18 @@ package com.codenal.announce.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.codenal.employee.domain.Employee;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,18 +35,23 @@ public class Announce {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="announce_no")
-	private Long announceNo;
+	private int announceNo;
+
 	
 	@OneToMany(mappedBy = "announce")
-	private List<AnnounceFile> announces1;
+	private List<AnnounceFile> files;
 	
 	@OneToMany(mappedBy = "announce")
-	private List<AnnounceReadAuthority> announces2;
+	private List<AnnounceReadAuthority> readAuthorities;
 
 
 	@Column(name="announce_writer")
-	private int announceWriter;
+	private Long announceWriter;
 	
+	@ManyToOne
+	@JoinColumn(name="announce_writer", insertable = false, updatable = false)
+	private Employee employee;
+
 	@Column(name="announce_title")
 	private String announceTitle;
 
@@ -50,8 +61,14 @@ public class Announce {
 	@Column(name="reg_date")
 	private LocalDateTime regDate;
 	
+	
 	@Column(name="mod_date")
 	private LocalDateTime modDate;
+	
+	@PrePersist
+	public void prePersist() {
+		this.regDate = LocalDateTime.now();
+	}
 	
 	@Column(name="view_count")
 	private int viewCount;

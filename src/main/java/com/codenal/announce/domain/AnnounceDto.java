@@ -1,6 +1,11 @@
 package com.codenal.announce.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.codenal.employee.domain.Employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +22,12 @@ import lombok.ToString;
 @Builder
 public class AnnounceDto {
 
-	private Long announce_no;
-	private int announce_writer;
+	private int announce_no;
+	private Long announce_writer;
+	private Employee employee;
+	private List<AnnounceFile> announceFile;
+	private List<AnnounceReadAuthority> announceReadAuthority;
+
 	private String announce_title;
 	private String announce_content;
 	private LocalDateTime reg_date;
@@ -40,6 +49,9 @@ public class AnnounceDto {
 				.modDate(mod_date)
 				.viewCount(view_count)
 				.readAuthorityStatus(read_authority_status)
+				.employee(employee)
+				.files(announceFile)
+				.readAuthorities(announceReadAuthority)
 				.build();
 		 
 	}
@@ -54,6 +66,9 @@ public class AnnounceDto {
 				.mod_date(announce.getModDate())
 				.view_count(announce.getViewCount())
 				.read_authority_status(announce.getReadAuthorityStatus())
+				.employee(announce.getEmployee())
+				.announceFile(announce.getFiles())
+				.announceReadAuthority(announce.getReadAuthorities())
 				.build();
 	}
 	
