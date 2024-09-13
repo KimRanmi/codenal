@@ -1,10 +1,7 @@
 package com.codenal.employee.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.service.EmployeeService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class EmployeeController {
 
@@ -31,13 +30,14 @@ public class EmployeeController {
     }
 
     @GetMapping("/mypage")
-    public String showMyPage(Model model, Authentication authentication) {
+    public String showMyPage(Model model, Authentication authentication, HttpSession session) {
         // 로그인한 사용자의 ID를 가져온다고 가정 (이 예에서는 인증 객체에서 사용자 ID를 얻음)
         Long empId = Long.parseLong(authentication.getName());
 
         // 서비스에서 직원 정보 조회
         Employee employee = employeeService.getEmployeeById(empId);
-
+        session.setAttribute("signatureImage", employee.getEmpSignImage() != null ? employee.getEmpSignImage() : null);
+        session.setAttribute("profileImage", employee.getEmpProfilePicture());
         // 모델에 직원 정보 추가
         model.addAttribute("employee", employee);
 
@@ -53,53 +53,45 @@ public class EmployeeController {
                                 @RequestParam(value = "empAddress", required = false) String empAddress,
                                 @RequestParam(value = "empAddressDetail", required = false) String empAddressDetail,
                                 @RequestParam(value = "signatureImage",required = false) String signatureImage,
-                                Authentication authentication) {
+                                Authentication authentication,HttpSession session) {
         Long empId = Long.parseLong(authentication.getName());
+
         Map<String, Object> response = new HashMap<>();
         
         try {
             // 직원 정보 가져오기
             Employee employee = employeeService.getEmployeeById(empId);
             
-            // 프로필 이미지 처리
+            // 프로필 이미지 처리 (Base64로 변환 후 DB에 저장)
             if (profileImage != null && !profileImage.isEmpty()) {
-                String uploadDir = "uploads/profileImages/";
-                String fileName = profileImage.getOriginalFilename();
-                Path uploadPath = Paths.get(uploadDir);
-
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
+                try {
+                    // 파일을 Base64로 변환
+                    String base64ProfileImage = Base64.getEncoder().encodeToString(profileImage.getBytes());
+                    // 데이터베이스에 저장 (Base64 포맷으로)
+                    employee.setEmpProfilePicture("data:image/jpeg;base64," + base64ProfileImage);  // 프로필 이미지 저장
+                    session.setAttribute("profileImage", "data:image/jpeg;base64," + base64ProfileImage);  // 세션에 저장
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    response.put("success", false);	
+                    response.put("error", "Failed to process profile image.");
+                    return ResponseEntity.status(500).body(response);
                 }
-
-                Path filePath = uploadPath.resolve(fileName);
-                Files.copy(profileImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                String fileDownloadUri = "/" + uploadDir + fileName;
-                employee.setEmpProfilePicture(fileDownloadUri);
             }
 
             // 서명 이미지 처리
-            if (signatureImage != null && !signatureImage.isEmpty()) {
+            if (signatureImage != null) {
                 try {
-                    // Base64 디코딩
-                    String base64Image = signatureImage.split(",")[1];
-                    byte[] decodedBytes = java.util.Base64.getDecoder().decode(base64Image);
-
-                    String signFileName = "signature_" + empId + ".png";
-                    String signUploadDir = "uploads/signatures/";
-                    Path signUploadPath = Paths.get(signUploadDir);
-
-                    if (!Files.exists(signUploadPath)) {
-                        Files.createDirectories(signUploadPath);
+                    // 서명 이미지가 빈 문자열인 경우 (즉, 서명 삭제 요청)
+                    if (signatureImage.trim().isEmpty()) {
+                        employee.setEmpSignImage(null);  // 서명 이미지 삭제
+                        session.setAttribute("signatureImage", null);  // 세션에서 제거
+                    } else {
+                        // 서명 이미지가 존재할 경우 저장
+                        employee.setEmpSignImage(signatureImage);  // 서명 이미지 저장
+                        session.setAttribute("signatureImage", signatureImage);  // 세션에 저장
                     }
 
-                    Path signFilePath = signUploadPath.resolve(signFileName);
-                    Files.write(signFilePath, decodedBytes);
-
-                    String signFileDownloadUri = "/" + signUploadDir + signFileName;
-                    employee.setEmpSignImage(signFileDownloadUri);
-
-                    response.put("filePath", signFileDownloadUri);
+                    response.put("filePath", signatureImage);  // 클라이언트에 반환할 서명 정보
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                     response.put("success", false);
@@ -118,15 +110,10 @@ public class EmployeeController {
             response.put("success", true);
             return ResponseEntity.ok(response);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            response.put("success", false);
-            response.put("error", "Failed to save profile or signature image.");
-            return ResponseEntity.status(500).body(response);
         } catch (Exception e) {
             e.printStackTrace();
             response.put("success", false);
-            response.put("error", "Unexpected error occurred.");	
+            response.put("error", "Failed to save profile or signature image.");
             return ResponseEntity.status(500).body(response);
         }
     }

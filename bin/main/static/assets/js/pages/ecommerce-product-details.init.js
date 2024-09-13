@@ -24,3 +24,25 @@ var productThubnailSlider = new Swiper(".product-thumbnail-slider", {
 		swiper: productNavSlider,
 	},
 });
+
+const formData = document.getElementById("meetingRoomForm");
+formData.addEventListener('submit',(e)=>{
+	e.preventDefault();
+	
+	            
+	                const payload = new FormData(formData);
+	                console.log(payload);
+	                fetch('/meetingRoom',{
+	                    method:'POST',
+	                    body:payload
+	                })
+	                .then(response => response.json())
+	                .then(data=>{
+	                	
+	                    alert('성공');
+	                })
+	            })
+
+
+
+
