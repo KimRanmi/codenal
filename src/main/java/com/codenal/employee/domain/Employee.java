@@ -6,6 +6,10 @@ import java.util.List;
 import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.Jobs;
 import com.codenal.announce.domain.Announce;
+import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.annual.domain.AnnualLeaveUsage;
+import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.Referrer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -80,7 +84,26 @@ public class Employee {
 
     @Column(name = "emp_auth")
     private String empAuth;
-	
+    
+    //전자결재
+    @OneToMany(mappedBy = "employee")
+    private List<Approval> approvals;
+    
+    //연차사용내역
+    @OneToMany(mappedBy = "employee")
+    private List<AnnualLeaveManage> annualLeaveManages;
+    
+    //수신참조자
+    @OneToMany(mappedBy = "employee")
+    private List<Referrer> referrers;
+    
+    @OneToMany(mappedBy = "employee")
+    private List<AnnualLeaveUsage> annualLeaveUsages;
+    
     @OneToMany(mappedBy = "employee")
     private List<Announce> announces;
 }
+
+
+	
+   
