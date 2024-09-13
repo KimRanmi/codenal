@@ -1,8 +1,11 @@
 package com.codenal.ref;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class Apps {
@@ -14,7 +17,8 @@ public class Apps {
 	}
 
 	@GetMapping("/apps-calendar")
-	public String apps_calendar() {
+	public String apps_calendar(Model model) {
+		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());
 		return "apps/calendar";
 	}
 	
@@ -22,6 +26,11 @@ public class Apps {
 	public String apps_chat(Model model) {
 		model.addAttribute("page","appchat");
 		return "apps/chat";
+	}
+	
+	@GetMapping("/apps-meeting-room-check")
+	public String apps_chat() {
+		return "apps/meeting-room-check";
 	}
 	
 	@GetMapping("/apps-mailbox")

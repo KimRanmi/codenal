@@ -270,11 +270,14 @@ const month=date.getMonth()+1;
 document.getElementById("month").innerHTML = month;
 
 
-
+const csrfToken = document.getElementById('csrf_token').value;
 const fetchEventList = () => {
 		return new Promise((resolve,reject)=>{
 			fetch('/eventList', {
-				method: 'POST'
+				method: 'POST',
+				headers: {
+								'X-CSRF-TOKEN': csrfToken
+							}
 			})
 			.then(response => response.json())
 			.then(data => {

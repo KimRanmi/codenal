@@ -11,6 +11,7 @@ var start_date = document.getElementById("event-start-date");
 var timepicker1 = document.getElementById("timepicker1");
 var timepicker2 = document.getElementById("timepicker2");
 const csrfToken = document.getElementById('csrf_token').value;
+const writer = document.getElementById("empId").value;
 var date_range = null;
 var T_check = null;
 var eventContent = null;
@@ -45,8 +46,7 @@ const fetchEventList = () => {
 				        className: data.eventList[i].calendar_schedule_category,
 				        location: data.eventList[i].calendar_schedule_location,
 				        description: data.eventList[i].calendar_schedule_content,
-				        writer: data.eventList[i].calendar_schedule_writer,
-				        color: data.eventList[i].calendar_schedule_color
+				        writer: data.eventList[i].calendar_schedule_writer
 					}
 					defaultEvents[i] = data[i];
 				}
@@ -54,6 +54,21 @@ const fetchEventList = () => {
 			})
 		})
 	}
+	
+	fetch('/eventWriter'+writer, {
+				method: 'POST',
+				headers: {
+		                'X-CSRF-TOKEN': csrfToken
+		            },
+				})
+				.then(response => response.json())
+				.then(data => {
+					console.log(data.empData);
+					let empName = data.empData.empName;
+					let empDept = data.empData.deptNo;
+					let empJob = data.empData.jobNo;
+					
+				})
 
 document.addEventListener("DOMContentLoaded", function () {
     flatPickrInit();
@@ -206,6 +221,9 @@ document.addEventListener("DOMContentLoaded", function () {
 				if (xhr.readyState == 4 && xhr.status == 200) {
 				}
 			}
+			const header = document.getElementById("_csrf_header").value;
+			xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+			xhr.setRequestHeader(header, csrfToken);
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 			xhr.send("category="+categoryNo+"&title="+eventEl.innerText+"&writer="+writer+"&start_date="+startDate);
             return {
@@ -281,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit-event-btn").removeAttribute("hidden");
             document.getElementById('btn-save-event').setAttribute("hidden", true);
             document.getElementById("edit-event-btn").setAttribute("data-id", "edit-event");
-            document.getElementById("edit-event-btn").innerHTML = "수정";
+            document.getElementById("edit-event-btn").innerHTML = "수정정";
             eventClicked();
             flatPickrInit();
             flatpicekrValueClear();
@@ -385,6 +403,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 document.getElementById("event-timepicker1-tag").innerHTML = tConvert(gt_time);
                 document.getElementById("event-timepicker2-tag").innerHTML = tConvert(ed_time);
+                console.log(writer+'확인');
+                
+	                document.getElementById("event-writer").innerHTML = gt_time;
+                
             }
             newEventData = null;
             modalTitle.innerText = selectedEvent.title;
@@ -422,7 +444,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 defaultEvents[indexOfSelectedEvent].description = (info.event._def.extendedProps.description) ? info.event._def.extendedProps.description : '';
                 defaultEvents[indexOfSelectedEvent].location = (info.event._def.extendedProps.location) ? info.event._def.extendedProps.location : '';
                 defaultEvents[indexOfSelectedEvent].writer = info.event.writer;
-                defaultEvents[indexOfSelectedEvent].color = info.event.color;
             }
             upcomingEvent(defaultEvents);
         }
@@ -556,6 +577,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	        	alert(data.res_msg);
 	        })*/
 	        
+	        console.log('작성자'+writer);
 	        if(eventContent == null){
 				console.log('생성');
 				const xhr = new XMLHttpRequest();
@@ -565,7 +587,6 @@ document.addEventListener("DOMContentLoaded", function () {
 						alert('성공');
 					}
 				}
-				let writer = 12345678;
 				const header = document.getElementById("_csrf_header").value;
 				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
 				xhr.setRequestHeader(header, csrfToken);
@@ -589,8 +610,10 @@ document.addEventListener("DOMContentLoaded", function () {
 						alert('성공');
 					}
 				}
-				let writer = 12345678;
 				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				const header = document.getElementById("_csrf_header").value;
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				xhr.setRequestHeader(header, csrfToken);
 				updateStartDate = updateStartDate.getFullYear()+'-'+(updateStartDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateStartDate.getDate().toString().padStart(2, '0')
 				+' '+updateStartDate.getHours().toString().padStart(2, '0')+':'+updateStartDate.getMinutes().toString().padStart(2, '0');
 				

@@ -27,6 +27,15 @@ public class CalendarService {
 		this.employeeRepository = employeeRepository;
 	}
 	
+	public EmployeeDto eventWriter(Long empId) {
+		Employee emp = employeeRepository.findByEmpId(empId);
+		EmployeeDto dto = EmployeeDto.fromEntity(emp);
+		
+		// jobs, jobsDto 생성 후 부서명, 직급명 각자 레포지토리에서 가져온 후 String 객체 만들어서 거기다 넣어서 리턴 후 js에서 출력하기
+		
+		return dto;
+	}
+	
 	public void modifyEvent(CalendarDto dto) {
 		CalendarDto res = selectOneEvent(dto.getCalendar_schedule_no());
 		res.setCalendar_schedule_category(dto.getCalendar_schedule_category());

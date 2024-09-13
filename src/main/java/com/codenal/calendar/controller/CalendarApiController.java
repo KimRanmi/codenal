@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.codenal.calendar.domain.Calendar;
 import com.codenal.calendar.domain.CalendarDto;
 import com.codenal.calendar.service.CalendarService;
+import com.codenal.employee.domain.Employee;
+import com.codenal.employee.domain.EmployeeDto;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,6 +43,18 @@ public class CalendarApiController {
 	@Autowired
 	public CalendarApiController(CalendarService calendarService) {
 		this.calendarService = calendarService;
+	}
+	
+	@ResponseBody
+	@PostMapping("/eventWriter{id}")
+	public Map<String, Object> eventWriter(@PathVariable("id") Long empId){
+		Map<String, Object> result = new HashMap<String, Object>();
+		EmployeeDto dto = calendarService.eventWriter(empId);
+		if(dto != null) {
+			result.put("empData", dto);
+		}
+		
+		return result;
 	}
 	
 	@ResponseBody

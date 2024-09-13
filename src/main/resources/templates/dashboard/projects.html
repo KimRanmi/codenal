@@ -16,7 +16,7 @@
 <body>
 	<div layout:fragment="content">
 		<!-- start page title -->
-		<div th:replace="partials/page-title :: page-title('메인화면','Dashboards')"></div>
+		<div th:replace="partials/page-title :: page-title('메인화면','홈')"></div>
 		<!-- end page title -->
 		<div class="row project-wrapper">
 			<div class="col-xxl-8">
@@ -30,16 +30,16 @@
 											id="candidate-img"
 											class="img-thumbnail rounded-circle shadow-none">
 									</div>
-
+									<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
 									<h5 id="candidate-name" class="mb-1" style="font-weight: bold;"><span>하츄핑</span> <span>대리</span></h5>
 									<h5 id="candidate-position" class="mb-1" style="font-size: 13px;"><span>웹 개발팀</span></h5>
 									<h5 id="candidate-position" class="text-muted mb-4" style="font-size: 13px"><span>2024.07.18</span> 입사</h5>
 									<div class="d-flex gap-2 justify-content-center">
 										<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="width: 100%">
 											<input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked=""> 
-											<label class="btn btn-outline-secondary" for="btnradio1" data-bs-toggle="tooltip" data-bs-placement="top" title="출근">출근하기</label> 
+											<label class="btn btn-outline-secondary" for="btnradio1">출근하기</label> 
 											<input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"> 
-											<label class="btn btn-outline-secondary" for="btnradio2" data-bs-toggle="tooltip" data-bs-placement="top" title="퇴근">퇴근하기</label> 
+											<label class="btn btn-outline-secondary" for="btnradio2">퇴근하기</label> 
 										</div>
 									</div>
 									<div class="border-0 d-flex justify-content-end">
@@ -60,7 +60,7 @@
 										</div>
 										<!--end col-->
 										<div class="col-6 col-sm-4">
-											<div class="p-3 border border-dashed border-start-0">
+											<div class="p-3 border border-dashed border-start-0 border-end-0">
 												<p class="text-muted mb-0 mb-1">지각</p>
 												<h5 class="mb-0">
 													<span class="counter-value">0</span>
