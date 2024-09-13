@@ -60,7 +60,7 @@ public class Employee {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "emp_end")
     private LocalDate empEnd;
-
+ 
     @Column(name = "emp_status")
     private String empStatus;
 
