@@ -1,0 +1,221 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<th:block layout:fragment="pagetitle">
+	<!--page title-->
+	<div th:replace="partials/title-meta :: title-meta('직원 정보 상세')"></div>
+</th:block>
+
+<head>
+
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<div th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="card body">
+					<!-- ----------------------탭---------------------------- -->
+					<div class="card-header">
+						<ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+							<li class="nav-item col-lg-1"><a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="fas fa-home"></i> 직원 정보
+							</a></li>
+							<li class="nav-item col-lg-1"><a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="far fa-user"></i> 퇴사 관리
+							</a></li>
+						</ul>
+					</div>
+
+					<div class="card-body">
+						<div class="tab-content">
+							<!-- ------------------------직원 정보----------------------------- -->
+							<div class="tab-pane active" id="personalDetails" role="tabpanel">
+								<form action="javascript:void(0);">
+									<div class="row">
+										<!-- 이름 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="firstnameInput" class="form-label">이름</label> 
+												<input type="text" class="form-control" id="firstnameInput" value="Dave">
+
+											</div>
+										</div>
+										<!-- 사번 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="lastnameInput" class="form-label">사번</label> 
+												<input type="text" class="form-control" id="lastnameInput" value="Adame">
+											</div>
+										</div>
+										<!--개인 번호 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="phonenumberInput" class="form-label">개인 번호</label> 
+												<input type="text" class="form-control" id="phonenumberInput" placeholder="Enter your phone number" value="+(1) 987 6543">
+											</div>
+										</div>
+										<!-- 주민 등록 번호 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="emailInput" class="form-label">주민 등록 번호</label> 
+												<input type="email" class="form-control" id="emailInput" value="daveadame@velzon.com">
+											</div>
+										</div>
+										<!-- 주소 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="JoiningdatInput" class="form-label">주소</label> 
+												<input type="text" class="form-control" />
+											</div>
+										</div>
+										<!-- 상세 주소 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="JoiningdatInput" class="form-label">상세 주소</label> 
+												<input type="text" class="form-control" id="JoiningdatInput" />
+											</div>
+										</div>
+										<!-- 부서 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="designationInput" class="form-label">부서</label> 
+												<input type="text" class="form-control" id="designationInput" value="Lead Designer / Developer">
+											</div>
+										</div>
+										<!-- 직급 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="websiteInput1" class="form-label">직급</label> 
+												<input type="text" class="form-control" id="websiteInput1" value="www.velzon.com" />
+												<div></div>
+											</div>
+										</div>
+										<!-- 입사일 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="cityInput" class="form-label">입사일</label> 
+												<input type="text" class="form-control" id="cityInput" value="California" />
+												<div></div>
+											</div>
+										</div>
+										<!-- 퇴사일 -->
+										<div class="col-lg-6">
+											<div class="mb-3">
+												<label for="countryInput" class="form-label">퇴사일</label> 
+												<input type="text" class="form-control" id="countryInput" value="United States" />
+											</div>
+										</div>
+										<!--임시 비밀번호 발급 / 정보 수정 /  취소 -->
+										<div class="col-lg-12">
+											<div class="hstack gap-3 justify-content-end">
+												<!-- 임시 비밀번호 발급 버튼 -->
+											<!-- 버튼 -->
+											<button type="button" class="btn btn-success btn-border w-lg" data-bs-toggle="modal" data-bs-target="#zoomInModal">
+											    임시 비밀번호 발급
+											</button>
+											
+											<!-- 모달 -->
+											<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
+											    <div class="modal-dialog modal-dialog-centered">
+											        <div class="modal-content">
+											            <div class="modal-header">
+											                <h4 class="modal-title" id="zoomInModalLabel" style="font-size: 18px; font-weight: bold;">임시 비밀번호 발급</h4>
+											                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											            </div>
+											            <div class="modal-body">
+											                <h5 class="fs-16">
+											                    강해린님에게 임시 비밀번호를 발급하시겠습니까?
+											                </h5>
+											                <form action="javascript:void(0);">
+											                    <div class="row g-3">
+											                        <div class="col-xxl-12">
+											                        <div></div>
+											                        </div>
+											                        <div class="col-xxl-12">
+											                            <div>
+											                                <label for="emailInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label>
+											                                <input type="password" class="form-control" id="emailInput" placeholder="비밀번호를 입력하세요.">
+											                                <div class="invalid-feedback"></div>
+											                            </div>
+											                        </div>
+											                    </div>
+											                </form>
+											            </div>
+											            <div class="modal-footer">
+											                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+											                <button type="button" class="btn btn-primary">Save Changes</button>
+											            </div>
+											        </div><!-- /.modal-content -->
+											    </div><!-- /.modal-dialog -->
+											</div><!-- /.modal -->
+
+												<!-- --------------------- -->
+
+												<!-- 수정 버튼 -->
+												<button type="submit" class="btn btn-primary btn-border w-xs">수정</button>
+
+												<!-- 이전 버튼 -->
+												<button type="button" class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs" th:onclick="|location.href='@{/admin/list}'|">이전</button>
+											</div>
+										</div>
+
+									</div>
+								</form>
+							</div>
+
+
+							<!-- ------------------------퇴사 관리----------------------------- -->
+							<div class="tab-pane" id="changePassword" role="tabpanel">
+								<form action="javascript:void(0);">
+									<div class="row g-4">
+										<!-- 퇴사일 -->
+										<div class="col-lg-1"></div>
+										<div class="col-lg-5">
+											<div>
+												<label for="oldpasswordInput" class="form-label">퇴사일</label> <input type="password" class="form-control" id="oldpasswordInput">
+											</div>
+										</div>
+										<!-- 관리자 비밀번호 -->
+										<div class="col-lg-5">
+											<div>
+												<label for="newpasswordInput" class="form-label">관리자 비밀번호</label> <input type="password" class="form-control" id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
+											</div>
+										</div>
+										<div class="col-lg-1"></div>
+
+										<div class="col-lg-14">
+											<div class="hstack justify-content-end">
+												<button type="submit" class="btn btn-primary btn-border w-xs">퇴사</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<th:block layout:fragment="pagejs">
+		<script src="/assets/js/pages/profile-setting.init.js"></script>
+	</th:block>
+
+	<th:block layout:fragment="modal">
+
+	</th:block>
+	<th:block layout:fragment="pagejs">
+		<!-- prismjs plugin -->
+		<script src="/assets/libs/prismjs/prism.js"></script>
+		<!-- Lord Icon -->
+		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
+
+		<!-- Modal Js -->
+		<script src="/assets/js/pages/modal.init.js"></script>
+	</th:block>
+</body>
+
+</html>

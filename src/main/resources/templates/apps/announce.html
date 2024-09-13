@@ -1,5 +1,6 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}">
 
 <th:block layout:fragment="pagetitle">
@@ -8,13 +9,22 @@
 </th:block>
 
 <head>
-	<!-- Sweet Alert css-->
-	<link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+<!-- Sweet Alert css-->
+<link href="/assets/libs/sweetalert2/sweetalert2.min.css"
+	rel="stylesheet" type="text/css" />
+
+<style>
+tr {
+	text-align: center;
+	font-size: 15px;
+}
+</style>
 </head>
 
 <body>
 	<div layout:fragment="content">
 		<div th:replace="partials/page-title :: page-title('게시판 조회','게시판')"></div>
+
 
 		<div class="row">
 			<div class="col-lg-12">
@@ -24,30 +34,34 @@
 							<h5 class="card-title mb-0 flex-grow-1">게시판 목록</h5>
 							<div class="flex-shrink-0">
 								<div class="d-flex flex-wrap gap-2">
-									<a href="/announce/create"><i class="ri-add-line align-bottom me-1"></i>
-										게시글 작성</a>
-										<!-- 게시글 체크박스 기능 안넣을거면 지우기 -->
-<!--체크박스 									<button class="btn btn-soft-danger" id="remove-actions"
+									<a href="/announce/create"><i
+										class="ri-add-line align-bottom me-1"></i> 게시글 작성 </a>
+									<!-- 게시글 체크박스 기능 안넣을거면 지우기 -->
+									<!--체크박스 									<button class="btn btn-soft-danger" id="remove-actions"
 										onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="card-body border border-dashed border-end-0 border-start-0">
+					<div
+						class="card-body border border-dashed border-end-0 border-start-0">
 						<form>
+							<input type="hidden" th:value="${username}"></input>
 							<div class="row g-3">
 								<div class="col-xxl-5 col-sm-12">
 									<div class="search-box">
-										<input type="text" class="form-control search bg-light border-light"
-											placeholder="검색어를 입력하세요.">
-										<i class="ri-search-line search-icon"></i>
+										<input type="text"
+											class="form-control search bg-light border-light"
+											placeholder="검색어를 입력하세요."> <i
+											class="ri-search-line search-icon"></i>
 									</div>
 								</div>
 
 								<div class="col-xxl-3 col-sm-4">
 									<div class="input-light">
-										<select class="form-control" data-choices data-choices-search-false
-											name="choices-single-default" id="idStatus">
+										<select class="form-control" data-choices
+											data-choices-search-false name="choices-single-default"
+											id="idStatus">
 											<option value="">정렬</option>
 											<option value="New" selected>최신순</option>
 											<option value="Old">오래된순</option>
@@ -58,10 +72,9 @@
 								</div>
 								<!--end col-->
 								<div class="col-xxl-1 col-sm-4">
-<!--onclick="SearchData(); JS파일에 있는거 지우기 -->
-									<button type="button" class="btn btn-primary w-100" onclick=""> <i
-											class="ri-equalizer-fill me-1 align-bottom"></i>
-										필터
+									<!--onclick="SearchData(); JS파일에 있는거 지우기 -->
+									<button type="button" class="btn btn-primary w-100" onclick="">
+										<i class="ri-equalizer-fill me-1 align-bottom"></i> 필터
 									</button>
 								</div>
 								<!--end col-->
@@ -72,10 +85,11 @@
 					<!--end card-body-->
 					<div class="card-body">
 						<div class="table-responsive table-card mb-4">
-							<table class="table align-middle table-nowrap mb-0" id="tasksTable">
+							<table class="table align-middle table-nowrap mb-0"
+								id="tasksTable">
 								<thead class="table-light text-muted">
 									<tr>
-<!--체크박스 										<th style="width: 40px;">
+										<!--체크박스 										<th style="width: 40px;">
 											<div class="form-check">
 												<input class="form-check-input" type="checkbox" id="checkAll"
 													value="option">
@@ -99,7 +113,7 @@
 									<!-- announceList 꺼내기(게시글 존재o) -->
 									<th:block th:if="${!#lists.isEmpty(announceList.content)}">
 										<tr th:each="announce, stat : ${announceList}">
-	<!--체크박스 										<th scope="row">
+											<!--체크박스 										<th scope="row">
 												<div class="form-check">
 													<input class="form-check-input" type="checkbox" name="chk_child"
 														value="option1">
@@ -107,22 +121,25 @@
 											</th> -->
 											<!-- pageable 활용한 게시글 번호 수정 -->
 											<td></td>
-											<td th:text="${(announceList.pageable.pageSize) * (announceList.pageable.pageNumber)+stat.count}"></td>
+											<td
+												th:text="${(announceList.pageable.pageSize) * (announceList.pageable.pageNumber)+stat.count}"></td>
 											<td th:text="${announce.view_count}"></td>
-											<td>
-											  <a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}" th:text="${announce.announce_title}"></a>
-											</td>											
-											<td th:text="${announce.announce_writer}">작성자이름 </td>
-											<td th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>
+											<td><a
+												th:href="@{/announce/detail/{no}(no=${announce.announce_no})}"
+												th:text="${announce.announce_title}"></a></td>
+											<td th:text="${announce.employee.empName}">작성자이름</td>
+											<td
+												th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>
 										</tr>
 									</th:block>
 								</tbody>
 							</table>
 							<!--end table-->
-							
+
 						</div>
 						<!--페이징 로직-->
-						<div class="d-flex justify-content-end mt-2" th:if="${!announceList.isEmpty()}">
+						<div class="d-flex justify-content-end mt-2"
+							th:if="${!announceList.isEmpty()}">
 							<ul class="pagination"
 								th:with="
 								pageNumber = ${announceList.pageable.pageNumber},
@@ -134,38 +151,28 @@
 								">
 								<!-- 이전 -->
 								<th:block th:if="${!announceList.first}">
-									<li class="page-item">
-									<a class="page-link" th:href="${announceList.first} ? '#' : @{/announce(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;이전</a>
+									<li class="page-item"><a class="page-link"
+										th:href="${announceList.first} ? '#' : @{/announce(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;이전</a>
 									</li>
 								</th:block>
 								<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용-->
-								<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
-									<li class="page-item">
-									<a class="page-link" th:text="${page}" th:href="@{/announce(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}" 
-									th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
-									</li>
+								<th:block
+									th:each="page: ${#numbers.sequence(startPage, endPage)}">
+									<li class="page-item"><a class="page-link"
+										th:text="${page}"
+										th:href="@{/announce(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}"
+										th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
 								</th:block>
 								<ul class="pagination listjs-pagination mb-0"></ul>
 								<!-- 이후 -->
 								<th:block th:if="${!announceList.last}">
-									<li class="page-item">
-									<a class="page-link" th:href="${announceList.last} ? '#' : @{/announce(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;이후</a>
+									<li class="page-item"><a class="page-link"
+										th:href="${announceList.last} ? '#' : @{/announce(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;이후</a>
 									</li>
 								</th:block>
 							</ul>
 						</div>
-						
-<!-- 						<div class="d-flex justify-content-end mt-2">
-							<div class="pagination-wrap hstack gap-2">
-								<a class="page-item pagination-prev disabled" href="#">
-									이전
-								</a>
-								<ul class="pagination listjs-pagination mb-0"></ul>
-								<a class="page-item pagination-next" href="#">
-									이후
-								</a>
-							</div>
-						</div> -->
+						<!-- 페이징 로직 끝 -->
 					</div>
 					<!--end card-body-->
 				</div>
@@ -178,35 +185,23 @@
 	</div>
 
 
-<!-- JS -->
-<script>
+	<!-- list.js min js -->
+	<script src="/assets/libs/list.js/list.min.js"></script>
 
+	<!--list pagination js-->
+	<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
 
+	<!-- titcket init js -->
+	<script src="/assets/js/pages/tasks-list.init.js"></script>
 
-
-
-</script>
-
-
-
-
-		<!-- list.js min js -->
-    <script src="/assets/libs/list.js/list.min.js"></script>
-
-    <!--list pagination js-->
-    <script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
-
-    <!-- titcket init js -->
-    <script src="/assets/js/pages/tasks-list.init.js"></script>
-
-    <!-- Sweet Alerts js -->
-    <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<!-- Sweet Alerts js -->
+	<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 	</th:block>
-	
-	
-	
-	
-	
+
+
+
+
+
 </body>
 
 </html>

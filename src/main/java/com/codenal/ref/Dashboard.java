@@ -8,7 +8,7 @@ public class Dashboard {
 
 	@GetMapping("/")
 	public String index() {
-		return "dashboard/index";
+		return "dashboard/projects";
 	}
 	
 	@GetMapping("/dashboard-analytics")

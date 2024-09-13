@@ -24,21 +24,18 @@ import lombok.Setter;
 @Builder
 public class AnnounceFile {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="announce_no")
-	private Long announceNo;
-	
-	@ManyToOne
-	@JoinColumn(name="parent_announce_no")
-	private Announce announce;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="file_no")
+    private int fileNo;
+
+    @ManyToOne
+    @JoinColumn(name="announce_no", nullable = false)
+    private Announce announce;
 
 	@Column(name="file_ori_name")
 	private String fileOriName;
 	
-	@Column(name="announce_title")
-	private String announceTitle;
-
 	@Column(name="file_new_name")
 	private String fileNewName;
 	

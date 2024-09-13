@@ -62,7 +62,7 @@ public class ApprovalService {
    // 리스트 조회
    public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id) {
 	  
-	  Employee emp = employeeRepository.findByempName(id);
+	  Employee emp = employeeRepository.findByEmpId(id);
       Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),pageable);
 
       List<Map<String, Object>> responseList = new ArrayList<>();
@@ -112,7 +112,7 @@ public class ApprovalService {
    // 전자결재 저장
    public Approval createApproval(Map<String,Object> obj) {
       
-      Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+      Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
       System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
       
       ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
@@ -131,7 +131,7 @@ public class ApprovalService {
    // 전자결재(휴가신청서) 저장
    public Approval createApprovalLeave(Map<String,Object> obj) {
          
-         Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+         Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
          System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
          
      ApprovalForm af = approvalFormRepository.findByApprovalFormCode((Integer)obj.get("폼코드"));
@@ -216,7 +216,7 @@ public class ApprovalService {
    @Transactional
    public Approval updateApproval(Map<String,Object> obj,Long no) {
 	   
-	   Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+	   Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
 	   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
 	      
 	   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
@@ -242,7 +242,7 @@ public class ApprovalService {
 	   @Transactional
 	   public Approval updateApprovalLeave(Map<String,Object> obj,Long no) {
 		   
-		   Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+		   Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
 		   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
 		      
 		   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));

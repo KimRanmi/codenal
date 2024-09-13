@@ -1,8 +1,6 @@
 package com.codenal.admin.controller;
 
-import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.codenal.admin.service.AdminService;
 import com.codenal.employee.domain.EmployeeDto;
-
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @Controller
 public class AdminApiController {
@@ -26,25 +20,25 @@ public class AdminApiController {
 	@Autowired
 	public AdminApiController(AdminService adminService) {
 		this.adminService = adminService;
-	}
-
+	} 
+ 
 	// 신규 직원 등록
-	@ResponseBody
-	@PostMapping("/join")
+	@ResponseBody 
+	@PostMapping("/admin/join")
 	public Map<String,String> joinEmployee(@RequestBody EmployeeDto dto) {
-		System.out.println("Received DTO: " + dto);
+		
 		Map<String,String> resultMap = new HashMap<String,String>();
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "등록 중 오류가 발생했습니다.");
 
 		if(adminService.createEmployee(dto) > 0) {
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "성공적으로 등록되었습니다.");
+			resultMap.put("res_msg", "신규 직원이 성공적으로 등록되었습니다.");
 		};
 
 		return resultMap;
 	}
-
+	
 	
 	
 }
