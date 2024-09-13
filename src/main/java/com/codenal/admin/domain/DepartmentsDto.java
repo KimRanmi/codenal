@@ -6,15 +6,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@ToString
 public class DepartmentsDto {
 
-    private Integer deptNo; // 부서 번호
+    private int deptNo; // 부서 번호
     private String deptName; // 부서명
     private LocalDate deptCreateDate; // 부서 개설일
 

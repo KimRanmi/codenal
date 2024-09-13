@@ -7,10 +7,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class Apps {
 	
+	@GetMapping("/admin/detail")
+	public String admin_detail() {
+		return "admin/detail";
+	}
 
-	@GetMapping("/admin-join")
-	public String admin_join() {
-		return "admin/join";
+	@GetMapping("/employee-addressBook")
+	public String employee_addressBook() {
+		return "employee/addressBook";
+	}
+	
+	@GetMapping("/admin-list")
+	public String admin_list() {
+		return "admin/list";
+	}
+	
+	@GetMapping("/admin-dept")
+	public String admin_dept() {
+		return "admin/dept";
 	}
 
 	@GetMapping("/apps-calendar")

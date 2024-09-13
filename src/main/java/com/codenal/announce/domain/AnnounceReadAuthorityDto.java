@@ -19,14 +19,14 @@ import lombok.ToString;
 public class AnnounceReadAuthorityDto {
 
 	private Announce announce;
-	private Departments department;
-	private Jobs job;
+	private Departments departments;
+	private Jobs jobs;
 	
 	public AnnounceReadAuthority toEntity() {
 		return AnnounceReadAuthority.builder()
 				.announce(announce)
-				.department(department)
-				.job(job)
+				.departments(departments)
+				.jobs(jobs)
 				.build();
 		 
 	}
@@ -34,8 +34,8 @@ public class AnnounceReadAuthorityDto {
 	public AnnounceReadAuthorityDto toDto(AnnounceReadAuthority announceReadAuthority) {
 		return AnnounceReadAuthorityDto.builder()
 				.announce(announceReadAuthority.getAnnounce())
-				.department(announceReadAuthority.getDepartment())
-				.job(announceReadAuthority.getJob())
+				.departments(announceReadAuthority.getDepartments())
+				.jobs(announceReadAuthority.getJobs())
 				.build();
 	}
 }
