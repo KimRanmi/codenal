@@ -1,6 +1,7 @@
 package com.codenal.approval.service;
 
 import java.io.File;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,8 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalFile;
+import com.codenal.approval.domain.ApprovalFileDto;
 import com.codenal.approval.repository.ApprovalFileRepository;
 import com.codenal.approval.repository.ApprovalRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ApprovalFileService {
@@ -99,5 +103,32 @@ public class ApprovalFileService {
 			e.printStackTrace();
 			return new ResponseEntity<Object>(null, HttpStatus.CONFLICT);
 		}
+	}
+	
+	// 수정 ( 폴더 안에 파일 삭제 후 파일 데이터 삭제)
+	@Transactional
+	public int  deleteFile(Long no) {
+		int result = -1;
+		System.out.println(no);
+		try {
+			// 
+			ApprovalFile af = approvalFileRepository.findByApprovalNo(no);
+			String newFileName = af.getFileNewName();
+			
+			String resultDir = fileDir + URLDecoder.decode(newFileName,"UTF-8");
+			
+			if(resultDir != null && resultDir.isEmpty() ==false) {
+				File file = new File(resultDir);
+				if(file.exists()) {
+					file.delete();
+				}
+			}
+			
+			result = approvalFileRepository.deleteByApprovalNo(no);
+			
+		}catch(Exception e) {
+			e.printStackTrace();		
+		}
+		return result;
 	}
 }

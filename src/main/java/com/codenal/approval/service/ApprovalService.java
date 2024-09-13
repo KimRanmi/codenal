@@ -157,6 +157,7 @@ public class ApprovalService {
                           .employee(emp)
                           .annualUsageStartDate((LocalDate)obj.get("시작일자"))
                           .annualUsageEndDate((LocalDate)obj.get("종료일자"))
+                          .timePeriod((String)obj.get("반차시간대"))
                           .build();
                               
          
@@ -231,9 +232,65 @@ public class ApprovalService {
 			   				
 	   Approval approval = dto.toEntity();
 	   
-
+	   // 데이터베이스에 저장
+	   approvalRepository.save(approval);
+	   
 	   return approval;
    }
    
+	   // 전자결재(근태신청서) 수정
+	   @Transactional
+	   public Approval updateApprovalLeave(Map<String,Object> obj,Long no) {
+		   
+		   Employee emp = employeeRepository.findByempName((Long)obj.get("이름"));
+		   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+		      
+		   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+		   ApprovalForm af = approvalFormRepository.findByApprovalFormCode((Integer)obj.get("폼코드"));
+		     
+		     int type = 0;
+		     switch (af.getFormName()) {
+		        case "반차":
+		            type = 1;
+		            break;
+		        case "연차":
+		            type = 2;
+		            break;
+		        case "경조사휴가":
+		            type = 3;
+		            break;
+		        case "병가":
+		            type = 4;
+		            break; 
+		     }
+		     
+		     AnnualLeaveUsage annual = AnnualLeaveUsage.builder()
+		                          .annualType(type)
+		                          .employee(emp)
+		                          .annualUsageStartDate((LocalDate)obj.get("시작일자"))
+		                          .annualUsageEndDate((LocalDate)obj.get("종료일자"))
+		                          .timePeriod((String)obj.get("반차시간대"))
+		                          .build();
+		                              
+		         
+		   AnnualLeaveUsage au = annualLeaveUsageRepository.save(annual);
+		   
+		   ApprovalDto dto = ApprovalDto.builder()
+				   				.approval_no(no)
+				   				.approval_title((String)obj.get("제목"))
+				   				.approval_content((String)obj.get("내용"))
+				   				.approval_status(0)
+				   				.employee(emp)
+				   				.approvalCategory(ac)
+				   				.annualLeaveUsage(au)
+				   				.build();
+				   				
+		   Approval approval = dto.toEntity();
+		   
+		   // 데이터베이스에 저장
+		   approvalRepository.save(approval);
+		   
+		   return approval;
+	   }
 
 }

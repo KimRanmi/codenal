@@ -72,11 +72,9 @@
 	cursor: not-allowed;
 }
 
-input[type=text], input[type=date] {
-	border: 1px solid #d3d3d3;
-	border-radius: 4px;
-	height: 35px;
-}	
+select, input[type=date], input[type=text] {
+			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
+		}
 </style>
 </head>
 <body>
@@ -141,46 +139,64 @@ input[type=text], input[type=date] {
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
 									class="selectedName3">
 							</div>
-							<div class="mb-3" style="width: 600px;">
-								<div th:if="${dto.approval.approvalStatus!=4}">
-								    <label class="form-label" for="project-thumbnail-img">양식</label><br>
-									<input type="text" th:value="${dto.approvalForm.formName}"
-									style="width: 200px;" readonly>
-								</div>
-								<div th:if="${dto.approval.approvalStatus==4 && type==1}">
-								<label class="form-label" for="project-thumbnail-img">양식</label><br>
-								    <select class="form-control" id="category-select"
-								            style="width: 200px;" name="form_code" onchange="updateEditorContent()">
-								        <option value="">-- 선택하세요 --</option>
-								        <option th:each="cate : ${cateList}" 
-								                th:value="${cate.form_code}" 
-								                th:text="${cate.form_name}" 
-								                th:data-content="${cate.form_content}"
-								                th:selected="${dto.approvalForm.formCode == cate.form_code}">
-								        </option>
-								    </select>
-								</div>
-								<div
-									style="margin-top: -30px; margin-left: 230px; color: #b9b9b9">
-									내 잔여연차 :</div>
-								<div style="margin-top: 30px; margin-bottom: 10px;">날짜</div>
-								<div id="dateContent" style="width: 1000px;">
-									<div th:if="${dto.approvalForm.formName.equals('반차')}">
-										<input type="date" disabled style="width: 200px;"
-											id="singleStartDate"
-											th:value="${dto.annualLeaveUsage.annualUsageStartDate}">
-									</div>
-									<div th:if="${dto.approvalForm.formName != '반차'}">
-										<input type="date" readonly style="width: 200px;"
-											id="startDate" name="start_date"
-											th:value="${dto.annualLeaveUsage.annualUsageStartDate}">
-										~ <input type="date" readonly style="width: 200px;"
-											id="endDate" name="end_date"
-											th:value="${dto.annualLeaveUsage.annualUsageEndDate}">
-									</div>
+						
+						<!-- 회수함에 없는 상태 -->
+						<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus!=4 && type==1}">
+						    <label class="form-label" for="project-thumbnail-img">양식</label><br>
+						    <input type="text" th:value="${dto.approvalForm.formName}"
+						           style="width: 200px;" readonly>
+						    <div>
+						        <label class="form-label" for="project-thumbnail-img" style="margin-top: 20px; margin-bottom:10px;">날짜</label><br>
+						        <input type="date" th:value="${dto.annualLeaveUsage.annualUsageStartDate}" readonly style="width:200px;">
+						        -
+						        <input type="date" th:value="${dto.annualLeaveUsage.annualUsageEndDate}" th:if="${dto.annualLeaveUsage.annualUsageEndDate != null}" readonly style="width:200px;">
+								<input type="text" th:value="${dto.annualLeaveUsage.timePeriod}" th:if="${dto.annualLeaveUsage.timePeriod != null}" 
+						           style="width: 200px;" readonly>
+						    	<input type="hidden" th:if="${dto.annualLeaveUsage.timePeriod} == null">
+						    </div>
+						</div>
+						
+						<!-- 회수함에 있는 상태 -->
+						<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus==4 && type==1}">
+						    <label class="form-label" for="project-thumbnail-img">양식</label><br>
+						    <select class="form-control" id="category-select"
+						            style="width: 200px;" name="form_code" onchange="updateEditorContent()">
+						        <option value="">-- 선택하세요 --</option>
+						        <option th:each="cate : ${cateList}" 
+						                th:value="${cate.form_code}" 
+						                th:text="${cate.form_name}" 
+						                th:data-content="${cate.form_content}"
+						                th:selected="${dto.approvalForm.formCode == cate.form_code}">
+						        </option>
+						    </select>
+						    <div>
+						        <div style="margin-top: -30px; margin-left: 230px; color: #b9b9b9">
+						            내 잔여연차 :
+						        </div>
+						        <div style="margin-top: 30px; margin-bottom: 10px;">날짜</div>
+						        <div id="dateContent" style="width: 1000px;">
+						            <div th:if="${dto.approvalForm.formName.equals('반차')}">
+						                <input type="date" style="width: 200px;"
+						                       id="singleStartDate"
+						                       th:value="${dto.annualLeaveUsage.annualUsageStartDate}">
+						                <select style="margin-left: 10px; width: 150px;" name="time_period">
+						                	<option th:selected="${dto.annualLeaveUsage.timePeriod == '오전'}">오전</option>
+						                	<option th:selected="${dto.annualLeaveUsage.timePeriod == '오후'}">오후</option>
+						            	</select>
+						            </div>
+						            <div th:if="${dto.approvalForm.formName != '반차'}">
+						                <input type="date" style="width: 200px;"
+						                       id="startDate" name="start_date"
+						                       th:value="${dto.annualLeaveUsage.annualUsageStartDate}">
+						                -
+						                <input type="date" style="width: 200px;"
+						                       id="endDate" name="end_date"
+						                       th:value="${dto.annualLeaveUsage.annualUsageEndDate}">
+						            </div>
+						        </div>
+						    </div>
+						</div>
 
-								</div>
-							</div>
 						</form>
 						<br>
 						<div th:text="${dto.approval.approvalContent}"
@@ -290,6 +306,43 @@ input[type=text], input[type=date] {
 			    contentEditor.setHTML(formContent);
 			}
 		 </script>
+		 
+		 
+		 <!-- 날짜 생성 스크립트  -->
+		 <script>
+                const select = document.getElementById('category-select');
+                const contents = document.getElementById('dateContent');
+            
+                // select 값이 변경될 때마다 실행되는 이벤트 리스너
+                select.addEventListener('change', function() {
+                    const selectedValue = select.value;
+                    if (selectedValue == '1') {
+                        contents.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> -' +
+                                            '<select style="margin-left:10px; width:150px;"><option>선택하세요</option><option>오전</option><option>오후</option></select>';
+                    } else {
+                        contents.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> - ' +
+                                            '<input type="date" style="width:200px;" id="endDate" name="end_date">';
+                    }
+
+                    // 새롭게 생성된 요소를 가져와서 이벤트 리스너 추가
+                    const start = document.getElementById('startDate');
+                    const end = document.getElementById('endDate');
+                    
+                    if (end) {
+                        end.addEventListener('change', function() {
+                            if (start.value > end.value) {
+                                alert('종료일이 시작일보다 빠릅니다.');
+                                end.value = ''; 
+                            }
+                        });
+                    }
+                });
+            
+        </script>
+		 
+		 
+		 
+		 
 		 <script>
 				const form = document.getElementById('approvalForm');
 				form.addEventListener('submit',(e) =>{
@@ -302,7 +355,7 @@ input[type=text], input[type=date] {
 				payload.forEach((value, key) => {
 				    console.log(`${key}: ${value}`);
 				});
-				fetch('/approval/update/'+id,{
+				fetch('/approval/leaveUpdate/'+id,{
 					method : 'PUT',
 					headers : {
 						'X-CSRF-TOKEN': csrfToken

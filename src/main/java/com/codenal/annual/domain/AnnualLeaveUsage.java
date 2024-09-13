@@ -49,6 +49,10 @@ public class AnnualLeaveUsage {
    @Column(name="annual_type")
    private int annualType;
    
+   // 반차였을 때 오전인지 오후인지 설정하는 컬럼
+   @Column(name="time_period")
+   private String timePeriod;
+   
    @OneToMany(mappedBy="annualLeaveUsage")
    private List<Approval> approvals;
 }

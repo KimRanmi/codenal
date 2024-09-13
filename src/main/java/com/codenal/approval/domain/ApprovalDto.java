@@ -2,6 +2,7 @@ package com.codenal.approval.domain;
 
 import java.time.LocalDate;
 
+import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.employee.domain.Employee;
 
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class ApprovalDto {
 	private String approval_content;
 	private int approval_status;
 	private Long annual_usage_no;
+	private AnnualLeaveUsage annualLeaveUsage;
 	
 	public Approval toEntity() {
 		return Approval.builder()
@@ -38,6 +40,7 @@ public class ApprovalDto {
 				.approvalStatus(approval_status)
 				.approvalCategory(approvalCategory)
 				.employee(employee)
+				.annualLeaveUsage(annualLeaveUsage)
 				.build();
 	}
 	
@@ -50,6 +53,7 @@ public class ApprovalDto {
 				.approval_status(approval.getApprovalStatus())
 				.approvalCategory(approvalCategory)
 				.employee(employee)
+				.annualLeaveUsage(annualLeaveUsage)
 				.build();
 	}
 }

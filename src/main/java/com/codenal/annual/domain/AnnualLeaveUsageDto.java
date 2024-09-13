@@ -23,6 +23,7 @@ public class AnnualLeaveUsageDto {
    private LocalDate annual_usage_end_date;
    private Long emp_id;
    private int annual_type;
+   private String time_period;
    
    public AnnualLeaveUsage toEntity() {
       return AnnualLeaveUsage.builder()
@@ -30,6 +31,7 @@ public class AnnualLeaveUsageDto {
             .annualUsageStartDate(annual_usage_start_date)
             .annualUsageEndDate(annual_usage_end_date)
             .annualType(annual_type)
+            .timePeriod(time_period)
             .build();
    }
    
@@ -39,6 +41,7 @@ public class AnnualLeaveUsageDto {
             .annual_usage_start_date(alu.getAnnualUsageStartDate())
             .annual_usage_end_date(alu.getAnnualUsageEndDate())
             .annual_type(alu.getAnnualType())
+            .time_period(alu.getTimePeriod())
             .build();
    }
    

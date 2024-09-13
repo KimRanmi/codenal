@@ -21,6 +21,7 @@ public class ApprovalFileDto {
 	private String file_ori_name;
 	private String file_new_name;
 	private String file_path;
+	private Approval approval;
 	
 	public ApprovalFile toEntity() {
 		return ApprovalFile.builder()
@@ -28,6 +29,7 @@ public class ApprovalFileDto {
 				.fileOriName(file_ori_name)
 				.fileNewName(file_new_name)
 				.filePath(file_path)
+				.approval(approval)
 				.build();
 	}
 	
@@ -37,6 +39,7 @@ public class ApprovalFileDto {
 				.file_ori_name(af.getFileOriName())
 				.file_new_name(af.getFileNewName())
 				.file_path(af.getFilePath())
+				.approval(af.getApproval())
 				.build();
 	}
 }

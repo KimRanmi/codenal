@@ -109,14 +109,14 @@
 									th:value=${dto.approval.approvalRegDate}>
 							</div>		
 							<div class="mb-3" style="width: 600px;">
+							
 								<!-- status가 4가 아닐 때 -->
 							    <div th:if="${dto.approval.approvalStatus != 4}">
 								    <div th:if="${dto.file == null}">
 								        <label class="form-label" for="file-upload">파일첨부</label>
 								        <input class="form-control" id="file-upload"
 								               type="file" accept="image/png, image/gif, image/jpeg"
-								               style="width: 500px;" 
-								               th:disabled="${dto.approval.approvalStatus != 4}">
+								               style="width: 500px;" >
 								    </div>
 	
 								    <div th:if="${dto.file != null}">
@@ -280,6 +280,8 @@
 			    contentEditor.setHTML(formContent);
 			}
 		 </script>
+		 
+		 <!-- 수정  -->
 		 <script>
 				const form = document.getElementById('approvalForm');
 				form.addEventListener('submit',(e) =>{
