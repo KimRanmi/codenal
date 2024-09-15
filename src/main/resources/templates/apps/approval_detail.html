@@ -123,7 +123,7 @@
 								        <label class="form-label" for="file-link">첨부파일</label>
 								        <a id="file-link" class="form-control"
 								           th:text="${dto.file.fileOriName}"
-								           th:href="@{/download/{no}(no=${dto.approval.approvalNo})}" 
+								           th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}" 
 								           name="file" style="width: 500px;"></a>
 								    </div>
 							    </div>
@@ -188,7 +188,7 @@
 									<button type="button" class="btn btn-danger w-sm">반려</button>
 								</div>
 								<div  th:if=${dto.employee.empId}==${#authentication.name}==${dto.approval.approvalStatus==4}>
-									<button type="submit" class="btn btn-secondary w-sm">수정</button>
+									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
 									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
 								</div>
 							</div>
@@ -272,13 +272,14 @@
 			});
 
 			// 카테고리 선택하면서 카테고리 선택했을 때의 스크립트 코드
-			function updateEditorContent() {
-			    const selectElement = document.getElementById('category-select');
-			    const selectedOption = selectElement.options[selectElement.selectedIndex];
-			    const formContent = selectedOption ? selectedOption.getAttribute('data-content') : '';
+			 function updateEditorContent() {
+		        const selectElement = document.getElementById('category-select');
+		        const selectedOption = selectElement.options[selectElement.selectedIndex];
+		        const formContent = selectedOption.getAttribute('data-content');
 
-			    contentEditor.setHTML(formContent);
-			}
+		        // 토스트 에디터 내용 저장한 값 불러옴
+		        contentEditor.setHTML(formContent);
+		    }
 		 </script>
 		 
 		 <!-- 수정  -->
@@ -331,13 +332,13 @@
 				const csrfToken = document.getElementById('csrf_token').value;
 				
 				if(confirm('회수함으로 이동하시겠습니까?')){
-					fetch('/approval/revoke',{
-						method : 'post',
-						headers: {
-							'Content-Type': 'application/json',
-							'X-CSRF-TOKEN': csrfToken
-		                },
-		                body: JSON.stringify({ approvalNo: id })  
+					fetch('/approval/revoke' ,{
+						method: 'POST',
+	                    headers: {
+	                        'Content-Type': 'application/json',
+	                        'X-CSRF-TOKEN': csrfToken
+	                    },
+	                    body: JSON.stringify({ approvalNo: id })
 					})
 					.then(response => response.json())
 			        .then(data => {
@@ -352,7 +353,43 @@
 				}
 			});
 		</script>
-				
+		
+		<!-- 삭제 -->
+		<script>
+		document.getElementById("delete").addEventListener('click',function(){
+			const id = document.getElementById('approvalNo').value;
+			const csrfToken = document.getElementById('csrf_token').value;
+			if(confirm('정말 삭제하시겠습니까?')){
+				fetch('/approval/delete/'+id,{
+					method : 'delete',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-TOKEN': csrfToken
+	                },
+	                body: JSON.stringify({ approvalNo: id })  
+				})
+				.then(response => response.json())
+		        .then(data => {
+		            console.log(data.res_code);
+		            if(data.res_code === '200') {
+						Swal.fire({
+							icon: 'success',
+							title : '성공',
+							text : data.reg_msg
+						}).then(() =>{
+							location.href = "/approval/list?num=0";
+						});
+					}else{
+						Swal.fire({
+							icon : 'error',
+							title : '실패',
+							text : data.reg_msg
+						})
+					}
+				})
+			}	
+		});
+		</script>
 
 	</div>
 </body>

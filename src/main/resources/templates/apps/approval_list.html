@@ -156,37 +156,40 @@
 								</div>
 							</div>
 						</div>
-								<div th:if="${!resultList.isEmpty()}" >
-									<div class="pagination" style=" margin-left : 500px;"
-										th:with="
-							            pageNumber = ${resultList.pageable.pageNumber},
-							            pageSize = ${resultList.pageable.pageSize},
-							            totalPages = ${resultList.totalPages},
-							            startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-							            tempEndPage = ${startPage + pageSize - 1},
-							            endPage = ${tempEndPage < totalPages ? tempEndPage : totalPages}">
 
-										<!-- 이전 페이지 링크 -->
-										<th:block th:if="${!resultList.first}">
-											<a th:href="@{/approval(page=${pageNumber - 1})}">&lt;</a>
-										</th:block>
 
-										<!-- 페이지 숫자 링크 -->
-										<th:block
-											th:each="page : ${#numbers.sequence(startPage, endPage)}">
-											<a th:text="${page}" th:href="@{/approval(page=${page} - 1)}"
-												th:classappend="${page == pageNumber + 1} ? 'active'"></a>
-										</th:block>
-
-										<!-- 다음 페이지 링크 -->
-										<th:block th:if="${!resultList.last}">
-											<a th:href="@{/approval(page=${pageNumber + 1})}">&gt;</a>
-										</th:block>
-									</div>
-								</div>
 						<!--end card-->
 					</div>
 					<!--end col-->
+								    <div class="col">
+								        <div class="pagination-wrapper">
+								            <div class="pagination" style="margin-top:700px;"
+								                 th:with="pageNumber=${resultList.pageable.pageNumber}, 
+								                         pageSize=${resultList.pageable.pageSize}, 
+								                         totalPages=${resultList.totalPages}, 
+								                         startPage=${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+								                         tempEndPage=${startPage + pageSize - 1},
+								                         endPage=${tempEndPage < totalPages ? tempEndPage : totalPages}">
+								
+								                <!-- 이전 페이지 링크 -->
+								                <th:block th:if="${resultList.hasPrevious()}">
+								                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber - 1})}" class="page-link">&lt;</a>
+								                </th:block>
+								
+								                <!-- 페이지 숫자 링크 -->
+								                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+								                    <a th:text="${page}" th:href="@{/approval/list(num=${num}, page=${page - 1})}"
+								                       th:classappend="${page == pageNumber + 1} ? 'active' : ''" class="page-link"></a>
+								                </th:block>
+								
+								                <!-- 다음 페이지 링크 -->
+								                <th:block th:if="${resultList.hasNext()}">
+								                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber + 1})}" class="page-link">&gt;</a>
+								                </th:block>
+								            </div>
+								        </div>
+								    </div>
+								
 				</div>
 				<!--end col-->
 			</div>

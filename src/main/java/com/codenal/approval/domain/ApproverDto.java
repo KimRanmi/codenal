@@ -2,6 +2,8 @@ package com.codenal.approval.domain;
 
 import java.time.LocalDateTime;
 
+import com.codenal.employee.domain.Employee;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +21,7 @@ import lombok.ToString;
 public class ApproverDto {
 	
 	private Long approval_no;
-	private Long approver_id;
+	private Employee employee;
 	private String approver_type;
 	private int approval_status;
 	private LocalDateTime approval_date;

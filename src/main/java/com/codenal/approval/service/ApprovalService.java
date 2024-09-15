@@ -207,9 +207,8 @@ public class ApprovalService {
    @Transactional
    public int revoke(Long approvalNo) {
 	  int result = 4;
-	  int status = approvalRepository.updateStatus(result,approvalNo);
 	  
-	  return status;
+	  return approvalRepository.updateStatus(result,approvalNo);
    }
    
    // 게시글 수정
@@ -221,11 +220,14 @@ public class ApprovalService {
 	      
 	   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
 	   
+	   System.out.println("카테고리 : "+ac.getCateCode());
+	   
 	   ApprovalDto dto = ApprovalDto.builder()
 			   				.approval_no(no)
 			   				.approval_title((String)obj.get("제목"))
 			   				.approval_content((String)obj.get("내용"))
 			   				.approval_status(0)
+			   				.approval_reg_date((LocalDate)obj.get("날짜"))
 			   				.employee(emp)
 			   				.approvalCategory(ac)
 			   				.build();
@@ -279,6 +281,7 @@ public class ApprovalService {
 				   				.approval_no(no)
 				   				.approval_title((String)obj.get("제목"))
 				   				.approval_content((String)obj.get("내용"))
+				   				.approval_reg_date((LocalDate)obj.get("날짜"))
 				   				.approval_status(0)
 				   				.employee(emp)
 				   				.approvalCategory(ac)
@@ -291,6 +294,18 @@ public class ApprovalService {
 		   approvalRepository.save(approval);
 		   
 		   return approval;
+	   }
+	   
+	   // 전자결재 삭제
+	   public int deleteApproval(Long no) {
+		   int result = 0;
+			try {
+			    approvalRepository.deleteById(no);	
+				result = 1;
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			return result;
 	   }
 
 }
