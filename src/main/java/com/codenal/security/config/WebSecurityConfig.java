@@ -46,6 +46,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/announce/createEnd").permitAll()
 				.requestMatchers("/announce/delete/**").permitAll()
 				.requestMatchers("/announce/updateEnd/**").permitAll()
+				.requestMatchers("/employee/addressBook/**").permitAll()
 				.requestMatchers("/mypage/**").authenticated()
 				.requestMatchers("/documents/**").authenticated() 
 				.anyRequest().authenticated()

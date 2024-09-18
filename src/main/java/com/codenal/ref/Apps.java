@@ -11,7 +11,7 @@ public class Apps {
 	public String admin_detail() {
 		return "admin/detail";
 	}
-
+	
 	//@GetMapping("/employee/addressBook")
 	//public String employee_addressBook() {
 	//	return "employee/addressBook";

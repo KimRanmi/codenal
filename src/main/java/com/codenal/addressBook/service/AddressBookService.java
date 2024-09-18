@@ -81,7 +81,7 @@ public class AddressBookService {
 
 	    return departments.stream().map(department -> {
 	        // 직원(자식) 리스트를 만들고 부서(부모)가 생성 -> 노드에 들어갈 데이터 미리 준비
-	        List<TreeMenuDto> employeeNodes = adminRepository.findByDepartments_DeptNo(department.getDeptNo()).stream()
+	    	List<TreeMenuDto> employeeNodes = adminRepository.findByDepartments_DeptNoAndEmpAuth(department.getDeptNo(), "USER").stream()
 	            .map(employee -> {
 	                TreeMenuDto employeeNode = TreeMenuDto.builder()
 	                        .nodeId(employee.getEmpId())    // 직원의 ID를 노드 ID로 설정

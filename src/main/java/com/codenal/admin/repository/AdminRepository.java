@@ -34,10 +34,10 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	Page<Employee> findAllByEmpAuth(String empStatus, Pageable pageable);
 
 	// TreeMenu
-	 // 특정 부서에 속한 직원
-    List<Employee> findByDepartments(Departments department);
-	
-	// 부서 ID로 직원 조회
-    List<Employee> findByDepartments_DeptNo(Long deptNo);
+	// 특정 부서에 속한 직원 중 'USER'인 직원만 조회
+    List<Employee> findByDepartmentsAndEmpAuth(Departments department, String empAuth);
+    
+    // 부서 ID로 직원 조회 중 'USER'인 직원만 조회
+    List<Employee> findByDepartments_DeptNoAndEmpAuth(Long deptNo, String empAuth);
 
 }
