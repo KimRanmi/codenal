@@ -28,12 +28,12 @@ public class DeptViewController {
 		return "admin/dept"; 
 	}
 
-	// TreeMenu
+	// TreeMenu(JsTree)
 	@GetMapping("/tree-menu")
 	@ResponseBody
 	public List<TreeMenuDto> getTreeMenu() {
 		List<TreeMenuDto> treeMenu = addressBookService.getTreeMenu();
-		System.out.println("Tree Menu Data: " + treeMenu);  // 로그 추가
+		// System.out.println("Tree Menu Data: " + treeMenu);  
 		return addressBookService.getTreeMenu();
 	}
 } 

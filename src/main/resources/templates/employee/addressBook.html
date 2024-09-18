@@ -58,11 +58,11 @@
 						        method: 'GET',
 						        dataType: 'json',
 						        success: function (data) {		
-						        	// 데이터 일치 검사
-						            if (!data || data.length === 0) {
+						        	
+						           /*  if (!data || data.length === 0) {
 						                console.error('Received data is empty or undefined.');
 						                return;
-						            }
+						            } */
 	
 						            // TreeMenuDto
 						            const formatDataForJsTree = (nodes) => {
@@ -255,7 +255,7 @@
 									</tbody>
 								</table>
 								<br>
-								<div class="center" th:if="${!resultList.isEmpty()}">
+								<div class="center" th:if="${!resultList.isEmpty()}" id="pagination-container">
 									<div class="pagination"
 										th:with="
 										pageNumber = ${resultList.pageable.pageNumber},
@@ -266,10 +266,9 @@
 										endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
 										">
 										<th:block th:if="${!resultList.first}">
-											<a
-												th:href="${resultList.first} ? '#' : @{/admin/list(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;</a>
+											<a th:href="${resultList.first} ? '#' : @{/admin/list(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;</a>
 										</th:block>
-										<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용 -->
+									
 										<th:block
 											th:each="page: ${#numbers.sequence(startPage, endPage)}">
 											<a th:text="${page}"

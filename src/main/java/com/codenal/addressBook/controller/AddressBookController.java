@@ -46,7 +46,7 @@ public class AddressBookController {
         return "employee/addressBook";
     }
 
-    // TreeMenu 데이터를 제공하는 엔드포인트
+    // TreeMenu(JsTree)
     @GetMapping("/tree-menu")
     @ResponseBody
     public List<TreeMenuDto> getTreeMenu() {

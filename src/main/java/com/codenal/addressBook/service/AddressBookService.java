@@ -2,11 +2,8 @@ package com.codenal.addressBook.service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.LinkedHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.codenal.addressBook.domain.TreeMenuDto;
 import com.codenal.addressBook.respository.AddressBookRepository;
 import com.codenal.admin.domain.Departments;
-import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.repository.AdminRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
@@ -75,18 +71,19 @@ public class AddressBookService {
 	}
 
 
-	// TreeMenu
+	// TreeMenu(JsTree)
 	public List<TreeMenuDto> getTreeMenu() {
-		List<Departments> departments = addressBookRepository.findAll();
-		System.out.println("Departments Fetched: " + departments);  // 부서 리스트 출력
+		List<Departments> departments = addressBookRepository.findAll();	// 전 부서 조회
+		// System.out.println("Departments Fetched: " + departments);  
 
+		// 직원(자식) 리스트를 만들고 부서(부모)가 생성 -> 노드에 들어갈 데이터 미리 준비
 		return departments.stream().map(department -> {
-			// 직원(자식) 리스트를 만들고 부서(부모)가 생성 -> 노드에 들어갈 데이터 미리 준비
+			// 부서 노드 추가
 			List<TreeMenuDto> employeeNodes = adminRepository.findByDepartments_DeptNoAndEmpAuth(department.getDeptNo(), "USER").stream()
 					.sorted(Comparator.comparing(employee -> employee.getJobs().getJobPriority())) // Comparator.comparing = 오름차순
 					.map(employee -> {
 						TreeMenuDto employeeNode = TreeMenuDto.builder()
-								.nodeId(employee.getEmpId())    // 직원의 ID를 노드 ID로 설정
+								.nodeId(employee.getEmpId())   
 								.nodeName(employee.getEmpName() + " (" + employee.getJobs().getJobName() + ")") // 직원(자식) + 직급명
 								.nodeState(TreeMenuDto.NodeState.builder().opened(false).build()) // 직원은 닫혀있기
 								.build();
@@ -95,9 +92,9 @@ public class AddressBookService {
 					})
 					.collect(Collectors.toList());
 
-			// 부서를 TreeMenuDto로 변환하고, 자식으로 직원 노드 추가
+			// 직원 노드 추가
 			TreeMenuDto departmentNode = TreeMenuDto.builder()
-					.nodeId(department.getDeptNo())  // 부서의 ID를 노드 ID로 설정
+					.nodeId(department.getDeptNo())  
 					.nodeName(department.getDeptName())    // 부서명을 노드 이름으로
 					.nodeState(TreeMenuDto.NodeState.builder().opened(true).build())    // 부서는 열려있기
 					.nodeChildren(employeeNodes)    // 부서 노드의 자식 = 해당 부서의 직원들
