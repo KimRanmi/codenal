@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.codenal.admin.domain.Jobs;
 import com.codenal.admin.repository.AdminRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
@@ -160,11 +161,6 @@ public class AdminService {
 			return searchByEmployeeInfo(searchDto, pageable);
 		}
 	}
-
-
-
-
-
 
 
 

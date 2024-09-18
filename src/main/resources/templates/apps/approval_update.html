@@ -5,7 +5,7 @@
 <head>
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
-<title>전자결재 상세</title>
+<title>전자결재 수정,삭제</title>
 <!-- Bootstrap CSS -->
 <th:block layout:fragment="pagetitle" />
 <link
@@ -22,6 +22,57 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 
+#modal {
+	position: fixed;
+	display: none;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 400px;
+	height: 400px;
+	background-color: white;
+	border: 1px solid #b9b9b9;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.modal-content {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 20px;
+	height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
+	box-sizing: border-box;
+	overflow-y: auto;
+}
+
+.modal-item {
+	border: 1px solid #b9b9b9;
+	width: 20px;
+	height: 20px;
+	display: contents;
+	align-items: center;
+	justify-content: center;
+	margin: 5px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.modal-item.selected {
+	color: cornflowerblue;
+}
+
+.modal-footer {
+	display: flex;
+	justify-content: center;
+	padding: 10px;
+	border-top: 1px solid #b9b9b9;
+}
+
+.modal-item.disabled {
+	color: #b9b9b9;
+	cursor: not-allowed;
+}
 .project-thumbnail-img{
 			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
 		}
@@ -37,7 +88,7 @@
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
 							<br>
-							
+							<!-- 제목 출력 status가 4일 때는 회수함일 때 이때는 disabled 처리 X -->
 							<div class="mb-3" style="width: 600px;">
 								<input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}" >
 								<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
@@ -76,9 +127,42 @@
 								           name="file" style="width: 500px;"></a>
 								    </div>
 							    </div>
-							    
+							    <!-- status가 4일 때 -->
+							    <div th:if="${dto.approval.approvalStatus == 4}">
+								        <label class="form-label" for="file-upload">파일첨부</label>
+								        <input class="form-control" id="file-upload"
+								               type="file" accept="image/png, image/gif, image/jpeg"
+								               style="width: 500px;" name="file">
+							    	
+								</div>
 							</div>
-							
+							<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus==4 && type == 2}" >
+								<label class="form-label" for="project-thumbnail-img">양식</label><br>
+								<!-- 요청서 -->
+								<div>
+									<select class="form-control" id="category-select"
+										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
+										<option>-- 선택하세요 --</option>
+										<option th:each="cate : ${cateList}" th:value="${cate.form_code}"
+                							th:text="${cate.form_name}" id="cateList"  th:data-content="${cate.form_content}"
+                							th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
+        								</option>
+									</select>
+								</div>
+							</div>
+							<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus==4 && type == 3}">
+								<!-- 품의서 -->
+								<div>
+									<select class="form-control" id="category-select"
+										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
+										<option>-- 선택하세요 --</option>
+										<option th:each="cate : ${cateList}" th:value="${cate.form_code}"
+                							th:text="${cate.form_name}" id="cateList" th:data-content="${cate.form_content}"
+                							th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
+        								</option>
+									</select>
+								</div>
+							</div>
 							<div class="mb-3">
 								<label class="form-label" for="references">수신참조자</label><br>
 								<input id="references" type="text"
@@ -102,6 +186,10 @@
 								<div  th:if=${dto.employee.empId}!=${#authentication.name}>
 									<button type="button" class="btn btn-secondary w-sm">승인</button>
 									<button type="button" class="btn btn-danger w-sm">반려</button>
+								</div>
+								<div  th:if=${dto.employee.empId}==${#authentication.name}==${dto.approval.approvalStatus==4}>
+									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
+									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
 								</div>
 							</div>
 							
@@ -183,38 +271,96 @@
 			    updateEditorContent();
 			});
 
+			// 카테고리 선택하면서 카테고리 선택했을 때의 스크립트 코드
+			 function updateEditorContent() {
+		        const selectElement = document.getElementById('category-select');
+		        const selectedOption = selectElement.options[selectElement.selectedIndex];
+		        const formContent = selectedOption.getAttribute('data-content');
+
+		        // 토스트 에디터 내용 저장한 값 불러옴
+		        contentEditor.setHTML(formContent);
+		    }
 		 </script>
 		 
-		
-		<!-- 회수함 이동 -->
-		<script>
-			document.getElementById('revoke').addEventListener('click',function(){
+		 <!-- 수정  -->
+		 <script>
+				const form = document.getElementById('approvalForm');
+				form.addEventListener('submit',(e) =>{
+				e.preventDefault();
 				const id = document.getElementById('approvalNo').value;
+				const payload = new FormData(form);
 				const csrfToken = document.getElementById('csrf_token').value;
+				const content = contentEditor.getHTML();
+				payload.append("approval_content",content);
 				
-				if(confirm('회수함으로 이동하시겠습니까?')){
-					fetch('/approval/revoke' ,{
-						method: 'POST',
-	                    headers: {
-	                        'Content-Type': 'application/json',
-	                        'X-CSRF-TOKEN': csrfToken
-	                    },
-	                    body: JSON.stringify({ approvalNo: id })
-					})
-					.then(response => response.json())
-			        .then(data => {
-			            console.log(data.res_code);
-			            if (data.res_code === '200'){
-			                location.href = "/approval/list?num=4";
-			               
-			            }else{
-			            	console.log('오류');
-			            }
-			        });    
-				}
-			});
+				payload.forEach((value, key) => {
+				    console.log(`${key}: ${value}`);
+				});
+				fetch('/approval/update/'+id,{
+					method : 'PUT',
+					headers : {
+						'X-CSRF-TOKEN': csrfToken
+		            },
+		            body: payload
+				})
+				.then(response => response.json())
+				.then(data => {
+					console.log(data.res_code);
+					if(data.res_code === '200') {
+						Swal.fire({
+							icon: 'success',
+							title : '성공',
+							text : data.reg_msg
+						}).then(() =>{
+							location.href = "/approval/list?num=0";
+						});
+					}else{
+						Swal.fire({
+							icon : 'error',
+							title : '실패',
+							text : data.reg_msg
+						})
+					}
+				})
+			});	
 		</script>
-		
+	
+		<!-- 삭제 -->
+		<script>
+		document.getElementById("delete").addEventListener('click',function(){
+			const id = document.getElementById('approvalNo').value;
+			const csrfToken = document.getElementById('csrf_token').value;
+			if(confirm('정말 삭제하시겠습니까?')){
+				fetch('/approval/delete/'+id,{
+					method : 'delete',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-TOKEN': csrfToken
+	                },
+	                body: JSON.stringify({ approvalNo: id })  
+				})
+				.then(response => response.json())
+		        .then(data => {
+		            console.log(data.res_code);
+		            if(data.res_code === '200') {
+						Swal.fire({
+							icon: 'success',
+							title : '성공',
+							text : data.reg_msg
+						}).then(() =>{
+							location.href = "/approval/list?num=0";
+						});
+					}else{
+						Swal.fire({
+							icon : 'error',
+							title : '실패',
+							text : data.reg_msg
+						})
+					}
+				})
+			}	
+		});
+		</script>
 
 	</div>
 </body>

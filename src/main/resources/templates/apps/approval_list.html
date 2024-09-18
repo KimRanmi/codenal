@@ -144,7 +144,7 @@
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
-													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
+													th:href="@{/approval/detail/{no}(no=${approval['approval'].approvalNo})}"
 													th:text="${approval['approval'].approvalTitle}"></a></td>
 												<td>회수</td>
 												<td>결재자</td>

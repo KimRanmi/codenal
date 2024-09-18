@@ -48,6 +48,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/approval/**").permitAll()
 				.requestMatchers("/approval/update/**").permitAll()
 				.requestMatchers("/approval/leaveUpdate/**").permitAll()
+				.requestMatchers("/approval/detail/**").permitAll()
 				.requestMatchers("/list").permitAll() 
 				.requestMatchers("/mypage/**").authenticated()
 				.requestMatchers("/documents/**").authenticated() 

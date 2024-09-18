@@ -14,52 +14,6 @@
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
     <style>
-        #modal {
-            position: fixed;
-            display: none;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
-            background-color: white;
-            border: 1px solid #b9b9b9;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-        .modal-content {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 20px;
-            height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        .modal-item {
-            border: 1px solid #b9b9b9;
-            width: 20px;
-            height: 20px;
-            display: contents;
-            align-items: center;
-            justify-content: center;
-            margin: 5px;
-            cursor: pointer;
-            user-select: none;
-        }
-        .modal-item.selected {
-            color: cornflowerblue;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: center;
-            padding: 10px;
-            border-top: 1px solid #b9b9b9;
-        }
-        .modal-item.disabled {
-            color: #b9b9b9;
-            cursor: not-allowed;
-        }
        	select, input[type=date] {
 			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
 		}
@@ -109,7 +63,8 @@
                 							th:text="${cate.form_name}" id="cateList" th:value="${cate.form_code}" th:data-content="${cate.form_content}">
         								</option>
 									</select>
-								<div style="margin-top:-30px; margin-left:230px; color:#b9b9b9">내 잔여연차 : </div>
+								<div style="margin-top:-30px; margin-left:230px; color:#b9b9b9">내 잔여연차 : <span th:text="${remainDay}"></span></div>
+								
 								<div style="margin-top: 30px; margin-bottom:10px;">날짜</div>
 								<div id="dateContent" style="width:1000px;" >
 									<input type="date" style="width:200px;" id="startDate">
@@ -181,35 +136,33 @@
                     </div>
                 </div>
             </div>
-            <!-- 모달 창 -->
-		    <div id="modal">
-		        <div style="text-align: center;">결재자 선택</div>
-		        <div class="modal-content"> <!-- 이건 불러오는 값 ! 미리 내가 설정해놓은 것  -->
-		            <div class="modal-item">이과장</div>
-		            <div class="modal-item">박과장</div>
-		            <div class="modal-item">김과장</div>
-		            <div class="modal-item">최과장</div>
-		            <!-- 추가적인 사람들 -->
-		        </div>
-		        <div class="modal-footer">
-		            <button id="selectButton" style="background-color: cadetblue; border: 0px; border-radius: 30px; ">선택</button>
-		            <button id="closeButton" style="background-color: red; border: 0px; border-radius: 30px;">닫기</button>
-		        </div>
-		    </div>
         </div>
+        
+        <script>
+        // 모달 HTML을 불러오는 함수
+        function loadModal() {
+            fetch('../approval_modal.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.body.insertAdjacentHTML('beforeend', data);
+                });
+        }
+
+        // 페이지 로드 시 모달 불러오기
+        document.addEventListener('DOMContentLoaded', loadModal);
+    	</script>
         
         <!-- 날짜 생성 스크립트 설정 -->
         <script>
-            
                 const select = document.getElementById('category-select');
                 const content = document.getElementById('dateContent');
             
                 // select 값이 변경될 때마다 실행되는 이벤트 리스너
                 select.addEventListener('change', function() {
                     const selectedValue = select.value;
-                    if (selectedValue == '1') {
+                    if (selectedValue == '1') { //name값 설정해줘야 form data 안에 담길 수 있다 !
                         content.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> -' +
-                                            '<select style="margin-left:10px; width:150px;"><option>선택하세요</option><option>오전</option><option>오후</option></select>';
+                                            '<select style="margin-left:10px; width:150px;" name="time_period"><option>선택하세요</option><option>오전</option><option>오후</option></select>';
                     } else {
                         content.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> - ' +
                                             '<input type="date" style="width:200px;" id="endDate" name="end_date">';
@@ -261,9 +214,15 @@
 			        e.preventDefault();
 			        const payload = new FormData(form);
 			        const csrfToken = document.getElementById('csrf_token').value;
+			   	
+			     
 			        /* 토스트 api 안에 값 저장 */
 					const content = contentEditor.getHTML();
 					payload.append("approval_content",content);
+
+					payload.forEach((value, key) => {
+					    console.log(`${key}: ${value}`);
+					});
 					
 			        fetch('/approval_leave', {
 			            method: 'POST',
@@ -292,143 +251,7 @@
 			            }
 			        })
 			    });
-    	</script>
-    	
-    	<!-- 모달 관련 script -->
-    	<script>
-	        const modal = document.querySelector('#modal');
-	        const button = document.querySelector('#button_modal1');
-	        const button2 = document.querySelector('#button_modal2');
-	        const button3 = document.querySelector('#references');
-	        const closeButton = document.querySelector('#closeButton');
-	        const selectButton = document.querySelector('#selectButton');
-	        const selectedNames = document.querySelectorAll('.selectedName');
-	        const selectedNames2 = document.querySelectorAll('.selectedName2');
-	        const selectedNames3 = document.querySelector('#references');
-	        let selectedPeople = []; //합의자
-	        let selectedPeople2 = []; //결재자
-	        let selectedPeople3 = []; //수신 참조자
-
-	        function updateModal() {
-	            const group = modal.dataset.group;
-	            const modalItems = document.querySelectorAll('.modal-item');
-	
-	            modalItems.forEach(item => {
-	                const person = item.textContent.trim();
-	                let isDisabled = false;
-	
-	                if (group === 'approver') {
-	                    // 결재자 모달에서는 선택된 합의자만 비활성화
-	                    isDisabled = selectedPeople.includes(person) || selectedPeople3.includes(person);
-	                } else if (group === 'agreement') {
-	                    // 합의자 모달에서는 선택된 결재자 및 수신참조자 비활성화
-	                    isDisabled = selectedPeople2.includes(person) || selectedPeople3.includes(person);
-	                } else if (group === 'references') {
-	                    // 수신참조자 모달에서는 선택된 결재자 및 합의자 비활성화
-	                    isDisabled = selectedPeople.includes(person) || selectedPeople2.includes(person);
-	                }
-	
-	                item.classList.toggle('disabled', isDisabled);
-	            });
-	        }
-	        
-       		// 합의자 모달 열기
-	        button.addEventListener('click', () => {
-	            modal.style.display = 'block';
-	            modal.dataset.group = 'agreement';
-	            updateModal();
-	        });
-
-	        // 결재자 모달 열기
-	        button2.addEventListener('click', () => {
-	            modal.style.display = 'block';
-	            modal.dataset.group = 'approver';
-	            updateModal();
-	        });
-
-	        // 수신참조자 모달 열기
-	        button3.addEventListener('click', () => {
-	            modal.style.display = 'block';
-	            modal.dataset.group = 'references';
-	            updateModal();
-	        });
-
-
-	        // 모달 닫기
-	        closeButton.addEventListener('click', () => {
-	            modal.style.display = 'none';
-	        });
-
-	        // 선택된 사람 저장
-	        document.querySelectorAll('.modal-item').forEach(item => {
-	            item.addEventListener('click', () => {
-	                const person = item.textContent.trim();
-	                const group = modal.dataset.group;
-	
-	                if (item.classList.contains('disabled')) {
-	                    return;  // disabled 상태이면 아무 동작도 하지 않음
-	                }
-	
-	                if(group === 'approver'){
-	                    if (selectedPeople2.includes(person)) {
-	                        // 이미 선택된 사람을 해제
-	                        selectedPeople2 = selectedPeople2.filter(p => p !== person);
-	                        item.classList.remove('selected');
-	                    } else if (selectedPeople2.length < 3) {
-	                        // 선택된 사람이 3명 이하인 경우에만 추가
-	                        selectedPeople2.push(person);
-	                        item.classList.add('selected');
-	                    } else {
-	                        // 선택된 사람 수가 3명 이상일 경우 경고
-	                        alert('최대 3명까지 선택할 수 있습니다.');
-	                    }
-	
-	                }else if(group === 'agreement'){
-	                    if (selectedPeople.includes(person)) {
-	                        // 이미 선택된 사람을 해제
-	                        selectedPeople = selectedPeople.filter(p => p !== person);
-	                        item.classList.remove('selected');
-	                    } else if (selectedPeople.length < 3) {
-	                        // 선택된 사람이 3명 이하인 경우에만 추가
-	                        selectedPeople.push(person);
-	                        item.classList.add('selected');
-	                    } else {
-	                        // 선택된 사람 수가 3명 이상일 경우 경고
-	                        alert('최대 3명까지 선택할 수 있습니다.');
-	                    }
-	                }else if(group === 'references'){
-	                    if (selectedPeople3.includes(person)) {
-	                        // 이미 선택된 사람을 해제
-	                        selectedPeople3 = selectedPeople3.filter(p => p !== person);
-	                        item.classList.remove('selected');
-	                    } else{
-	                        selectedPeople3.push(person);
-	                        item.classList.add('selected');
-	                    }
-	                }
-	            });
-	        });
-        
-	        // 적용 버튼 클릭 시 선택된 사람을 페이지에 반영
-	        selectButton.addEventListener('click', () => {
-	            const group = modal.dataset.group;
-	
-	            if (group === 'agreement') {
-	                selectedNames.forEach((element, index) => {
-	                    element.textContent = selectedPeople[index] || '';
-	                    button.value = '';
-	                });
-	            } else if (group === 'approver') {
-	                selectedNames2.forEach((element, index) => {
-	                    element.textContent = selectedPeople2[index] || '';
-	                    button2.value= '';
-	                });
-	            } else if ( group === 'references') {
-	                selectedNames3.value = selectedPeople3.join(', ');
-	            }
-	
-	            modal.style.display = 'none';
-	        });
+			    
     	</script>
     </div>
 </body>

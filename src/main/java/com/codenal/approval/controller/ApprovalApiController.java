@@ -83,8 +83,10 @@ public class ApprovalApiController {
 	@ResponseBody
 	@PostMapping("/approval_leave")
 	public Map<String, String> createApprovalLeave(@RequestParam("approval_content") String approvalContent,
-			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
-			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("start_date") LocalDate startDate,
+			@RequestParam("approval_title") String approvalTitle, 
+			@RequestParam("emp_id") String empId,
+			@RequestParam("approval_reg_date") String approvalRegDate, 
+			@RequestParam("start_date") LocalDate startDate,
 			@RequestParam(value = "end_date", required = false) LocalDate endDate,
 			@RequestParam("form_code") String formCode,
 			@RequestParam(value = "time_period", required = false) String timePeriod,
