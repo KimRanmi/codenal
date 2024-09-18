@@ -6,6 +6,8 @@ import java.util.List;
 import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.Jobs;
 import com.codenal.announce.domain.Announce;
+import com.codenal.chat.domain.ChatMsg;
+import com.codenal.chat.domain.ChatParticipants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -91,5 +93,11 @@ public class Employee {
 	
     @OneToMany(mappedBy = "employee")
     private List<Announce> announces;
+    
+    @OneToMany(mappedBy = "employee")
+    private List<ChatParticipants> participants;
+    
+    @OneToMany(mappedBy = "employee")
+    private List<ChatMsg> messages;
 
 }

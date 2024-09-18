@@ -650,6 +650,7 @@
 					
 
 						<form id="selectEmployeeForm">
+						<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
 						<div class="mb-4 d-flex align-items-center">
 							<div class="me-2">
 								<h5 class="mb-0 fs-13">선택 직원 :</h5>
@@ -676,7 +677,7 @@
 									</div>
 									<div class="flex-shrink-0">
 										<button type="button" class="btn btn-light btn-sm" onclick="employeeSelect_btn(this)" 
-                           				 th:attr="data-emp-name=${emp.empName}">선택</button>
+                           				 th:attr="data-emp-name=${emp.empName}, data-emp-id=${emp.empId}">선택</button>
 									</div>
 								</div>
 								<!-- end member item -->
@@ -685,58 +686,87 @@
 						</div> <!-- empList 끝 -->
 						</div>
 					</div>
-									<script>
-										const employeeSelect_btn = function(button){
-											 const empName = button.getAttribute('data-emp-name');
-											    const view_div = document.getElementById('selectEmp');
-											    
-											    // 선택된 버튼의 정보를 view_div에 추가합니다.
-											    view_div.innerHTML += "<div id='selectEmpName' class='avatar-group-item' data-bs-toggle='tooltip' data-bs-trigger='hover' data-bs-placement='top' title='"+empName+"'>"
-											                        + "<div class='avatar-xs'>"
-											                        + "<img src='/assets/images/users/avatar-3.jpg' alt='' class='rounded-circle img-fluid'>"
-											                        + "</div>"
-											                        + "</div>";
-										}
-									</script>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-light w-xs" data-bs-dismiss="modal">취소</button>
-						<button type="submit" class="btn btn-success w-xs" onclick="employeeInvite_btn()">초대하기</button>
+						<button type="submit" class="btn btn-success w-xs" id="inviteBtn">초대하기</button>
 					</div>
 					<script>
-					const form = document.getElementById("selectEmployeeForm");
-
-					form.addEventListener('submit', (e) => {
-					    e.preventDefault(); // 기본 폼 제출 동작 방지
-					    // 유효성 검사 하기 (직원을 선택하세요.)
-						
-					    // FormData 객체를 생성하여 폼 데이터를 가져옴
-					    const formData = new FormData(form);
 					
-					    // 추가적으로 필요한 데이터를 FormData에 추가
-					    formData.append('room_status','Y');
-					    formData.append('chat_name',document.getElementById('selectEmpName').value);
-					    formData.append('room_type','1');
-					    
-						const csrfToken = document.getElementById("csrf_token").value;
-						
-							    fetch("/chatList/chatRoom/create", {
-							        method: 'POST',
-							        headers: {
-						            'X-CSRF-TOKEN': csrfToken // CSRF 토큰을 헤더에 포함
-						        	},
-						        	body: formData
-							    })
-							    .then(response => {
-							        if (response.ok) {
-							            return response.json(); // JSON 응답을 반환
-							        } else {
-							            throw new Error(response.status); // 에러 상태 코드
-							        }
-							    })
-							    .then(data => callback(null, data))
-							    .catch(error => callback(error.message, null));
+						const employeeSelect_btn = function(button) {
+						    const empName = button.getAttribute('data-emp-name');
+						    const empId = button.getAttribute('data-emp-id');
+						    const view_div = document.getElementById('selectEmp');
+						    const form = document.getElementById('selectEmployeeForm');
 	
-						}
+						    // 숨겨진 입력 필드와 view_div에서 empId를 삭제하는 함수
+						    const removeEmployee = function(empId) {
+						        // view_div에서 해당 직원 아이템 제거
+						        const avatarGroupItem = view_div.querySelector(`div[data-bs-toggle='tooltip'][title='${empName}']`);
+						        if (avatarGroupItem) {
+						            avatarGroupItem.remove();
+						        }
+	
+						        // 숨겨진 입력 필드에서 해당 empId 제거
+						        const hiddenInputs = form.querySelectorAll(`input[name='emp_id[]'][value='${empId}']`);
+						        hiddenInputs.forEach(input => input.remove());
+						    };
+	
+						    // 이미 선택된 직원인 경우 제거
+						    if (document.querySelector(`input[name='emp_id[]'][value='${empId}']`)) {
+						        removeEmployee(empId);
+						    } else {
+						        // 선택된 버튼의 정보를 view_div에 추가
+						        view_div.innerHTML += "<div class='avatar-group-item' data-bs-toggle='tooltip' data-bs-trigger='hover' data-bs-placement='top' title='" + empName + "'>"
+						                            + "<div class='avatar-xs'>"
+						                            + "<img src='/assets/images/users/avatar-3.jpg' alt='' class='rounded-circle img-fluid'>"
+						                            + "</div>"
+						                            + "</div>";
+	
+						        // 폼에 숨겨진 input 필드로 선택된 직원 정보 추가
+						        const hiddenInput = document.createElement('input');
+						        hiddenInput.type = 'hidden';
+						        hiddenInput.name = 'emp_id[]';  // 배열 형태로 여러 직원 선택
+						        hiddenInput.value = empId;
+						        form.appendChild(hiddenInput);
+						    }
+						};
+						
+						document.getElementById("inviteBtn").addEventListener('click', function(e) {
+						    e.preventDefault(); // 기본 폼 제출 동작 방지
+
+						    const form = document.getElementById("selectEmployeeForm");
+
+						    // FormData 객체를 생성하여 폼 데이터를 가져옴
+						    const formData = new FormData(form);
+						    
+						    for (let [key, value] of formData.entries()) {
+						        console.log(key, value); // 폼 데이터 출력
+						    }
+
+						    // 추가적으로 필요한 데이터를 FormData에 추가
+						    formData.append('room_status', 'Y');
+						    formData.append('room_type', '1');
+						    
+						    const csrfToken = document.getElementById("csrf_token").value;
+
+						    fetch("/chatList/chatRoom/create", {
+						        method: 'POST',
+						        headers: {
+						            'X-CSRF-TOKEN': csrfToken,
+						        },
+						        body: formData
+						    })
+						    .then(response => response.json())
+						    .then(data => {
+						        if (data.res_code === '200') {
+						            alert(data.res_msg);
+						            location.href = `/chatList`;
+						            /* location.href = `/chatList/chatRoom/detail/${data.roomNo}`; // 서버에서 받은 `roomNo`로 URL을 설정 */
+						        } else {
+						            alert('실패: ' + data.res_msg);
+						        }
+						    })
+						});
 					</script>
 				</div>
 				<!-- end modal-content -->

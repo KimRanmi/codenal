@@ -11,6 +11,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     // 필요시 커스텀 쿼리 추가 가능
     Employee findByEmpId(Long empId);
     
-    @Query("SELECT e FROM Employee e WHERE e.empStatus = 'Y'")
-    List<Employee> findAllActiveEmployees();
+    @Query("SELECT e FROM Employee e WHERE e.empStatus = 'Y' AND e.empId != ?1 AND e.empAuth !='ADMIN'")
+    List<Employee> findAllActiveEmployees(Long empId);
 }

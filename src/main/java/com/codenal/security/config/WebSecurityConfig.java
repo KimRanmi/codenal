@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 		 // CORS 설정 적용
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/auth-signin-basic", "/assets/**", "/join", "/list", "/announce/**", "/chatList/**").permitAll()
+				.requestMatchers("/auth-signin-basic", "/assets/**", "/join", "/list", "/announce/**", "/chatList/**", "/chatting").permitAll()
 				 .requestMatchers("/mypage/**").authenticated()
 				 .requestMatchers("/documents/**").authenticated() 
 				 .anyRequest().authenticated()
