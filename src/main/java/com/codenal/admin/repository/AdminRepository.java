@@ -34,7 +34,7 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	Page<Employee> findAllByEmpAuth(String empStatus, Pageable pageable);
 	
 	
-	// 2. 상세 조회
+	// 2. 상세 조회 // 정보 수정
     Employee findByEmpId(Long empId);
 
     

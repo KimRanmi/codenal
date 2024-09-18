@@ -18,10 +18,10 @@ import com.codenal.employee.domain.Employee;
 @AllArgsConstructor
 @Builder
 @ToString
-public class TreeMenuDto {
+public class TreeMenuDto {	// 실제 엔티티는 nono
     private long nodeId; // 노드 ID
     private String nodeName; // 노드 이름
-    private NodeState nodeState; // 노드 상태 (opened만 사용)
+    private NodeState nodeState; // 노드 상태 (관리자는 opened만 필요)
     private List<TreeMenuDto> nodeChildren; // 자식 노드
     private String nodeIcon; // 노드 아이콘
 

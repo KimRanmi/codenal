@@ -12,7 +12,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
 import com.codenal.admin.repository.AdminRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
@@ -32,7 +35,7 @@ public class AdminService {
 		this.adminRepository = adminRepository;
 	}
 
-	// --------------------신규 직원 등록
+	// ------------------ 신규 직원 등록
 	public int createEmployee(EmployeeDto dto) {
 
 		int result = -1;
@@ -72,7 +75,7 @@ public class AdminService {
 	}
 
 
-	// ----------------직원 목록 검색 1 (재직 or 퇴사)
+	// ---------------- 직원 목록 검색 1 (재직 or 퇴사)
 	public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
 		Page<Employee> adminSearchOne = null;
 
@@ -105,7 +108,7 @@ public class AdminService {
 	}
 
 
-	// ------------------직원 목록 검색 2 (직원 정보)
+	// ------------------ 직원 목록 검색 2 (직원 정보)
 	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
 		Page<Employee> adminSearchTwo = null;
 
@@ -149,7 +152,7 @@ public class AdminService {
 	}
 
 
-	// ----------------직원 검색 통합 (재직/퇴사 + 직원 정보)
+	// ---------------- 직원 검색 통합 (재직/퇴사 + 직원 정보)
 	public Page<EmployeeDto> searchAll(EmployeeDto searchDto, Pageable pageable) {
 
 		if (searchDto.getSearch_type() == 0) {
@@ -162,29 +165,46 @@ public class AdminService {
 	}
 
 
-	// 직원 정보 상세 조회
-	public EmployeeDto selectEmployeeListDetail(Long empId) {
-		
+	// ---------------- 직원 정보 상세 조회
+	public EmployeeDto employeeDetail(Long empId) {
+
 		Employee e = adminRepository.findByEmpId(empId);
-		  return EmployeeDto.fromEntity(e);
+		return EmployeeDto.fromEntity(e);
 	}
 
 
-	// 직원 정보 수정
-	//@Transactional
-	//	public Employee selectEmployeeListUpdate(EmployeeDto dto) { 
-	//	EmployeeDto temp = selectEmployeeOne(dto.get());
-	//	temp.setBoard_title(dto.getBoard_title());
-	//	temp.setBoard_content(dto.getBoard_content());
-	//	if(dto.getOri_thumbnail() != null && "".equals(dto.getOri_thumbnail()) == false) {
-	//		temp.setOri_thumbnail(dto.getOri_thumbnail());
-	//		temp.setNew_thumbnail(dto.getNew_thumbnail());
-	//	}
+	// ---------------- 직원 정보 수정
+	@Transactional
+	public Employee employeeUpdate(EmployeeDto dto) { 
+	
+		EmployeeDto temp = selectUpdate(dto.getEmpId());
 
-	//	Board board = temp.toEntity();
-	//	Board result = boardRepository.save(board);
-	//	return result;
-	//}
+		temp.setEmpName(dto.getEmpName());
+		temp.setDeptNo(dto.getDeptNo());
+		temp.setJobNo(dto.getJobNo());
+
+		Employee e = temp.toEntity();
+		return adminRepository.save(e);
+	}
+
+	public EmployeeDto selectUpdate(Long empId) {
+		
+		Employee e = adminRepository.findByEmpId(empId);
+
+		EmployeeDto dto = EmployeeDto.builder()
+				.empId(e.getEmpId())
+				.empName(e.getEmpName())
+				.deptNo(e.getDepartments().getDeptNo())
+				// .deptName(e.getDepartments().getDeptName()) 
+				.jobNo(e.getJobs().getJobNo())
+				// .jobName(e.getJobs().getJobName()) 
+				.build();
+
+		return dto;
+	}
+
+
+
 
 
 }

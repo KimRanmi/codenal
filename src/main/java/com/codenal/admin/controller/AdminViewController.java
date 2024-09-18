@@ -60,22 +60,25 @@ public class AdminViewController {
 	// 직원 정보 상세 조회
 	@GetMapping("/detail/{empId}")
 	public String employeeListDetail(@PathVariable("empId") Long empId, Model model) {
-	    EmployeeDto employeeDetail = adminService.selectEmployeeListDetail(empId); // 변수명을 일치시킵니다.
-	    model.addAttribute("employeeDetail", employeeDetail); // 모델의 키와 뷰에서 사용하는 변수를 일치시킵니다.
+		
+		EmployeeDto employeeDetail = adminService.employeeDetail(empId); 
+		model.addAttribute("employeeDetail", employeeDetail);
 
-	    return "admin/detail";
+		return "admin/detail";
 	}
 
 
 	// 직원 정보 수정
-	//@GetMapping("/admin/employeeListUpdate/{employee_id}")
-	//	public String employeeListUpdate(@PathVariable("id") Long id, Model model) {
+	@GetMapping("/update/{empId}")
+	public String employeeListUpdate(@PathVariable("empId") Long empId, Model model) {
+		
+	    EmployeeDto employeeUpdate = adminService.selectUpdate(empId);  
+	    model.addAttribute("employeeUpdate", employeeUpdate);
+	    
+	    return "admin/detail";
+	}
 
-	//	EmployeeDto employeeList = employeeListService.selectEmployeeListUpdate(id);
-	//    model.addAttribute("employeeList", employeeList);
 
-	//    return "admin/employeeListDetail";
-	//}
-	
-	
+
+
 }

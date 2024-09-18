@@ -1,20 +1,24 @@
 package com.codenal.admin.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.codenal.admin.service.AdminService;
 import com.codenal.employee.domain.EmployeeDto;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequestMapping("/admin")
 public class AdminApiController {
 
 	private final AdminService adminService;
@@ -23,12 +27,12 @@ public class AdminApiController {
 	public AdminApiController(AdminService adminService) {
 		this.adminService = adminService;
 	} 
- 
+
 	// 신규 직원 등록
 	@ResponseBody 
-	@PostMapping("/admin/join")
+	@PostMapping("/join")
 	public Map<String,String> joinEmployee(@RequestBody EmployeeDto dto) {
-		
+
 		Map<String,String> resultMap = new HashMap<String,String>();
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "등록 중 오류가 발생했습니다.");
@@ -40,6 +44,26 @@ public class AdminApiController {
 
 		return resultMap;
 	}
-	
+
+	// 직원 정보 수정
+	@ResponseBody
+	@PostMapping("/update")
+	public Map<String, String> employeeUpdate(@PathVariable("id") Long id, EmployeeDto dto) {
+		Map<String, String> resultMap = new HashMap<>();
+		resultMap.put("res_code", "404");
+		resultMap.put("res_msg", "직원 정보 수정 중 오류가 발생했습니다.");
+
+		dto.setEmpId(id);
+
+		if (adminService.employeeUpdate(dto) != null) {
+			resultMap.put("res_code", "200");
+			resultMap.put("res_msg", "직원 정보가 성공적으로 수정되었습니다.");
+		}
+
+		return resultMap;
+	}
+
+
+
 }
 
