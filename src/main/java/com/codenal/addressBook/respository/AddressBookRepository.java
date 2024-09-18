@@ -14,5 +14,4 @@ public interface AddressBookRepository extends JpaRepository<Departments, Long> 
     List<Departments> findAll();
 
    
- 
 }

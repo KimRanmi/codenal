@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.codenal.admin.service.AdminService;
@@ -56,16 +57,15 @@ public class AdminViewController {
 	}
 
 
-
-
 	// 직원 정보 상세 조회
-	//@GetMapping("/admin/employeeListDetail/{employee_id}")
-	//	public String employeeListDetail(@PathVariable("id") Long id, Model model) {
-	//    EmployeeDto employeeList = employeeListService.selectEmployeeListDetail(id);
-	//    model.addAttribute("employeeList", employeeList);
+	@GetMapping("/detail/{empId}")
+	public String employeeListDetail(@PathVariable("empId") Long empId, Model model) {
+	    EmployeeDto employeeDetail = adminService.selectEmployeeListDetail(empId); // 변수명을 일치시킵니다.
+	    model.addAttribute("employeeDetail", employeeDetail); // 모델의 키와 뷰에서 사용하는 변수를 일치시킵니다.
 
-	//    return "admin/employeeListDetail";
-	//}
+	    return "admin/detail";
+	}
+
 
 	// 직원 정보 수정
 	//@GetMapping("/admin/employeeListUpdate/{employee_id}")
@@ -76,4 +76,6 @@ public class AdminViewController {
 
 	//    return "admin/employeeListDetail";
 	//}
+	
+	
 }

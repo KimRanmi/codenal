@@ -33,6 +33,7 @@ public class TreeMenuDto {
     @ToString
     public static class NodeState {
         private boolean opened; // 노드가 열려 있는지 여부
+        // selected 나 disabled 같은거 추가 하고 싶은면 여기에 추가
     }
 
     public static TreeMenuDto fromDepartment(Departments department, List<TreeMenuDto> employeeNodes) {
@@ -40,7 +41,7 @@ public class TreeMenuDto {
                 .nodeId(department.getDeptNo())
                 .nodeName(department.getDeptName())
                 .nodeState(NodeState.builder().opened(false).build())
-                .nodeChildren(employeeNodes != null ? employeeNodes : new ArrayList<>()) // 빈 리스트를 ArrayList로 생성
+                .nodeChildren(employeeNodes != null ? employeeNodes : new ArrayList<>()) 
                 .build();
     }
 

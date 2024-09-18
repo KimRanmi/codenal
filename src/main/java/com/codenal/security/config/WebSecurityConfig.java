@@ -1,6 +1,5 @@
 package com.codenal.security.config;
 
-import java.beans.Customizer;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -43,6 +42,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
 				.requestMatchers("/admin/list").permitAll()
 				.requestMatchers("/admin/join").permitAll()
+				.requestMatchers("/admin/dept").permitAll()
 				.requestMatchers("/announce/createEnd").permitAll()
 				.requestMatchers("/announce/delete/**").permitAll()
 				.requestMatchers("/announce/updateEnd/**").permitAll()

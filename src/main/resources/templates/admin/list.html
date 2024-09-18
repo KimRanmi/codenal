@@ -173,17 +173,19 @@ layout:decorate="~{layout}" data-sidebar="light">
 
 										<!-- 직원 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-											<tr th:each="employee, employeeStat : ${resultList.content}" >
-												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}" style="text-align: center;"></td>
-												<td th:text="${employee.empId}" style="text-align: center;"></td>
-												<td th:text="${employee.empName}" style="text-align: center;"></td>
-												<td th:text="${employee.deptName}" style="text-align: center;"></td>
-												<td th:text="${employee.jobName}" style="text-align: center;"></td>
-												<td th:text="${employee.empPhone}" style="text-align: center;"></td>
-												<td th:text="${employee.empStatus eq 'Y' ? '재직' : '퇴사'}" style="text-align: center;"></td>
-												<td></td>
-											</tr>
+										    <tr th:each="employee, employeeStat : ${resultList.content}" 
+										        th:onclick="|location.href='@{/admin/detail/{empId}(empId=${employee.empId})}'|"
+										        style="cursor: pointer;">
+										        <td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}" style="text-align: center;"></td>
+										        <td th:text="${employee.empId}" style="text-align: center;"></td>
+										        <td th:text="${employee.empName}" style="text-align: center;"></td>
+										        <td th:text="${employee.deptName}" style="text-align: center;"></td>
+										        <td th:text="${employee.jobName}" style="text-align: center;"></td>
+										        <td th:text="${employee.empPhone}" style="text-align: center;"></td>
+										        <td th:text="${employee.empStatus eq 'Y' ? '재직' : '퇴사'}" style="text-align: center;"></td>
+										    </tr>
 										</th:block>
+
 
 
 									</tbody>

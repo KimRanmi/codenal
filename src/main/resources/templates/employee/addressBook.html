@@ -9,17 +9,14 @@
 </th:block>
 
 <head>
-<!-- Sweet Alert css-->
-<link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
-<!-- Font Awesome 라이브러리 추가 -->
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> 
-<!-- jsTree 테마 CSS 포함 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
-<!-- jQuery 포함 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-<!-- jsTree 포함 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
-
+	<!-- Font Awesome 라이브러리 추가 -->
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> 
+	<!-- jsTree 테마 CSS 포함 -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+	<!-- jQuery 포함 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+	<!-- jsTree 포함 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
  <style>
         .jstree-icon.ri-building-fill { /* 회사 아이콘 */
             color: #3e4a6e; 
@@ -74,7 +71,7 @@
 						                        id: node.nodeId,
 						                        text: node.nodeName,
 						                        state: {
-						                            opened: node.nodeState.opened
+						                            opened: false	// 직원은 처음에 접어둠
 						                        },
 						                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
 						                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
@@ -100,7 +97,7 @@
 						            $('#treeMenu').jstree({
 						                'core': {
 						                    "animation": 0,
-						                    "check_callback": true,
+						                    "check_callback": false,
 						                    'data': [companyNode] 
 						                },
 						                "plugins": ["types"],
@@ -242,9 +239,7 @@
 										</th:block>
 										<!-- 직원 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-											<tr th:each="employee, employeeStat : ${resultList.content}"
-												th:onclick="|location.href='@{/employee/{id}(id=${employee.empId})}'|"
-												style="cursor: pointer;">
+											<tr th:each="employee, employeeStat : ${resultList.content}">									
 												<td
 													th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}"
 													style="text-align: center;"></td>
@@ -296,12 +291,12 @@
 	</div>
 
 	<th:block layout:fragment="pagejs">
-		<!-- list.js min js -->
-	<!-- 	<script src="/assets/libs/list.js/list.min.js"></script> -->
+	
+		<!-- <script src="/assets/libs/list.js/list.min.js"></script> -->
 		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
 		<!-- icon -->
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
-		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
 	</th:block>
 	
 
