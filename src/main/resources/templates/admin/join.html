@@ -1,9 +1,10 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('직원 정보 관리')"></div>
+	<div th:replace="~{partials/title-meta :: title-meta('직원 정보 관리')}"></div>
 </th:block>
 
 <head>
@@ -127,13 +128,6 @@
 			</div>
 		</div>
 	</div>
-
-
-	<th:block layout:fragment="modal">
-
-	</th:block>
-
-	<th:block layout:fragment="pagejs">
 
 		<script>
 	/* 	개인 번호 (010-0000-0000) */
@@ -279,7 +273,7 @@
 	    }); 
 	});
 	</script>
-	</th:block>
+	
 </body>
 
 </html>

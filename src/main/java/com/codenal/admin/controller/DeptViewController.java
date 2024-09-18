@@ -12,8 +12,8 @@ public class DeptViewController {
 		    return "admin/dept"; 
 		}
 		
-		@GetMapping("/employee/addressBook")
-		public String addressBookPage() {
-		    return "employee/addressBook"; 
-		}
+		/*
+		 * @GetMapping("/employee/addressBook") public String addressBookPage() { return
+		 * "employee/addressBook"; }
+		 */
 } 

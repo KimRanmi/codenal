@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 public class DepartmentsDto {
 
-    private int deptNo; // 부서 번호
+	private Long deptNo; // 부서 번호
     private String deptName; // 부서명
     private LocalDate deptCreateDate; // 부서 개설일
 

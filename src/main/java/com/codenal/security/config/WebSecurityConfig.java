@@ -1,10 +1,12 @@
 package com.codenal.security.config;
 
+import java.beans.Customizer;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,8 +22,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.codenal.security.service.SecurityService;
-
-import jakarta.servlet.MultipartConfigElement;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +40,6 @@ public class WebSecurityConfig {
 		// CORS 설정 적용
 		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
-
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
 				.requestMatchers("/admin/list").permitAll()
 				.requestMatchers("/admin/join").permitAll()
@@ -108,10 +107,17 @@ public class WebSecurityConfig {
 		return jdbcTokenRepository;
 	}
 
-
-
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return (web -> 
+		web.ignoring()
+		.requestMatchers(
+				PathRequest.toStaticResources().atCommonLocations()
+				));
 	}
 }

@@ -1,9 +1,10 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('직원 정보 상세')"></div>
+	<div th:replace="~{partials/title-meta :: title-meta('직원 정보 상세')}"></div>
 </th:block>
 
 <head>
@@ -205,15 +206,6 @@
 		</div>
 	</div>
 
-
-
-	<th:block layout:fragment="pagejs">
-		<script src="/assets/js/pages/profile-setting.init.js"></script>
-	</th:block>
-
-	<th:block layout:fragment="modal">
-
-	</th:block>
 	<th:block layout:fragment="pagejs">
 		<!-- prismjs plugin -->
 		<script src="/assets/libs/prismjs/prism.js"></script>

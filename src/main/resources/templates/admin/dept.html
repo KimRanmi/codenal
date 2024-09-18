@@ -1,11 +1,11 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
+	layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('부서 관리')"></div>
+	<div th:replace="~{partials/title-meta :: title-meta('부서 관리')}"></div>
 </th:block>
 
 <head>
@@ -55,7 +55,7 @@
 							<div class="col-md-4">
 								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal"
 									data-bs-target="#showModal"
-									style="width: 50%; font-size: 18px; padding: 3px; font-weight: bold;  border: 1px solid  #299cdb;">
+									style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid  #299cdb;">
 									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
 								</button>
 							</div>
@@ -124,8 +124,6 @@
 
 		<script src="/assets/js/pages/crm-contact.init.js"></script>
 
-		<!-- Sweet Alerts js -->
-		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 	</th:block>
 </body>
 

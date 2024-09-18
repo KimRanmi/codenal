@@ -1,13 +1,17 @@
 package com.codenal.admin.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.codenal.admin.domain.Departments;
 import com.codenal.employee.domain.Employee;
 
 public interface AdminRepository extends JpaRepository<Employee, Long> {
 
+	// 1. 검색
 	// 재직 상태
 	Page<Employee> findByEmpStatusAndEmpAuth(String empStatus, String empAuth, Pageable pageable);	
 
@@ -28,5 +32,12 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 
 	// 전체
 	Page<Employee> findAllByEmpAuth(String empStatus, Pageable pageable);
+
+	// TreeMenu
+	 // 특정 부서에 속한 직원
+    List<Employee> findByDepartments(Departments department);
+	
+	// 부서 ID로 직원 조회
+    List<Employee> findByDepartments_DeptNo(Long deptNo);
 
 }

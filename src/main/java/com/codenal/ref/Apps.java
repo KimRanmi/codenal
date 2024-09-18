@@ -12,20 +12,20 @@ public class Apps {
 		return "admin/detail";
 	}
 
-	@GetMapping("/employee-addressBook")
-	public String employee_addressBook() {
-		return "employee/addressBook";
-	}
+	//@GetMapping("/employee/addressBook")
+	//public String employee_addressBook() {
+	//	return "employee/addressBook";
+	//}
 	
-	@GetMapping("/admin-list")
-	public String admin_list() {
-		return "admin/list";
-	}
+	//@GetMapping("/admin/list")
+	//public String admin_list() {
+	//	return "admin/list";
+	//}
 	
-	@GetMapping("/admin-dept")
-	public String admin_dept() {
-		return "admin/dept";
-	}
+	//@GetMapping("/admin/dept")
+	//public String admin_dept() {
+	//	return "admin/dept";
+	//}
 
 	@GetMapping("/apps-calendar")
 	public String apps_calendar() {

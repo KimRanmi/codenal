@@ -71,11 +71,11 @@ public class Employee {
     private String empSignImage;
 
     @ManyToOne
-    @JoinColumn(name = "dept_no", referencedColumnName = "dept_no", insertable = false, updatable = false)
+    @JoinColumn(name = "dept_no", referencedColumnName = "dept_no")
     private Departments departments;
 
     @ManyToOne
-    @JoinColumn(name = "job_no",  referencedColumnName = "job_no", insertable = false, updatable = false)
+    @JoinColumn(name = "job_no",  referencedColumnName = "job_no")
     private Jobs jobs;
 
     @Column(name = "emp_auth")

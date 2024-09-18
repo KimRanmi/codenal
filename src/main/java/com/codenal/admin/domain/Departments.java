@@ -32,10 +32,10 @@ import lombok.Setter;
 @Builder
 public class Departments {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "dept_no")
-    private int deptNo;	// 부서 번호
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "dept_no")
+	private Long deptNo; // 부서 번호
 
     @Column(name = "dept_name", nullable = false)
     private String deptName;	// 부서명
@@ -51,4 +51,6 @@ public class Departments {
     @OneToMany(mappedBy = "departments")
     private List<AnnounceReadAuthority> readAuthorities;
 
+    @Column(name = "parent_dept_no")
+    private Long parentDeptNo;  // 상위 부서 번호
 }

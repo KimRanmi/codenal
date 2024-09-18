@@ -97,7 +97,7 @@ public class AdminService {
 
 		List<EmployeeDto> adminSearchOneList = new ArrayList<>();
 		for (Employee e : adminSearchOne) {
-			EmployeeDto dto = new EmployeeDto().fromEntity(e);
+			EmployeeDto dto = EmployeeDto.fromEntity(e);
 			adminSearchOneList.add(dto);
 		}
 
@@ -141,7 +141,7 @@ public class AdminService {
 
 		List<EmployeeDto> adminSearchTwoList = new ArrayList<EmployeeDto>();
 		for (Employee e : adminSearchTwo) {
-			EmployeeDto dto = new EmployeeDto().fromEntity(e);
+			EmployeeDto dto = EmployeeDto.fromEntity(e);
 			adminSearchTwoList.add(dto);
 		}
 

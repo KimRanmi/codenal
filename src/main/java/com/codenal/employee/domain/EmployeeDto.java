@@ -35,7 +35,7 @@ public class EmployeeDto {
     private String empStatus;
     private String empProfilePicture;
     private String empSignImage;
-    private int deptNo;
+    private Long deptNo;
     private String deptName; // 추가
     private int jobNo;
     private String jobName;  // 추가
