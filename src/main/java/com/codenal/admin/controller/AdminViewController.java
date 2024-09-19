@@ -1,6 +1,8 @@
 package com.codenal.admin.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,10 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.data.domain.Sort;
 
 import com.codenal.admin.domain.DepartmentsDto;
+import com.codenal.admin.domain.JobsDto;
 import com.codenal.admin.service.AdminService;
 import com.codenal.employee.domain.EmployeeDto;
 
@@ -66,21 +71,61 @@ public class AdminViewController {
 
 		return "admin/detail";
 	}
+	
+	// 직원 비밀번호 변경 (work1234)
+	@PostMapping("/admin/reset-password")
+	@ResponseBody
+	public Map<String, Object> resetPassword(@RequestBody Map<String, String> requestData) {
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    String adminPassword = requestData.get("adminPassword");
+	    Long employeeId = Long.parseLong(requestData.get("employeeId"));
+	    
+	    // 관리자 비밀번호 확인 
+	    if (!adminPassword.equals("work1234")) {
+	        response.put("success", false);
+	        response.put("message", "관리자 비밀번호가 일치하지 않습니다.");
+	        return response;
+	    }
+	    
+	    // 직원 비밀번호 변경
+	    try {
+	        adminService.resetEmployeePassword(employeeId, "work1234");
+	        response.put("success", true);
+	    } catch (Exception e) {
+	        response.put("success", false);
+	        response.put("message", "비밀번호 변경 중 오류가 발생했습니다.");
+	    }
+	    
+	    return response;
+	}
+
 
 	// 직원 정보 수정
 	@GetMapping("/update/{empId}")
 	public String employeeUpdate(@PathVariable("empId") Long empId, Model model) {
+	    EmployeeDto employeeUpdate = adminService.employeeDetail(empId);
+	    
+	    System.out.println("employeeUpdate deptNo: " + employeeUpdate.getDeptNo());
+	    model.addAttribute("employeeUpdate", employeeUpdate);
+	    
+	    // 부서 셀렉트
+	    List<DepartmentsDto> departments = adminService.getAllDepartments();
+	    model.addAttribute("departments", departments);
 
-		EmployeeDto employeeUpdate = adminService.employeeDetail(empId);
-		model.addAttribute("employeeUpdate", employeeUpdate);
-		return "admin/update"; 
+	    // 직급 목록 추가
+	    List<JobsDto> jobs = adminService.getAllJobs();
+	    model.addAttribute("jobs", jobs);
+
+	    return "admin/update";
 	}
 
 	// 직원 정보 수정 (POST 요청)
 	@PostMapping("/update/{empId}")
 	public String saveEmployeeUpdate(@PathVariable("empId") Long empId, EmployeeDto employeeDto) {
+		  System.out.println("Received deptNo: " + employeeDto.getDeptNo()); 
 		adminService.employeeUpdate(empId, employeeDto);
-		return "redirect:/admin/detail/" + empId; // 수정 후 상세 페이지로 리다이렉트
+		return "redirect:/admin/detail/" + empId;
 	}
 
 

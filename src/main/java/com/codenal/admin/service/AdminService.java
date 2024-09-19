@@ -49,14 +49,19 @@ public class AdminService {
 
 		int result = -1;
 		try {
-			// 기본 비밀번호 'work1234'암호화
+			
+			// 기본 비밀번호 'work1234' 설정
 			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
-				String defaultPassword = passwordEncoder.encode("work1234");
-				dto.setEmpPw(defaultPassword);
-			} else {
-				// 비밀번호가 제공되었을 경우 암호화
-				dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+			    dto.setEmpPw("work1234");
 			}
+			// 기본 비밀번호 'work1234'암호화
+//			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
+//				String defaultPassword = passwordEncoder.encode("work1234");
+//				dto.setEmpPw(defaultPassword);
+//			} else {
+//				// 비밀번호가 제공되었을 경우 암호화
+//				dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+//			}
 
 			// 1. emp_hire 날짜를 기반으로 6자리 값 생성 (YYMMDD)
 			LocalDate hireDate = dto.getEmpHire();  // DTO에서 `emp_hire` 값을 가져옴
@@ -83,15 +88,6 @@ public class AdminService {
 
 	}
 	
-	
-	
-	// ---------------- 모든 직원 목록 가져오기
-	public Page<EmployeeDto> findAllEmployees(Pageable pageable) {
-	    Page<Employee> employeePage = adminRepository.findAllByEmpAuth("USER", pageable);
-	    return employeePage.map(EmployeeDto::fromEntity);
-	}
-
-
 
 	// ---------------- 직원 목록 검색 1 (재직 or 퇴사)
 	public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
@@ -189,6 +185,15 @@ public class AdminService {
 		Employee e = adminRepository.findByEmpId(empId);
 		return EmployeeDto.fromEntity(e);
 	}
+	
+	
+	// ---------------- 직원 비밀번호 변경 
+	public void resetEmployeePassword(Long employeeId, String newPassword) {
+	    EmployeeDto employee = employeeDetail(employeeId);
+	    employee.setEmpPw(newPassword); // 암호화하지 않고 저장
+	    adminRepository.save(employee.toEntity());
+	}
+
 	
 	// 부서 셀렉트
 	public List<DepartmentsDto> getAllDepartments() {

@@ -37,7 +37,7 @@
 						<div class="tab-content">
 							<!-- ------------------------직원 정보----------------------------- -->
 							<div class="tab-pane active" id="personalDetails" role="tabpanel">
-								<form th:action="@{/admin/update/{empId}(empId=${employeeDetail.empId})}" th:method="get" th:if="${employeeDetail != null}">
+								<form th:action="@{/admin/update/{empId}(empId=${employeeDetail.empId})}" th:method="post" th:if="${employeeDetail != null}">
 									<div class="row">
 										<!-- 이름 -->
 										<div class="col-lg-6">
@@ -126,7 +126,7 @@
 																<h5 class="fs-16">
 																	<span th:text="${employeeDetail.empName}"></span>님에게 임시 비밀번호를 발급하시겠습니까?
 																</h5>
-																<form>
+																<form id="passwordResetForm">
 																	<div class="row g-3">
 																		<div class="col-xxl-12">
 																			<div></div>
@@ -141,18 +141,12 @@
 																</form>
 															</div>
 															<div class="modal-footer">
-																<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-																<button type="button" class="btn btn-primary">Save Changes</button>
+																<button type="submit" class="btn btn-primary">발급</button>
+																<button type="button" class="btn btn-light" data-bs-dismiss="modal">취소</button>
 															</div>
 														</div>
-														<!-- /.modal-content -->
 													</div>
-													<!-- /.modal-dialog -->
 												</div>
-												<!-- /.modal -->
-
-												<!-- --------------------- -->
-
 
 												<!-- 수정 버튼 -->
 												<button type="submit" class="btn btn-primary btn-border w-xs">수정</button>
@@ -206,6 +200,40 @@
 		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
 		<script src="/assets/js/pages/modal.init.js"></script>
 	</th:block>
+	
+	<script>
+	document.getElementById('issuePasswordButton').addEventListener('click', function () {
+		var adminPassword = document.getElementById('adminPassword').value;
+	//	var employeeId = /*[[${employeeDetail.empId}]]*/;
+
+	    
+	    if (adminPassword) {
+	        fetch('/admin/reset-password', {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json',
+	            },
+	            body: JSON.stringify({
+	                adminPassword: adminPassword,
+	                employeeId: employeeId,
+	            }),
+	        })
+	        .then(response => response.json())
+	        .then(data => {
+	            if (data.success) {
+	                alert('비밀번호가 성공적으로 변경되었습니다.');
+	           
+	                $('#zoomInModal').modal('hide');
+	            } else {
+	                alert('비밀번호 변경 실패: ' + data.message);
+	            }
+	        })
+	        .catch(error => console.error('Error:', error));
+	    } else {
+	        alert('관리자 비밀번호를 입력해주세요.');
+	    }
+	});
+</script>
 </body>
 
 </html>

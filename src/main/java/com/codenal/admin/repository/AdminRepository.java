@@ -34,7 +34,7 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	
 	
 	// 2. 목록 조회
-	List<Employee> findAllByEmpAuth(String empAuth);
+//	List<Employee> findAllByEmpAuth(String empAuth);
 	
 	
 	// 3. 상세 조회 // 정보 수정

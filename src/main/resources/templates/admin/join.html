@@ -246,7 +246,7 @@ layout:decorate="~{layout}" data-sidebar="light">
 	    const jsonData = JSON.stringify(obj);
 	    const csrfToken = document.getElementById("csrf_token").value;
 	
-	    fetch('/admin/join', {
+	    fetch('/admin/api/join', {
 	        method: 'POST',
 	        headers: {
 	            "Content-Type": "application/json;charset=utf-8",
