@@ -36,5 +36,5 @@ public class Departments {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "dept_create_date")
-    private LocalDate deptCreateDate;
+    private LocalDate deptCreateDate;	
 }

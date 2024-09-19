@@ -10,44 +10,71 @@
 <head>
 <meta name="_csrf" th:content="${_csrf.token}">
 <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+<style>
+.btn:focus {
+	outline: none;
+	box-shadow: none !important;
+	border: none;
+}
+
+.active-link {
+	font-weight: bold;
+	color: #0d6efd; /* 하이라이트 색상 */
+}
+
+/* 공유 문서 탭 스타일 */
+#shared-docs-tabs {
+	display: flex;
+	justify-content: flex-start; /* 왼쪽 정렬 */
+	align-items: center;
+	padding: 0;
+	margin: 10px 0;
+}
+
+#shared-docs-tabs a {
+	padding: 5px 10px; /* 작고 간결하게 패딩 줄임 */
+	font-size: 12px; /* 글자 크기를 작게 설정 */
+	text-align: left; /* 텍스트를 왼쪽 정렬 */
+	margin-right: 5px; /* 탭 간의 간격을 좁힘 */
+	color: #007bff; /* 탭 기본 색상 */
+	border: none;
+	border-bottom: 2px solid transparent;
+	transition: all 0.3s ease; /* 애니메이션 추가 */
+}
+
+#shared-docs-tabs a.active {
+	border-color: #007bff; /* 활성화된 탭에 하이라이트 */
+	font-weight: bold;
+}
+
+#shared-docs-tabs a:hover {
+	color: #0056b3; /* 탭 hover 시 색상 */
+	border-bottom: 2px solid #0056b3; /* hover 시 하단선 */
+}
+</style>
 </head>
 
 <body>
 	<div layout:fragment="content">
+		<div th:replace="partials/page-title :: page-title('문서함','개인문서')"></div>
 		<div class="chat-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1">
 			<div class="file-manager-sidebar">
 				<div class="p-3 d-flex flex-column h-100">
-					<div class="mb-3">
-						<h5 class="mb-0 fw-semibold">문서함</h5>
-					</div>
-					<div class="search-box">
-						<input type="text" class="form-control bg-light border-light"
-							placeholder="Search here..."> <i
-							class="ri-search-2-line search-icon"></i>
-					</div>
+
+
 					<div class="mt-3 mx-n4 px-4 file-menu-sidebar-scroll"
 						data-simplebar>
 						<ul class="list-unstyled file-manager-menu">
-							<li>
-								<button class="btn" data-bs-toggle="collapse"
-									href="#collapseExample" role="button" aria-expanded="true"
-									aria-controls="collapseExample">
-									<i class="ri-folder-2-line align-bottom me-2"></i> <span
-										class="file-list-link">문서함</span>
-								</button>
-								<div class="collapse show" id="collapseExample">
-									<ul class="sub-menu list-unstyled">
-										<li><a href="/apps-file-manager">개인문서</a></li>
-										<li><a href="#!">공유문서</a></li>
-									</ul>
-								</div>
-							</li>
-							<li><a href="#!"><i
-									class="ri-star-line align-bottom me-2"></i> <span
-									class="file-list-link">즐겨찾기</span></a></li>
-							<li><a href="#!"><i
-									class="ri-delete-bin-line align-bottom me-2"></i> <span
-									class="file-list-link">휴지통</span></a></li>
+							<li><a href="#" id="personal-docs"
+								class="file-list-link active"><i
+									class="ri-folder-2-line align-bottom me-2"></i>개인문서</a></li>
+							<li><a href="#" id="shared-docs" class="file-list-link"><i
+									class="ri-folder-2-line align-bottom me-2"></i>공유문서</a></li>
+							<li><a href="#" id="favorite-docs" class="file-list-link"><i
+									class="ri-star-line align-bottom me-2"></i>즐겨찾기</a></li>
+							<li><a href="#" id="trash-docs" class="file-list-link"><i
+									class="ri-delete-bin-line align-bottom me-2"></i>휴지통</a></li>
 						</ul>
 					</div>
 					<div class="mt-auto">
@@ -87,25 +114,62 @@
 							</div>
 						</div>
 					</div>
+					<!-- 검색창과 검색 버튼 상단에 배치 -->
+
 
 					<div>
 						<div class="d-flex align-items-center mb-3">
 							<h5 class="flex-grow-1 fs-16 mb-0" id="filetype-title">개인 문서</h5>
-							<div class="ms-auto">
-								<!-- 등록 버튼을 오른쪽 끝으로 이동 -->
-								<button type="button" class="btn btn-primary"
-									onclick="openFileDialog()">파일 등록</button>
+						</div>
 
-								<!-- 숨겨진 파일 입력 -->
-								<input type="file" id="fileInput" style="display: none;"
-									onchange="uploadFile()">
+						<div class="row g-3 mb-3">
+							<div class="col-xxl-5 col-sm-12">
+								<div class="search-box">
+									<input type="text"
+										class="form-control search bg-light border-light"
+										id="searchKeyword" placeholder="검색어를 입력하세요."> <i
+										class="ri-search-line search-icon"></i>
+								</div>
+							</div>
+							<div class="col-auto">
+								<button type="button" class="btn btn-primary btn-sm-2"
+									onclick="searchFiles()">검색</button>
 							</div>
 						</div>
+
 					</div>
-					<div class="table-responsive">
+					<div class="d-flex align-items-center mb-3">
+						<div class="ms-auto">
+							<button id="restore-btn" type="button"
+								class="btn btn-success btn-sm-1"
+								onclick="restoreSelectedFiles()" style="display: none;">복원</button>
+							<!-- 복원 버튼 -->
+							<!-- 다운로드 버튼 수정 -->
+							<button id="download-btn" type="button"
+								class="btn btn-primary btn-sm-1"
+								onclick="downloadSelectedFiles()">다운로드</button>
+
+							<button type="button" id="delete-btn"
+								class="btn btn-danger btn-sm-1" onclick="deleteSelectedFiles()">삭제</button>
+							<button type="button" id="file-register-btn"
+								class="btn btn-primary" onclick="openFileDialog()">파일
+								등록</button>
+							<input type="file" id="fileInput" style="display: none;"
+								onchange="uploadFile()">
+						</div>
+					</div>
+
+
+					<!-- 개인 문서 테이블 -->
+					<div id="personal-files-table" class="table-responsive">
 						<table class="table align-middle table-nowrap mb-0">
 							<thead class="table-active">
 								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all"
+										onclick="toggleSelectAll(this)"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
 									<th scope="col">파일명</th>
 									<th scope="col">크기</th>
 									<th scope="col">생성일</th>
@@ -113,7 +177,110 @@
 									<th scope="col" class="text-center">세부</th>
 								</tr>
 							</thead>
-							<tbody id="file-list"></tbody>
+							<tbody id="file-list">
+								<!-- 개인 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+					<!-- 공유 문서 탭 네비게이션 추가 -->
+					<!-- 공유 문서 탭 네비게이션 추가 -->
+					<div id="shared-docs-tabs">
+						<a class="nav-link active" id="shared-by-me-tab" href="#"
+							onclick="showSharedByMeFiles()">공유한 문서함</a> <a class="nav-link"
+							id="shared-with-me-tab" href="#"
+							onclick="showSharedWithMeFiles()">공유받은 문서함</a>
+					</div>
+
+					<!-- 공유한 문서 테이블 -->
+					<div id="shared-by-me-files-table" class="table-responsive"
+						style="display: block;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-shared-by-me"
+										onclick="toggleSelectAll(this, 'shared-by-me-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">생성일</th>
+									<th scope="col">공유여부</th>
+									<th scope="col" class="text-center">세부</th>
+								</tr>
+							</thead>
+							<tbody id="shared-by-me-file-list">
+								<!-- 공유한 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+
+					<!-- 공유받은 문서 테이블 -->
+					<div id="shared-with-me-files-table" class="table-responsive"
+						style="display: none;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-shared-with-me"
+										onclick="toggleSelectAll(this, 'shared-with-me-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">생성일</th>
+									<th scope="col">등록자</th>
+									<th scope="col" class="text-center">세부</th>
+								</tr>
+							</thead>
+							<tbody id="shared-with-me-file-list">
+								<!-- 공유받은 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+					<div id="favorite-files-table" class="table-responsive"
+						style="display: none;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-favorite"
+										onclick="toggleSelectAll(this, 'favorite-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">생성일</th>
+									<th scope="col">공유여부</th>
+									<th scope="col" class="text-center">세부</th>
+								</tr>
+							</thead>
+							<tbody id="favorite-file-list">
+								<!-- 즐겨찾기 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+
+					<div id="trash-files-table" class="table-responsive"
+						style="display: none;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-trash"
+										onclick="toggleSelectAll(this, 'trash-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">등록자</th>
+									<th scope="col">생성일</th>
+
+								</tr>
+							</thead>
+							<tbody id="trash-file-list">
+								<!-- 휴지통 파일 목록이 여기에 로드됩니다 -->
+							</tbody>
 						</table>
 					</div>
 					<ul id="pagination" class="pagination pagination-lg"></ul>
@@ -138,21 +305,248 @@
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-	</div>
 
-	<th:block layout:fragment="pagejs">
-		<!-- apexcharts -->
-		<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
-		<script src="/assets/js/pages/file-manager.init.js"></script>
-		<script>
+
+				<th:block layout:fragment="pagejs">
+					<!-- apexcharts -->
+					<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+					<script src="/assets/js/pages/file-manager.init.js"></script>
+					<script>
         const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        
+        
+        
+        
+        function showSharedFiles() {
+            hideAllTables();
+            // 공유문서 탭 보이기
+            document.getElementById('shared-docs-tabs').style.display = 'block';
+            document.getElementById('shared-by-me-files-table').style.display = 'block';
+            document.getElementById('shared-with-me-files-table').style.display = 'none';
+            document.getElementById('restore-btn').style.display = 'none';
+            
+            document.getElementById('shared-by-me-tab').classList.add('active');
+            document.getElementById('shared-with-me-tab').classList.remove('active');
+            document.getElementById('download-btn').style.display = 'inline-block';
+            document.getElementById('file-register-btn').style.display = 'none';
+            document.getElementById('delete-btn').style.display = 'inline-block';
+            loadSharedByMeFiles();
+        }
 
+        function showSharedByMeFiles() {
+            hideAllTables();
+            document.getElementById('shared-by-me-files-table').style.display = 'block'; // 공유한 문서 테이블 보이기
+            document.getElementById('shared-with-me-files-table').style.display = 'none'; // 공유받은 문서 테이블 숨기기
+
+            // 탭의 클래스 관리
+            document.getElementById('shared-by-me-tab').classList.add('active');
+            document.getElementById('shared-with-me-tab').classList.remove('active');
+
+            loadSharedByMeFiles(); // 공유한 문서 목록 불러오기
+        }
+        function showSharedWithMeFiles() {
+            hideAllTables();
+            document.getElementById('shared-by-me-files-table').style.display = 'none'; // 공유한 문서 테이블 숨기기
+            document.getElementById('shared-with-me-files-table').style.display = 'block'; // 공유받은 문서 테이블 보이기
+
+            // 탭의 클래스 관리
+            document.getElementById('shared-by-me-tab').classList.remove('active');
+            document.getElementById('shared-with-me-tab').classList.add('active');
+            
+
+            loadSharedWithMeFiles(); // 공유받은 문서 목록 불러오기
+        }
+
+   // 개인 문서, 즐겨찾기, 휴지통에서는 공유문서 탭 숨기기
+     function showPersonalFiles() {
+    hideAllTables();
+    document.getElementById('personal-files-table').style.display = 'block';
+    document.getElementById('restore-btn').style.display = 'none';
+    document.getElementById('shared-docs-tabs').style.display = 'none';
+
+    // 개인 문서 페이지에서는 다운로드 버튼을 보이게 함
+    document.getElementById('download-btn').style.display = 'inline-block';
+    document.getElementById('file-register-btn').style.display = 'inline-block';
+    document.getElementById('delete-btn').style.display = 'inline-block';
+    loadPersonalFiles();
+}
+
+     function showFavoriteFiles() {
+    	    hideAllTables();
+    	    document.getElementById('favorite-files-table').style.display = 'block';
+    	    document.getElementById('restore-btn').style.display = 'none';
+    	    // 공유문서 탭 숨기기
+    	    document.getElementById('shared-docs-tabs').style.display = 'none';
+    	    document.getElementById('download-btn').style.display = 'none';
+    	    document.getElementById('file-register-btn').style.display = 'none';
+    	    document.getElementById('delete-btn').style.display = 'none'; // 삭제 버튼 숨김
+    	    loadFavoriteFiles();
+    	}
+     function showTrashFiles() {
+    	    hideAllTables();
+    	    document.getElementById('trash-files-table').style.display = 'block';
+    	    document.getElementById('restore-btn').style.display = 'inline-block';
+    	    document.getElementById('delete-btn').style.display = 'inline-block';
+    	    // 공유문서 탭 숨기기
+    	    document.getElementById('shared-docs-tabs').style.display = 'none';
+    	    document.getElementById('download-btn').style.display = 'none';
+    	    document.getElementById('file-register-btn').style.display = 'none';
+    	    loadTrashFiles();
+    	}
+
+     function hideAllTables() {
+    	    const personalTable = document.getElementById('personal-files-table');
+    	    if (personalTable) personalTable.style.display = 'none';
+
+    	    const sharedByMeTable = document.getElementById('shared-by-me-files-table');
+    	    if (sharedByMeTable) sharedByMeTable.style.display = 'none';
+
+    	    const sharedWithMeTable = document.getElementById('shared-with-me-files-table');
+    	    if (sharedWithMeTable) sharedWithMeTable.style.display = 'none';
+
+    	    const favoriteTable = document.getElementById('favorite-files-table');
+    	    if (favoriteTable) favoriteTable.style.display = 'none';
+
+    	    const trashTable = document.getElementById('trash-files-table');
+    	    if (trashTable) trashTable.style.display = 'none';
+    	}	
+     // 현재 활성화된 테이블을 반환하는 함수
+     function getActiveTableId() {
+    if (document.getElementById('personal-files-table') && document.getElementById('personal-files-table').style.display !== 'none') {
+        return 'personal-files-table';
+    } else if (document.getElementById('shared-by-me-files-table') && document.getElementById('shared-by-me-files-table').style.display !== 'none') {
+        return 'shared-by-me-files-table';
+    } else if (document.getElementById('shared-with-me-files-table') && document.getElementById('shared-with-me-files-table').style.display !== 'none') {
+        return 'shared-with-me-files-table';
+    } else if (document.getElementById('favorite-files-table') && document.getElementById('favorite-files-table').style.display !== 'none') {
+        return 'favorite-files-table';
+    } else if (document.getElementById('trash-files-table') && document.getElementById('trash-files-table').style.display !== 'none') {
+        return 'trash-files-table';
+    }
+    return null;
+}
+
+        function searchFiles() {
+            const keyword = document.getElementById('searchKeyword').value.trim();  // 검색어에서 공백 제거
+            if (!keyword) {  // 검색어가 비어 있을 때
+                alert('검색어를 입력하세요.');  // 경고 메시지 출력
+                return;  // 검색 요청 중단
+            }
+
+            const activeTableId = getActiveTableId();  // 활성화된 테이블 확인
+            let fetchUrl = `/api/documents/search?keyword=${keyword}`;  // 키워드로 검색
+
+            fetch(fetchUrl, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const fileList = document.querySelector(`#${activeTableId} tbody`);
+                fileList.innerHTML = '';  // 기존 목록을 지우고 새 목록을 추가
+
+                if (data.length === 0) {
+                    fileList.innerHTML = '<tr><td colspan="6" class="text-center">검색 결과가 없습니다.</td></tr>';
+                } else {
+                    data.forEach(document => {
+                        const formattedSize = formatFileSize(document.docSize);
+                        const row = `
+                            <tr>
+                                <td style="text-align: center;">
+                                    <input type="checkbox" class="file-checkbox" value="${document.docNo}">
+                                </td>
+                                <td>${document.docName}</td>
+                                <td>${formattedSize}</td>
+                                <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                                <td>${document.docStatus == 1 ? '공유' : '개인'}</td>
+                                <td class="text-center"><button class="btn btn-info btn-sm">보기</button></td>
+                            </tr>
+                        `;
+                        fileList.innerHTML += row;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error searching files:', error);
+            });
+        }
+        // 모든 파일 선택/해제
+       function toggleSelectAll(selectAllCheckbox, className = 'file-checkbox') {
+    const checkboxes = document.querySelectorAll(`.${className}`);
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+}
+
+    // 선택된 파일 삭제(휴지통 또는 영구 삭제)
+       function deleteSelectedFiles() {
+           const activeTableId = getActiveTableId(); // 현재 활성화된 테이블을 확인
+           let className = 'file-checkbox'; // 기본 체크박스 클래스는 개인 문서용
+           let deleteUrl = '/api/documents/delete'; // 기본 삭제 URL (휴지통으로 이동)
+
+           // 각 테이블별로 체크박스 클래스 설정 및 삭제 URL 설정
+           if (activeTableId === 'shared-by-me-files-table' || activeTableId === 'shared-with-me-files-table') {
+               className = 'shared-checkbox'; // 공유 문서 체크박스
+           } else if (activeTableId === 'favorite-files-table') {
+               className = 'favorite-checkbox'; // 즐겨찾기 체크박스
+           } else if (activeTableId === 'trash-files-table') {
+               className = 'trash-checkbox'; // 휴지통 체크박스
+               deleteUrl = '/api/documents/delete-permanently'; // 휴지통에서 삭제는 영구 삭제로 설정
+           }
+
+           // 해당 테이블의 체크박스들에서 선택된 파일 ID를 추출
+           const selectedFiles = [];
+           const checkboxes = document.querySelectorAll(`.${className}:checked`);
+
+           checkboxes.forEach(checkbox => {
+               selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
+           });
+
+           if (selectedFiles.length === 0) {
+               alert('삭제할 파일을 선택하세요.');
+               return;
+           }
+
+           // 서버에 삭제 요청 (영구 삭제 또는 휴지통으로 이동)
+           fetch(deleteUrl, {
+               method: 'POST',
+               headers: {
+                   'X-CSRF-TOKEN': csrfToken,
+                   'Content-Type': 'application/json'
+               },
+               body: JSON.stringify(selectedFiles) // 선택된 파일 ID 배열을 전송
+           })
+           .then(response => response.text())
+           .then(result => {
+               alert(result);
+               // 삭제 후 테이블별로 파일 목록 갱신
+               if (activeTableId === 'personal-files-table') {
+                   loadPersonalFiles();  // 개인 파일 목록 갱신
+               } else if (activeTableId === 'shared-by-me-files-table') {
+                   loadSharedByMeFiles();    // 공유한 파일 목록 갱신
+               } else if (activeTableId === 'shared-with-me-files-table') {
+                   loadSharedWithMeFiles();    // 공유받은 파일 목록 갱신
+               } else if (activeTableId === 'favorite-files-table') {
+                   loadFavoriteFiles();  // 즐겨찾기 파일 목록 갱신
+               } else if (activeTableId === 'trash-files-table') {
+                   loadTrashFiles();     // 휴지통 파일 목록 갱신
+               }
+           })
+           .catch(error => {
+               console.error('Error deleting files:', error);
+           });
+       }
         function openFileDialog() {
             document.getElementById('fileInput').click();
         }
 
+        
+        function fetchFileList() {
+            loadPersonalFiles();  // 개인 문서 목록을 다시 로드하는 함수 호출
+        }
         // 파일 업로드 처리
         function uploadFile() {
             const fileInput = document.getElementById('fileInput');
@@ -176,7 +570,6 @@
                 console.error('Error uploading file:', error);
             });
         }
-		
         	
         function formatFileSize(bytes) {
             const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -185,37 +578,307 @@
             return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
         }
         
-        // 문서 목록 가져오기
-        function fetchFileList() {
-            fetch('/api/documents/list')
+        
+        
+        
+        
+     // 개인 문서 파일 목록 불러오기 (휴지통 파일 제외)
+       function loadPersonalFiles() {
+    fetch('/api/documents/list?excludeTrash=true')
+        .then(response => response.json())
+        .then(data => {
+            const fileList = document.getElementById('personal-files-table').querySelector('tbody');
+            fileList.innerHTML = ''; // 기존 목록 비우기
+
+            if (data.length === 0) {
+                fileList.innerHTML = '<tr><td colspan="5" class="text-center">파일이 없습니다.</td></tr>';
+            } else {
+                data.forEach(document => {
+                    const row = `
+                        <tr>
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="file-checkbox" value="${document.docNo}">
+                            </td>
+                            <td>${document.docName}</td>
+                            <td>${formatFileSize(document.docSize)}</td>
+                            <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                            <td>${document.docStatus == 1 ? '공유문서' : '개인문서'}</td>
+                           
+                        </tr>
+                    `;
+                    fileList.innerHTML += row;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching personal files:', error);
+        });
+}
+       
+        function loadSharedByMeFiles() {
+            fetch('/api/documents/shared-by-me')
                 .then(response => response.json())
                 .then(data => {
-                    const fileList = document.getElementById('file-list');
-                    fileList.innerHTML = ''; // 기존 목록을 지우고 새 목록을 추가
+                    const fileList = document.getElementById('shared-by-me-files-table').querySelector('tbody');
+                    fileList.innerHTML = ''; // 기존 목록 비우기
 
-                    data.forEach(document => {
-                    	const formattedSize = formatFileSize(document.docSize);
-                        const row = `
-                            <tr>
-                                <td>${document.docName}</td>
-                                <td>${formattedSize}</td>
-                                <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
-                                <td>${document.docStatus == 1 ? '공유' : '개인'}</td>
-                                <td class="text-center"><button class="btn btn-info btn-sm">보기</button></td>
-                            </tr>
-                        `;
-                        fileList.innerHTML += row;
-                    });
+                    if (data.length === 0) {
+                        fileList.innerHTML = '<tr><td colspan="6" class="text-center">공유한 파일이 없습니다.</td></tr>';
+                    } else {
+                        data.forEach(document => {
+                            const row = `
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" class="shared-checkbox" value="${document.docNo}">
+                                    </td>
+                                    <td>${document.docName}</td>
+                                    <td>${formatFileSize(document.docSize)}</td>
+                                    <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                                    <td>공유문서</td>
+                                    <td class="text-center"><button class="btn btn-info btn-sm">보기</button></td>
+                                </tr>
+                            `;
+                            fileList.innerHTML += row;
+                        });
+                    }
                 })
                 .catch(error => {
-                    console.error('Error fetching file list:', error);
+                    console.error('Error fetching shared by me files:', error);
                 });
         }
-
-        // 페이지 로드 시 문서 목록 가져오기
-        document.addEventListener('DOMContentLoaded', fetchFileList);
      
+        function loadSharedWithMeFiles() {
+            fetch('/api/documents/shared-with-me')
+                .then(response => response.json())
+                .then(data => {
+                    const fileList = document.getElementById('shared-with-me-files-table').querySelector('tbody');
+                    fileList.innerHTML = ''; // 기존 목록 비우기
+
+                    if (data.length === 0) {
+                        fileList.innerHTML = '<tr><td colspan="6" class="text-center">공유받은 파일이 없습니다.</td></tr>';
+                    } else {
+                        data.forEach(document => {
+                            const row = `
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" class="shared-checkbox" value="${document.docNo}">
+                                    </td>
+                                    <td>${document.docName}</td>
+                                    <td>${formatFileSize(document.docSize)}</td>
+                                    <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                                    <td>${document.docSharer}</td>
+                                    <td class="text-center"><button class="btn btn-info btn-sm">보기</button></td>
+                                </tr>
+                            `;
+                            fileList.innerHTML += row;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching shared with me files:', error);
+                });
+        }
+     
+        // 즐겨찾기 문서 파일 목록 불러오기
+       function loadFavoriteFiles() {
+    fetch('/api/documents/list?type=favorite')
+        .then(response => response.json())
+        .then(data => {
+            const fileList = document.getElementById('favorite-files-table').querySelector('tbody');
+            fileList.innerHTML = ''; // 기존 목록 비우기
+
+            if (data.length === 0) {
+                fileList.innerHTML = '<tr><td colspan="6" class="text-center">즐겨찾기한 파일이 없습니다.</td></tr>';
+            } else {
+                data.forEach(document => {
+                    const row = `
+                        <tr>
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="favorite-checkbox" value="${document.docNo}">
+                            </td>
+                            <td>${document.docName}</td>
+                            <td>${formatFileSize(document.docSize)}</td>
+                            <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                            <td>${document.docStatus == 1 ? '공유' : '개인'}</td>
+                            <td class="text-center"><button class="btn btn-info btn-sm">보기</button></td>
+                        </tr>
+                    `;
+                    fileList.innerHTML += row;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching favorite files:', error);
+        });
+}
+     // 휴지통 파일 목록 불러오기
+        function loadTrashFiles() {
+            fetch('/api/documents/trash')
+                .then(response => response.json())
+                .then(data => {
+                    const fileList = document.getElementById('trash-files-table').querySelector('tbody');
+                    fileList.innerHTML = ''; // 기존 목록 비우기
+
+                    if (data.length === 0) {
+                        fileList.innerHTML = '<tr><td colspan="6" class="text-center">휴지통이 비어 있습니다.</td></tr>';
+                    } else {
+                        data.forEach(document => {
+                            const row = `
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" class="trash-checkbox" value="${document.docNo}" style="width: 16px; height: 16px; margin: 0; padding: 0;">
+                                    </td>
+                                    <td>${document.docName}</td>
+                                    <td>${formatFileSize(document.docSize)}</td>
+                                    <td>${document.docEmpId}</td>
+                                    <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                                  
+                                </tr>
+                            `;
+                            fileList.innerHTML += row;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching trash files:', error);
+                });
+        }
+        
+        
+       
+     
+   
+
+       
+
+       
+     // 선택된 파일 복원
+        function restoreSelectedFiles() {
+            const selectedFiles = [];
+            const checkboxes = document.querySelectorAll('.trash-checkbox:checked');
+
+            checkboxes.forEach(checkbox => {
+                selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
+            });
+
+            if (selectedFiles.length === 0) {
+                alert('복원할 파일을 선택하세요.');
+                return;
+            }
+
+            // 서버에 복원 요청
+            fetch('/api/documents/restore', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedFiles) // 선택된 파일 ID 배열을 전송
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                // 복원 후 파일 목록 갱신
+                loadTrashFiles(); // 휴지통 목록 갱신
+            })
+            .catch(error => {
+                console.error('Error restoring files:', error);
+            });
+        }
+
+    
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            showPersonalFiles();  // 기본적으로 개인 문서를 보여줌
+            
+            // 개인 문서 탭을 기본적으로 active 상태로 설정
+            document.getElementById('personal-docs').classList.add('active');
+            // 초기 로드 시 공유문서 탭 숨기기
+            document.getElementById('shared-docs-tabs').style.display = 'none';
+        });
+
+        // 각각의 메뉴 클릭 시 테이블 전환
+        document.getElementById('personal-docs').addEventListener('click', function(event) {
+            event.preventDefault();
+            showPersonalFiles();
+        });
+
+        document.getElementById('shared-docs').addEventListener('click', function(event) {
+            event.preventDefault();
+            showSharedFiles();
+        });
+
+        document.getElementById('favorite-docs').addEventListener('click', function(event) {
+            event.preventDefault();
+            showFavoriteFiles();
+        });
+
+        document.getElementById('trash-docs').addEventListener('click', function(event) {
+            event.preventDefault();
+            showTrashFiles();
+        });
+
+        
+        
+        function downloadSelectedFiles() {
+            const selectedFiles = [];
+            const activeTableId = getActiveTableId(); // 현재 활성화된 테이블 확인
+            let className = 'file-checkbox'; // 기본 체크박스 클래스는 개인 문서용
+
+            if (activeTableId === 'shared-by-me-files-table') {
+                className = 'shared-checkbox'; // 공유 문서 체크박스
+            } else if (activeTableId === 'shared-with-me-files-table') {
+                className = 'shared-checkbox'; // 공유받은 문서 체크박스
+            }
+
+            // 선택된 체크박스들에서 파일 ID 추출
+            const checkboxes = document.querySelectorAll(`.${className}:checked`);
+            checkboxes.forEach(checkbox => {
+                selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
+            });
+
+            if (selectedFiles.length === 0) {
+                alert('다운로드할 파일을 선택하세요.');
+                return;
+            }
+
+            // 파일이 1개일 때는 바로 다운로드
+            if (selectedFiles.length === 1) {
+                downloadFile(selectedFiles[0]);
+            } else {
+                // 파일이 여러 개일 때는 하나씩 순차적으로 다운로드
+                selectedFiles.forEach(fileId => {
+                    downloadFile(fileId);
+                });
+            }
+        }
+
+        function downloadFile(fileId) {
+            fetch(`/api/documents/download?docId=${fileId}`, {  
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            })
+            .then(response => {
+                const fileName = response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');  // 파일명 추출
+                return response.blob().then(blob => ({ fileName, blob }));
+            })
+            .then(({ fileName, blob }) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;  // 파일명을 서버에서 전달받아 설정
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(error => {
+                console.error('파일 다운로드 중 오류가 발생했습니다:', error);
+            });
+        }
+
     </script>
-	</th:block>
+				</th:block>
 </body>
 </html>

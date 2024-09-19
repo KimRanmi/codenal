@@ -26,7 +26,6 @@ public class DocumentDto {
     private String docPath;
     private BigDecimal docSize;
     private Long docEmpId;
-    private Long docShareEmpId;
 
     // 엔터티를 DTO로 변환하는 메서드
     public static DocumentDto fromEntity(Documents documents) {
