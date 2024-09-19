@@ -1,4 +1,4 @@
-package com.codenal.addressBook.respository;
+package com.codenal.admin.repository;
 
 import java.util.List;
 
@@ -8,9 +8,12 @@ import org.springframework.stereotype.Repository;
 import com.codenal.admin.domain.Departments;
 
 @Repository
-public interface AddressBookRepository extends JpaRepository<Departments, Long> {
+public interface DepartmentsRepository extends JpaRepository<Departments, Long> {
 
-	// 전 부서
+	// 1. 직원 정보 수정
+	Departments findByDeptNo(Long deptNo);
+	
+	// 2. JsTree
     List<Departments> findAll();
-
 }
+    

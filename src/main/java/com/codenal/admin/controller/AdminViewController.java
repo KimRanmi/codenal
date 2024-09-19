@@ -12,7 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.codenal.admin.service.AdminService;
 import com.codenal.employee.domain.EmployeeDto;
@@ -55,28 +57,40 @@ public class AdminViewController {
 
 		return "admin/list";
 	}
+	
+	// 직원 정보 수정
+	//@GetMapping("/update")
+//	public String updatePage() {
+//		return "admin/update";
+//	}
 
-
+	
 	// 직원 정보 상세 조회
 	@GetMapping("/detail/{empId}")
-	public String employeeListDetail(@PathVariable("empId") Long empId, Model model) {
+	public String employeeListDetail(@PathVariable("empId") Long empId, 
+	                                 @RequestParam(value = "modify", required = false, defaultValue = "false") boolean modify, 
+	                                 Model model) {
 		
-		EmployeeDto employeeDetail = adminService.employeeDetail(empId); 
-		model.addAttribute("employeeDetail", employeeDetail);
+	    EmployeeDto employeeDetail = adminService.employeeDetail(empId); 
+	    model.addAttribute("employeeDetail", employeeDetail);
+	    model.addAttribute("modifyMode", modify); // 수정 모드 여부를 모델에 추가
 
-		return "admin/detail";
-	}
-
-
-	// 직원 정보 수정
-	@GetMapping("/update/{empId}")
-	public String employeeListUpdate(@PathVariable("empId") Long empId, Model model) {
-		
-	    EmployeeDto employeeUpdate = adminService.selectUpdate(empId);  
-	    model.addAttribute("employeeUpdate", employeeUpdate);
-	    
 	    return "admin/detail";
 	}
+
+	
+	// 직원 정보 수정
+	@PostMapping("/update/{empId}")
+	public String updateEmployee(@PathVariable("empId") Long empId, EmployeeDto employeeDto) {
+		
+	    adminService.employeeUpdate(empId, employeeDto);
+	    
+	    return "/admin/detail/";
+	}
+
+
+ 
+
 
 
 

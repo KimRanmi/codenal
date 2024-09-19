@@ -12,21 +12,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.codenal.addressBook.domain.TreeMenuDto;
-import com.codenal.addressBook.respository.AddressBookRepository;
 import com.codenal.admin.domain.Departments;
 import com.codenal.admin.repository.AdminRepository;
+import com.codenal.admin.repository.DepartmentsRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 
 @Service
 public class AddressBookService {
 
-	private final AddressBookRepository addressBookRepository;
+	private final  DepartmentsRepository departmentsRepository;
 	private final AdminRepository adminRepository;
 
 	@Autowired
-	public AddressBookService(AddressBookRepository addressBookRepository, AdminRepository adminRepository) {
-		this.addressBookRepository = addressBookRepository;
+	public AddressBookService(DepartmentsRepository departmentsRepository, AdminRepository adminRepository) {
+		this.departmentsRepository = departmentsRepository;
 		this.adminRepository = adminRepository;
 	}
 
@@ -73,7 +73,7 @@ public class AddressBookService {
 
 	// TreeMenu(JsTree)
 	public List<TreeMenuDto> getTreeMenu() {
-		List<Departments> departments = addressBookRepository.findAll();	// 전 부서 조회
+		List<Departments> departments = departmentsRepository.findAll();	// 전 부서 조회
 		// System.out.println("Departments Fetched: " + departments);  
 
 		// 직원(자식) 리스트를 만들고 부서(부모)가 생성 -> 노드에 들어갈 데이터 미리 준비

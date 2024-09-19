@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,8 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.domain.Jobs;
+import com.codenal.admin.domain.JobsDto;
 import com.codenal.admin.repository.AdminRepository;
+import com.codenal.admin.repository.DepartmentsRepository;
+import com.codenal.admin.repository.JobsRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 
@@ -27,12 +32,16 @@ public class AdminService {
 	// 암호화
 	// Spring Security 설정 클래스에서 PasswordEncoder를 빈으로 등록
 	private final AdminRepository adminRepository;
+	private final DepartmentsRepository departmentsRepository;
+	private final JobsRepository jobsRepository;
 
 	@Autowired
 	public AdminService(PasswordEncoder passwordEncoder,
-			AdminRepository adminRepository) {
+			AdminRepository adminRepository, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository) {
 		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
+		this.departmentsRepository = departmentsRepository;
+		this.jobsRepository = jobsRepository;
 	}
 
 	// ------------------ 신규 직원 등록
@@ -171,37 +180,41 @@ public class AdminService {
 		Employee e = adminRepository.findByEmpId(empId);
 		return EmployeeDto.fromEntity(e);
 	}
+	
+	// 부서 목록
+	public List<DepartmentsDto> getAllDepartments() {
+	    List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
+	    return departments.stream()
+	                      .map(DepartmentsDto::fromEntity) // Departments 객체를 DepartmentsDto로 변환
+	                      .collect(Collectors.toList());
+	}
+	
+	// 직급 목록
+	public List<JobsDto> getAllJobs() {
+	    List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
+	    return jobs.stream()
+	               .map(JobsDto::fromEntity) // Jobs 객체를 JobsDto로 변환
+	               .collect(Collectors.toList());
+	}
+
 
 
 	// ---------------- 직원 정보 수정
 	@Transactional
-	public Employee employeeUpdate(EmployeeDto dto) { 
-	
-		EmployeeDto temp = selectUpdate(dto.getEmpId());
+	public Employee employeeUpdate(Long empId, EmployeeDto dto) { 
+	    Employee e = adminRepository.findByEmpId(empId);
 
-		temp.setEmpName(dto.getEmpName());
-		temp.setDeptNo(dto.getDeptNo());
-		temp.setJobNo(dto.getJobNo());
+	    e.setEmpName(dto.getEmpName());
 
-		Employee e = temp.toEntity();
-		return adminRepository.save(e);
+	    Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+	    e.setDepartments(department);
+
+	    Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+	    e.setJobs(job);
+
+	    return adminRepository.save(e);
 	}
 
-	public EmployeeDto selectUpdate(Long empId) {
-		
-		Employee e = adminRepository.findByEmpId(empId);
-
-		EmployeeDto dto = EmployeeDto.builder()
-				.empId(e.getEmpId())
-				.empName(e.getEmpName())
-				.deptNo(e.getDepartments().getDeptNo())
-				// .deptName(e.getDepartments().getDeptName()) 
-				.jobNo(e.getJobs().getJobNo())
-				// .jobName(e.getJobs().getJobName()) 
-				.build();
-
-		return dto;
-	}
 
 
 
