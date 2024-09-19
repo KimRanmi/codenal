@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.codenal.admin.domain.Departments;
 import com.codenal.employee.domain.Employee;
 
 public interface AdminRepository extends JpaRepository<Employee, Long> {
@@ -40,9 +39,9 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
     
 	// 3. TreeMenu
 	// 특정 부서에 속한 직원
-    List<Employee> findByDepartmentsAndEmpAuth(Departments department, String empAuth);
+  //  List<Employee> findByDepartmentsAndEmpAuthAndEmpStatus(Departments department, String empAuth, String empStatus);
     
     // 부서 번호로 직원 조회
-    List<Employee> findByDepartments_DeptNoAndEmpAuth(Long deptNo, String empAuth);
+    List<Employee> findByDepartments_DeptNoAndEmpAuthAndEmpStatus(Long deptNo, String empAuth, String empStatus);
 
 }

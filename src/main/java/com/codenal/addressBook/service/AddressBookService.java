@@ -79,7 +79,7 @@ public class AddressBookService {
 		// 직원(자식) 리스트를 만들고 부서(부모)가 생성 -> 노드에 들어갈 데이터 미리 준비
 		return departments.stream().map(department -> {
 			// 부서 노드 추가
-			List<TreeMenuDto> employeeNodes = adminRepository.findByDepartments_DeptNoAndEmpAuth(department.getDeptNo(), "USER").stream()
+			List<TreeMenuDto> employeeNodes = adminRepository.findByDepartments_DeptNoAndEmpAuthAndEmpStatus(department.getDeptNo(), "USER", "Y").stream()
 					.sorted(Comparator.comparing(employee -> employee.getJobs().getJobPriority())) // Comparator.comparing = 오름차순
 					.map(employee -> {
 						TreeMenuDto employeeNode = TreeMenuDto.builder()
