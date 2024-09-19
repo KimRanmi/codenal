@@ -82,6 +82,15 @@ public class AdminService {
 		return result;
 
 	}
+	
+	
+	
+	// ---------------- 모든 직원 목록 가져오기
+	public Page<EmployeeDto> findAllEmployees(Pageable pageable) {
+	    Page<Employee> employeePage = adminRepository.findAllByEmpAuth("USER", pageable);
+	    return employeePage.map(EmployeeDto::fromEntity);
+	}
+
 
 
 	// ---------------- 직원 목록 검색 1 (재직 or 퇴사)

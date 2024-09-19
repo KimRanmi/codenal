@@ -1,198 +1,160 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}" data-sidebar="light">
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
-	<div th:replace="~{partials/title-meta :: title-meta('직원 정보 상세')}"></div>
+    <div th:replace="~{partials/title-meta :: title-meta('직원 정보 상세')}"></div>
 </th:block>
 
 <head>
 </head>
 
 <body>
-	<div layout:fragment="content">
-		<div
-			th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="card body">
-					<!-- ----------------------탭---------------------------- -->
-					<div class="card-header">
-						<ul
-							class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0"
-							role="tablist">
-							<li class="nav-item col-lg-1"><a class="nav-link active"
-								data-bs-toggle="tab" href="#personalDetails" role="tab"
-								style="font-size: 18px; text-align: center; font-weight: bold;">
-									<i class="fas fa-home"></i> 직원 정보
-							</a></li>
-							<!-- <li class="nav-item col-lg-1"><a class="nav-link"
-								data-bs-toggle="tab" href="#changePassword" role="tab"
-								style="font-size: 18px; text-align: center; font-weight: bold;">
-									<i class="far fa-user"></i> 퇴사 관리
-							</a></li> -->
-						</ul>
-					</div>
+    <div layout:fragment="content">
+        <div th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card body">
+                    <!-- ----------------------탭---------------------------- -->
+                    <div class="card-header">
+                        <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+                            <li class="nav-item col-lg-1"><a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab"
+                                    style="font-size: 18px; text-align: center; font-weight: bold;">
+                                    <i class="fas fa-home"></i> 직원 정보
+                                </a></li>
+                        </ul>
+                    </div>
 
-					<div class="card-body">
-						<div class="tab-content">
-							<!-- ------------------------직원 정보----------------------------- -->
-							<div class="tab-pane active" id="personalUpdate" role="tabpanel">
-								<form th:action="@{|/admin/update/${employeeDetail.empId}|}" th:method="post" th:if="${employeeDetail != null}">
-									<div class="row">
-										<!-- 이름 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="firstnameInput" class="form-label">이름</label> <input
-													type="text" class="form-control" id="firstnameInput"
-													th:value="${employeeUpdate.empName}">
-											</div>
-										</div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <!-- ------------------------직원 정보----------------------------- -->
+                            <div class="tab-pane active" id="personalUpdate" role="tabpanel">
+                                <form th:action="@{|/admin/update/${employeeDetail.empId}|}" th:method="post" th:if="${employeeDetail != null}">
+                                    <div class="row">
+                                        <!-- 이름 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="firstnameInput" class="form-label">이름</label>
+                                                <input type="text" class="form-control" id="firstnameInput" name="empName"
+                                                    th:value="${employeeDetail.empName}">
+                                            </div>
+                                        </div>
 
-										<!-- 사번 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="lastnameInput" class="form-label">사번</label> <input
-													type="text" class="form-control" id="lastnameInput" readonly>
-											</div>
-										</div>
+                                        <!-- 사번 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="lastnameInput" class="form-label">사번</label>
+                                                <input type="text" class="form-control" id="lastnameInput" name="empId"
+                                                    th:value="${employeeDetail.empId}" readonly>
+                                            </div>
+                                        </div>
 
-										<!-- 개인 번호 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="phonenumberInput" class="form-label">개인
-													번호</label> <input type="text" class="form-control"
-													id="phonenumberInput" readonly>
-											</div>
-										</div>
+                                        <!-- 개인 번호 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="phonenumberInput" class="form-label">개인 번호</label>
+                                                <input type="text" class="form-control" id="phonenumberInput" name="empPhone" 
+                                                    th:value="${employeeDetail.empPhone}" readonly>
+                                            </div>
+                                        </div>
 
-										<!-- 주민 등록 번호 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="emailInput" class="form-label">주민 등록 번호</label>
-												<input type="text" class="form-control" id="emailInput" 	readonly>
-											</div>
-										</div>
+                                        <!-- 주민 등록 번호 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="emailInput" class="form-label">주민 등록 번호</label>
+                                                <input type="text" class="form-control" id="emailInput" name="empSsn"
+                                                    th:value="${employeeDetail.empSsn}" readonly>
+                                            </div>
+                                        </div>
 
-										<!-- 주소 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="addressInput" class="form-label">주소</label> <input
-													type="text" class="form-control" id="addressInput"
-													th:value="${employeeUpdate.empAddress}" readonly>
-											</div>
-										</div>
+                                        <!-- 주소 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="addressInput" class="form-label">주소</label>
+                                                <input type="text" class="form-control" id="addressInput" name="empAddress"
+                                                    th:value="${employeeDetail.empAddress}" readonly>
+                                            </div>
+                                        </div>
 
-										<!-- 상세 주소 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="addressDetailInput" class="form-label">상세
-													주소</label> <input type="text" class="form-control"
-													id="addressDetailInput"
-													th:value="${employeeUpdate.empAddressDetail}" readonly>
-											</div>
-										</div>
+                                        <!-- 상세 주소 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="addressDetailInput" class="form-label">상세 주소</label>
+                                                <input type="text" class="form-control" id="addressDetailInput" name="empAddressDetail"
+                                                    th:value="${employeeDetail.empAddressDetail}" readonly>
+                                            </div>
+                                        </div>
 
-										<!-- 부서 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="departmentInput" class="form-label">부서</label> <input
-													type="text" class="form-control" id="departmentInput"
-													th:value="${employeeDetail.deptName}">
-											</div>
-										</div>
+                                        <!-- 부서 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="departmentInput" class="form-label">부서</label>
+                                                <select class="form-control" id="departmentInput" name="deptNo">
+            <option value="" disabled selected>부서를 선택하세요</option>
+            <option th:each="dept : ${departments}" 
+                    th:value="${dept.deptNo}" 
+                    th:text="${dept.deptName}" 
+                    th:selected="${dept.deptNo} == ${employeeDetail.deptNo}">
+            </option>
+        </select>
+                                            </div>
+                                        </div>
 
-										<!-- 직급 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="jobInput" class="form-label">직급</label> <input
-													type="text" class="form-control" id="jobInput"
-													th:value="${employeeDetail.jobName}">
-											</div>
-										</div>
+                                        <!-- 직급 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="jobInput" class="form-label">직급</label>
+                                                <input type="text" class="form-control" id="jobInput" name="jobNo"
+                                                    th:value="${employeeDetail.jobNo}">
+                                            </div>
+                                        </div>
 
-										<!-- 입사일 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="hireDateInput" class="form-label">입사일</label> <input
-													type="text" class="form-control" id="hireDateInput"
-													th:value="${employeeDetail.empHire}" readonly>
-											</div>
-										</div>
+                                        <!-- 입사일 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="hireDateInput" class="form-label">입사일</label>
+                                                <input type="text" class="form-control" id="hireDateInput" name="empHire"
+                                                    th:value="${employeeDetail.empHire}" readonly>
+                                            </div>
+                                        </div>
 
-										<!-- 퇴사일 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="endDateInput" class="form-label">퇴사일</label> <input
-													type="text" class="form-control" id="endDateInput"
-													th:value="${employeeDetail.empEnd}" readonly>
-											</div>
-										</div>
+                                        <!-- 퇴사일 -->
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label for="endDateInput" class="form-label">퇴사일</label>
+                                                <input type="text" class="form-control" id="endDateInput" name="empEnd"
+                                                    th:value="${employeeDetail.empEnd}" readonly>
+                                            </div>
+                                        </div>
 
-										<!--임시 비밀번호 발급 / 정보 수정 / 취소 -->
-										<div class="col-lg-12">
-											<div class="hstack gap-3 justify-content-end">					
-												<!-- 수정 버튼 -->
-												<button type="submit"
-													class="btn btn-primary btn-border w-xs">완료</button>
+                                        <!--임시 비밀번호 발급 / 정보 수정 / 취소 -->
+                                        <div class="col-lg-12">
+                                            <div class="hstack gap-3 justify-content-end">
+                                                <!-- 수정 버튼 -->
+                                                <button type="submit" class="btn btn-primary btn-border w-xs">완료</button>
 
-												<!-- 이전 버튼 -->
-												<button type="button"
-													class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs"
-													th:href="@{/admin/detail}">취소</button>
-											</div>
-										</div>
+                                                <!-- 이전 버튼 -->
+                                                <button type="button" class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs"
+                                                    th:onclick="|location.href='@{/admin/detail}'|">취소</button>
+                                            </div>
+                                        </div>
 
-									</div>
-								</form>
-							</div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-							<!-- ------------------------퇴사 관리----------------------------- -->
-							<!-- <div class="tab-pane" id="changePassword" role="tabpanel">
-								<form action="javascript:void(0);">
-									<div class="row g-4">
-										퇴사일
-										<div class="col-lg-1"></div>
-										<div class="col-lg-5">
-											<div>
-												<label for="oldpasswordInput" class="form-label">퇴사일</label>
-												<input type="password" class="form-control"
-													id="oldpasswordInput">
-											</div>
-										</div>
-										관리자 비밀번호
-										<div class="col-lg-5">
-											<div>
-												<label for="newpasswordInput" class="form-label">관리자
-													비밀번호</label> <input type="password" class="form-control"
-													id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
-											</div>
-										</div>
-										<div class="col-lg-1"></div>
-
-										<div class="col-lg-14">
-											<div class="hstack justify-content-end">
-												<button type="submit"
-													class="btn btn-primary btn-border w-xs">퇴사</button>
-											</div>
-										</div>
-									</div>
-								</form>
-							</div> -->
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<th:block layout:fragment="pagejs">
-		<script src="/assets/libs/prismjs/prism.js"></script>
-		<script
-			src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
-		<script src="/assets/js/pages/modal.init.js"></script>
-	</th:block>
+    <th:block layout:fragment="pagejs">
+        <script src="/assets/libs/prismjs/prism.js"></script>
+        <script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
+        <script src="/assets/js/pages/modal.init.js"></script>
+    </th:block>
 </body>
 
 </html>

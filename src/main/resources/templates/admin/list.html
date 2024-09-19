@@ -166,6 +166,7 @@ layout:decorate="~{layout}" data-sidebar="light">
 									<tbody>
 										<!-- 직원 목록이 비어 있을 때 -->
 										<th:block th:if="${#lists.isEmpty(resultList.content)}">
+
 											<tr>
 												<td colspan="6" style="text-align: center;">직원 목록이 없습니다.</td>
 											</tr>
@@ -173,6 +174,7 @@ layout:decorate="~{layout}" data-sidebar="light">
 
 										<!-- 직원 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
+
 										    <tr th:each="employee, employeeStat : ${resultList.content}" 
 										        th:onclick="|location.href='@{/admin/detail/{empId}(empId=${employee.empId})}'|"
 										        style="cursor: pointer;">
