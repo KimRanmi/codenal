@@ -16,11 +16,10 @@ import lombok.ToString;
 @ToString
 public class DepartmentsDto {
 
-    private int deptNo; // 부서 번호
+	private Long deptNo; // 부서 번호
     private String deptName; // 부서명
     private LocalDate deptCreateDate; // 부서 개설일
 
-    // 엔티티를 DTO로 변환하는 메서드
     public static DepartmentsDto fromEntity(Departments departments) {
         return DepartmentsDto.builder()
                 .deptNo(departments.getDeptNo())
@@ -29,7 +28,6 @@ public class DepartmentsDto {
                 .build();
     }
 
-    // DTO를 엔터티로 변환하는 메서드
     public Departments toEntity() {
         return Departments.builder()
                 .deptNo(deptNo)

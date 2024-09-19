@@ -5,6 +5,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,8 +21,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.codenal.security.service.SecurityService;
-
-import jakarta.servlet.MultipartConfigElement;
 
 @Configuration
 @EnableWebSecurity
@@ -42,6 +41,8 @@ public class WebSecurityConfig {
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
 				.requestMatchers("/admin/list").permitAll()
+				.requestMatchers("/admin/join").permitAll()
+				.requestMatchers("/admin/dept").permitAll()
 				.requestMatchers("/announce/createEnd").permitAll()
 				.requestMatchers("/announce/delete/**").permitAll()
 				.requestMatchers("/announce/updateEnd/**").permitAll()
@@ -50,6 +51,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/approval/leaveUpdate/**").permitAll()
 				.requestMatchers("/approval/detail/**").permitAll()
 				.requestMatchers("/list").permitAll() 
+				.requestMatchers("/employee/addressBook/**").permitAll()
 				.requestMatchers("/mypage/**").authenticated()
 				.requestMatchers("/documents/**").authenticated() 
 				.anyRequest().authenticated()
@@ -111,10 +113,17 @@ public class WebSecurityConfig {
 		return jdbcTokenRepository;
 	}
 
-
-
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return (web -> 
+		web.ignoring()
+		.requestMatchers(
+				PathRequest.toStaticResources().atCommonLocations()
+				));
 	}
 }

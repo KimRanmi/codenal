@@ -1,224 +1,120 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-	<!-- Bootstrap CSS -->
-    <th:block layout:fragment="pagetitle" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Dropzone CSS -->
-    <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
-    <meta charset="UTF-8">
-    <title>모달창</title>
-    <style>
-        #modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-            z-index: 1000;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        .employee-list {
-            list-style-type: none; /* 리스트 스타일 제거 */
-            padding-left: 20px; /* 왼쪽 여백 추가 */
-            transition: max-height 0.3s ease; /* 부드러운 애니메이션 추가 */
-            overflow: hidden; /* 내용이 넘치지 않도록 처리 */
-            max-height: 0; /* 기본적으로 숨김 상태 */
-        }
-        .employee-list.show {
-            max-height: 200px; /* 보일 때의 최대 높이 */
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script
+	src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<link
+	href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+
+
+<title>모달창</title>
+<style>
+.jstree-icon.ri-building-fill {
+	color: #3e4a6e;
+	font-size: 24px;
+}
+
+.jstree-icon.ri-team-fill {
+	color: #3577f1;
+	font-size: 20px;
+}
+
+.jstree-icon.ri-user-2-fill {
+	color: #9a9ba0;
+	font-size: 16px;
+}
+</style>
 </head>
 <body>
-	<div layout:fragment="content">
-    <div id="modal" style="height:500px; width:500px;">
-        <div style="text-align: center;">결재자 선택</div>
-        <div>
-            <th:block th:if="${!#lists.isEmpty(departmentsList)}">
-                <th:block th:each="dept : ${departmentsList}">
-                    <div>
-                        <span th:text="${dept.deptName}" style="cursor: pointer;" class="toggle-employee-list" data-dept-no="${dept.deptNo}"></span>
-                        <ul class="employee-list" id="list-${dept.deptNo}"> <!-- 고유 ID 사용 -->
-                            <th:block th:each="emp : ${resultList.content}" th:if="${emp.deptNo == dept.deptNo}">
-                                <li th:text="${emp.empName}" id="empName-${emp.empId}"></li>
-                            </th:block>
-                        </ul>
-                    </div>
-                </th:block>
-            </th:block>
-        </div>
-        <div class="modal-footer">
-            <button id="selectButton" style="background-color: cadetblue; border: 0; border-radius: 30px;">선택</button>
-            <button id="closeButton" style="background-color: red; border: 0; border-radius: 30px;">닫기</button>
-        </div>
-    </div>
+		<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-dialog-centered">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="myModalLabel">직원선택</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <div class="modal-body">
+	                <div id="treeMenu"></div>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+	                <button type="button" class="btn btn-primary" id="chooseButton">등록</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 
-    <script>
-    
-	document.addEventListener('DOMContentLoaded', function() {
-		console.log('페이지 로드 완료'); // 페이지 로드 확인 로그
-	
-    // toggleEmployeeList 함수 정의
-    function toggleEmployeeList(departmentNo) {
-        console.log('toggleEmployeeList 호출', departmentNo); // 호출 로그
-        const employeeList = document.getElementById(`list-${departmentNo}`);
-        if (employeeList) {
-            employeeList.classList.toggle('show');
-            console.log('리스트 상태:', employeeList.classList); // 상태 확인 로그
-        } else {
-            console.error('리스트를 찾을 수 없음', departmentNo); // 에러 로그
-        }
-    }
+	<script>
+    $(document).ready(function() {
+    	
+    	$('#myModal').on('show.bs.modal', function () {
+    	    console.log('모달이 열렸습니다.'); // 추가된 로그
+    	    $.ajax({
+    	        url: '/approval/modal', // 데이터를 가져올 URL
+    	        method: 'GET',
+    	        dataType: 'json',
+    	        success: function(data) {
+    	            console.log(data); // 추가된 로그
+    	            const formatDataForJsTree = (nodes) => {
+                        return nodes.map(node => {
+                            return {
+                                id: node.nodeId,
+                                text: node.nodeName,
+                                state: { opened: false },
+                                children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
+                                icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+                            };
+                        });
+                    };
+                    const formattedData = formatDataForJsTree(data);
+                    const companyNode = {
+                        id: 'companyName',
+                        text: 'withXwork',
+                        state: { opened: true },
+                        children: formattedData,
+                        icon: 'ri-building-fill'
+                    };
 
-    const toggleElements = document.querySelectorAll('.toggle-employee-list');
-    toggleElements.forEach(element => {
-        element.addEventListener('click', function() {
-            const deptNo = this.getAttribute('data-dept-no');
-            console.log('Clicked department no:', deptNo); // 클릭 로그
-            toggleEmployeeList(deptNo);
+                    $('#treeMenu').jstree({
+                        'core': {
+                            "animation": 0,
+                            "check_callback": false,
+                            'data': [companyNode]
+                        },
+                        "plugins": ["types"],
+                        "types": {
+                            "default": { "icon": "ri-team-fill" },
+                            "file": { "icon": "ri-user-2-fill" }
+                        }
+                    });
+    	        },
+    	        error: function(xhr, status, error) {
+    	            console.error("데이터 로드 오류: " + error);
+    	        }
+    	    });
+    	});
+
+    	
+   
+
+        // 등록 버튼 이벤트
+        $(document).on('click', '#chooseButton', function() {
+            const selectedNodes = $('#treeMenu').jstree("get_selected", true);
+            selectedNodes.forEach(node => {
+                console.log(node.text); // 선택된 직원 이름을 콘솔에 출력
+            });
         });
     });
-});
+</script>
 
-    </script>
-		<!-- 모달 관련 script -->
-		<script>
-	        const modal = document.querySelector('#modal');
-	        const button = document.querySelector('#button_modal1');
-	        const button2 = document.querySelector('#button_modal2');
-	        const button3 = document.querySelector('#references');
-	        const closeButton = document.querySelector('#closeButton');
-	        const selectButton = document.querySelector('#selectButton');
-	        const selectedNames = document.querySelectorAll('.selectedName');
-	        const selectedNames2 = document.querySelectorAll('.selectedName2');
-	        const selectedNames3 = document.querySelector('#references');
-	        let selectedPeople = []; //합의자
-	        let selectedPeople2 = []; //결재자
-	        let selectedPeople3 = []; //수신 참조자
-
-	        function updateModal() {
-	            const group = modal.dataset.group;
-	            const modalItems = document.querySelectorAll('.modal-item');
-	
-	            modalItems.forEach(item => {
-	                const person = item.textContent.trim();
-	                let isDisabled = false;
-	
-	                if (group === 'approver') {
-	                    // 결재자 모달에서는 선택된 합의자만 비활성화
-	                    isDisabled = selectedPeople.includes(person) || selectedPeople3.includes(person);
-	                } else if (group === 'agreement') {
-	                    // 합의자 모달에서는 선택된 결재자 및 수신참조자 비활성화
-	                    isDisabled = selectedPeople2.includes(person) || selectedPeople3.includes(person);
-	                } else if (group === 'references') {
-	                    // 수신참조자 모달에서는 선택된 결재자 및 합의자 비활성화
-	                    isDisabled = selectedPeople.includes(person) || selectedPeople2.includes(person);
-	                }
-	
-	                item.classList.toggle('disabled', isDisabled);
-	            });
-	        }
-	        
-       		// 합의자 모달 열기
-	        button.addEventListener('click', () => {
-	            modal.style.display = 'block';
-	            modal.dataset.group = 'agreement';
-	            updateModal();
-	        });
-
-	        // 결재자 모달 열기
-	        button2.addEventListener('click', () => {
-	            modal.style.display = 'block';
-	            modal.dataset.group = 'approver';
-	            updateModal();
-	        });
-
-	        // 수신참조자 모달 열기
-	        button3.addEventListener('click', () => {
-	            modal.style.display = 'block';
-	            modal.dataset.group = 'references';
-	            updateModal();
-	        });
-
-
-	        // 모달 닫기
-	        closeButton.addEventListener('click', () => {
-	            modal.style.display = 'none';
-	        });
-
-	        // 선택된 사람 저장
-	        document.querySelectorAll('.modal-item').forEach(item => {
-	            item.addEventListener('click', () => {
-	                const person = item.textContent.trim();
-	                const group = modal.dataset.group;
-	
-	                if (item.classList.contains('disabled')) {
-	                    return;  // disabled 상태이면 아무 동작도 하지 않음
-	                }
-	
-	                if(group === 'approver'){
-	                    if (selectedPeople2.includes(person)) {
-	                        // 이미 선택된 사람을 해제
-	                        selectedPeople2 = selectedPeople2.filter(p => p !== person);
-	                        item.classList.remove('selected');
-	                    } else if (selectedPeople2.length < 3) {
-	                        // 선택된 사람이 3명 이하인 경우에만 추가
-	                        selectedPeople2.push(person);
-	                        item.classList.add('selected');
-	                    } else {
-	                        // 선택된 사람 수가 3명 이상일 경우 경고
-	                        alert('최대 3명까지 선택할 수 있습니다.');
-	                    }
-	
-	                }else if(group === 'agreement'){
-	                    if (selectedPeople.includes(person)) {
-	                        // 이미 선택된 사람을 해제
-	                        selectedPeople = selectedPeople.filter(p => p !== person);
-	                        item.classList.remove('selected');
-	                    } else if (selectedPeople.length < 3) {
-	                        // 선택된 사람이 3명 이하인 경우에만 추가
-	                        selectedPeople.push(person);
-	                        item.classList.add('selected');
-	                    } else {
-	                        // 선택된 사람 수가 3명 이상일 경우 경고
-	                        alert('최대 3명까지 선택할 수 있습니다.');
-	                    }
-	                }else if(group === 'references'){
-	                    if (selectedPeople3.includes(person)) {
-	                        // 이미 선택된 사람을 해제
-	                        selectedPeople3 = selectedPeople3.filter(p => p !== person);
-	                        item.classList.remove('selected');
-	                    } else{
-	                        selectedPeople3.push(person);
-	                        item.classList.add('selected');
-	                    }
-	                }
-	            });
-	        });
-        
-	        // 적용 버튼 클릭 시 선택된 사람을 페이지에 반영
-	        selectButton.addEventListener('click', () => {
-	            const group = modal.dataset.group;
-	
-	            if (group === 'agreement') {
-	                selectedNames.forEach((element, index) => {
-	                    element.textContent = selectedPeople[index] || '';
-	                    button.value = '';
-	                });
-	            } else if (group === 'approver') {
-	                selectedNames2.forEach((element, index) => {
-	                    element.textContent = selectedPeople2[index] || '';
-	                    button2.value= '';
-	                });
-	            } else if ( group === 'references') {
-	                selectedNames3.value = selectedPeople3.join(', ');
-	            }
-	
-	            modal.style.display = 'none';
-	        });
-    	</script>
 </body>
 </html>

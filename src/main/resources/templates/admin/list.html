@@ -1,9 +1,10 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('직원 정보 관리')"></div>
+	<div th:replace="~{partials/title-meta :: title-meta('직원 정보 관리')}"></div>
 </th:block>
 
 <head>
@@ -28,8 +29,8 @@
 									<div class="row g-3">
 										<!-- 신규 직원 등록 버튼 -->
 										<div class="col-xxl-3 col-sm-7">
-											<a th:href="@{/admin/join}" class="btn btn-success add-btn d-flex align-items-center justify-content-center" id="create-btn" 
-											style="width: 50%; font-size: 18px; padding: 3px;"> 
+											<a th:href="@{/admin/join}" class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" id="create-btn" 
+											style="width: 50%; font-size: 18px; padding: 3px;  border: 1px solid  #299cdb;"> 
 											<i class="ri-add-line align-bottom me-1"></i> 신규 직원 등록
 											</a>
 										</div>
@@ -87,7 +88,8 @@
 									<div class="row g-3">
 										<!-- 신규 직원 등록 버튼 -->
 										<div class="col-xxl-3 col-sm-7">
-											<a th:href="@{/admin/join}" class="btn btn-success add-btn d-flex align-items-center justify-content-center" id="create-btn" style="width: 60%; font-size: 18px; padding: 3px;"> 
+											<a th:href="@{/admin/join}" class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" 
+											id="create-btn" style="width: 60%; font-size: 18px; padding: 3px; border: 1px solid  #299cdb;"> 
 											<i class="ri-add-line align-bottom me-1"></i> 신규 직원 등록
 											</a>
 										</div>
@@ -171,19 +173,20 @@
 
 										<!-- 직원 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-											<tr th:each="employee, employeeStat : ${resultList.content}" 
-												th:onclick="|location.href='@{/employee/{id}(id=${employee.empId})}'|"
-												style="cursor: pointer;">
-												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}" style="text-align: center;"></td>
-												<td th:text="${employee.empId}" style="text-align: center;"></td>
-												<td th:text="${employee.empName}" style="text-align: center;"></td>
-												<td th:text="${employee.deptName}" style="text-align: center;"></td>
-												<td th:text="${employee.jobName}" style="text-align: center;"></td>
-												<td th:text="${employee.empPhone}" style="text-align: center;"></td>
-												<td th:text="${employee.empStatus eq 'Y' ? '재직' : '퇴사'}" style="text-align: center;"></td>
-												<td></td>
-											</tr>
+										    <tr th:each="employee, employeeStat : ${resultList.content}" 
+										        th:onclick="|location.href='@{/admin/detail/{empId}(empId=${employee.empId})}'|"
+										        style="cursor: pointer;">
+										        <td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}" style="text-align: center;"></td>
+										        <td th:text="${employee.empId}" style="text-align: center;"></td>
+										        <td th:text="${employee.empName}" style="text-align: center;"></td>
+										        <td th:text="${employee.deptName}" style="text-align: center;"></td>
+										        <td th:text="${employee.jobName}" style="text-align: center;"></td>
+										        <td th:text="${employee.empPhone}" style="text-align: center;"></td>
+										        <td th:text="${employee.empStatus eq 'Y' ? '재직' : '퇴사'}" style="text-align: center;"></td>
+										    </tr>
 										</th:block>
+
+
 
 									</tbody>
 								</table>
@@ -231,18 +234,13 @@
 
 
 	<th:block layout:fragment="pagejs">
-		<!-- ckeditor -->
 		<!-- list.js min js -->
 		<script src="/assets/libs/list.js/list.min.js"></script>
-
 		<!--list pagination js-->
 		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
-
-		<!-- ecommerce-order init js -->
-		<script src="/assets/js/pages/ecommerce-order.init.js"></script>
-
-		<!-- Sweet Alerts js -->
-		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+		
+		<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+		
 	</th:block>
 </body>
 

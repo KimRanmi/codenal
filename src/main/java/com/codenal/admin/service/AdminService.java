@@ -12,6 +12,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import com.codenal.admin.domain.Departments;
 
 import com.codenal.admin.domain.Jobs;
 import com.codenal.admin.repository.AdminRepository;
@@ -33,7 +37,7 @@ public class AdminService {
 		this.adminRepository = adminRepository;
 	}
 
-	// --------------------신규 직원 등록
+	// ------------------ 신규 직원 등록
 	public int createEmployee(EmployeeDto dto) {
 
 		int result = -1;
@@ -73,7 +77,7 @@ public class AdminService {
 	}
 
 
-	// ----------------직원 목록 검색 1 (재직 or 퇴사)
+	// ---------------- 직원 목록 검색 1 (재직 or 퇴사)
 	public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
 		Page<Employee> adminSearchOne = null;
 
@@ -81,15 +85,15 @@ public class AdminService {
 
 		if (searchText != null && !"".equals(searchText)) {
 			switch (searchText) {
-				case "ALL" :	// 전체
-					adminSearchOne = adminRepository.findAllByEmpAuth("USER", pageable);
-					break;
-				case "Y" :  // empStatus가 'Y'일 경우 (재직)
-					adminSearchOne = adminRepository.findByEmpStatusAndEmpAuth("Y", "USER", pageable);
-					break;
-				case "N":  // empStatus가 'N'일 경우 (퇴사)
-					adminSearchOne = adminRepository.findByEmpStatusAndEmpAuth("N", "USER", pageable);
-					break;
+			case "ALL" :	// 전체
+				adminSearchOne = adminRepository.findAllByEmpAuth("USER", pageable);
+				break;
+			case "Y" :  // empStatus가 'Y'일 경우 (재직)
+				adminSearchOne = adminRepository.findByEmpStatusAndEmpAuth("Y", "USER", pageable);
+				break;
+			case "N":  // empStatus가 'N'일 경우 (퇴사)
+				adminSearchOne = adminRepository.findByEmpStatusAndEmpAuth("N", "USER", pageable);
+				break;
 			}
 		} else {
 			adminSearchOne = adminRepository.findAllByEmpAuth("USER", pageable);
@@ -98,7 +102,7 @@ public class AdminService {
 
 		List<EmployeeDto> adminSearchOneList = new ArrayList<>();
 		for (Employee e : adminSearchOne) {
-			EmployeeDto dto = new EmployeeDto().fromEntity(e);
+			EmployeeDto dto = EmployeeDto.fromEntity(e);
 			adminSearchOneList.add(dto);
 		}
 
@@ -106,43 +110,43 @@ public class AdminService {
 	}
 
 
-	// ------------------직원 목록 검색 2 (직원 정보)
+	// ------------------ 직원 목록 검색 2 (직원 정보)
 	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
 		Page<Employee> adminSearchTwo = null;
 
 		String searchText = searchDto.getSearch_text();
 
 		if (searchText != null && !"".equals(searchText)) {
-		    int searchType = searchDto.getSearch_type();
+			int searchType = searchDto.getSearch_type();
 
-		    switch (searchType) {
-		        case 1:
-		        	adminSearchTwo = adminRepository.findAllByEmpAuth("USER", pageable);
-		            break;
-		        case 2:
-		            adminSearchTwo = adminRepository.findByEmpIdContainingAndEmpAuth(searchText, "USER", pageable);
-		            break;
-		        case 3:
-		            adminSearchTwo = adminRepository.findByEmpNameContainingAndEmpAuth(searchText, "USER", pageable);
-		            break;
-		        case 4:
-		            adminSearchTwo = adminRepository.findByDepartments_DeptNameContainingAndEmpAuth(searchText, "USER", pageable);
-		            break;
-		        case 5:
-		            adminSearchTwo = adminRepository.findByJobs_JobNameContainingAndEmpAuth(searchText, "USER", pageable);
-		            break;
-		        case 6:
-		            adminSearchTwo = adminRepository.findByEmpPhoneContainingAndEmpAuth(searchText, "USER", pageable);
-		            break;
-		    }
+			switch (searchType) {
+			case 1:
+				adminSearchTwo = adminRepository.findAllByEmpAuth("USER", pageable);
+				break;
+			case 2:
+				adminSearchTwo = adminRepository.findByEmpIdContainingAndEmpAuth(searchText, "USER", pageable);
+				break;
+			case 3:
+				adminSearchTwo = adminRepository.findByEmpNameContainingAndEmpAuth(searchText, "USER", pageable);
+				break;
+			case 4:
+				adminSearchTwo = adminRepository.findByDepartments_DeptNameContainingAndEmpAuth(searchText, "USER", pageable);
+				break;
+			case 5:
+				adminSearchTwo = adminRepository.findByJobs_JobNameContainingAndEmpAuth(searchText, "USER", pageable);
+				break;
+			case 6:
+				adminSearchTwo = adminRepository.findByEmpPhoneContainingAndEmpAuth(searchText, "USER", pageable);
+				break;
+			}
 		} else {
-		    adminSearchTwo = adminRepository.findAllByEmpAuth("USER", pageable);
+			adminSearchTwo = adminRepository.findAllByEmpAuth("USER", pageable);
 		}
 
 
 		List<EmployeeDto> adminSearchTwoList = new ArrayList<EmployeeDto>();
 		for (Employee e : adminSearchTwo) {
-			EmployeeDto dto = new EmployeeDto().fromEntity(e);
+			EmployeeDto dto = EmployeeDto.fromEntity(e);
 			adminSearchTwoList.add(dto);
 		}
 
@@ -150,7 +154,7 @@ public class AdminService {
 	}
 
 
-	// ----------------직원 검색 통합 (재직/퇴사 + 직원 정보)
+	// ---------------- 직원 검색 통합 (재직/퇴사 + 직원 정보)
 	public Page<EmployeeDto> searchAll(EmployeeDto searchDto, Pageable pageable) {
 
 		if (searchDto.getSearch_type() == 0) {
@@ -162,6 +166,44 @@ public class AdminService {
 		}
 	}
 
+
+	// ---------------- 직원 정보 상세 조회
+	public EmployeeDto employeeDetail(Long empId) {
+
+		Employee e = adminRepository.findByEmpId(empId);
+		return EmployeeDto.fromEntity(e);
+	}
+
+
+	// ---------------- 직원 정보 수정
+	@Transactional
+	public Employee employeeUpdate(EmployeeDto dto) { 
+	
+		EmployeeDto temp = selectUpdate(dto.getEmpId());
+
+		temp.setEmpName(dto.getEmpName());
+		temp.setDeptNo(dto.getDeptNo());
+		temp.setJobNo(dto.getJobNo());
+
+		Employee e = temp.toEntity();
+		return adminRepository.save(e);
+	}
+
+	public EmployeeDto selectUpdate(Long empId) {
+		
+		Employee e = adminRepository.findByEmpId(empId);
+
+		EmployeeDto dto = EmployeeDto.builder()
+				.empId(e.getEmpId())
+				.empName(e.getEmpName())
+				.deptNo(e.getDepartments().getDeptNo())
+				// .deptName(e.getDepartments().getDeptName()) 
+				.jobNo(e.getJobs().getJobNo())
+				// .jobName(e.getJobs().getJobName()) 
+				.build();
+
+		return dto;
+	}
 
 
 	// 직원 정보 상세 조회
@@ -187,6 +229,7 @@ public class AdminService {
 	//	Board result = boardRepository.save(board);
 	//	return result;
 	//}
+
 
 
 }

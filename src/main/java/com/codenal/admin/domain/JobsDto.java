@@ -19,7 +19,6 @@ public class JobsDto {
     private String jobName; // 직급명
     private int jobPriority; // 우선순위
 
-    // 엔티티를 DTO로 변환하는 메서드
     public static JobsDto fromEntity(Jobs jobs) {
         return JobsDto.builder()
                 .jobNo(jobs.getJobNo())
@@ -28,7 +27,6 @@ public class JobsDto {
                 .build();
     }
 
-    // DTO를 엔터티로 변환하는 메서드
     public Jobs toEntity() {
         return Jobs.builder()
                 .jobNo(jobNo)

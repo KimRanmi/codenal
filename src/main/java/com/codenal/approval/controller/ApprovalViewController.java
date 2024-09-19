@@ -15,13 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.codenal.admin.domain.Departments;
-import com.codenal.admin.service.AdminService;
-import com.codenal.admin.service.DepartmentsService;
+import com.codenal.addressBook.domain.TreeMenuDto;
+import com.codenal.addressBook.service.AddressBookService;
 import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.service.AnnualLeaveManageService;
@@ -29,7 +28,6 @@ import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.service.ApprovalService;
 import com.codenal.employee.domain.Employee;
-import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.service.EmployeeService;
 import com.codenal.security.service.SecurityService;
 
@@ -39,18 +37,16 @@ public class ApprovalViewController {
 	private final ApprovalService approvalService;
 	private final EmployeeService employeeService;
 	private final AnnualLeaveManageService annualLeaveManageService;
-	private final AdminService adminService;
-	private final DepartmentsService departmentsService;
+	private final AddressBookService addressBookService;
 
 	@Autowired
 	public ApprovalViewController(ApprovalService approvalService, SecurityService securityService,
 			EmployeeService employeeService, AnnualLeaveManageService annualLeaveManageService,
-			AdminService adminService, DepartmentsService departmentsService) {
+			AddressBookService addressBookService) {
 		this.approvalService = approvalService;
 		this.annualLeaveManageService = annualLeaveManageService;
 		this.employeeService = employeeService;
-		this.adminService = adminService;
-		this.departmentsService = departmentsService;
+		this.addressBookService = addressBookService;
 	}
 
 	// 생성 nav에서 숫자값을 받아와서 create로 전달(휴가신청서는 따로 관리)
@@ -177,19 +173,34 @@ public class ApprovalViewController {
 		return "apps/" + returnResult;
 	}
 
-	// 모달창 열기
+	/*
+	 * // 모달창 열기
+	 * 
+	 * @GetMapping("/approval/modal") public String openModal(Model model,
+	 * 
+	 * @PageableDefault(page = 0, size = 10, sort = "empId", direction =
+	 * Sort.Direction.DESC) Pageable pageable,
+	 * 
+	 * @ModelAttribute("searchDto") EmployeeDto searchDto) {
+	 * 
+	 * Page<EmployeeDto> resultList = adminService.searchAll(searchDto, pageable);
+	 * List<Departments> departmentsList = departmentsService.findJobAll();
+	 * 
+	 * model.addAttribute("resultList", resultList); model.addAttribute("searchDto",
+	 * searchDto); model.addAttribute("departmentsList",departmentsList);
+	 * 
+	 * return "apps/modal"; }
+	 */
+	
 	@GetMapping("/approval/modal")
-	public String openModal(Model model,
-			@PageableDefault(page = 0, size = 10, sort = "empId", direction = Sort.Direction.DESC) Pageable pageable,
-			@ModelAttribute("searchDto") EmployeeDto searchDto) {
-
-		Page<EmployeeDto> resultList = adminService.searchAll(searchDto, pageable);
-		List<Departments> departmentsList = departmentsService.findJobAll(); 
-
-		model.addAttribute("resultList", resultList);
-		model.addAttribute("searchDto", searchDto);
-		model.addAttribute("departmentsList",departmentsList);
-
+	@ResponseBody
+	public List<TreeMenuDto> getTreeMenu(Model model) {
+	    return addressBookService.getTreeMenu();
+	}
+	
+	
+	@GetMapping("/modal")
+	public String getModal() {
 		return "apps/approval_modal";
 	}
 }
