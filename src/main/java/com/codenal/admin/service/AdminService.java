@@ -190,19 +190,19 @@ public class AdminService {
 		return EmployeeDto.fromEntity(e);
 	}
 	
-	// 부서 목록
+	// 부서 셀렉트
 	public List<DepartmentsDto> getAllDepartments() {
 	    List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
 	    return departments.stream()
-	                      .map(DepartmentsDto::fromEntity) // Departments 객체를 DepartmentsDto로 변환
+	                      .map(DepartmentsDto::fromEntity)
 	                      .collect(Collectors.toList());
 	}
 	
-	// 직급 목록
+	// 직급 셀렉트
 	public List<JobsDto> getAllJobs() {
 	    List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
 	    return jobs.stream()
-	               .map(JobsDto::fromEntity) // Jobs 객체를 JobsDto로 변환
+	               .map(JobsDto::fromEntity) 
 	               .collect(Collectors.toList());
 	}
 
@@ -223,9 +223,6 @@ public class AdminService {
 
 	    return adminRepository.save(e);
 	}
-
-
-
 
 
 
