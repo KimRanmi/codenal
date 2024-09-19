@@ -73,7 +73,7 @@ public class AdminViewController {
 	}
 	
 	// 직원 비밀번호 변경 (work1234)
-	@PostMapping("/admin/reset-password")
+	@PostMapping("/reset-password")
 	@ResponseBody
 	public Map<String, Object> resetPassword(@RequestBody Map<String, String> requestData) {
 	    Map<String, Object> response = new HashMap<>();
@@ -104,6 +104,7 @@ public class AdminViewController {
 	// 직원 정보 수정
 	@GetMapping("/update/{empId}")
 	public String employeeUpdate(@PathVariable("empId") Long empId, Model model) {
+		
 	    EmployeeDto employeeUpdate = adminService.employeeDetail(empId);
 	    
 	    System.out.println("employeeUpdate deptNo: " + employeeUpdate.getDeptNo());
@@ -123,11 +124,16 @@ public class AdminViewController {
 	// 직원 정보 수정 (POST 요청)
 	@PostMapping("/update/{empId}")
 	public String saveEmployeeUpdate(@PathVariable("empId") Long empId, EmployeeDto employeeDto) {
-		  System.out.println("Received deptNo: " + employeeDto.getDeptNo()); 
-		adminService.employeeUpdate(empId, employeeDto);
-		return "redirect:/admin/detail/" + empId;
-	}
+	    System.out.println("Received empId: " + empId);
+	    System.out.println("Received deptNo: " + employeeDto.getDeptNo());
 
+	    try {
+	        adminService.employeeUpdate(empId, employeeDto);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return "redirect:/admin/detail/" + empId;
+	}
 
 
 }

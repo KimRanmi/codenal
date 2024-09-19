@@ -42,6 +42,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
 				.requestMatchers("/admin/list").permitAll()
 				.requestMatchers("/admin/join").permitAll()
+				.requestMatchers("/admin/update/**").permitAll()
 				.requestMatchers("/admin/dept").permitAll()
 				.requestMatchers("/announce/createEnd").permitAll()
 				.requestMatchers("/announce/delete/**").permitAll()

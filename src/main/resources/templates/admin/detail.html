@@ -1,5 +1,7 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<div th:replace="~{partials/title-meta :: title-meta('직원 정보 상세')}"></div>
@@ -15,20 +17,33 @@
 	border: 1px solid #e6e6e6;
 }
 </style>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<!-- jQuery 라이브러리 추가 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap 모달에 필요한 스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
 
 <body>
 	<div layout:fragment="content">
-		<div th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
+		<div
+			th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card body">
 					<!-- ----------------------탭---------------------------- -->
 					<div class="card-header">
 						<ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
-							<li class="nav-item col-lg-1"><a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="fas fa-home"></i> 직원 정보
+							<li class="nav-item col-lg-1"><a class="nav-link active"
+								data-bs-toggle="tab" href="#personalDetails" role="tab"
+								style="font-size: 18px; text-align: center; font-weight: bold;">
+									<i class="fas fa-home"></i> 직원 정보
 							</a></li>
-							<li class="nav-item col-lg-1"><a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="far fa-user"></i> 퇴사 관리
+							<li class="nav-item col-lg-1"><a class="nav-link"
+								data-bs-toggle="tab" href="#changePassword" role="tab"
+								style="font-size: 18px; text-align: center; font-weight: bold;">
+									<i class="far fa-user"></i> 퇴사 관리
 							</a></li>
 						</ul>
 					</div>
@@ -37,128 +52,210 @@
 						<div class="tab-content">
 							<!-- ------------------------직원 정보----------------------------- -->
 							<div class="tab-pane active" id="personalDetails" role="tabpanel">
-								<form th:action="@{/admin/update/{empId}(empId=${employeeDetail.empId})}" th:method="post" th:if="${employeeDetail != null}">
-									<div class="row">
+								<div class="row">
+									<form th:action="@{/admin/update/{empId}(empId=${employeeDetail.empId})}"
+										th:method="post" th:if="${employeeDetail != null}">
 										<!-- 이름 -->
+										<input type="hidden" id="employeeIdInput"
+											th:value="${employeeDetail.empId}">
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="firstnameInput" class="form-label">이름</label> <input type="text" class="form-control" id="firstnameInput" th:value="${employeeDetail.empName}" readonly>
+												<label for="firstnameInput" class="form-label">이름</label> <input
+													type="text" class="form-control" id="firstnameInput"
+													th:value="${employeeDetail.empName}" readonly>
 											</div>
 										</div>
 
 										<!-- 사번 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="lastnameInput" class="form-label">사번</label> <input type="text" class="form-control" id="lastnameInput" th:value="${employeeDetail.empId}" readonly>
+												<label for="lastnameInput" class="form-label">사번</label> <input
+													type="text" class="form-control" id="lastnameInput"
+													th:value="${employeeDetail.empId}" readonly>
 											</div>
 										</div>
 
 										<!-- 개인 번호 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="phonenumberInput" class="form-label">개인 번호</label> <input type="text" class="form-control" id="phonenumberInput" th:value="${employeeDetail.empPhone}" readonly>
+												<label for="phonenumberInput" class="form-label">개인
+													번호</label> <input type="text" class="form-control"
+													id="phonenumberInput" th:value="${employeeDetail.empPhone}"
+													readonly>
 											</div>
 										</div>
 
 										<!-- 주민 등록 번호 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="emailInput" class="form-label">주민 등록 번호</label> <input type="text" class="form-control" id="emailInput" th:value="${employeeDetail.empSsn}" readonly>
+												<label for="emailInput" class="form-label">주민 등록 번호</label>
+												<input type="text" class="form-control" id="emailInput"
+													th:value="${employeeDetail.empSsn}" readonly>
 											</div>
 										</div>
 
 										<!-- 주소 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="addressInput" class="form-label">주소</label> <input type="text" class="form-control" id="addressInput" th:value="${employeeDetail.empAddress}" readonly>
+												<label for="addressInput" class="form-label">주소</label> <input
+													type="text" class="form-control" id="addressInput"
+													th:value="${employeeDetail.empAddress}" readonly>
 											</div>
 										</div>
 
 										<!-- 상세 주소 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="addressDetailInput" class="form-label">상세 주소</label> <input type="text" class="form-control" id="addressDetailInput" th:value="${employeeDetail.empAddressDetail}" readonly>
+												<label for="addressDetailInput" class="form-label">상세
+													주소</label> <input type="text" class="form-control"
+													id="addressDetailInput"
+													th:value="${employeeDetail.empAddressDetail}" readonly>
 											</div>
 										</div>
 
 										<!-- 부서 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="departmentInput" class="form-label">부서</label> <input type="text" class="form-control" id="departmentInput" th:value="${employeeDetail.deptName}" readonly>
+												<label for="departmentInput" class="form-label">부서</label> <input
+													type="text" class="form-control" id="departmentInput"
+													th:value="${employeeDetail.deptName}" readonly>
 											</div>
 										</div>
 
 										<!-- 직급 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="jobInput" class="form-label">직급</label> <input type="text" class="form-control" id="jobInput" th:value="${employeeDetail.jobName}" readonly>
+												<label for="jobInput" class="form-label">직급</label> <input
+													type="text" class="form-control" id="jobInput"
+													th:value="${employeeDetail.jobName}" readonly>
 											</div>
 										</div>
 
 										<!-- 입사일 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="hireDateInput" class="form-label">입사일</label> <input type="text" class="form-control" id="hireDateInput" th:value="${employeeDetail.empHire}" readonly>
+												<label for="hireDateInput" class="form-label">입사일</label> <input
+													type="text" class="form-control" id="hireDateInput"
+													th:value="${employeeDetail.empHire}" readonly>
 											</div>
 										</div>
 
 										<!-- 퇴사일 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="endDateInput" class="form-label">퇴사일</label> <input type="text" class="form-control" id="endDateInput" th:value="${employeeDetail.empEnd}" readonly>
+												<label for="endDateInput" class="form-label">퇴사일</label> <input
+													type="text" class="form-control" id="endDateInput"
+													th:value="${employeeDetail.empEnd}" readonly>
 											</div>
 										</div>
-
-										<!--임시 비밀번호 발급 / 정보 수정 / 취소 -->
-										<div class="col-lg-12">
-											<div class="hstack gap-3 justify-content-end">
-												<!-- 임시 비밀번호 발급 버튼 -->
-												<button type="button" class="btn btn-success btn-border w-lg" data-bs-toggle="modal" data-bs-target="#zoomInModal">임시 비밀번호 발급</button>
-												<!-- 모달 -->
-												<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h4 class="modal-title" id="zoomInModalLabel" style="font-size: 18px; font-weight: bold;">임시 비밀번호 발급</h4>
-																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-															</div>
-															<div class="modal-body">
-																<h5 class="fs-16">
-																	<span th:text="${employeeDetail.empName}"></span>님에게 임시 비밀번호를 발급하시겠습니까?
-																</h5>
-																<form id="passwordResetForm">
-																	<div class="row g-3">
-																		<div class="col-xxl-12">
-																			<div></div>
-																		</div>
-																		<div class="col-xxl-12">
-																			<div>
-																				<label for="emailInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label> <input type="password" class="form-control" id="emailInput" placeholder="비밀번호를 입력하세요.">
-																				<div class="invalid-feedback"></div>
-																			</div>
+									</form>
+									<!--임시 비밀번호 발급 / 정보 수정 / 취소 -->
+									<div class="col-lg-12">
+										<div class="hstack gap-3 justify-content-end">
+											<!-- 임시 비밀번호 발급 버튼 -->
+											<button type="button" class="btn btn-success btn-border w-lg"
+												data-bs-toggle="modal" data-bs-target="#zoomInModal">임시
+												비밀번호 발급</button>
+											<!-- 모달 -->
+											<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1"
+												aria-labelledby="zoomInModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-dialog-centered">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h4 class="modal-title" id="zoomInModalLabel"
+																style="font-size: 18px; font-weight: bold;">임시 비밀번호
+																발급</h4>
+															<button type="button" class="btn-close"
+																data-bs-dismiss="modal" aria-label="Close"></button>
+														</div>
+														<div class="modal-body">
+															<h5 class="fs-16">
+																<span th:text="${employeeDetail.empName}"></span>님에게 임시
+																비밀번호를 발급하시겠습니까?
+															</h5>											
+															<form id="passwordResetForm">
+																<div class="row g-3">
+																	<div class="col-xxl-12">
+																		<div></div>
+																	</div>
+																	<div class="col-xxl-12">
+																		<div>
+																			<label for="adminPasswordInput" class="form-label"
+																				style="font-size: 16px; font-weight: bold;">관리자
+																				비밀번호</label> <input type="password" class="form-control"
+																				id="adminPasswordInput" placeholder="비밀번호를 입력하세요.">
+																			<div class="invalid-feedback"></div>
 																		</div>
 																	</div>
-																</form>
-															</div>
-															<div class="modal-footer">
-																<button type="submit" class="btn btn-primary">발급</button>
-																<button type="button" class="btn btn-light" data-bs-dismiss="modal">취소</button>
-															</div>
+																	<input type="hidden" id="employeeIdHiddenInput"
+																		th:value="${employeeDetail.empId}">
+																</div>
+															</form>
+														</div>
+														<div class="modal-footer">
+															<button type="submit" class="btn btn-primary"
+																id="issuePasswordButton">발급</button>
+															<button type="button" class="btn btn-light"
+																data-bs-dismiss="modal">취소</button>
 														</div>
 													</div>
 												</div>
-
-												<!-- 수정 버튼 -->
-												<button type="submit" class="btn btn-primary btn-border w-xs">수정</button>
-
-												<!-- 이전 버튼 -->
-												<button type="button" class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs" th:onclick="|location.href='@{/admin/list}'|">이전</button>
-
 											</div>
-										</div>
+											<script>
+											document.addEventListener('DOMContentLoaded', function() {
+											    document.getElementById('issuePasswordButton').addEventListener('click', function (event) {
+											        event.preventDefault();
 
+											        var adminPassword = document.getElementById('adminPasswordInput').value;
+											        var employeeId = document.getElementById('employeeIdHiddenInput').value;
+											       
+											        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+											        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+											        if (adminPassword) {
+											            fetch('/admin/reset-password', {
+											                method: 'POST',
+											                headers: {
+											                    'Content-Type': 'application/json',
+											                    [csrfHeader]: csrfToken, 
+											                },
+											                body: JSON.stringify({
+											                    adminPassword: adminPassword,
+											                    employeeId: employeeId,
+											                }),
+											            })
+											            .then(response => response.json())
+											            .then(data => {
+											                console.log(data); 
+											                if (data.success) {
+											                    alert('비밀번호가 성공적으로 변경되었습니다.');
+											                    $('#zoomInModal').modal('hide');
+											                } else {
+											                    alert('비밀번호 변경 실패: ' + data.message);
+											                }
+											            })
+											            .catch(error => console.error('Error:', error));
+											        } else {
+											            alert('관리자 비밀번호를 입력해주세요.');
+											        }
+											    });
+											});	
+										</script>
+
+											<!-- 수정 버튼 -->
+											<button type="submit" class="btn btn-primary btn-border w-xs"
+											th:onclick="|location.href='@{/admin/update}'|">수정</button>
+
+											<!-- 이전 버튼 -->
+											<button type="button"
+												class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs"
+												th:onclick="|location.href='@{/admin/list}'|">이전</button>
+
+										</div>
 									</div>
-								</form>
+
+								</div>
+
 							</div>
 
 							<!-- ------------------------퇴사 관리----------------------------- -->
@@ -169,20 +266,25 @@
 										<div class="col-lg-1"></div>
 										<div class="col-lg-5">
 											<div>
-												<label for="oldpasswordInput" class="form-label">퇴사일</label> <input type="password" class="form-control" id="oldpasswordInput">
+												<label for="oldpasswordInput" class="form-label">퇴사일</label>
+												<input type="password" class="form-control"
+													id="oldpasswordInput">
 											</div>
 										</div>
 										<!-- 관리자 비밀번호 -->
 										<div class="col-lg-5">
 											<div>
-												<label for="newpasswordInput" class="form-label">관리자 비밀번호</label> <input type="password" class="form-control" id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
+												<label for="newpasswordInput" class="form-label">관리자
+													비밀번호</label> <input type="password" class="form-control"
+													id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
 											</div>
 										</div>
 										<div class="col-lg-1"></div>
 
 										<div class="col-lg-14">
 											<div class="hstack justify-content-end">
-												<button type="submit" class="btn btn-primary btn-border w-xs">퇴사</button>
+												<button type="submit"
+													class="btn btn-primary btn-border w-xs">퇴사</button>
 											</div>
 										</div>
 									</div>
@@ -197,43 +299,12 @@
 
 	<th:block layout:fragment="pagejs">
 		<script src="/assets/libs/prismjs/prism.js"></script>
-		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
+		<script
+			src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
 		<script src="/assets/js/pages/modal.init.js"></script>
 	</th:block>
-	
-	<script>
-	document.getElementById('issuePasswordButton').addEventListener('click', function () {
-		var adminPassword = document.getElementById('adminPassword').value;
-	//	var employeeId = /*[[${employeeDetail.empId}]]*/;
 
-	    
-	    if (adminPassword) {
-	        fetch('/admin/reset-password', {
-	            method: 'POST',
-	            headers: {
-	                'Content-Type': 'application/json',
-	            },
-	            body: JSON.stringify({
-	                adminPassword: adminPassword,
-	                employeeId: employeeId,
-	            }),
-	        })
-	        .then(response => response.json())
-	        .then(data => {
-	            if (data.success) {
-	                alert('비밀번호가 성공적으로 변경되었습니다.');
-	           
-	                $('#zoomInModal').modal('hide');
-	            } else {
-	                alert('비밀번호 변경 실패: ' + data.message);
-	            }
-	        })
-	        .catch(error => console.error('Error:', error));
-	    } else {
-	        alert('관리자 비밀번호를 입력해주세요.');
-	    }
-	});
-</script>
+	
 </body>
 
 </html>
