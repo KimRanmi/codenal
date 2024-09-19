@@ -28,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Setter
+@Setter 
 @Builder
 public class Departments { 
 
