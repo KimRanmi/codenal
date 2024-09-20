@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.codenal.employee.domain.Employee;
 
@@ -33,8 +36,11 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	Page<Employee> findAllByEmpAuth(String empStatus, Pageable pageable);
 	
 	
-	// 2. 목록 조회
-//	List<Employee> findAllByEmpAuth(String empAuth);
+	// 2. 퇴사
+	 // 직원의 상태(empStatus)를 'N'으로 업데이트하는 메서드
+    @Modifying
+    @Query("UPDATE Employee e SET e.empStatus = 'N' WHERE e.empId = :employeeId")
+    void updateEmployeeStatusToN(@Param("employeeId") Long employeeId);
 	
 	
 	// 3. 상세 조회 // 정보 수정
@@ -42,9 +48,6 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
   
  
 	// 4. TreeMenu
-	// 특정 부서에 속한 직원
-  //  List<Employee> findByDepartmentsAndEmpAuthAndEmpStatus(Departments department, String empAuth, String empStatus);
-    
     // 부서 번호로 직원 조회
     List<Employee> findByDepartments_DeptNoAndEmpAuthAndEmpStatus(Long deptNo, String empAuth, String empStatus);
 

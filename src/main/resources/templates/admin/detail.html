@@ -6,6 +6,7 @@
 </th:block>
 
 <head>
+<script src="/resources/js/reply.js?v=<%=System.currentTimeMillis() %>"></script>
 <style>
 /* 이름, 사번, 개인번호, 주민등록번호, 부서, 직급, 주소, 상세주소, 입사일, 퇴사일 */
 #firstnameInput, #lastnameInput, #phonenumberInput, #emailInput,
@@ -17,10 +18,6 @@
 </style>
 <meta name="_csrf" th:content="${_csrf.token}" />
 <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-<!-- jQuery 라이브러리 추가 -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap 모달에 필요한 스크립트 -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -34,7 +31,7 @@
 						<ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
 							<li class="nav-item col-lg-1"><a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="fas fa-home"></i> 직원 정보
 							</a></li>
-							<li class="nav-item col-lg-1"><a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="far fa-user"></i> 퇴사 관리
+							<li class="nav-item col-lg-1"><a class="nav-link" data-bs-toggle="tab" href="#empHire" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="far fa-user"></i> 퇴사 관리
 							</a></li>
 						</ul>
 					</div>
@@ -78,13 +75,13 @@
 											</div>
 
 											<!-- 주소 -->
-
 											<div class="col-lg-5">
 												<div class="mb-3">
 													<label for="addressInput" class="form-label" style="font-size: 16px; font-weight: bold;">주소</label> <input type="text" class="form-control" id="addressInput" th:value="${employeeDetail.empAddress}" readonly>
 												</div>
 											</div>
 											<div class="col-sm-1"></div>
+											
 											<!-- 상세 주소 -->
 											<div class="col-lg-5">
 												<div class="mb-3">
@@ -93,13 +90,13 @@
 											</div>
 
 											<!-- 부서 -->
-
 											<div class="col-lg-5">
 												<div class="mb-3">
 													<label for="departmentInput" class="form-label" style="font-size: 16px; font-weight: bold;">부서</label> <input type="text" class="form-control" id="departmentInput" th:value="${employeeDetail.deptName}" readonly>
 												</div>
 											</div>
 											<div class="col-sm-1"></div>
+											
 											<!-- 직급 -->
 											<div class="col-lg-5">
 												<div class="mb-3">
@@ -108,19 +105,21 @@
 											</div>
 
 											<!-- 입사일 -->
-
 											<div class="col-lg-5">
 												<div class="mb-3">
 													<label for="hireDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">입사일</label> <input type="text" class="form-control" id="hireDateInput" th:value="${employeeDetail.empHire}" readonly>
 												</div>
 											</div>
 											<div class="col-sm-1"></div>
+											
 											<!-- 퇴사일 -->
 											<div class="col-lg-5">
 												<div class="mb-3">
-													<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> <input type="text" class="form-control" id="endDateInput" th:value="${employeeDetail.empEnd}" readonly>
+													<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> 
+													<input type="text" class="form-control" id="endDateInput" th:value="${employeeDetail.empEnd}" readonly>
 												</div>
 											</div>
+											
 										</div>
 									</form>
 									<div class="mb-4"></div>
@@ -137,7 +136,7 @@
 															<h4 class="modal-title" id="zoomInModalLabel">임시 비밀번호 발급</h4>
 															<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 														</div>
-																															<div class="mb-3"></div>
+														<div class="mb-3"></div>
 														<div class="modal-body">
 															<h5 class="fs-16">
 																<span th:text="${employeeDetail.empName}"></span>님에게 임시 비밀번호를 발급하시겠습니까?
@@ -147,7 +146,7 @@
 																	<div class="mb-3"></div>
 																	<div class="col-xxl-12">
 																		<div>
-																			<label for="adminPasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label> <span class="text-danger">*</span> <input type="password" class="form-control" id="adminPasswordInput" placeholder="비밀번호를 입력하세요.">
+																			<label for="adminPasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호 </label> <span class="text-danger">*</span> <input type="password" class="form-control" id="adminPasswordInput" placeholder="비밀번호를 입력하세요." required autocomplete="new-password">
 																			<div class="invalid-feedback"></div>
 																		</div>
 																	</div>
@@ -163,46 +162,6 @@
 													</div>
 												</div>
 											</div>
-											<script>
-											document.addEventListener('DOMContentLoaded', function() {
-											    document.getElementById('issuePasswordButton').addEventListener('click', function (event) {
-											        event.preventDefault();
-
-											        var adminPassword = document.getElementById('adminPasswordInput').value;
-											        var employeeId = document.getElementById('employeeIdHiddenInput').value;
-											       
-											        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-											        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-											        if (adminPassword) {
-											            fetch('/admin/reset-password', {
-											                method: 'POST',
-											                headers: {
-											                    'Content-Type': 'application/json',
-											                    [csrfHeader]: csrfToken, 
-											                },
-											                body: JSON.stringify({
-											                    adminPassword: adminPassword,
-											                    employeeId: employeeId,
-											                }),
-											            })
-											            .then(response => response.json())
-											            .then(data => {
-											                console.log(data); 
-											                if (data.success) {
-											                    alert('비밀번호가 성공적으로 변경되었습니다.');
-											                    $('#zoomInModal').modal('hide');
-											                } else {
-											                    alert('비밀번호 변경 실패: ' + data.message);
-											                }
-											            })
-											            .catch(error => console.error('Error:', error));
-											        } else {
-											            alert('관리자 비밀번호를 입력해주세요.');
-											        }
-											    });
-											});	
-										</script>
 
 											<!-- 수정 버튼 -->
 											<button type="submit" class="btn btn-primary btn-border w-xs" th:onclick="|location.href='@{/admin/update}'|" style="font-size: 16px; font-weight: bold;">수정</button>
@@ -218,7 +177,7 @@
 							</div>
 
 							<!-- ------------------------퇴사 관리----------------------------- -->
-							<div class="tab-pane" id="changePassword" role="tabpanel">
+							<div class="tab-pane" id="empHire" role="tabpanel">
 								<form action="javascript:void(0);">
 									<div class="mb-4"></div>
 									<div class="row d-flex justify-content-center align-items-center">
@@ -232,27 +191,35 @@
 										<!-- 퇴사일 -->
 										<div class="col-lg-5">
 											<div>
-												<label for="oldpasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> <input type="password" class="form-control" id="oldpasswordInput">
+												<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> 
+												<span class="text-danger">*</span> 
+												<input type="text" class="form-control" id="detail-emp-end" name="emp_end" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="퇴사일을 선택하세요." required />
+												<div class="invalid-feedback">입사일보다 이 전으로 선택할 수 없습니다.</div>
 											</div>
 										</div>
+
 										<div class="col-sm-1"></div>
 										<!-- 관리자 비밀번호 -->
 										<div class="col-lg-5">
 											<div>
-												<label for="newpasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label> <span class="text-danger">*</span> <input type="password" class="form-control" id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
+												<label for="newpasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label> 
+												<span class="text-danger">*</span> 
+												<input type="password" class="form-control" id="empEndInput" placeholder="비밀번호를 입력해주세요." required autocomplete="current-password">
 											</div>
 										</div>
 										<div class="mb-4"></div>
 										<div class="mb-4"></div>
 										<div class="col-lg-14">
 											<div class="hstack justify-content-end">
-												<button type="submit" class="btn btn-primary btn-border w-xs" style="font-size: 16px; font-weight: bold;">퇴사</button>
+												<button type="submit" class="btn btn-primary btn-border w-xs" id="empEndButton"
+												 style="font-size: 16px; font-weight: bold;">퇴사</button>
 											</div>
 										</div>
-
 									</div>
+
 								</form>
 							</div>
+
 						</div>
 					</div>
 				</div>
@@ -260,10 +227,158 @@
 		</div>
 	</div>
 
+
+
 	<th:block layout:fragment="pagejs">
-		<script src="/assets/libs/prismjs/prism.js"></script>
-		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
-		<script src="/assets/js/pages/modal.init.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="/assets/js/pages/form-pickers.init.js"> </script>
+
+		<script>
+	/* 임시 비밀번호 발급 관리자 비밀번호 */
+	document.addEventListener('DOMContentLoaded', function() {
+	    document.getElementById('issuePasswordButton').addEventListener('click', function (event) {
+	        event.preventDefault();
+
+	        var adminPw = document.getElementById('adminPasswordInput').value;
+	        var empId = document.getElementById('employeeIdHiddenInput').value;
+	       
+	        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+	        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+	        if (adminPw) {
+	            fetch('/admin/reset-password', {
+	                method: 'POST',
+	                headers: {
+	                    'Content-Type': 'application/json',
+	                    [csrfHeader]: csrfToken,
+	                },
+	                body: JSON.stringify({
+	                    adminPw: adminPw,
+	                    empId: empId,
+	                }),
+	            })
+	            
+	            .then(response => response.json())
+	            .then(data => {
+	                console.log(data); 
+	                if (data.success) {
+	                    alert('비밀번호가 성공적으로 변경되었습니다.');
+	                    $('#zoomInModal').modal('hide');
+	                } else {
+	                    alert('비밀번호 변경 실패: ' + data.message);
+	                }
+	            })
+	            .catch(error => console.error('Error:', error));
+	        } else {
+	            alert('관리자 비밀번호를 입력해주세요.');
+	        }
+	    });
+	    
+	    // 비밀번호 필드 초기화 
+	    $('#zoomInModal').on('hidden.bs.modal', function () {
+	        document.getElementById('adminPasswordInput').value = '';  
+	    });
+	    
+	    // 엔터 가능
+	    document.getElementById('adminPasswordInput').addEventListener('keydown', function(event) {
+	        if (event.key === 'Enter') {
+	            event.preventDefault(); // 기본 엔터키 폼 제출 방지
+	            document.getElementById('issuePasswordButton').click(); // 발급 버튼 클릭 처리
+	        }
+	    });
+	});	
+	
+	
+ 	/* 퇴사일 선택 */
+	document.addEventListener('DOMContentLoaded', function() {
+	    var hireDate = document.getElementById('hireDateInput').value;
+	   // console.log("입사일: ", hireDate);
+
+	    flatpickr("#detail-emp-end", {
+	        dateFormat: "Y-m-d",  
+	        allowInput: true,
+	        minDate: hireDate
+	    });
+	});
+ 	
+ 	
+ 	/* 퇴사 관리자 비밀번호 */
+	document.addEventListener('DOMContentLoaded', function() {
+	    document.getElementById('empEndButton').addEventListener('click', function (event) {
+	        event.preventDefault();
+
+	        var adminPw = document.getElementById('empEndInput').value;
+	        var empId = document.getElementById('employeeIdHiddenInput').value;
+	        var empEnd = document.getElementById('detail-emp-end').value;
+	        
+	        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+	        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+	        if (adminPw) {
+	            fetch('/admin/emp-end', {
+	                method: 'POST',
+	                headers: {
+	                    'Content-Type': 'application/json',
+	                    [csrfHeader]: csrfToken, 
+	                },
+	                body: JSON.stringify({ 
+	                    adminPw: adminPw,
+	                    empId: empId,
+	                    empEnd: empEnd
+	                }),
+	            })
+	            
+	            .then(response => response.json())
+	            .then(data => {
+	                //console.log(data); 
+	                if (data.success) {
+	                    alert('직원이 성공적으로 퇴사 처리되었습니다.');
+	                    
+	                    updateEmployeeDetails(empId); // 바로 정보 업뎃
+	                    
+	                    // 직원 정보 탭으로 이동
+	                    var personalDetailsTab = new bootstrap.Tab(document.querySelector('a[href="#personalDetails"]'));
+	                    personalDetailsTab.show();
+	                    
+	                } else {
+	                    alert(data.message);
+	                }
+	            })
+	            .catch(error => console.error('Error:', error));
+	        } else {
+	            alert('관리자 비밀번호를 입력해주세요.');
+	        }
+	    });
+	    
+	    // 퇴사일 업뎃
+	    function updateEmployeeDetails(empId) {
+	    	
+	        fetch(`/admin/detail/${empId}/json`)
+	            .then(response => response.json())
+	            .then(data => {
+	                if (data.success) {
+	                    
+	                //    document.getElementById('employeeEnd').innerText = data.employeeDetail.name;
+	               
+	                } else {
+	                    console.error('직원 정보 업데이트 실패:', data.message);
+	                }
+	            })
+	            .catch(error => console.error('Error:', error));
+	    }
+	    
+	    // 비밀번호 필드 초기화 	    
+	    document.getElementById('empEndInput').value = '';
+	});
+
+    
+</script>
+		<!-- <!-- <script src="/assets/libs/prismjs/prism.js"></script>
+		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>  
+		<script src="/assets/js/pages/modal.init.js"></script>-->
+		<!-- jQuery 라이브러리 추가 -->
+		<!--  
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>	 -->
 	</th:block>
 
 

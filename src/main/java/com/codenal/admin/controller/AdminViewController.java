@@ -1,5 +1,8 @@
 package com.codenal.admin.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,6 +66,7 @@ public class AdminViewController {
 
 	// 직원 정보 상세 조회
 	@GetMapping("/detail/{empId}")
+	
 	public String employeeListDetail(@PathVariable("empId") Long empId, 
 			Model model) {
 		EmployeeDto employeeDetail = adminService.employeeDetail(empId);
@@ -72,17 +78,31 @@ public class AdminViewController {
 		return "admin/detail";
 	}
 	
+	// 직원 정보 상세 조회 (퇴사하고 JSON 반환)
+	@GetMapping("/detail/{empId}/json")
+	@ResponseBody
+	public ResponseEntity<?> employeeListDetailJson(@PathVariable("empId") Long empId) {
+	    EmployeeDto employeeDetail = adminService.employeeDetail(empId);
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("success", true);
+	    response.put("employeeDetail", employeeDetail);
+
+	    return ResponseEntity.ok(response); // JSON 응답 반환
+	    }
+	
+	
 	// 직원 비밀번호 변경 (work1234)
 	@PostMapping("/reset-password")
 	@ResponseBody
 	public Map<String, Object> resetPassword(@RequestBody Map<String, String> requestData) {
 	    Map<String, Object> response = new HashMap<>();
 	    
-	    String adminPassword = requestData.get("adminPassword");
-	    Long employeeId = Long.parseLong(requestData.get("employeeId"));
+	    String adminPw = requestData.get("adminPw");
+	    Long empId = Long.parseLong(requestData.get("empId"));
 	    
 	    // 관리자 비밀번호 확인 
-	    if (!adminPassword.equals("work1234")) {
+	    if (!adminPw.equals("work1234")) {
 	        response.put("success", false);
 	        response.put("message", "관리자 비밀번호가 일치하지 않습니다.");
 	        return response;
@@ -90,7 +110,7 @@ public class AdminViewController {
 	    
 	    // 직원 비밀번호 변경
 	    try {
-	        adminService.resetEmployeePassword(employeeId, "work1234");
+	        adminService.resetEmployeePassword(empId, "work1234");
 	        response.put("success", true);
 	    } catch (Exception e) {
 	        response.put("success", false);
@@ -99,6 +119,53 @@ public class AdminViewController {
 	    
 	    return response;
 	}
+	
+	
+	// 직원 퇴사 
+		@PostMapping("/emp-end")
+		@ResponseBody
+		public Map<String, Object> emdEndDatePwa(@RequestBody Map<String, String> requestData) {
+		    Map<String, Object> response = new HashMap<>();
+		    
+		    String adminPw= requestData.get("adminPw");
+		    Long empId = Long.parseLong(requestData.get("empId"));
+		    String empEndDateStr = requestData.get("empEnd");
+		
+		    // 관리자 비밀번호 확인 
+		    if (!adminPw.equals("work1234")) {
+		        response.put("success", false);
+		        response.put("message", "관리자 비밀번호가 일치하지 않습니다.");
+		        return response;
+		    }
+		    
+		    if (empEndDateStr == null || empEndDateStr.isEmpty()) {
+		        response.put("success", false);
+		        response.put("message", "퇴사일이 입력되지 않았습니다.");
+		        return response;
+		    }
+	
+		    try {
+		    	// 퇴사일 String -> Date
+		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		        LocalDate empEndDate = LocalDate.parse(empEndDateStr, formatter);
+
+		        // empStatus 'N' 변경
+		        boolean success = adminService.emdEndDate(empId, empEndDate);
+
+		        if (success) {
+		            response.put("success", true);
+		            response.put("message", "직원이 성공적으로 퇴사 처리되었습니다.");
+		        } else {
+		            response.put("success", false);
+		            response.put("message", "퇴사 처리 중 오류가 발생했습니다.");
+		        }
+		    } catch (DateTimeParseException e) {
+		        response.put("success", false);
+		        response.put("message", "퇴사일 형식이 올바르지 않습니다.");
+		    }
+		    
+		    return response;
+		}
 
 
 	// 직원 정보 수정
