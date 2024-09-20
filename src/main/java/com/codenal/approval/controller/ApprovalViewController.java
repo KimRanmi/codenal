@@ -81,7 +81,7 @@ public class ApprovalViewController {
 		model.addAttribute("no", no);
 		model.addAttribute("cateList", cateList);
 		model.addAttribute("remainDay", alm.getAnnualRemainDay());
-		return "apps/approval_leave_create";
+		return "apps/approval__leave_create";
 	}
 
 	// 상신 리스트
@@ -115,7 +115,7 @@ public class ApprovalViewController {
 		int typeInt = af.getBaseFormCode();
 
 		if (typeInt == 1) {
-			returnResult = "approval_leave_detail";
+			returnResult = "approval__leave_detail";
 		} else {
 			returnResult = "approval_detail";
 		}
@@ -151,7 +151,7 @@ public class ApprovalViewController {
 		int typeInt = af.getBaseFormCode();
 
 		if (typeInt == 1) {
-			returnResult = "approval_leave_update";
+			returnResult = "approval__leave_update";
 		} else {
 			returnResult = "approval_update";
 		}
@@ -173,24 +173,8 @@ public class ApprovalViewController {
 		return "apps/" + returnResult;
 	}
 
-	/*
-	 * // 모달창 열기
-	 * 
-	 * @GetMapping("/approval/modal") public String openModal(Model model,
-	 * 
-	 * @PageableDefault(page = 0, size = 10, sort = "empId", direction =
-	 * Sort.Direction.DESC) Pageable pageable,
-	 * 
-	 * @ModelAttribute("searchDto") EmployeeDto searchDto) {
-	 * 
-	 * Page<EmployeeDto> resultList = adminService.searchAll(searchDto, pageable);
-	 * List<Departments> departmentsList = departmentsService.findJobAll();
-	 * 
-	 * model.addAttribute("resultList", resultList); model.addAttribute("searchDto",
-	 * searchDto); model.addAttribute("departmentsList",departmentsList);
-	 * 
-	 * return "apps/modal"; }
-	 */
+	
+	// 모달 데이터 보내기
 	
 	@GetMapping("/approval/modal")
 	@ResponseBody
@@ -198,9 +182,4 @@ public class ApprovalViewController {
 	    return addressBookService.getTreeMenu();
 	}
 	
-	
-	@GetMapping("/modal")
-	public String getModal() {
-		return "apps/approval_modal";
-	}
 }

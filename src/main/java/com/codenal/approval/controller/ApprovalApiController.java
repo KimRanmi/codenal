@@ -2,6 +2,7 @@ package com.codenal.approval.controller;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalFileDto;
+import com.codenal.approval.domain.Approver;
 import com.codenal.approval.service.ApprovalFileService;
 import com.codenal.approval.service.ApprovalService;
+import com.codenal.approval.service.ApproverService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.service.EmployeeService;
 
@@ -31,13 +34,15 @@ public class ApprovalApiController {
 	private final ApprovalService approvalService;
 	private final ApprovalFileService approvalFileService;
 	private final EmployeeService employeeService;
-
+	private final ApproverService approverService;
+	
 	@Autowired
 	public ApprovalApiController(ApprovalService approvalService, ApprovalFileService approvalFileService,
-			EmployeeService employeeService) {
+			EmployeeService employeeService, ApproverService approverService) {
 		this.approvalService = approvalService;
 		this.approvalFileService = approvalFileService;
 		this.employeeService = employeeService;
+		this.approverService = approverService;
 	}
 
 	// 전자결재 등록 (요청서, 품의서)
@@ -46,7 +51,8 @@ public class ApprovalApiController {
 	public Map<String, String> createApproval(@RequestPart("approval_content") String approvalContent,
 			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("form_code") String formCode,
-			@RequestPart(value = "file", required = false) MultipartFile file) {
+			@RequestPart(value = "file", required = false) MultipartFile file,
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
 		resultMap.put("res_code", "404");
@@ -61,19 +67,33 @@ public class ApprovalApiController {
 		list.put("내용", approvalContent);
 		list.put("이름", emp_id);
 		list.put("폼코드", form_code);
+			
+		System.out.println("합의자 : "+agree);
 
 		Approval createdApproval = approvalService.createApproval(list);
 
 		if (createdApproval != null) {
-
+			
+			// 결재자 테이블로 넘기기
+			Map<String, List<Long>> approverList = new HashMap<String,List<Long>>();
+			approverList.put("합의자", agree);
+			approverList.put("결재자", approver);
+			
+			Map<String, Long> no = new HashMap<String,Long>();
+			no.put("결재번호", createdApproval.getApprovalNo());
+			
+			approverService.createApprover(approverList,createdApproval);
+			
+			
+			//파일 데이터
 			if (file != null) {
 				if (approvalFileService.upload(file, createdApproval) != null) {
 					resultMap.put("res_code", "200");
-					resultMap.put("res_msg", "전자결재 등록 성공");
+					resultMap.put("res_msg", "전자결재 등록 성공 하였습니다.");
 				}
 			}
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "전자결재 등록 성공");
+			resultMap.put("res_msg", "전자결재 등록 성공 하였습니다.");
 
 		}
 		return resultMap;
@@ -90,7 +110,8 @@ public class ApprovalApiController {
 			@RequestParam(value = "end_date", required = false) LocalDate endDate,
 			@RequestParam("form_code") String formCode,
 			@RequestParam(value = "time_period", required = false) String timePeriod,
-			@RequestParam(value = "file", required = false) MultipartFile file) {
+			@RequestParam(value = "file", required = false) MultipartFile file,
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
@@ -112,6 +133,16 @@ public class ApprovalApiController {
 		Approval createdApproval = approvalService.createApprovalLeave(list);
 
 		if (createdApproval != null) {
+			
+		// 결재자 테이블로 넘기기
+			Map<String, List<Long>> approverList = new HashMap<String,List<Long>>();
+			approverList.put("합의자", agree);
+			approverList.put("결재자", approver);
+						
+			Map<String, Long> no = new HashMap<String,Long>();
+			no.put("결재번호", createdApproval.getApprovalNo());
+						
+			approverService.createApprover(approverList,createdApproval);			
 
 			if (file != null) {
 				if (approvalFileService.upload(file, createdApproval) != null) {
@@ -156,7 +187,8 @@ public class ApprovalApiController {
 	public Map<String, String> updateApproval(@RequestParam("approval_content") String approvalContent,
 			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("form_code") String formCode,
-			@PathVariable("approvalNo") Long no, @RequestPart(name = "file", required = false) MultipartFile file) {
+			@PathVariable("approvalNo") Long no, @RequestPart(name = "file", required = false) MultipartFile file,
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
@@ -181,6 +213,8 @@ public class ApprovalApiController {
 		System.out.println("파일 수정 : " + file.getName());
 
 		if (updateApproval != null) {
+			
+			
 			resultMap.put("res_code", "200");
 			resultMap.put("res_msg", "전자결재 정상적으로 수정되었습니다.");
 			ApprovalFileDto alf = new ApprovalFileDto();

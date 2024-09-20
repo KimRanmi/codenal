@@ -21,6 +21,7 @@ import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
+import com.codenal.approval.domain.Approver;
 import com.codenal.approval.repository.ApprovalBaseFormTypeRepository;
 import com.codenal.approval.repository.ApprovalCategoryRepository;
 import com.codenal.approval.repository.ApprovalFileRepository;
@@ -99,6 +100,7 @@ public class ApprovalService {
       
       
       ApprovalForm af = (ApprovalForm) obj[4];
+      Approver approver = (Approver) obj[5];
       
       result.put("approval", approval);
       result.put("employee", employee);
@@ -106,10 +108,11 @@ public class ApprovalService {
       result.put("annualLeaveUsage", annualLeaveUsage);
       result.put("approvalForm", af);
       result.put("file", file);
+      result.put("approver", approver);
       return result;
    }
 
-   // 전자결재 저장
+   // 전자결재 저장 (품의서, 요청서)
    public Approval createApproval(Map<String,Object> obj) {
       
       Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
@@ -126,6 +129,7 @@ public class ApprovalService {
 
       return approvalRepository.save(approval);
    }
+   
    
    @Transactional
    // 전자결재(휴가신청서) 저장

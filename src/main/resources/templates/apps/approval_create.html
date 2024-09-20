@@ -9,13 +9,35 @@
 
 <th:block layout:fragment="pagetitle" />
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
+	type="text/css" />
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+<style>
+.jstree-icon.ri-building-fill {
+	color: #3e4a6e;
+	font-size: 24px;
+}
+
+.jstree-icon.ri-team-fill {
+	color: #3577f1;
+	font-size: 20px;
+}
+
+.jstree-icon.ri-user-2-fill {
+	color: #9a9ba0;
+	font-size: 16px;
+}
+</style>
+
 </head>
 <body>
 	<div layout:fragment="content">
@@ -96,12 +118,27 @@
 									onclick="history.back()">취소</button>
 							</div>
 
-							<div id="modal" style="display: none; position: fixed;">
-								<div class="modal-header">
-									<button type="button" id="closeButton" class="close">&times;</button>
-								</div>
-								<div class="modal-body">
-									<!-- 모달 데이터 추가 되는 곳 -->
+							<!-- 모달 생성 -->
+							<div class="modal fade" id="staticBackdrop"
+								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+								role="dialog" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+										<div class="modal-body text-left">
+											<div class="mt-1">
+												<h4 class="mb-3">직원 등록</h4>
+												<div id="treeMenu"></div>
+												<div id="treeAdd"></div>
+												<div class="hstack gap-9">
+													<a id="successBtn" class="btn btn-success">완료</a> <a
+														href="javascript:void(0);"
+														class="btn btn-link link-success fw-medium"
+														data-bs-dismiss="modal"><i
+														class="ri-close-line me-1 align-middle" id="resetBtn"></i>초기화</a>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 
@@ -109,13 +146,15 @@
 							<div style="margin-top: -1080px; margin-left: 900px;">
 								<label>합의자</label>
 								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;" data-name="">
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary" style="background-color: white; color: black; border: 1px solid white;" id="button_modal1">선택</button>
+											<button type="button" class="btn btn-primary"
+												style="background-color: white; color: black; border: 1px solid white;"
+												id="button_modal1">선택</button>
 
 										</td>
 										<td
@@ -126,13 +165,13 @@
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" data-group="agree"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" data-group="agree"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" data-group="agree"></td>
 									</tr>
 								</table>
 								<br> <label>결재자</label>
@@ -143,7 +182,9 @@
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary" style="background-color: white; color: black; border: 1px solid white;" id="button_modal2">선택</button>
+											<button type="button" class="btn btn-primary"
+												style="background-color: white; color: black; border: 1px solid white;"
+												id="button_modal2">선택</button>
 
 										</td>
 										<td
@@ -154,13 +195,13 @@
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2"></td>
+											class="selectedName2" data-group="approver"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2"></td>
+											class="selectedName2" data-group="approver"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2"></td>
+											class="selectedName2" data-group="approver"></td>
 									</tr>
 								</table>
 							</div>
@@ -169,46 +210,141 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-   		<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    	<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+		<script
+			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+		<script
+			src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
 
 
-		<script>
-    	document.addEventListener('DOMContentLoaded', function() {
-       		$('#button_modal1, #button_modal2').click(function() {
-            // AJAX 요청으로 데이터를 로드하고 모달을 열기
-            	$('.modal-body').load('/modal', function(response, status, xhr) {
-                	if (status == "error") {
-                    	console.error("Error loading modal: " + xhr.status + " " + xhr.statusText);
-                    	return; // 에러 발생 시 더 이상 진행하지 않음
-                	}
 
-                	// 모달 열기
-                	const modalElement = document.getElementById('myModal');
-                	if (modalElement) {
-                    	const modal = new bootstrap.Modal(modalElement, {
-                        	backdrop: 'static',
-                        	keyboard: false // ESC로 닫기 방지 (선택 사항)
-                    	});
-                    	modal.show(); // 모달 표시
-                	} else {
-                    console.error("모달 요소를 찾을 수 없습니다.");
-                	}
-            	});
-        	});
-    	});
+		<!-- 모달 관련 js -->
+			<script>
+		    const selectArray = []; // 선택된 이름을 저장할 배열
+		    let buttonId = '';
+		
+		    $('#button_modal1, #button_modal2').click(function() {
+		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
+		        buttonId = this.id;
+		        console.log(buttonId);
+		        
+		        // 선택 배열 초기화
+		        selectArray.length = 0; 
+		
+		        $.ajax({
+		            url: '/approval/modal', // 데이터를 가져올 URL
+		            method: 'GET',
+		            dataType: 'json',
+		            success: function(data) {
+		                console.log(data); // 데이터 로그
+		
+		                // jsTree용 데이터 형식 변환
+		                const formatDataForJsTree = (nodes) => {
+		                    return nodes.map(node => ({
+		                        id: node.nodeId,
+		                        text: node.nodeName,
+		                        state: { opened: false },
+		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
+		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+		                    }));
+		                };
+		
+		                const formattedData = formatDataForJsTree(data);
+		                const companyNode = {
+		                    id: 'companyName',
+		                    text: 'withXwork',
+		                    state: { opened: true },
+		                    children: formattedData,
+		                    icon: 'ri-building-fill'
+		                };
+		
+		                // 기존 jsTree 인스턴스 제거
+		                if ($('#treeMenu').data('jstree')) {
+		                    $('#treeMenu').jstree("destroy");
+		                }
+		
+		                // jsTree 초기화
+		                $('#treeMenu').jstree({
+		                    'core': {
+		                        animation: 0,
+		                        check_callback: false,
+		                        data: [companyNode]
+		                    },
+		                    plugins: ["types", "selectbox"],
+		                    types: {
+		                        default: { icon: "ri-team-fill" },
+		                        file: { icon: "ri-user-2-fill" }
+		                    }
+		                }).on('select_node.jstree', function(e, data) {
+		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
+		                    selectArray.length = 0; // 배열 초기화
+		
+		                    selectedNodes.forEach(node => {
+		                        if (node.parent !== 'companyName') {
+		                            selectArray.push({id: node.id, text: node.text}); // 선택된 자식 노드의 이름 추가, 데이터 베이스에 보낼 id 설정
+		                            console.log(node);
+		                        }
+		                    });
+		                });
+		
+		                // 모달 표시
+		                const modalElement = document.getElementById('staticBackdrop');
+		                if (modalElement) {
+		                    const modal = new bootstrap.Modal(modalElement, {
+		                        backdrop: 'static',
+		                        keyboard: false // ESC로 닫기 방지
+		                    });
+		                    modal.show(); // 모달 표시
+		                    
+		                    // 등록 버튼 이벤트
+		                    $(document).on('click', '#successBtn', function() {
+		                        const selectNameElements = buttonId === "button_modal1" 
+		                            ? document.querySelectorAll('.selectedName') 
+		                            : document.querySelectorAll('.selectedName2');
+		
+		                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
 
+		                            for (let index = 0; index < length; index++) {
+		                                // selectArray[index]가 정의되어 있는지 확인
+		                                if (selectArray[index]) {
+		                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
+		                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
+		                                } else {
+		                                    selectNameElements[index].textContent = ''; // 비워두기
+		                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
+		                                }
+		                            }
+		
+		                        modal.hide(); // 모달 닫기
+		                    });
+		
+		                 // 초기화 버튼 이벤트 -> 이건 나중에 수정
+		                    $(document).on('click', '#resetBtn', function() {
+		                        const selectNameElements = buttonId === "button_modal1" 
+		                            ? document.querySelectorAll('.selectedName') 
+		                            : document.querySelectorAll('.selectedName2');
+
+		                        selectNameElements.forEach((element) => {
+		                            if (element) { // 요소가 존재하는지 확인
+		                                element.innerHTML = ''; // 비워두기
+		                            } else {
+		                                console.warn("해당 요소가 존재하지 않습니다."); // 요소가 없을 때 경고 로그
+		                            }
+		                        });
+		                        selectArray.length = 0; // 배열 초기화
+		                    });
+		                } else {
+		                    console.error("모달 요소를 찾을 수 없습니다.");
+		                }
+		            }
+		        });
+		    });
 		</script>
 
-
-
-
-	
-
-
+		<!-- 폼 안에 필요한 값 불러오기 -->
 		<script>
         
         const contentEditor = new toastui.Editor({
@@ -239,12 +375,50 @@
             e.preventDefault();
             const payload = new FormData(form);
             const csrfToken = document.getElementById('csrf_token').value;
+            
+            /* const divs = document.querySelectorAll('td[data-group="agree"]'); // 'agree' 그룹의 td 요소 선택
+            const groupA = []; // 결과를 저장할 배열 초기화
+
+            for (let i = 0; i < divs.length; i++) {
+                const div = divs[i]; // 각 div 요소 가져오기
+                const numberValue = Number(div); // 숫자로 변환
+
+                if (!isNaN(numberValue)) { // 숫자인지 확인
+                    groupA.push(numberValue); // 숫자로 변환한 값 추가
+                }
+            }
+            
+            console.log(groupA);
+             */ 
+             
+             // 위의 코드랑 같은 것. 짧게 생성 map은 자바스크립트의 배열 메서드 중 하나
+             const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
+             .map(td => {
+             	const value = td.getAttribute('data-name');
+             	return value ? Number(value) : null;
+             })
+              .filter(Boolean);
+             
+             
+             const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
+             .map(td => {
+            	 const value = td.getAttribute('data-name');
+            	 return value ? Number(value) : null;
+             })
+             .filter(Boolean);
 
             /* 토스트 api 안에 값 저장 */
             const content = contentEditor.getHTML();
+            
             payload.append("approval_content", content);
-
-            fetch('/approval', {
+			payload.append("agree", agree);
+			payload.append("approver",approver);
+            
+			payload.forEach((value, key) => {
+			    console.log(`${key}: ${value}`);
+			});
+			
+			fetch('/approval', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken
@@ -258,7 +432,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: "성공",
-                        text: data.reg_msg
+                        text: data.res_msg
                     }).then(() => {
                         location.href = "/approval/list?num=0";
                     });
@@ -266,7 +440,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: '실패',
-                        text: data.reg_msg
+                        text: data.res_msg
                     });
                 }
             });
@@ -274,7 +448,8 @@
     </script>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-	
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -5,21 +5,19 @@
 <head>
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
-<title>전자결재 수정,삭제</title>
-<!-- Bootstrap CSS -->
-<th:block layout:fragment="pagetitle" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<title>전자결재 등록(휴가신청서)</title>
 <link
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
-<!-- Dropzone CSS -->
 <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
 	type="text/css" />
-<!-- 토슽 api -->
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-<script
-	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 <style>
 .jstree-icon.ri-building-fill {
 	color: #3e4a6e;
@@ -35,95 +33,48 @@
 	color: #9a9ba0;
 	font-size: 16px;
 }
-.project-thumbnail-img{
-			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
-		}
 
+select, input[type=date] {
+	border: 1px solid #d3d3d3;
+	border-radius: 4px;
+	height: 35px;
+}
 </style>
 </head>
 <body>
 	<div layout:fragment="content">
-		<div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
-		<div class="row" style="margin-left: 30px;" >
+		<div th:replace="partials/page-title :: page-title('전자결재 작성', '전자결재')"></div>
+		<div class="row" style="margin-left: 30px;">
 			<div class="col-lg-12">
-				<div style="background-color: white; width: 1750px; height: 1150px;">
+				<div style="background-color: white; width: 1750px; height: 1250px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
+							<input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
 							<br>
-							<!-- 제목 출력 status가 4일 때는 회수함일 때 이때는 disabled 처리 X -->
 							<div class="mb-3" style="width: 600px;">
-								<input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}" >
-								<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
-								<label class="form-label" for="project-title-input">제목</label> 
-								<input type="text" class="form-control" id="project-title-input"
-									th:value="${dto.approval.approvalTitle}" name="approval_title"
-									th:disabled="${dto.approval.approvalStatus != 4}" style="width: 500px;">
+								<label class="form-label" for="project-title-input">제목</label> <input
+									type="text" class="form-control" id="project-title-input"
+									placeholder="제목을 입력하세요" style="width: 500px;"
+									name="approval_title">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-author-input">기안자</label>
-								<input type="text" class="form-control" th:value="${dto.employee.empName}"
-									id="project-author-input" readonly style="width: 500px;" name="emp_id">
+								<input type="text" class="form-control"
+									id="project-author-input" readonly
+									th:value="${#authentication.name}" style="width: 500px;"
+									name="emp_id">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-date-input">기안일</label> <input
 									type="text" class="form-control" id="project-date-input"
-									readonly style="width: 500px;" name="approval_reg_date"
-									th:value=${dto.approval.approvalRegDate}>
-							</div>		
+									th:value="${ldt}" readonly style="width: 500px;"
+									name="approval_reg_date">
+							</div>
 							<div class="mb-3" style="width: 600px;">
-							
-								<!-- status가 4가 아닐 때 -->
-							    <div th:if="${dto.approval.approvalStatus != 4}">
-								    <div th:if="${dto.file == null}">
-								        <label class="form-label" for="file-upload">파일첨부</label>
-								        <input class="form-control" id="file-upload"
-								               type="file" accept="image/png, image/gif, image/jpeg"
-								               style="width: 500px;" >
-								    </div>
-	
-								    <div th:if="${dto.file != null}">
-								        <label class="form-label" for="file-link">첨부파일</label>
-								        <a id="file-link" class="form-control"
-								           th:text="${dto.file.fileOriName}"
-								           th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}" 
-								           name="file" style="width: 500px;"></a>
-								    </div>
-							    </div>
-							    <!-- status가 4일 때 -->
-							    <div th:if="${dto.approval.approvalStatus == 4}">
-								        <label class="form-label" for="file-upload">파일첨부</label>
-								        <input class="form-control" id="file-upload"
-								               type="file" accept="image/png, image/gif, image/jpeg"
-								               style="width: 500px;" name="file">
-							    	
-								</div>
-							</div>
-							<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus==4 && type == 2}" >
-								<label class="form-label" for="project-thumbnail-img">양식</label><br>
-								<!-- 요청서 -->
-								<div>
-									<select class="form-control" id="category-select"
-										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
-										<option>-- 선택하세요 --</option>
-										<option th:each="cate : ${cateList}" th:value="${cate.form_code}"
-                							th:text="${cate.form_name}" id="cateList"  th:data-content="${cate.form_content}"
-                							th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
-        								</option>
-									</select>
-								</div>
-							</div>
-							<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus==4 && type == 3}">
-								<!-- 품의서 -->
-								<div>
-									<select class="form-control" id="category-select"
-										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
-										<option>-- 선택하세요 --</option>
-										<option th:each="cate : ${cateList}" th:value="${cate.form_code}"
-                							th:text="${cate.form_name}" id="cateList" th:data-content="${cate.form_content}"
-                							th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
-        								</option>
-									</select>
-								</div>
+								<label class="form-label" for="project-thumbnail-img">파일첨부</label>
+								<input class="form-control" id="project-thumbnail-img"
+									name="file" type="file"
+									accept="image/png, image/gif, image/jpeg" style="width: 500px;">
 							</div>
 							<div class="mb-3">
 								<label class="form-label" for="references">수신참조자</label><br>
@@ -131,21 +82,49 @@
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
 									class="selectedName3">
 							</div>
+
+							<!-- 양식 선택 -->
+							<div class="mb-3" style="width: 600px;">
+								<label class="form-label" for="project-thumbnail-img">양식</label><br>
+								<!-- 근태신청서의 경우 -->
+								<div th:if="${no == 1}">
+									<select class="form-control" id="category-select"
+										style="width: 200px;" name="form_code"
+										onchange="updateEditorContent()">
+										<option>-- 선택하세요 --</option>
+										<option th:each="cate : ${cateList}"
+											th:text="${cate.form_name}" id="cateList"
+											th:value="${cate.form_code}"
+											th:data-content="${cate.form_content}"></option>
+									</select>
+									<div
+										style="margin-top: -30px; margin-left: 230px; color: #b9b9b9">
+										내 잔여연차 : <span th:text="${remainDay}"></span>
+									</div>
+
+									<div style="margin-top: 30px; margin-bottom: 10px;">날짜</div>
+									<div id="dateContent" style="width: 1000px;">
+										<input type="date" style="width: 200px;" id="startDate">
+										<select style="margin-left: 10px; width: 150px;"
+											name="time_period">
+											<option>오전</option>
+											<option>오후</option>
+										</select>
+									</div>
+								</div>
+							</div>
 							<br>
-							<div th:text="${dto.approval.approvalContent}"
-							style="display: none" id="contentDiv"></div>
 							<!-- 토스트 api -->
 							<div class="col-lg-11" style="margin-left: -15px;">
 								<label>내용</label>
 								<div id="approval_edit"></div>
 							</div>
-							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로 -> 이건 나중에 수정해야함  -->
+							<!-- 버튼 -->
 							<br>
-							<div style="margin-left:1300px; margin-top:60px;">
-								<div>
-									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
-									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
-								</div>
+							<div style="margin-left: 1350px; margin-top: 30px;">
+								<button type="submit" class="btn btn-secondary w-sm">올리기</button>
+								<button type="submit" class="btn btn-danger w-sm"
+									onclick="history.back()">취소</button>
 							</div>
 							
 							<!-- 모달 생성 -->
@@ -171,10 +150,13 @@
 									</div>
 								</div>
 							</div>
-							
-							
-							<!-- 합의자 결재자 확인처리 해야함 -->
-							<div style="margin-top: -1080px; margin-left: 900px;">
+
+
+
+
+							<div style="margin-top: -1150px; margin-left: 900px;">
+
+								<!-- 합의자 결재자 선택 -->
 								<label>합의자</label>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
@@ -183,10 +165,9 @@
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal1">선택</button>
-
+											<input type="button" value="선택"
+											style="background-color: white; border: white;"
+											id="button_modal1">
 										</td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
@@ -213,10 +194,11 @@
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal2">선택</button>
-
+											<div style="display: none" class="modal2">
+												<label>직원 선택</label>
+											</div> <input type="button" value="선택"
+											style="background-color: white; border: white;"
+											id="button_modal2">
 										</td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
@@ -236,13 +218,12 @@
 									</tr>
 								</table>
 							</div>
-							
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-		
+
 		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 		<script
 			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -250,8 +231,7 @@
 			src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 		<script
 			src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
-		
-		
+
 		<!-- 모달 관련 js -->
 		<script>
 	    const selectArray = []; // 선택된 이름을 저장할 배열
@@ -365,119 +345,110 @@
 	        });
 	    });
 	</script>
-		
-		
-		
-		
+
+
+
+		<!-- 날짜 생성 스크립트 설정 -->
 		<script>
-			// 기존 데이터 불러오면서 토스트 api 설정.
-			const content = document.getElementById('contentDiv');
-			const contentEditor = new toastui.Editor({
-                el: document.querySelector('#approval_edit'),
-                width: '1300px',
-                height: '500px',
-                initialValue: content.textContent,
-                initialEditType: 'wysiwyg',
-                previewStyle: 'vertical',
-                hideModeSwitch: true
-            });
-		    
-			document.addEventListener('DOMContentLoaded', () => {
-			    contentEditor();
-			    updateEditorContent();
-			});
+                const select = document.getElementById('category-select');
+                const content = document.getElementById('dateContent');
+            
+                // select 값이 변경될 때마다 실행되는 이벤트 리스너
+                select.addEventListener('change', function() {
+                    const selectedValue = select.value;
+                    if (selectedValue == '1') { //name값 설정해줘야 form data 안에 담길 수 있다 !
+                        content.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> -' +
+                                            '<select style="margin-left:10px; width:150px;" name="time_period"><option>선택하세요</option><option>오전</option><option>오후</option></select>';
+                    } else {
+                        content.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> - ' +
+                                            '<input type="date" style="width:200px;" id="endDate" name="end_date">';
+                    }
 
-			// 카테고리 선택하면서 카테고리 선택했을 때의 스크립트 코드
-			 function updateEditorContent() {
-		        const selectElement = document.getElementById('category-select');
-		        const selectedOption = selectElement.options[selectElement.selectedIndex];
-		        const formContent = selectedOption.getAttribute('data-content');
+                    // 새롭게 생성된 요소를 가져와서 이벤트 리스너 추가
+                    const start = document.getElementById('startDate');
+                    const end = document.getElementById('endDate');
+                    
+                    if (end) {
+                        end.addEventListener('change', function() {
+                            if (start.value > end.value) {
+                                alert('종료일이 시작일보다 빠릅니다.');
+                                end.value = ''; 
+                            }
+                        });
+                    }
+                });
+            
+        </script>
 
-		        // 토스트 에디터 내용 저장한 값 불러옴
-		        contentEditor.setHTML(formContent);
-		    }
-		 </script>
-		 
-		 <!-- 수정  -->
-		 <script>
-				const form = document.getElementById('approvalForm');
-				form.addEventListener('submit',(e) =>{
-				e.preventDefault();
-				const id = document.getElementById('approvalNo').value;
-				const payload = new FormData(form);
-				const csrfToken = document.getElementById('csrf_token').value;
-				const content = contentEditor.getHTML();
-				payload.append("approval_content",content);
-				
-				payload.forEach((value, key) => {
-				    console.log(`${key}: ${value}`);
-				});
-				fetch('/approval/update/'+id,{
-					method : 'PUT',
-					headers : {
-						'X-CSRF-TOKEN': csrfToken
-		            },
-		            body: payload
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data.res_code);
-					if(data.res_code === '200') {
-						Swal.fire({
-							icon: 'success',
-							title : '성공',
-							text : data.reg_msg
-						}).then(() =>{
-							location.href = "/approval/list?num=0";
-						});
-					}else{
-						Swal.fire({
-							icon : 'error',
-							title : '실패',
-							text : data.reg_msg
-						})
-					}
-				})
-			});	
-		</script>
-	
-		<!-- 삭제 -->
-		<script>
-		document.getElementById("delete").addEventListener('click',function(){
-			const id = document.getElementById('approvalNo').value;
-			const csrfToken = document.getElementById('csrf_token').value;
-			if(confirm('정말 삭제하시겠습니까?')){
-				fetch('/approval/delete/'+id,{
-					method : 'delete',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-CSRF-TOKEN': csrfToken
-	                },
-	                body: JSON.stringify({ approvalNo: id })  
-				})
-				.then(response => response.json())
-		        .then(data => {
-		            console.log(data.res_code);
-		            if(data.res_code === '200') {
-						Swal.fire({
-							icon: 'success',
-							title : '성공',
-							text : data.reg_msg
-						}).then(() =>{
-							location.href = "/approval/list?num=0";
-						});
-					}else{
-						Swal.fire({
-							icon : 'error',
-							title : '실패',
-							text : data.reg_msg
-						})
-					}
-				})
-			}	
-		});
-		</script>
 
+		<script> /* 토스트 api 설정 */
+		      const contentEditor = new toastui.Editor({
+		      el: document.querySelector('#approval_edit'),
+		      width: '100%',
+		      height: '500px',
+		      initialEditType: 'wysiwyg',
+		      previewStyle: 'vertical',
+		      hideModeSwitch: true
+    		});
+	    
+		      function updateEditorContent() {
+			        const selectElement = document.getElementById('category-select');
+			        const selectedOption = selectElement.options[selectElement.selectedIndex];
+			        const formContent = selectedOption.getAttribute('data-content');
+
+			        // 토스트 에디터 내용 저장한 값 불러옴
+			        contentEditor.setHTML(formContent);
+			    }
+
+			    // 페이지 로드 시 기본 내용 설정
+			    document.addEventListener('DOMContentLoaded', () => {
+			        updateEditorContent();
+			    });
+			
+			    const form = document.getElementById("approvalForm");
+			    form.addEventListener('submit', (e) => {
+			        e.preventDefault();
+			        const payload = new FormData(form);
+			        const csrfToken = document.getElementById('csrf_token').value;
+			   	
+			     
+			        /* 토스트 api 안에 값 저장 */
+					const content = contentEditor.getHTML();
+					payload.append("approval_content",content);
+
+					payload.forEach((value, key) => {
+					    console.log(`${key}: ${value}`);
+					});
+					
+			        fetch('/approval_leave', {
+			            method: 'POST',
+			            headers: {
+			                'X-CSRF-TOKEN': csrfToken
+			            },
+			            body: payload 
+			        })
+			        .then(response => response.json())
+			        .then(data => {
+			            console.log(data.res_msg);
+			            if (data.res_code === '200') {
+			                Swal.fire({
+			                    icon: 'success',
+			                    title: "성공",
+			                    text: data.reg_msg
+			                }).then(() => {
+			                    location.href = "/approval/list?num=0";
+			                });
+			            } else {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: '실패',
+			                    text: data.reg_msg
+			                });
+			            }
+			        })
+			    });
+			    
+    	</script>
 	</div>
 </body>
 </html>

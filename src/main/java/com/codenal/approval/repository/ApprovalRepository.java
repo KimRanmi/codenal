@@ -27,15 +27,17 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		
 		
 		// usage값이 null일 수도 있어서 left join 처리
-		@Query("SELECT a, e, t, u, f " +
+		@Query("SELECT a, e, t, u, f, v " +
 			       "FROM Approval a " +
 			       "JOIN a.employee e " +
 			       "JOIN a.approvalCategory c " +
 			       "JOIN c.approvalForm f "+
 			       "JOIN f.approvalBaseFormType t "+
+			       "JOIN a.approver v "+
 			       "LEFT JOIN a.annualLeaveUsage u "+
 			       "WHERE a.approvalNo = ?1")
 		List<Object[]> selectByapprovalNo(Long approvalNo);
+		
 		
 		Approval findByApprovalNo(Long approvalNo);
 		

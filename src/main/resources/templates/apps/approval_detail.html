@@ -111,7 +111,7 @@
 								<label>합의자</label>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-									<tr>
+									<tr  >
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
@@ -122,16 +122,16 @@
 									</tr>
 								</table>
 								<table style="border-collapse: collapse; border-spacing: 0;">
-									<tr>
+									<tr th:each="dto : ${approver}" th:if="${dto.approverType == '합의자'}">
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" th:text="${dto.employee.empName}" ></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" th:text="${dto.employee.empName}" ></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" th:text="${dto.employee.empName}"></td>
 									</tr>
 								</table>
 								<br> <label>결재자</label>

@@ -27,9 +27,10 @@ import lombok.NoArgsConstructor;
 
 public class Approver {
 	
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="approver_no")
+	private int approverNo;
 	
 	@Column(name="approver_type")
 	private String approverType;
