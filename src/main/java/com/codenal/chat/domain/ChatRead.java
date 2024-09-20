@@ -24,6 +24,9 @@ public class ChatRead {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="read_no")
+	private int readNo;
+	
 	@ManyToOne
 	@JoinColumn(name="msg_no")
 	private ChatMsg chatMsg;

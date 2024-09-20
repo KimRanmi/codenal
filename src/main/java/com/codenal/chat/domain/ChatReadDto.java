@@ -15,17 +15,19 @@ import lombok.ToString;
 @Builder
 public class ChatReadDto {
 
-	private int msg_no;
+	private int read_no;
 	private char is_receiver_read;
 	
 	public ChatRead toEntity() {
 		return ChatRead.builder()
+				.readNo(read_no)
 				.isReceiverRead(is_receiver_read)
 				.build();
 	}
 	
 	public ChatReadDto toDto(ChatRead chatRead) {
 		return ChatReadDto.builder()
+				.read_no(chatRead.getReadNo())
 				.is_receiver_read(chatRead.getIsReceiverRead())
 				.build();
 	}

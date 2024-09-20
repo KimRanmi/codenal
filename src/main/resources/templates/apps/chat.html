@@ -742,10 +742,6 @@
 						    for (let [key, value] of formData.entries()) {
 						        console.log(key, value); // 폼 데이터 출력
 						    }
-
-						    // 추가적으로 필요한 데이터를 FormData에 추가
-						    formData.append('room_status', 'Y');
-						    formData.append('room_type', '1');
 						    
 						    const csrfToken = document.getElementById("csrf_token").value;
 

@@ -51,7 +51,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 					}		
 				break;
 				case "msg":
-					chatService.createChatMsg(msg);  // 메시지 처리
+					for(Long userId : clients.keySet()) {
+					chatService.createChatMsg(msg, userId);  // 메시지 처리
+					}
 				break;
 			}
 			
@@ -64,7 +66,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 		    // 나머지 사용자들의 세션은 여전히 clients 맵에 남아있으므로, 채팅 가능
 			clients.values().removeAll(Arrays.asList(session));
 			System.out.println("=== 삭제 확인 ===");
-			for(String userId : clients.keySet()) {
+			for(Long userId : clients.keySet()) {
 				System.out.println(userId +" : "+clients.get(userId));
 			}		
 		}

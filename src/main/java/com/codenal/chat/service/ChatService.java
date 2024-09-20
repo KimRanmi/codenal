@@ -88,12 +88,23 @@ public class ChatService {
 		return chatListDto;
 	}
 	
+	
+	public void chatRoomDetail(int roomNo, Long userId) {
+		// 채팅 참여자 정보와 채팅 메시지 불러오기
+		// 채팅방 입장 순간 알림온 메시지 읽은 상태로 update
+		ChatRoom chatRoom = chatRoomRepository.findByRoomNo(roomNo);
+		ChatParticipants chatParticipantNo = chatParticipantsRepository.findById(roomNo, userId);
+		// 메시지 상태들이 'Y'인 메시지 불러오기  --> 필요없는거 같긴 함
+		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
+		chatReadRepository.findAllById(chatParticipantNo);  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 
+	}
+	
+	
 	// 메시지 전송시 생성
 	@Transactional
-	public int createChatMsg(ChatMsgDto dto, String username) {
+	public int createChatMsg(ChatMsgDto dto, Long userId) {
 		int result = -1; 
 		try {
-			Long userId = Long.parseLong(username);
 			ChatRoom room = chatRoomRepository.findByRoomNo(dto.getRoom_no());
 			Employee emp = employeeRepository.findByEmpId(dto.getSender_id());
 			ChatMsg target = ChatMsg.builder()
