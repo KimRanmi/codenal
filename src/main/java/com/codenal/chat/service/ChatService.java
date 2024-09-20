@@ -71,32 +71,50 @@ public class ChatService {
 		return savedChatRoom;
 	}
 	
-	// 활성 상태의 참여중인 채팅 목록 조회
-	public List<ChatParticipantsDto> chatListSelect(String username){
+	// 본인의 활성 상태인 채팅 참여 테이블 조회
+	public List<ChatParticipants> participantListSelect(String username){
 		Long empId = Long.parseLong(username);
-		List<ChatParticipants> chatLists = chatParticipantsRepository.findByChatRoom(empId);
+		Employee emp = employeeRepository.findByEmpId(empId);
+		List<ChatParticipants> chatLists = chatParticipantsRepository.findByChatRoom(emp);
 		List<ChatParticipantsDto> chatListDto = new ArrayList<ChatParticipantsDto>();
 		for(ChatParticipants chatList :chatLists) {
 			ChatParticipantsDto dto = new ChatParticipantsDto().toDto(chatList);
+			dto.setRoom_no(chatList.getChatRoom().getRoomNo());
+			dto.setEmp_id(chatList.getEmployee().getEmpId());
 			chatListDto.add(dto);
 		}
-			
-//		for(ChatParticipants chatList : chatLists) {
-//		ChatRoom chatRoomList = chatRoomRepository.findAllById(chatList.getChatRoom());
-//		}
-		
-		return chatListDto;
+		return chatLists;
 	}
 	
+	// 본인의 활성 상태의 참여중인 채팅방 목록 조회
+//	public List<ChatRoomDto> chatListSelect(String username){
+//		Long empId = Long.parseLong(username);
+//		Employee emp = employeeRepository.findByEmpId(empId);
+//		List<ChatRoom> chatLists = chatRoomRepository.findByEmpId(emp);
+//		List<ChatRoomDto> chatListDto = new ArrayList<ChatRoomDto>();
+//		for(ChatRoom chatList :chatLists) {
+//			ChatRoomDto dto = new ChatRoomDto().toDto(chatList);
+//			chatListDto.add(dto);
+//		}
+//		
+//		return chatListDto;
+//	}
 	
-	public void chatRoomDetail(int roomNo, Long userId) {
+	
+	// chat detail 부분
+	@Transactional
+	public ChatRoom selectChatRoomOne(int roomNo, Long empId) {
 		// 채팅 참여자 정보와 채팅 메시지 불러오기
 		// 채팅방 입장 순간 알림온 메시지 읽은 상태로 update
 		ChatRoom chatRoom = chatRoomRepository.findByRoomNo(roomNo);
-		ChatParticipants chatParticipantNo = chatParticipantsRepository.findById(roomNo, userId);
+		Employee employee = employeeRepository.findByEmpId(empId);
+		// 내 참가자 번호 불러오기
+		ChatParticipants chatParticipant = chatParticipantsRepository.findByParticipants(chatRoom, employee);
 		// 메시지 상태들이 'Y'인 메시지 불러오기  --> 필요없는거 같긴 함
-		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
-		chatReadRepository.findAllById(chatParticipantNo);  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 
+//		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
+		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
+		
+		return chatRoom;
 	}
 	
 	
@@ -133,4 +151,5 @@ public class ChatService {
 		}
 		return result;
 	}
+
 }

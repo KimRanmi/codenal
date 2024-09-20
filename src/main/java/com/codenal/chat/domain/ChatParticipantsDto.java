@@ -19,7 +19,7 @@ public class ChatParticipantsDto {
 
 	private int participant_no;
 	private int room_no;
-	private int emp_id;
+	private Long emp_id;
 	private char switch_status;
 	private LocalDateTime participate_date;
 	private LocalDateTime exit_date;

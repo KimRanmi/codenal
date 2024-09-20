@@ -16,7 +16,7 @@ public interface ChatReadRepository extends JpaRepository<ChatRead, Integer>{
 	List<ChatRead> findAllById(int chatMsg, int participantNo);
 
 	@Modifying
-	@Query(value="UPDATE ChatRead r SET r.isReceiverRead = 'Y' WHERE r.chatParticipant = ?1")
-	void findAllById(ChatParticipants chatParticipantNo);
+	@Query(value="UPDATE ChatRead r SET r.isReceiverRead = 'Y' WHERE r.chatParticipant.participantNo = ?1")
+	void updateByRead(int participantNo);
 
 }
