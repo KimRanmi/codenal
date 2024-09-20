@@ -7,6 +7,8 @@ File: Project Dashboard init js
 */
 
 
+const empId = document.getElementById("empId").value;
+
 // get colors array from the string
 function getChartColorsArray(chartId) {
     if (document.getElementById(chartId) !== null) {
@@ -273,7 +275,7 @@ document.getElementById("month").innerHTML = month;
 const csrfToken = document.getElementById('csrf_token').value;
 const fetchEventList = () => {
 		return new Promise((resolve,reject)=>{
-			fetch('/eventList', {
+			fetch('/eventList'+empId, {
 				method: 'POST',
 				headers: {
 								'X-CSRF-TOKEN': csrfToken
@@ -314,14 +316,16 @@ fetchEventList().then(function(data) {
 	/*let nowDate = new Date();
 	nowDate = nowDate.getFullYear() + '-' + (nowDate.getMonth() + 1) + '-1';*/
 	let toDay = new Date();
+	toDay.setDate(1);
 	let lastDate = new Date();
 	let lastDay = new Date(lastDate.getFullYear(), (lastDate.getMonth() + 1), 0);
+	/*lastDay.setDate(lastDay.getDate()+7);*/
 	for(let i = 0; i <= data.eventList.length; i++){
 		let startDate = new Date(data[i].start);
 		let endDate = new Date(data[i].end);
-		console.log(data[i].start);
 		
 		if (startDate >= toDay && startDate <= lastDay) {
+			
 			let startAmpm = '';
 			let endAmpm = '';
 			if(startDate.getHours() < 12){
@@ -334,11 +338,12 @@ fetchEventList().then(function(data) {
 			} else {
 				endAmpm = 'PM';
 			}
-			console.log(endDate.getHours());
+			if(data[i].className == "bg-soft-danger"){
+				
 				document.getElementById("eventList").innerHTML +=
-					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+					'<div class="mini-stats-wid d-flex align-items-center mt-3 mr-3">\
 						<div class="flex-shrink-0 avatar-sm">\
-							<span class="mini-stat-icon avatar-title rounded-circle text-success bg-soft-success fs-4">'+startDate.getDate()+'</span>\
+							<span class="avatar-title rounded-circle text-danger bg-soft-danger fs-4">'+startDate.getDate()+'</span>\
 						</div>\
 						<div class="flex-grow-1 ms-3">\
 							<h6 class="mb-1">'+data[i].title+'</h6>\
@@ -348,6 +353,49 @@ fetchEventList().then(function(data) {
 							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
 						</div>\
 					</div>';
+			}else if(data[i].className == "bg-soft-success"){
+				document.getElementById("eventList").innerHTML +=
+					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="avatar-title rounded-circle text-success bg-soft-success fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">[개인] '+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0 ms-3">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</div>';
+			}else if(data[i].className == "bg-soft-info"){
+				document.getElementById("eventList").innerHTML +=
+					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="avatar-title rounded-circle text-info bg-soft-info fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">[부서] '+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</div>';
+			}else if(data[i].className == "bg-soft-warning"){
+				document.getElementById("eventList").innerHTML +=
+					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="avatar-title rounded-circle text-warning bg-soft-warning fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">[전체] '+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</div>';
+			}
 		}
 		
 	}

@@ -19,7 +19,7 @@ var defaultEvents = [];
 
 const fetchEventList = () => {
 		return new Promise((resolve,reject)=>{
-			fetch('/eventList', {
+			fetch('/eventList'+writer, {
 				method: 'POST',
 				headers: {
 		                'X-CSRF-TOKEN': csrfToken
@@ -37,17 +37,18 @@ const fetchEventList = () => {
 						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
 						case 5 : data.eventList[i].calendar_schedule_category = 'bg-soft-danger'; break;
 					}
-
-					data[i] = {
-						id: data.eventList[i].calendar_schedule_no,
-				        title: data.eventList[i].calendar_schedule_title,
-				        start: new Date(data.eventList[i].calendar_schedule_start_date),
-				        end: new Date(data.eventList[i].calendar_schedule_end_date),
-				        className: data.eventList[i].calendar_schedule_category,
-				        location: data.eventList[i].calendar_schedule_location,
-				        description: data.eventList[i].calendar_schedule_content,
-				        writer: data.eventList[i].calendar_schedule_writer
-					}
+						
+						data[i] = {
+							id: data.eventList[i].calendar_schedule_no,
+					        title: data.eventList[i].calendar_schedule_title,
+					        start: new Date(data.eventList[i].calendar_schedule_start_date),
+					        end: new Date(data.eventList[i].calendar_schedule_end_date),
+					        className: data.eventList[i].calendar_schedule_category,
+					        location: data.eventList[i].calendar_schedule_location,
+					        description: data.eventList[i].calendar_schedule_content,
+					        writer: data.eventList[i].calendar_schedule_writer
+						}
+					
 					defaultEvents[i] = data[i];
 				}
 				resolve(defaultEvents);
@@ -55,20 +56,7 @@ const fetchEventList = () => {
 		})
 	}
 	
-	fetch('/eventWriter'+writer, {
-				method: 'POST',
-				headers: {
-		                'X-CSRF-TOKEN': csrfToken
-		            },
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data.empData);
-					let empName = data.empData.empName;
-					let empDept = data.empData.deptNo;
-					let empJob = data.empData.jobNo;
-					
-				})
+	
 
 document.addEventListener("DOMContentLoaded", function () {
     flatPickrInit();
@@ -299,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit-event-btn").removeAttribute("hidden");
             document.getElementById('btn-save-event').setAttribute("hidden", true);
             document.getElementById("edit-event-btn").setAttribute("data-id", "edit-event");
-            document.getElementById("edit-event-btn").innerHTML = "수정정";
+            document.getElementById("edit-event-btn").innerHTML = "수정";
             eventClicked();
             flatPickrInit();
             flatpicekrValueClear();
@@ -403,9 +391,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 document.getElementById("event-timepicker1-tag").innerHTML = tConvert(gt_time);
                 document.getElementById("event-timepicker2-tag").innerHTML = tConvert(ed_time);
-                console.log(writer+'확인');
                 
-	                document.getElementById("event-writer").innerHTML = gt_time;
+                
+                var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
+                    return x.id == selectedEvent.id
+                });
+                let eventWriter = defaultEvents[indexOfSelectedEvent].writer;
+                console.log(eventWriter+'확인');
+                
+                fetch('/eventWriter'+eventWriter, {
+				method: 'POST',
+				headers: {
+		                'X-CSRF-TOKEN': csrfToken
+		            },
+				})
+				.then(response => response.json())
+				.then(data => {
+					let empName = data.name;
+					let empDept = data.dept;
+					let empJob = data.job;
+					
+		            document.getElementById("event-writer").innerHTML = empDept+' '+empName+' '+empJob;
+				})
+                
                 
             }
             newEventData = null;
@@ -644,10 +652,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 selectedEvent.setAllDay(all_day);
                 selectedEvent.setExtendedProp("description", eventDescription);
                 selectedEvent.setExtendedProp("location", event_location);
+                selectedEvent.setProp("writer", writer);
                 var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
                     return x.id == selectedEvent.id
                 });
                 if (defaultEvents[indexOfSelectedEvent]) {
+					defaultEvents[indexOfSelectedEvent].category = categoryNo;
                     defaultEvents[indexOfSelectedEvent].title = updatedTitle;
                     defaultEvents[indexOfSelectedEvent].start = updateStartDate;
                     defaultEvents[indexOfSelectedEvent].end = updateEndDate;
@@ -655,6 +665,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     defaultEvents[indexOfSelectedEvent].className = updatedCategory;
                     defaultEvents[indexOfSelectedEvent].description = eventDescription;
                     defaultEvents[indexOfSelectedEvent].location = event_location;
+                    defaultEvents[indexOfSelectedEvent].writer = writer;
                 }
                 calendar.render();
                 // default
@@ -948,7 +959,7 @@ function tConvert(time) {
     var t = time.split(":");
     var hours = t[0];
     var minutes = t[1];
-    var newformat = hours >= 12 ? '오전' : '오후';
+    var newformat = hours >= 12 ? '오후' : '오전';
     hours = hours % 12;
     hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;

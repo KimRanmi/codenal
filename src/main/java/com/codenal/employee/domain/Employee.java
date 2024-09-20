@@ -76,4 +76,3 @@ public class Employee {
     @Column(name = "emp_auth")
     private String empAuth;
 }
-

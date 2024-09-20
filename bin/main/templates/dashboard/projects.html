@@ -19,6 +19,7 @@
 		<div th:replace="partials/page-title :: page-title('메인화면','홈')"></div>
 		<!-- end page title -->
 		<div class="row project-wrapper">
+			<input type="hidden" id="empId" th:value="${empId}"> <!-- 현재 로그인한 사용자 id -->
 			<div class="col-xxl-8">
 				<div class="row">
 					<div class="col-xl-4">

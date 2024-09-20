@@ -15,22 +15,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "departments")
+@Table(name = "jobs")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
-public class Departments {
+public class Jobs {
 	
 	@Id
-	@Column(name = "dept_no")
+	@Column(name = "job_no")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long deptNo;
+	private Long jobNo;
 	
-	@Column(name = "dept_name")
-	private String deptName;
+	@Column(name = "job_name")
+	private String jobName;
 	
-	@Column(name = "dept_create_date")
-	private LocalDate deptCreateDate;
+	@Column(name = "job_priority")
+	private Long jobPriority;
 
 }

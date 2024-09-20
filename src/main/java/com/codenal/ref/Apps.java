@@ -1,14 +1,29 @@
 package com.codenal.ref;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.codenal.meeting.domain.MeetingRoom;
+import com.codenal.meeting.domain.MeetingRoomDto;
+import com.codenal.meeting.domain.MeetingRoomTimeDto;
+import com.codenal.meeting.service.MeetingRoomService;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class Apps {
+	
+	private MeetingRoomService meetingRoomService;
+	
+	@Autowired
+	public Apps(MeetingRoomService meetingRoomService) {
+		this.meetingRoomService = meetingRoomService;
+	}
 	
 
 	@GetMapping("/admin-join")
@@ -53,8 +68,16 @@ public class Apps {
 		return "apps/ecommerce-products";
 	}
 	
+	// 회의실 예약
+	
 	@GetMapping("/apps-ecommerce-product-details")
-	public String apps_ecommerce_product_details() {
+	public String apps_ecommerce_product_details(Model model) {
+		List<MeetingRoomDto> mr = meetingRoomService.meetingRoomList();
+		List<MeetingRoomTimeDto> time = meetingRoomService.meetingRoomTimeList();
+		model.addAttribute("meetingRoom", mr);
+		model.addAttribute("meetingRoomTime", time);
+		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());
+		System.out.println(mr);
 		return "apps/ecommerce-product-details";
 	}
 	
