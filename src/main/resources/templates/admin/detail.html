@@ -1,7 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}" data-sidebar="light">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<div th:replace="~{partials/title-meta :: title-meta('직원 정보 상세')}"></div>
@@ -20,30 +18,23 @@
 <meta name="_csrf" th:content="${_csrf.token}" />
 <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 <!-- jQuery 라이브러리 추가 -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap 모달에 필요한 스크립트 -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap 모달에 필요한 스크립트 -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
 
 <body>
 	<div layout:fragment="content">
-		<div
-			th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
+		<div th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card body">
 					<!-- ----------------------탭---------------------------- -->
 					<div class="card-header">
 						<ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
-							<li class="nav-item col-lg-1"><a class="nav-link active"
-								data-bs-toggle="tab" href="#personalDetails" role="tab"
-								style="font-size: 18px; text-align: center; font-weight: bold;">
-									<i class="fas fa-home"></i> 직원 정보
+							<li class="nav-item col-lg-1"><a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="fas fa-home"></i> 직원 정보
 							</a></li>
-							<li class="nav-item col-lg-1"><a class="nav-link"
-								data-bs-toggle="tab" href="#changePassword" role="tab"
-								style="font-size: 18px; text-align: center; font-weight: bold;">
-									<i class="far fa-user"></i> 퇴사 관리
+							<li class="nav-item col-lg-1"><a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="far fa-user"></i> 퇴사 관리
 							</a></li>
 						</ul>
 					</div>
@@ -53,150 +44,121 @@
 							<!-- ------------------------직원 정보----------------------------- -->
 							<div class="tab-pane active" id="personalDetails" role="tabpanel">
 								<div class="row">
-									<form th:action="@{/admin/update/{empId}(empId=${employeeDetail.empId})}"
-										th:method="post" th:if="${employeeDetail != null}">
+									<form th:action="@{/admin/update/{empId}(empId=${employeeDetail.empId})}" th:method="post" th:if="${employeeDetail != null}">
 										<!-- 이름 -->
-										<input type="hidden" id="employeeIdInput"
-											th:value="${employeeDetail.empId}">
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="firstnameInput" class="form-label">이름</label> <input
-													type="text" class="form-control" id="firstnameInput"
-													th:value="${employeeDetail.empName}" readonly>
-											</div>
-										</div>
+										<input type="hidden" id="employeeIdInput" th:value="${employeeDetail.empId}">
 
-										<!-- 사번 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="lastnameInput" class="form-label">사번</label> <input
-													type="text" class="form-control" id="lastnameInput"
-													th:value="${employeeDetail.empId}" readonly>
+										<div class="row d-flex justify-content-center align-items-center">
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="firstnameInput" class="form-label" style="font-size: 16px; font-weight: bold;">이름</label> <input type="text" class="form-control" id="firstnameInput" th:value="${employeeDetail.empName}" readonly>
+												</div>
 											</div>
-										</div>
-
-										<!-- 개인 번호 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="phonenumberInput" class="form-label">개인
-													번호</label> <input type="text" class="form-control"
-													id="phonenumberInput" th:value="${employeeDetail.empPhone}"
-													readonly>
+											<div class="col-sm-1"></div>
+											<!-- 사번 -->
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="lastnameInput" class="form-label" style="font-size: 16px; font-weight: bold;">사번</label> <input type="text" class="form-control" id="lastnameInput" th:value="${employeeDetail.empId}" readonly>
+												</div>
 											</div>
-										</div>
 
-										<!-- 주민 등록 번호 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="emailInput" class="form-label">주민 등록 번호</label>
-												<input type="text" class="form-control" id="emailInput"
-													th:value="${employeeDetail.empSsn}" readonly>
+											<!-- 개인 번호 -->
+
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="phonenumberInput" class="form-label" style="font-size: 16px; font-weight: bold;">개인 번호</label> <input type="text" class="form-control" id="phonenumberInput" th:value="${employeeDetail.empPhone}" readonly>
+												</div>
 											</div>
-										</div>
-
-										<!-- 주소 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="addressInput" class="form-label">주소</label> <input
-													type="text" class="form-control" id="addressInput"
-													th:value="${employeeDetail.empAddress}" readonly>
+											<div class="col-sm-1"></div>
+											<!-- 주민 등록 번호 -->
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="emailInput" class="form-label" style="font-size: 16px; font-weight: bold;">주민 등록 번호</label> <input type="text" class="form-control" id="emailInput" th:value="${employeeDetail.empSsn}" readonly>
+												</div>
 											</div>
-										</div>
 
-										<!-- 상세 주소 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="addressDetailInput" class="form-label">상세
-													주소</label> <input type="text" class="form-control"
-													id="addressDetailInput"
-													th:value="${employeeDetail.empAddressDetail}" readonly>
+											<!-- 주소 -->
+
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="addressInput" class="form-label" style="font-size: 16px; font-weight: bold;">주소</label> <input type="text" class="form-control" id="addressInput" th:value="${employeeDetail.empAddress}" readonly>
+												</div>
 											</div>
-										</div>
-
-										<!-- 부서 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="departmentInput" class="form-label">부서</label> <input
-													type="text" class="form-control" id="departmentInput"
-													th:value="${employeeDetail.deptName}" readonly>
+											<div class="col-sm-1"></div>
+											<!-- 상세 주소 -->
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="addressDetailInput" class="form-label" style="font-size: 16px; font-weight: bold;">상세 주소</label> <input type="text" class="form-control" id="addressDetailInput" th:value="${employeeDetail.empAddressDetail}" readonly>
+												</div>
 											</div>
-										</div>
 
-										<!-- 직급 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="jobInput" class="form-label">직급</label> <input
-													type="text" class="form-control" id="jobInput"
-													th:value="${employeeDetail.jobName}" readonly>
+											<!-- 부서 -->
+
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="departmentInput" class="form-label" style="font-size: 16px; font-weight: bold;">부서</label> <input type="text" class="form-control" id="departmentInput" th:value="${employeeDetail.deptName}" readonly>
+												</div>
 											</div>
-										</div>
-
-										<!-- 입사일 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="hireDateInput" class="form-label">입사일</label> <input
-													type="text" class="form-control" id="hireDateInput"
-													th:value="${employeeDetail.empHire}" readonly>
+											<div class="col-sm-1"></div>
+											<!-- 직급 -->
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="jobInput" class="form-label" style="font-size: 16px; font-weight: bold;">직급</label> <input type="text" class="form-control" id="jobInput" th:value="${employeeDetail.jobName}" readonly>
+												</div>
 											</div>
-										</div>
 
-										<!-- 퇴사일 -->
-										<div class="col-lg-6">
-											<div class="mb-3">
-												<label for="endDateInput" class="form-label">퇴사일</label> <input
-													type="text" class="form-control" id="endDateInput"
-													th:value="${employeeDetail.empEnd}" readonly>
+											<!-- 입사일 -->
+
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="hireDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">입사일</label> <input type="text" class="form-control" id="hireDateInput" th:value="${employeeDetail.empHire}" readonly>
+												</div>
+											</div>
+											<div class="col-sm-1"></div>
+											<!-- 퇴사일 -->
+											<div class="col-lg-5">
+												<div class="mb-3">
+													<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> <input type="text" class="form-control" id="endDateInput" th:value="${employeeDetail.empEnd}" readonly>
+												</div>
 											</div>
 										</div>
 									</form>
+									<div class="mb-4"></div>
 									<!--임시 비밀번호 발급 / 정보 수정 / 취소 -->
 									<div class="col-lg-12">
 										<div class="hstack gap-3 justify-content-end">
 											<!-- 임시 비밀번호 발급 버튼 -->
-											<button type="button" class="btn btn-success btn-border w-lg"
-												data-bs-toggle="modal" data-bs-target="#zoomInModal">임시
-												비밀번호 발급</button>
+											<button type="button" class="btn btn-success btn-border w-lg" data-bs-toggle="modal" data-bs-target="#zoomInModal" style="font-size: 16px; font-weight: bold;">임시 비밀번호 발급</button>
 											<!-- 모달 -->
-											<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1"
-												aria-labelledby="zoomInModalLabel" aria-hidden="true">
+											<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
 												<div class="modal-dialog modal-dialog-centered">
 													<div class="modal-content">
-														<div class="modal-header">
-															<h4 class="modal-title" id="zoomInModalLabel"
-																style="font-size: 18px; font-weight: bold;">임시 비밀번호
-																발급</h4>
-															<button type="button" class="btn-close"
-																data-bs-dismiss="modal" aria-label="Close"></button>
+														<div class="modal-header" style="border-bottom: 1px solid #dee2e6;">
+															<h4 class="modal-title" id="zoomInModalLabel">임시 비밀번호 발급</h4>
+															<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 														</div>
+																															<div class="mb-3"></div>
 														<div class="modal-body">
 															<h5 class="fs-16">
-																<span th:text="${employeeDetail.empName}"></span>님에게 임시
-																비밀번호를 발급하시겠습니까?
-															</h5>											
+																<span th:text="${employeeDetail.empName}"></span>님에게 임시 비밀번호를 발급하시겠습니까?
+															</h5>
 															<form id="passwordResetForm">
 																<div class="row g-3">
-																	<div class="col-xxl-12">
-																		<div></div>
-																	</div>
+																	<div class="mb-3"></div>
 																	<div class="col-xxl-12">
 																		<div>
-																			<label for="adminPasswordInput" class="form-label"
-																				style="font-size: 16px; font-weight: bold;">관리자
-																				비밀번호</label> <input type="password" class="form-control"
-																				id="adminPasswordInput" placeholder="비밀번호를 입력하세요.">
+																			<label for="adminPasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label> <span class="text-danger">*</span> <input type="password" class="form-control" id="adminPasswordInput" placeholder="비밀번호를 입력하세요.">
 																			<div class="invalid-feedback"></div>
 																		</div>
 																	</div>
-																	<input type="hidden" id="employeeIdHiddenInput"
-																		th:value="${employeeDetail.empId}">
+																	<input type="hidden" id="employeeIdHiddenInput" th:value="${employeeDetail.empId}">
 																</div>
 															</form>
 														</div>
+														<div class="mb-3"></div>
 														<div class="modal-footer">
-															<button type="submit" class="btn btn-primary"
-																id="issuePasswordButton">발급</button>
-															<button type="button" class="btn btn-light"
-																data-bs-dismiss="modal">취소</button>
+															<button type="submit" class="btn btn-primary" id="issuePasswordButton" style="font-size: 16px; font-weight: bold;">발급</button>
+															<button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-size: 16px; font-weight: bold;">취소</button>
 														</div>
 													</div>
 												</div>
@@ -243,13 +205,10 @@
 										</script>
 
 											<!-- 수정 버튼 -->
-											<button type="submit" class="btn btn-primary btn-border w-xs"
-											th:onclick="|location.href='@{/admin/update}'|">수정</button>
+											<button type="submit" class="btn btn-primary btn-border w-xs" th:onclick="|location.href='@{/admin/update}'|" style="font-size: 16px; font-weight: bold;">수정</button>
 
 											<!-- 이전 버튼 -->
-											<button type="button"
-												class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs"
-												th:onclick="|location.href='@{/admin/list}'|">이전</button>
+											<button type="button" class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs" th:onclick="|location.href='@{/admin/list}'|" style="font-size: 16px; font-weight: bold;">이전</button>
 
 										</div>
 									</div>
@@ -261,32 +220,36 @@
 							<!-- ------------------------퇴사 관리----------------------------- -->
 							<div class="tab-pane" id="changePassword" role="tabpanel">
 								<form action="javascript:void(0);">
-									<div class="row g-4">
+									<div class="mb-4"></div>
+									<div class="row d-flex justify-content-center align-items-center">
+										<div class="col-lg-5">
+											<h3>
+												<span th:text="${employeeDetail.empName}"></span>님을 퇴사하시겠습니까?
+											</h3>
+										</div>
+										<div class="col-lg-5"></div>
+										<div class="mb-4"></div>
 										<!-- 퇴사일 -->
-										<div class="col-lg-1"></div>
 										<div class="col-lg-5">
 											<div>
-												<label for="oldpasswordInput" class="form-label">퇴사일</label>
-												<input type="password" class="form-control"
-													id="oldpasswordInput">
+												<label for="oldpasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> <input type="password" class="form-control" id="oldpasswordInput">
 											</div>
 										</div>
+										<div class="col-sm-1"></div>
 										<!-- 관리자 비밀번호 -->
 										<div class="col-lg-5">
 											<div>
-												<label for="newpasswordInput" class="form-label">관리자
-													비밀번호</label> <input type="password" class="form-control"
-													id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
+												<label for="newpasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label> <span class="text-danger">*</span> <input type="password" class="form-control" id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
 											</div>
 										</div>
-										<div class="col-lg-1"></div>
-
+										<div class="mb-4"></div>
+										<div class="mb-4"></div>
 										<div class="col-lg-14">
 											<div class="hstack justify-content-end">
-												<button type="submit"
-													class="btn btn-primary btn-border w-xs">퇴사</button>
+												<button type="submit" class="btn btn-primary btn-border w-xs" style="font-size: 16px; font-weight: bold;">퇴사</button>
 											</div>
 										</div>
+
 									</div>
 								</form>
 							</div>
@@ -299,12 +262,11 @@
 
 	<th:block layout:fragment="pagejs">
 		<script src="/assets/libs/prismjs/prism.js"></script>
-		<script
-			src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
+		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
 		<script src="/assets/js/pages/modal.init.js"></script>
 	</th:block>
 
-	
+
 </body>
 
 </html>
