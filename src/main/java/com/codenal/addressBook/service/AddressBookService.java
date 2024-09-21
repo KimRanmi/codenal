@@ -32,42 +32,41 @@ public class AddressBookService {
 
 	// ------------------직원 목록 검색 2 (직원 정보)
 	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
-		Page<Employee> addressBookSearch = null;
+	    Page<Employee> addressBookSearch = null;
 
-		String searchText = searchDto.getSearch_text();
+	    String searchText = searchDto.getSearch_text();
 
-		if (searchText != null && !"".equals(searchText)) {
-			int searchType = searchDto.getSearch_type();
+	    if (searchText != null && !"".equals(searchText)) {
+	        int searchType = searchDto.getSearch_type();
 
-			switch (searchType) {
-			case 1:
-				addressBookSearch = adminRepository.findAllByEmpAuth("USER", pageable);
-				break;
-			case 2: 
-				addressBookSearch = adminRepository.findByEmpNameContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			case 3:
-				addressBookSearch = adminRepository.findByDepartments_DeptNameContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			case 4:
-				addressBookSearch = adminRepository.findByJobs_JobNameContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			case 5:
-				addressBookSearch = adminRepository.findByEmpPhoneContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			}
-		} else {
-			addressBookSearch = adminRepository.findAllByEmpAuth("USER", pageable);
-		}
+	        switch (searchType) {
+	            case 1:
+	                addressBookSearch = adminRepository.findAllByEmpAuthAndEmpStatus("USER", "Y", pageable);
+	                break;
+	            case 2:
+	                addressBookSearch = adminRepository.findByEmpNameContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);
+	                break;
+	            case 3:
+	                addressBookSearch = adminRepository.findByDepartments_DeptNameContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);
+	                break;
+	            case 4:
+	                addressBookSearch = adminRepository.findByJobs_JobNameContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);
+	                break;
+	            case 5:
+	                addressBookSearch = adminRepository.findByEmpPhoneContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);
+	                break;
+	        }
+	    } else {
+	        addressBookSearch = adminRepository.findAllByEmpAuthAndEmpStatus("USER", "Y", pageable);
+	    }
 
+	    List<EmployeeDto> addressBookSearchList = new ArrayList<>();
+	    for (Employee e : addressBookSearch) {
+	        EmployeeDto dto = EmployeeDto.fromEntity(e);
+	        addressBookSearchList.add(dto);
+	    }
 
-		List<EmployeeDto> addressBookSearchList = new ArrayList<EmployeeDto>();
-		for (Employee e : addressBookSearch) {
-			EmployeeDto dto = EmployeeDto.fromEntity(e);
-			addressBookSearchList.add(dto);
-		}
-
-		return new PageImpl<>(addressBookSearchList, pageable, addressBookSearch.getTotalElements());
+	    return new PageImpl<>(addressBookSearchList, pageable, addressBookSearch.getTotalElements());
 	}
 
 

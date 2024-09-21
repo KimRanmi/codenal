@@ -35,7 +35,7 @@
 
 <body>
 	<div layout:fragment="content">
-		<div th:replace="~{partials/page-title :: page-title('직원 정보 관리', '직원 관리')}"></div>
+		<div th:replace="~{partials/page-title :: page-title('조직도', '주소록')}"></div>
 		<div class="row">
 			<!--------------------------------- 조직도 ----------------------------------------------->
 			<div class="col-xxl-3">
@@ -49,75 +49,7 @@
 					</div>
 					<!-- JsTree -->
 					<div class="card-body border border-dashed border-end-0 border-start-0">
-						<div id="treeMenu"></div>
-						<script>
-						$(document).ready(function () {				
-						    // 트리 메뉴 데이터
-						    $.ajax({
-						        url: '/employee/addressBook/tree-menu',
-						        method: 'GET',
-						        dataType: 'json',
-						        success: function (data) {		
-						        	
-						           /*  if (!data || data.length === 0) {
-						                console.error('Received data is empty or undefined.');
-						                return;
-						            } */
-	
-						            // TreeMenuDto
-						            const formatDataForJsTree = (nodes) => {
-						                return nodes.map(node => {
-						                    return {
-						                        id: node.nodeId,
-						                        text: node.nodeName,
-						                        state: {
-						                            opened: false	// 직원은 처음에 접어둠
-						                        },
-						                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
-						                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-						                        		// 부서 아이콘 : 직원 아이콘
-						                    };
-						                });
-						            };
-
-						            const formattedData = formatDataForJsTree(data);
-
-						            // 그룹웨어 회사 이름
-						            const companyNode = {
-						                id: 'companyName',
-						                text: 'withXwork', // 위드워크 회사명
-						                state: {
-						                    opened: true
-						                },
-						                children: formattedData, 
-						                icon: 'ri-building-fill' // 회사 아이콘
-						            };
-
-						            // jsTree 초기화
-						            $('#treeMenu').jstree({
-						                'core': {
-						                    "animation": 0,
-						                    "check_callback": false,
-						                    'data': [companyNode] 
-						                },
-						                "plugins": ["types"],
-						                "types": {
-						                    "default": {
-						                        "icon": "ri-team-fill"	// 부서 아이콘
-						                    },
-						                    "file": {
-						                        "icon": "ri-user-2-fill"	// 직원 아이콘
-						                    }
-						                }
-						            });
-						        },
-						       /*  error: function (xhr, status, error) {
-						            console.error('Error loading tree menu data:', error);
-						        } */
-						    });
-						});
-
-						</script> 
+						<div id="treeMenu"></div>				
 					</div>
 				</div>
 			</div>
@@ -136,7 +68,7 @@
 					<!----------목록 상단------------>
 					<div
 						class="card-body border border-dashed border-end-0 border-start-0">
-						<!-- 검색 폼 시작 -->
+						<!-- 검색 폼 searchDto != null 시작 -->
 						<form th:action="@{/employee/addressBook}"
 							th:object="${searchDto}" method="get"
 							th:if="${searchDto != null}">
@@ -168,6 +100,7 @@
 											class="ri-search-line search-icon"></i>
 									</div>
 								</div>
+								
 								<!-- 검색 버튼 -->
 								<div class="col-md-1">
 									<div>
@@ -176,9 +109,10 @@
 									</div>
 								</div>
 							</div>
-						</form>
+						</form>						
 						<!-- 검색 폼 끝 -->
-						<!-- 검색 폼 시작 -->
+						
+						<!-- 검색 폼 searchDto == null 시작 -->
 						<form th:action="@{/employee/addressBook}" method="get"
 							th:if="${searchDto == null}">
 							<div class="row g-3 justify-content-end">
@@ -202,6 +136,7 @@
 											class="ri-search-line search-icon"></i>
 									</div>
 								</div>
+								
 								<!-- 검색 버튼 -->
 								<div class="col-md-1">
 									<div>
@@ -240,8 +175,7 @@
 										<!-- 직원 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
 											<tr th:each="employee, employeeStat : ${resultList.content}">									
-												<td
-													th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}"
+												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}"
 													style="text-align: center;"></td>
 												<td th:text="${employee.empName}"
 													style="text-align: center;"></td>
@@ -254,7 +188,9 @@
 										</th:block>
 									</tbody>
 								</table>
+								
 								<br>
+								
 								<div class="center" th:if="${!resultList.isEmpty()}" id="pagination-container">
 									<div class="pagination"
 										th:with="
@@ -276,8 +212,7 @@
 												th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
 										</th:block>
 										<th:block th:if="${!resultList.last}">
-											<a
-												th:href="${resultList.last} ? '#' : @{/admin/list(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;</a>
+											<a th:href="${resultList.last} ? '#' : @{/admin/list(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;</a>
 										</th:block>
 									</div>
 								</div>
@@ -296,6 +231,75 @@
 		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
 		<!-- icon -->
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
+		
+		<script>
+		$(document).ready(function () {				
+		    // 트리 메뉴 데이터
+		    $.ajax({
+		        url: '/employee/addressBook/tree-menu',
+		        method: 'GET',
+		        dataType: 'json',
+		        success: function (data) {		
+		        	
+		           /*  if (!data || data.length === 0) {
+		                console.error('Received data is empty or undefined.');
+		                return;
+		            } */
+
+		            // TreeMenuDto
+		            const formatDataForJsTree = (nodes) => {
+		                return nodes.map(node => {
+		                    return {
+		                        id: node.nodeId,
+		                        text: node.nodeName,
+		                        state: {
+		                            opened: false	// 직원은 처음에 접어둠
+		                        },
+		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
+		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+		                        		// 부서 아이콘 : 직원 아이콘
+		                    };
+		                });
+		            };
+
+		            const formattedData = formatDataForJsTree(data);
+
+		            // 그룹웨어 회사 이름
+		            const companyNode = {
+		                id: 'companyName',
+		                text: 'withXwork', // 위드워크 회사명
+		                state: {
+		                    opened: true
+		                },
+		                children: formattedData, 
+		                icon: 'ri-building-fill' // 회사 아이콘
+		            };
+
+		            // jsTree 초기화
+		            $('#treeMenu').jstree({
+		                'core': {
+		                    "animation": 0,
+		                    "check_callback": false,
+		                    'data': [companyNode] 
+		                },
+		                "plugins": ["types"],
+		                "types": {
+		                    "default": {
+		                        "icon": "ri-team-fill"	// 부서 아이콘
+		                    },
+		                    "file": {
+		                        "icon": "ri-user-2-fill"	// 직원 아이콘
+		                    }
+		                }
+		            });
+		        },
+		       /*  error: function (xhr, status, error) {
+		            console.error('Error loading tree menu data:', error);
+		        } */
+		    });
+		});
+		</script> 
+						
 	</th:block>
 	
 

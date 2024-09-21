@@ -50,5 +50,16 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	// 4. TreeMenu
     // 부서 번호로 직원 조회
     List<Employee> findByDepartments_DeptNoAndEmpAuthAndEmpStatus(Long deptNo, String empAuth, String empStatus);
+    
+    // 5. 주소록 (재직 중인 사람만)
+    Page<Employee> findAllByEmpAuthAndEmpStatus(String empAuth, String empStatus, Pageable pageable);
+
+    Page<Employee> findByEmpNameContainingAndEmpAuthAndEmpStatus(String empName, String empAuth, String empStatus, Pageable pageable);
+
+    Page<Employee> findByDepartments_DeptNameContainingAndEmpAuthAndEmpStatus(String deptName, String empAuth, String empStatus, Pageable pageable);
+
+    Page<Employee> findByJobs_JobNameContainingAndEmpAuthAndEmpStatus(String jobName, String empAuth, String empStatus, Pageable pageable);
+
+    Page<Employee> findByEmpPhoneContainingAndEmpAuthAndEmpStatus(String empPhone, String empAuth, String empStatus, Pageable pageable);
 
 }

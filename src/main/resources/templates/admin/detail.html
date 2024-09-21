@@ -440,11 +440,22 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // 퇴사일 db -> 직원 상세에 바로 업뎃
+                    // 퇴사일 db -> 직원 상세에 바로 업데이트
                     if (data.employeeDetail && data.employeeDetail.empEnd) {
-                        document.getElementById('detail-emp-end').innerText = data.employeeDetail.empEnd;
+                       
+                        var flatpickrInstance = document.getElementById('detail-emp-end')._flatpickr;
+                        if (flatpickrInstance) {
+                            flatpickrInstance.setDate(data.employeeDetail.empEnd);
+                        } else {
+                            document.getElementById('detail-emp-end').value = data.employeeDetail.empEnd;
+                        }
+
+                        // 직원 상세 정보 탭에 퇴사일 바로 표시
+                        document.getElementById('endDateInput').value = data.employeeDetail.empEnd;
+
                     } else {
-                        document.getElementById('detail-emp-end').innerText = '퇴사일 정보 없음';
+                        document.getElementById('detail-emp-end').value = '퇴사일 정보 없음';
+                        document.getElementById('endDateInput').value = '퇴사일 정보 없음';
                     }
                 } else {
                     console.error('직원 정보 업데이트 실패:', data.message);
@@ -453,6 +464,7 @@
             .catch(error => console.error('Error:', error));
     }
 });
+
 
 
     
