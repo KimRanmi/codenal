@@ -9,28 +9,34 @@
 </th:block>
 
 <head>
-	<!-- Font Awesome 라이브러리 추가 -->
-	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> 
-	<!-- jsTree 테마 CSS 포함 -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
-	<!-- jQuery 포함 -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-	<!-- jsTree 포함 -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
- <style>
-        .jstree-icon.ri-building-fill { /* 회사 아이콘 */
-            color: #3e4a6e; 
-            font-size: 24px;
-        }
-        .jstree-icon.ri-team-fill { /* 부서 아이콘 */
-            color: #3577f1; 
-            font-size: 20px;
-        }
-        .jstree-icon.ri-user-2-fill { /* 직원 아이콘 */
-            color: #9a9ba0; 
-            font-size: 16px;
-        }
-    </style>
+<!-- Font Awesome 라이브러리 추가 -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- jsTree 테마 CSS 포함 -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<!-- jQuery 포함 -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<!-- jsTree 포함 -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+<style>
+.jstree-icon.ri-building-fill { /* 회사 아이콘 */
+	color: #3e4a6e;
+	font-size: 24px;
+}
+
+.jstree-icon.ri-team-fill { /* 부서 아이콘 */
+	color: #3577f1;
+	font-size: 20px;
+}
+
+.jstree-icon.ri-user-2-fill { /* 직원 아이콘 */
+	color: #9a9ba0;
+	font-size: 16px;
+}
+</style>
 </head>
 
 <body>
@@ -41,16 +47,17 @@
 			<!--------------------------------- 조직도 ----------------------------------------------->
 			<div class="col-xxl-3">
 				<div class="card" id="contact-view-detail">
-				<!-- 조직도 이름 -->
+					<!-- 조직도 이름 -->
 					<div class="card-header border-0">
 						<div class="col-sm">
 							<h5 class="card-title mb-0"
-								style="font-size: 18px; font-weight: bold; ">조직도</h5>
+								style="font-size: 18px; font-weight: bold;">조직도</h5>
 						</div>
 					</div>
 					<!-- 조직도 Api -->
-					<div class="card-body border border-dashed border-end-0 border-start-0">
-								<div id="treeMenu"></div>					
+					<div
+						class="card-body border border-dashed border-end-0 border-start-0">
+						<div id="treeMenu"></div>
 					</div>
 				</div>
 			</div>
@@ -70,12 +77,58 @@
 						class="card-body border border-dashed border-end-0 border-start-0">
 						<div class="row g-3">
 							<div class="col-md-4">
-								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal"
-									data-bs-target="#showModal"
-									style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid  #299cdb;">
+								<button
+									class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center"
+									data-bs-toggle="modal" data-bs-target="#zoomInModal"
+									style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
 									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
 								</button>
+
+								<!-- 모달 -->
+								<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1"
+									aria-labelledby="zoomInModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header"
+												style="border-bottom: 1px solid #dee2e6;">
+												<h4 class="modal-title" id="zoomInModalLabel">부서 추가</h4>
+												<button type="button" class="btn-close"
+													data-bs-dismiss="modal" aria-label="Close"></button>
+											</div>
+											
+											<div class="modal-body">
+												<form id="passwordResetForm">
+													<div class="row g-3">
+														<div class="mb-3"></div>
+														<div class="col-xxl-12">
+															<div>
+																<label for="adminPasswordInput" class="form-label"
+																	style="font-size: 16px; font-weight: bold;">부서명 </label>
+																	 <input type="password" class="form-control"
+																	id="adminPasswordInput" placeholder="부서명을 입력하세요."
+																	required autocomplete="new-password">
+																<div class="invalid-feedback"></div>
+															</div>
+														</div>											
+													</div>
+												</form>
+											</div>
+											<div class="mb-3"></div>
+
+											<div class="modal-footer">
+												<button type="submit" class="btn btn-primary"
+													id="issuePasswordButton"
+													style="font-size: 16px; font-weight: bold;">추가</button>
+												<button type="button" class="btn btn-light"
+													data-bs-dismiss="modal"
+													style="font-size: 16px; font-weight: bold;">취소</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- 모달 창 끝 -->
 							</div>
+							
 							<div class="col-md-3"></div>
 							<div class="col-md-4">
 								<div class="search-box">
@@ -98,7 +151,8 @@
 					<div class="card-body">
 						<div>
 							<div class="table-responsive table-card mb-3">
-								<table class="table align-middle table-nowrap mb-0" id="customerTable">
+								<table class="table align-middle table-nowrap mb-0"
+									id="customerTable">
 									<thead class="table-light">
 										<tr>
 											<th scope="col" style="text-align: center;">번호</th>
@@ -140,7 +194,7 @@
 		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
 		<!-- icon -->
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
-		
+
 		<script>
 						$(document).ready(function () {				
 						    // 트리 메뉴
@@ -208,7 +262,7 @@
 						    });
 						});
 
-						</script> 
+						</script>
 
 	</th:block>
 </body>
