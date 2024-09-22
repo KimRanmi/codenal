@@ -13,6 +13,7 @@ import com.codenal.approval.domain.ApprovalCategory;
 
 public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		
+		// 상신리스트
 		@Query(value="SELECT a,f FROM Approval a "
 				 + "JOIN a.employee e "
 		         + "JOIN a.approvalCategory c "
@@ -25,15 +26,30 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		         +"WHERE a.approvalStatus = ?1 and e.empId = ?2 ")
 		Page<Object[]> findList(int num,Long id,Pageable pageable);
 		
+		// 수신리스트
+		@Query(value="SELECT a,f,v FROM Approval a "
+				 + "JOIN a.employee e "
+		         + "JOIN a.approvalCategory c "
+		         + "JOIN c.approvalForm f "
+		         + "JOIN a.approver v "
+		         + "where a.approvalStatus = ?1 and v.employee.empId = ?2 and v.approverPriority =?3 "
+		         + "ORDER BY v.approverPriority ASC",
+		         countQuery = "SELECT count(DISTINCT a) FROM Approval a "
+		         +"JOIN a.employee e "
+		         +"JOIN a.approvalCategory c "
+		         +"JOIN c.approvalForm f "
+		         +"JOIN a.approver v "
+		         +"WHERE a.approvalStatus = ?1 and v.employee.empId= ?2 and v.approverPriority =?3")
+		Page<Object[]> findinboxList(int num,Long id,int priority,Pageable pageable);
+		
 		
 		// usage값이 null일 수도 있어서 left join 처리
-		@Query("SELECT a, e, t, u, f, v " +
+		@Query("SELECT a, e, t, u, f " +
 			       "FROM Approval a " +
 			       "JOIN a.employee e " +
 			       "JOIN a.approvalCategory c " +
 			       "JOIN c.approvalForm f "+
 			       "JOIN f.approvalBaseFormType t "+
-			       "JOIN a.approver v "+
 			       "LEFT JOIN a.annualLeaveUsage u "+
 			       "WHERE a.approvalNo = ?1")
 		List<Object[]> selectByapprovalNo(Long approvalNo);

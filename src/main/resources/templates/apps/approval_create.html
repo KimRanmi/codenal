@@ -59,7 +59,7 @@
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-author-input">기안자</label>
 								<input type="text" class="form-control"
-									th:value="${#authentication.name}" id="project-author-input"
+									th:value="${#authentication.name}" id="emp_id"
 									readonly style="width: 500px;" name="emp_id">
 							</div>
 							<div class="mb-3" style="width: 600px;">
@@ -223,9 +223,12 @@
 
 		<!-- 모달 관련 js -->
 			<script>
+			
+			// 로그인 한 사람 은 트리구조에서 지우기 
+			const loginId = document.getElementById('emp_id').value;
 		    const selectArray = []; // 선택된 이름을 저장할 배열
 		    let buttonId = '';
-		
+		    
 		    $('#button_modal1, #button_modal2').click(function() {
 		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
 		        buttonId = this.id;
@@ -241,18 +244,21 @@
 		            success: function(data) {
 		                console.log(data); // 데이터 로그
 		
-		                // jsTree용 데이터 형식 변환
+		                // jsTree용 데이터 형식 변환. 지금 로그인한 사람 정보는 제외
 		                const formatDataForJsTree = (nodes) => {
-		                    return nodes.map(node => ({
+		                    return nodes
+		                    .filter(node => node.nodeId.toString() !== loginId)
+		                    .map(node => ({
 		                        id: node.nodeId,
 		                        text: node.nodeName,
 		                        state: { opened: false },
 		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
 		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
 		                    }));
+						
 		                };
-		
 		                const formattedData = formatDataForJsTree(data);
+		                const formattedDataLength = formattedData.length; 
 		                const companyNode = {
 		                    id: 'companyName',
 		                    text: 'withXwork',

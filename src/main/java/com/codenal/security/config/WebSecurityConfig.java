@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.codenal.security.service.SecurityService;
 
@@ -126,4 +128,15 @@ public class WebSecurityConfig {
 				PathRequest.toStaticResources().atCommonLocations()
 				));
 	}
+	
+	@Configuration // 파일경로
+	public class WebConfig implements WebMvcConfigurer {
+	    @Override
+	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	        registry.addResourceHandler("/uploads/**")
+	        .addResourceLocations("/classpath:/uploads/");// 실제 파일 시스템 경로
+	    }
+	}
+	
+	
 }

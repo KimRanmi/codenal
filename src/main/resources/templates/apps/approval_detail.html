@@ -36,11 +36,12 @@
 				<div style="background-color: white; width: 1750px; height: 1150px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
-							<br>
-							
-							<div class="mb-3" style="width: 600px;">
 								<input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}" >
 								<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
+								<input type="hidden" th:value="${emp.empSignImage}" id="sign_img">
+								<input type="hidden" th:value="${emp.empId}" id="login_id">
+							<br>
+							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-title-input">제목</label> 
 								<input type="text" class="form-control" id="project-title-input"
 									th:value="${dto.approval.approvalTitle}" name="approval_title"
@@ -93,53 +94,62 @@
 								<label>내용</label>
 								<div id="approval_edit"></div>
 							</div>
-							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로 -> 이건 나중에 수정해야함  -->
+							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려 -->
 							<br>
-							<div style="margin-left:1300px; margin-top:60px;">
-								<div  th:if=${dto.employee.empId}==${#authentication.name}==${dto.approval.approvalStatus==0}>
-									<button type="button" class="btn btn-secondary w-sm" style="margin-left:100px;" id="revoke">회수</button>
-								</div>
-								<div  th:if=${dto.employee.empId}!=${#authentication.name}>
-									<button type="button" class="btn btn-secondary w-sm">승인</button>
-									<button type="button" class="btn btn-danger w-sm">반려</button>
-								</div>
+							<div style="margin-left:1300px; margin-top:70px;">
+							    <div th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
+							        <button type="button" class="btn btn-secondary w-sm" style="margin-left:100px;" id="revoke">회수</button>
+							    </div>
+							    <div th:if="${dto.employee.empId != emp.empId and (dto.agree.size() == 0 or dto.agree[0].approvalStatus == 0) and (dto.approver.size() == 0 or dto.approver[0].approvalStatus == 0)}">
+							        <button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
+							        <button type="button" class="btn btn-danger w-sm">반려</button>
+							    </div>
+							    <div th:if="${dto.approval.approvalStatus != 0}">
+							    	<button type="button" style="border:1px solid white"></button>
+							    </div>
 							</div>
-							
 							<!-- 합의자 결재자 확인처리 해야함 -->
 							<div style="margin-top:-1050px; margin-left:900px;">
-
 								<label>합의자</label>
-								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-									<tr  >
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+								<table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+								    <tr>
+									    <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+									        <img th:if="${dto.agree.size() > 0 and dto.agree[0].approvalStatus != 0}" 
+									             th:src="${dto.agree[0].employee.empSignImage}" 
+									             style="max-width: 100%; max-height: 100%;"/>
+									    </td>
+									    <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+									        <img th:if="${dto.agree.size() > 1 and dto.agree[1].approvalStatus != 0}" 
+									             th:src="${dto.agree[1].employee.empSignImage}" 
+									             style="max-width: 100%; max-height: 100%;"/>
+									    </td>
+									    <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+									        <img th:if="${dto.agree.size() > 2 and dto.agree[2].approvalStatus != 0}" 
+									             th:src="${dto.agree[2].employee.empSignImage}" 
+									             style="max-width: 100%; max-height: 100%;"/>
+									    </td>
 									</tr>
 								</table>
 								<table style="border-collapse: collapse; border-spacing: 0;">
-									<tr th:each="dto : ${approver}" th:if="${dto.approverType == '합의자'}">
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" th:text="${dto.employee.empName}" ></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" th:text="${dto.employee.empName}" ></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" th:text="${dto.employee.empName}"></td>
-									</tr>
+								     <tr>
+								        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+								            class="selectedName"
+								            th:text="${ dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"></td>
+								        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+								            class="selectedName"
+								            th:text="${dto.agree.size() > 1 ?dto.agree[1].employee.empName : ''}" ></td>
+								        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+								            class="selectedName"
+								            th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"></td>
+								    </tr>
 								</table>
 								<br> <label>결재자</label>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
 									<tr>
 										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"
+											></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
@@ -150,12 +160,15 @@
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${ dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
 											class="selectedName2"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${ dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
 											class="selectedName2"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${ dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
 											class="selectedName2"></td>
 									</tr>
 								</table>
@@ -215,7 +228,56 @@
 			});
 		</script>
 		
-
+		<!-- 승인으로 이동 -->
+		<script>
+			document.getElementById('consent').addEventListener('click',function(){
+				const id = document.getElementById('approvalNo').value;
+				const csrfToken = document.getElementById('csrf_token').value;
+				const signImg = document.getElementById("sign_img").value;
+				const loginId = document.getElementById("login_id").value;
+				
+				 if (signImg === null || signImg === '') {
+			            Swal.fire({
+			                icon: 'warning',
+			                title: '서명 이미지가 없습니다!',
+			                text: '프로필 페이지로 이동합니다.',
+			            }).then(() => {
+			                location.href = '/mypage'; // 프로필 페이지로 이동
+			            }); 
+			            return;
+			        }
+					
+					if(confirm('승인하시겠습니까?')){
+					fetch('/approver/consent' ,{
+						method: 'POST',
+	                    headers: {
+	                        'Content-Type': 'application/json',
+	                        'X-CSRF-TOKEN': csrfToken
+	                    },
+	                    body: JSON.stringify({ approvalNo: id, loginId: loginId })
+					})
+					.then(response => response.json())
+			        .then(data => {
+			            console.log(data.res_code);
+			            if (data.res_code === '200') {
+			                Swal.fire({
+			                    icon: 'success',
+			                    title: "성공",
+			                    text: data.res_msg
+			                }).then(() => {
+			                    location.href = "/approval/inboxList?num=1";
+			                });
+			            } else {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: '실패',
+			                    text: data.res_msg
+			                });
+			            }
+			        });
+			    }
+			}); 
+	</script>
 	</div>
 </body>
 </html>

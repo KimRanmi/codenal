@@ -1,6 +1,6 @@
 package com.codenal.approval.service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +12,8 @@ import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
+
+import jakarta.transaction.Transactional;
 	
 @Service
 public class ApproverService {
@@ -41,7 +43,7 @@ public class ApproverService {
 									.approval(createdApproval)
 									.approverPriority(i+1)
 									.approverType("합의자")
-									.Employee(emp)
+									.employee(emp)
 									.build();
 			
 			approverRepository.save(approvers);
@@ -55,12 +57,52 @@ public class ApproverService {
 									.approval(createdApproval)
 									.approverPriority(agree.size()+i+1)
 									.approverType("결재자")
-									.Employee(emp)
+									.employee(emp)
 									.build();
 			
 			approverRepository.save(approvers);
 		}
 		
 		
+	}
+	
+	
+	// approver 1순위 -> 2순위
+	@Transactional
+	public int consentApprover(Long no, Long loginId) {
+		int status = 1;
+		// 전자결재 테이블 상태 변경
+		int ape = approvalRepository.updateStatus(status, no);
+
+		// 현재 approver 우선순위 상태 확인
+		int currentPriority = approverRepository.findApproverPriority(no, loginId);
+
+		// 결재자 카운트
+		Long approverCount = approverRepository.countApprover(no);
+
+		// 결재자 테이블 상태 변경
+		LocalDateTime ldt = LocalDateTime.now();
+		int app = approverRepository.updateStatus(status, ldt, no, loginId);
+
+		if (app == 0) {
+			// 다음 우선순위 결재자가 있는지 확인
+			if (currentPriority < approverCount) {
+				int nextPriority = currentPriority + 1;
+				int nextApproverCount = approverRepository.findByApprovalNoAndPriority(no, nextPriority, loginId);
+
+				if (nextApproverCount > 0) {
+					// 다음 우선순위 결재자 상태 업데이트
+					approverRepository.updateStatus(status, ldt, no, loginId);
+				}
+			}else {
+				approverRepository.updateStatus(status, ldt, no, loginId);
+				status = 3;
+				approvalRepository.updateStatus(status,no);
+			}
+		}
+		System.out.println("ape : " + ape);
+		System.out.println("app" + app);
+
+		return app;
 	}
 }

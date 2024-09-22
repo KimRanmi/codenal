@@ -334,5 +334,21 @@ public class ApprovalApiController {
 		return resultMap;
 		
 	}
-
+	
+	// 전자결재 승인 (우선순위가 1일 경우)
+	@ResponseBody
+	@PostMapping("/approver/consent")
+	public Map<String,String> consentApprover(@RequestBody Map<String, String> request){
+		Map<String, String> resultMap = new HashMap<String, String>();
+		resultMap.put("res_code", "404");
+		Long no = Long.valueOf(request.get("approvalNo"));
+		Long loginId = Long.valueOf(request.get("loginId"));
+		
+		if(approverService.consentApprover(no,loginId)>0) {
+			resultMap.put("res_code","200");
+			resultMap.put("res_msg", "승인되었습니다.");
+		}
+		
+		return resultMap;
+	}
 }

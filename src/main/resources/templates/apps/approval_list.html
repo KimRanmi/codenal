@@ -1,210 +1,181 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 
 <head>
-<meta charset="UTF-8">
-<title>전자결재 리스트</title>
-<th:block layout:fragment="pagetitle" />
-<link
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-	rel="stylesheet">
-<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
-	type="text/css" />
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-<script
-	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <meta charset="UTF-8">
+    <title>전자결재 리스트</title>
+    <th:block layout:fragment="pagetitle" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
-<style>
-.table-card {
-	overflow: hidden;
-}
+    <style>
+        .table-card {
+            overflow: hidden;
+        }
 
-.table {
-	width: 100%;
-	table-layout: auto; /* 자동 크기 조정 */
-}
-</style>
+        .table {
+            width: 100%;
+            table-layout: auto; /* 자동 크기 조정 */
+        }
+    </style>
 </head>
 
 <body>
-	<div>
-		<div layout:fragment="content">
-			<div th:replace="partials/page-title :: page-title('상신함','전자결재')"></div>
-			<div>
-				<div class="row">
-					<div class="col-xxl-9">
-						<div class="card" id="companyList">
-							<div class="card-header" style="height: 800px; width: 1840px;">
-								<div class="row g-2">
-									<div>
-										<div>
-											<select
-												style="height: 37.67px; width: 100px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
-												<option>전체기간</option>
-												<option>한달</option>
-												<option>6개월</option>
-												<option>일년</option>
-											</select> <input type="text" value="제목" disabled
-												style="margin-left: 5px; height: 37.67px; width: 70px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
-											<div class="search-box"
-												style="width: 300px; margin-left: 190px; margin-top: -38px; height: 37.67px;">
-												<input type="text" class="form-control search"> <i
-													class="ri-search-line search-icon"></i>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="table-responsive table-card mb-3">
-									<table class="table align-middle table-nowrap mb-0"
-										id="customerTable" style="margin-top: 50px;">
-										<colgroup>
-											<col width=5%>
-											<col width=10%>
-											<col width=40%>
-											<col width=15%>
-											<col width=15%>
-											<col width=15%>
-										</colgroup>
-										<thead>
-											<tr style="text-align: center;">
-												<th>번호</th>
-												<th>종류</th>
-												<th>제목</th>
-												<th>상태</th>
-												<th>최종결재자</th>
-												<th scope="col">처리날짜</th>
-											</tr>
-										</thead>
-										<tbody class="list form-check-all" style="text-align: center;">
-											<!-- 대기/진행중 상태 -->
-											<tr th:each="approval, approvalStat : ${resultList.content}"
-												th:if="${num == 0 and (approval['approval'].approvalStatus == 0)}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
-												<td
-													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
-												<td><a
-													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
-													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td th:switch="${approval['approval'].approvalStatus}">
-													<span th:case="0">대기</span> <span th:case="1">진행중</span>
-												</td>
-												<td>결재자</td>
-												<td>처리날짜</td>
-											</tr>
-											<!-- 진행 -->
-											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 1 and approval['approval'].approvalStatus == 1}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
-												<td
-													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
-												<td><a
-													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
-													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td th:switch="${approval['approval'].approvalStatus}">
-													<span th:case="0">대기</span> <span th:case="1">진행중</span>
-												</td>
-												<td>결재자</td>
-												<td>처리날짜</td>
-											</tr>
-											<!-- 완료 상태 -->
-											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 2 and approval['approval'].approvalStatus == 2}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
-												<td
-													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
-												<td><a
-													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
-													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td>완료</td>
-												<td>결재자</td>
-												<td>처리날짜</td>
-											</tr>
-
-											<!-- 반려 상태 -->
-											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 3 and approval['approval'].approvalStatus == 3}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
-												<td
-													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
-												<td><a
-													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
-													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td>반려</td>
-												<td>결재자</td>
-												<td>처리날짜</td>
-											</tr>
-
-											<!-- 회수 상태 -->
-											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 4 and approval['approval'].approvalStatus == 4}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
-												<td
-													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
-												<td><a
-													th:href="@{/approval/detail/{no}(no=${approval['approval'].approvalNo})}"
-													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td>회수</td>
-												<td>결재자</td>
-												<td>처리날짜</td>
-											</tr>
-										</tbody>
-
-									</table>
-								</div>
-							</div>
-						</div>
-
-
-						<!--end card-->
-					</div>
-					<!--end col-->
-								    <div class="col">
-								        <div class="pagination-wrapper">
-								            <div class="pagination" style="margin-top:700px;"
-								                 th:with="pageNumber=${resultList.pageable.pageNumber}, 
-								                         pageSize=${resultList.pageable.pageSize}, 
-								                         totalPages=${resultList.totalPages}, 
-								                         startPage=${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-								                         tempEndPage=${startPage + pageSize - 1},
-								                         endPage=${tempEndPage < totalPages ? tempEndPage : totalPages}">
-								
-								                <!-- 이전 페이지 링크 -->
-								                <th:block th:if="${resultList.hasPrevious()}">
-								                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber - 1})}" class="page-link">&lt;</a>
-								                </th:block>
-								
-								                <!-- 페이지 숫자 링크 -->
-								                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
-								                    <a th:text="${page}" th:href="@{/approval/list(num=${num}, page=${page - 1})}"
-								                       th:classappend="${page == pageNumber + 1} ? 'active' : ''" class="page-link"></a>
-								                </th:block>
-								
-								                <!-- 다음 페이지 링크 -->
-								                <th:block th:if="${resultList.hasNext()}">
-								                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber + 1})}" class="page-link">&gt;</a>
-								                </th:block>
-								            </div>
-								        </div>
-								    </div>
-								
+    <div>
+        <div layout:fragment="content">
+            <div th:replace="partials/page-title :: page-title('상신함','전자결재')"></div>
+            <div>
+                <div class="row">
+                    <div class="col-xxl-9">
+                        <div class="card" id="companyList">
+                            <div class="card-header" style="height: 800px; width: 1840px;">
+                                <div class="row g-2">
+                                    <div>
+                                        <div>
+                                            <select style="height: 37.67px; width: 100px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
+                                                <option>전체기간</option>
+                                                <option>한달</option>
+                                                <option>6개월</option>
+                                                <option>일년</option>
+                                            </select>
+                                            <input type="text" value="제목" disabled style="margin-left: 5px; height: 37.67px; width: 70px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
+                                            <div class="search-box" style="width: 300px; margin-left: 190px; margin-top: -38px; height: 37.67px;">
+                                                <input type="text" class="form-control search"> 
+                                                <i class="ri-search-line search-icon"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive table-card mb-3">
+                                    <table class="table align-middle table-nowrap mb-0" id="customerTable" style="margin-top: 50px;">
+                                        <colgroup>
+                                            <col width=5%>
+                                            <col width=10%>
+                                            <col width=40%>
+                                            <col width=15%>
+                                            <col width=15%>
+                                            <col width=15%>
+                                        </colgroup>
+                                        <thead>
+                                            <tr style="text-align: center;">
+                                                <th>번호</th>
+                                                <th>종류</th>
+                                                <th>제목</th>
+                                                <th>상태</th>
+                                                <th>최종결재자</th>
+                                                <th scope="col">처리날짜</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all" style="text-align: center;">
+                                            <!-- 대기/진행중 상태 -->
+                                            <tr th:each="approval, approvalStat : ${resultList.content}" th:if="${num == 0 and (approval['approval'].approvalStatus == 0)}">
+                                                <td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+                                                <td th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
+                                                <td><a th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}" th:text="${approval['approval'].approvalTitle}"></a></td>
+                                                <td th:switch="${approval['approval'].approvalStatus}">
+                                                    <span th:case="0">대기</span>
+                                                    <span th:case="1">진행중</span>
+                                                </td>
+                                                <td>결재자</td>
+                                                <td>처리날짜</td>
+                                            </tr>
+                                            <!-- 진행 -->
+                                            <tr th:each="approval : ${resultList.content}" th:if="${num == 1 and approval['approval'].approvalStatus == 1}">
+                                                <td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+                                                <td th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
+                                                <td><a th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}" th:text="${approval['approval'].approvalTitle}"></a></td>
+                                                <td th:switch="${approval['approval'].approvalStatus}">
+                                                    <span th:case="0">대기</span>
+                                                    <span th:case="1">진행중</span>
+                                                </td>
+                                                <td>결재자</td>
+                                                <td>처리날짜</td>
+                                            </tr>
+                                            <!-- 완료 상태 -->
+                                            <tr th:each="approval : ${resultList.content}" th:if="${num == 2 and approval['approval'].approvalStatus == 2}">
+                                                <td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+                                                <td th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
+                                                <td><a th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}" th:text="${approval['approval'].approvalTitle}"></a></td>
+                                                <td>완료</td>
+                                                <td>결재자</td>
+                                                <td>처리날짜</td>
+                                            </tr>
+                                            <!-- 반려 상태 -->
+                                            <tr th:each="approval : ${resultList.content}" th:if="${num == 3 and approval['approval'].approvalStatus == 3}">
+                                                <td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+                                                <td th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
+                                                <td><a th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}" th:text="${approval['approval'].approvalTitle}"></a></td>
+                                                <td>반려</td>
+                                                <td>결재자</td>
+                                                <td>처리날짜</td>
+                                            </tr>
+                                            <!-- 회수 상태 -->
+                                            <tr th:each="approval : ${resultList.content}" th:if="${num == 4 and approval['approval'].approvalStatus == 4}">
+                                                <td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+                                                <td th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
+                                                <td><a th:href="@{/approval/detail/{no}(no=${approval['approval'].approvalNo})}" th:text="${approval['approval'].approvalTitle}"></a></td>
+                                                <td>회수</td>
+                                                <td>결재자</td>
+                                                <td>처리날짜</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end card-->
+                    </div>
+                    <!--end col-->
+                    <div class="col">
+				    <div class="pagination-wrapper">
+				        <div class="pagination" style="margin-top:700px;"
+				             th:with="pageNumber=${resultList.pageable.pageNumber}, 
+				                      pageSize=${resultList.pageable.pageSize}, 
+				                      totalPages=${resultList.totalPages}, 
+				                      startPage=${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+				                      tempEndPage=${startPage + pageSize - 1},
+				                      endPage=${tempEndPage < totalPages ? tempEndPage : totalPages}">
+				            
+				            <th:block th:if="${resultList.totalElements > 0}">
+				                <!-- 이전 페이지 링크 -->
+				                <th:block th:if="${resultList.hasPrevious()}">
+				                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber - 1})}" class="page-link">&lt;</a>
+				                </th:block>
+				
+				                <!-- 페이지 숫자 링크 -->
+				                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+				                    <a th:text="${page}" th:href="@{/approval/list(num=${num}, page=${page - 1})}"
+				                       th:classappend="${page == pageNumber + 1} ? 'active' : ''" class="page-link"></a>
+				                </th:block>
+				
+				                <!-- 다음 페이지 링크 -->
+				                <th:block th:if="${resultList.hasNext()}">
+				                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber + 1})}" class="page-link">&gt;</a>
+				                </th:block>
+				            </th:block>
+				        </div>
+				    </div>
 				</div>
-				<!--end col-->
-			</div>
-			<!--end row-->
-		</div>
 
-		<th:block layout:fragment="modal"></th:block>
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+        </div>
 
-		<th:block layout:fragment="pagejs">
-			<script src="/assets/libs/list.js/list.min.js"></script>
-			<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
-			<script src="/assets/js/pages/crm-companies.init.js"></script>
-			<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
-		</th:block>
-	</div>
+        <th:block layout:fragment="modal"></th:block>
+
+        <th:block layout:fragment="pagejs">
+            <script src="/assets/libs/list.js/list.min.js"></script>
+            <script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+            <script src="/assets/js/pages/crm-companies.init.js"></script>
+            <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+        </th:block>
+    </div>
 </body>
 
 </html>

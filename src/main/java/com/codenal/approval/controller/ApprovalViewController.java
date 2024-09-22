@@ -94,11 +94,29 @@ public class ApprovalViewController {
 		Long id = Long.parseLong(username);
 
 		Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable, num, id);
-
+		
 		model.addAttribute("resultList", resultList);
 		model.addAttribute("num", num);
 
 		return "apps/approval_list";
+	}
+	
+	// 수신 리스트
+	@GetMapping("/approval/inboxList")
+	public String inboxListApproval(Model model, @RequestParam(value="num", defaultValue="0") int num,
+			@PageableDefault(page = 0, size = 10, sort = "approvalNo", direction = Sort.Direction.DESC) Pageable pageable) {
+		// 현재 인증된 사용자 정보 가져오기
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Long id = Long.parseLong(username);
+
+		Page<Map<String, Object>> resultList = approvalService.selectApprovalinBoxList(pageable, num, id);
+		
+		model.addAttribute("resultList", resultList);
+		
+		model.addAttribute("num", num);
+
+		return "apps/approval_list_inbox";
 	}
 
 	// 상세 조회
@@ -107,7 +125,13 @@ public class ApprovalViewController {
 		String returnResult = null;
 
 		System.out.println("상세조회 시작");
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Long id = Long.parseLong(username);
 
+		Employee emp = employeeService.getEmployeeById(id);
+		
 		Map<String, Object> resultList = approvalService.detailApproval(approval_no);
 
 		// 타입에 따라 리턴값 다르게 처리 -> 1이면 근태신청서 2면 품의서 3이면 요청서
@@ -134,6 +158,10 @@ public class ApprovalViewController {
 		model.addAttribute("dto", resultList);
 		model.addAttribute("type", typeInt);
 		model.addAttribute("cateList", cateList);
+		model.addAttribute("emp", emp);
+		
+		System.out.println("상세조회 출력 : "+resultList.get("approver"));
+		
 		return "apps/" + returnResult;
 	}
 
@@ -181,5 +209,7 @@ public class ApprovalViewController {
 	public List<TreeMenuDto> getTreeMenu(Model model) {
 	    return addressBookService.getTreeMenu();
 	}
+	
+
 	
 }

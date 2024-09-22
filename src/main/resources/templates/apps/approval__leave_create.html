@@ -60,9 +60,8 @@ select, input[type=date] {
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-author-input">기안자</label>
 								<input type="text" class="form-control"
-									id="project-author-input" readonly
-									th:value="${#authentication.name}" style="width: 500px;"
-									name="emp_id">
+									th:value="${#authentication.name}" id="emp_id"
+									readonly style="width: 500px;" name="emp_id">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-date-input">기안일</label> <input
@@ -151,9 +150,6 @@ select, input[type=date] {
 								</div>
 							</div>
 
-
-
-
 							<div style="margin-top: -1150px; margin-left: 900px;">
 
 								<!-- 합의자 결재자 선택 -->
@@ -234,6 +230,7 @@ select, input[type=date] {
 
 		<!-- 모달 관련 js -->
 		<script>
+		const loginId = document.getElementById('emp_id');
 	    const selectArray = []; // 선택된 이름을 저장할 배열
 	    let buttonId = '';
 	
@@ -254,7 +251,9 @@ select, input[type=date] {
 	
 	                // jsTree용 데이터 형식 변환
 	                const formatDataForJsTree = (nodes) => {
-	                    return nodes.map(node => ({
+	                    return nodes
+	                    .filter(node => node.nodeId !== loginId)
+	                    .map(node => ({
 	                        id: node.nodeId,
 	                        text: node.nodeName,
 	                        state: { opened: false },

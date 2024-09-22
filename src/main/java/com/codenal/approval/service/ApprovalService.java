@@ -27,6 +27,7 @@ import com.codenal.approval.repository.ApprovalCategoryRepository;
 import com.codenal.approval.repository.ApprovalFileRepository;
 import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
+import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
@@ -42,6 +43,7 @@ public class ApprovalService {
    private final ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository;
    private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
    private final ApprovalFileRepository approvalFileRepository;
+   private final ApproverRepository approverRepository;
 
    @Autowired
    public ApprovalService(ApprovalRepository approvalRepository, 
@@ -50,7 +52,8 @@ public class ApprovalService {
          ApprovalFormRepository approvalFormRepository,
          ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository,
          AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
-         ApprovalFileRepository approvalFileRepository) {
+         ApprovalFileRepository approvalFileRepository,
+         ApproverRepository approverRepository) {
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -58,6 +61,7 @@ public class ApprovalService {
       this.approvalBaseFormTypeRepository = approvalBaseFormTypeRepository;
       this.annualLeaveUsageRepository = annualLeaveUsageRepositroy;
       this.approvalFileRepository = approvalFileRepository;
+      this.approverRepository = approverRepository;
    }
 
    // 리스트 조회
@@ -79,7 +83,39 @@ public class ApprovalService {
       }
       return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
-
+   
+   // 수신리스트
+   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,int num2,Long id) {
+		  
+		  Employee emp = employeeRepository.findByEmpId(id);
+		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
+		  
+		  Approver apv = approverRepository.findByEmpId(emp.getEmpId());
+		  System.out.println("우선순위 : "+apv.getApproverPriority());
+		  
+		  // 우선순위 기준으로 받아오기
+	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),apv.getApproverPriority(),pageable);
+	      
+	      List<Map<String, Object>> responseList = new ArrayList<>();
+	      for (Object[] objects : approvalList.getContent()) {
+	         Approval approval = (Approval) objects[0];
+	         ApprovalForm approvalForm = (ApprovalForm) objects[1];
+	         Approver approver = (Approver) objects[2];
+	         int num = approval.getApprovalStatus();
+	         Map<String, Object> map = new HashMap<>();
+	         map.put("approval", approval);
+	         map.put("employee",approval.getEmployee());
+	         map.put("formType", approvalForm);
+	         map.put("approver",approver);
+	         map.put("num", num);
+	         responseList.add(map);
+	         
+	      }
+	      return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
+	   }
+   
+   
+   
    // 상세조회
    public Map<String, Object> detailApproval(Long approval_no) {
       List<Object[]> object = approvalRepository.selectByapprovalNo(approval_no);
@@ -98,9 +134,10 @@ public class ApprovalService {
           annualLeaveUsage = (AnnualLeaveUsage) obj[3];
       }
       
-      
       ApprovalForm af = (ApprovalForm) obj[4];
-      Approver approver = (Approver) obj[5];
+      
+      List<Approver> agree = approverRepository.findByApproverNo_Agree(approval_no);
+      List<Approver> approver = approverRepository.findByApproverNo_Approver(approval_no);
       
       result.put("approval", approval);
       result.put("employee", employee);
@@ -108,7 +145,8 @@ public class ApprovalService {
       result.put("annualLeaveUsage", annualLeaveUsage);
       result.put("approvalForm", af);
       result.put("file", file);
-      result.put("approver", approver);
+      result.put("agree", agree);
+      result.put("approver",approver);
       return result;
    }
 

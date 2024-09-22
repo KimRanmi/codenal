@@ -30,7 +30,7 @@ public class Approver {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="approver_no")
-	private int approverNo;
+	private Long approverNo;
 	
 	@Column(name="approver_type")
 	private String approverType;
@@ -55,5 +55,5 @@ public class Approver {
 	
 	@ManyToOne
 	@JoinColumn(name="approver_id")
-	private Employee Employee;
+	private Employee employee;
 }
