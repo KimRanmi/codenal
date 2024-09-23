@@ -26,18 +26,18 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	Page<Departments> findByDeptNameContaining(String deptName, Pageable pageable);
 
 	// 3. 부서별 직원 수
-	// 부서별 직원 수를 포함하여 전체 조회
-	 // 부서별 직원 수를 포함하여 전체 조회
+	// 부서별 직원 수를 포함하여 전체 조회 (empStatus가 'Y'인 직원만 집계)
 	@Query("SELECT d.deptNo AS deptNo, d.deptName AS deptName, d.deptCreateDate AS deptCreateDate, COUNT(e) AS empCount " +
-		       "FROM Departments d LEFT JOIN Employee e ON e.departments = d " +
-		       "GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
-		Page<DepartmentsCount> findAllWithEmployeeCount(Pageable pageable);
+	       "FROM Departments d LEFT JOIN Employee e ON e.departments = d AND e.empStatus = 'Y' " +
+	       "GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
+	Page<DepartmentsCount> findAllWithEmployeeCount(Pageable pageable);
 
-		// 부서명으로 검색하면서 직원 수를 포함하여 조회
-		@Query("SELECT d.deptNo AS deptNo, d.deptName AS deptName, d.deptCreateDate AS deptCreateDate, COUNT(e) AS empCount " +
-		       "FROM Departments d LEFT JOIN Employee e ON e.departments = d " +
-		       "WHERE d.deptName LIKE %:deptName% " +
-		       "GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
-		Page<DepartmentsCount> findByDeptNameContainingWithEmployeeCount(@Param("deptName") String deptName, Pageable pageable);
+	// 부서명으로 검색하면서 직원 수를 포함하여 조회 (empStatus가 'Y'인 직원만 집계)
+	@Query("SELECT d.deptNo AS deptNo, d.deptName AS deptName, d.deptCreateDate AS deptCreateDate, COUNT(e) AS empCount " +
+	       "FROM Departments d LEFT JOIN Employee e ON e.departments = d AND e.empStatus = 'Y' " +
+	       "WHERE d.deptName LIKE %:deptName% " +
+	       "GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
+	Page<DepartmentsCount> findByDeptNameContainingWithEmployeeCount(@Param("deptName") String deptName, Pageable pageable);
+
 
 }

@@ -20,6 +20,9 @@ public class DepartmentsDto {
     private String deptName; // 부서명
     private LocalDate deptCreateDate; // 부서 개설일
     private int empCount; //부서 내 직원 수
+    
+    private int search_type = 1; // int는 null 인식X
+    private String search_text;
 
     public static DepartmentsDto fromEntity(Departments departments) {
         return DepartmentsDto.builder()

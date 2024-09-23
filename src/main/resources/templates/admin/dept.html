@@ -38,6 +38,8 @@
 		<div th:replace="partials/page-title :: page-title('직원 관리','부서 관리')"></div>
 
 		<div class="row">
+		
+			
 			<!--------------------------------- 조직도 ----------------------------------------------->
 			<div class="col-xxl-3">
 				<div class="card" id="contact-view-detail">
@@ -118,6 +120,7 @@
 								</div>
 							</div>
 						</div>
+					
 					</div>
 
 					<!----------목록 조회------------>
@@ -147,7 +150,7 @@
 											<tr th:each="departments, deptStat : ${resultList.content}">												
 												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+deptStat.count}" style="text-align: center;"></td>
 												<td th:text="${departments.deptName}" style="text-align: center;"></td>
-												<td th:text="'empCount: ' + (${departments.empCount} ?: 0)" style="text-align: center;"></td>
+												<td th:text="${departments.empCount ?: 0} + '명'" style="text-align: center;"></td>
 												<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
 												<td style="text-align: center;"></td> 
 											</tr>
