@@ -31,11 +31,6 @@ public class Apps {
 	}
 	
 
-	@GetMapping("/admin-join")
-	public String admin_join() {
-		return "admin/join";
-	}
-
 	@GetMapping("/apps-calendar")
 	public String apps_calendar(Model model) {
 		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());

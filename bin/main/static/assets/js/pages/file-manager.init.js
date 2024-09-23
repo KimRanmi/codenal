@@ -77,22 +77,22 @@ var getJSON = function (jsonurl, callback) {
   xhr.send();
 };
 
-// get json
-getJSON("filemanager-filelist.json", function (err, data) {
-  if (err !== null) {
-    console.log("Something went wrong: " + err);
-  } else {
+fetch("/api/documents/list")
+  .then(response => response.json())
+  .then(data => {
     allFileList = data;
     loadFileData(allFileList);
-  }
-});
+  })
+  .catch(error => {
+    console.error("Something went wrong: ", error);
+  });
 
 // load product data
 function loadFileData(datas) {
   document.querySelector("#file-list").innerHTML = '';
   Array.from(datas).forEach(function (fileData, index) {
-    var fileIconElm
-    if (fileData.fileName.includes(".")) {
+    var fileIconElm;
+    if (fileData.fileName && fileData.fileName.includes(".")) { // fileName이 있는지 먼저 확인
       var fileIcon = fileData.fileName.split(".");
       function isStatus(val) {
         switch (val) {
@@ -184,39 +184,48 @@ function favouriteBtn() {
 }
 favouriteBtn();
 
+// 탭 이벤트 설정
 Array.from(document.querySelectorAll('.file-manager-menu a')).forEach(function (fileTab) {
   fileTab.addEventListener("click", function () {
-    var folderListelm = document.querySelector(".file-manager-menu a.active");
-    if (folderListelm) folderListelm.classList.remove("active");
-    fileTab.classList.add('active');
+    // 이미 활성화된 탭을 클릭한 경우, 동작을 중지함
+    if (fileTab.classList.contains('active')) return;
 
-    var tabname = fileTab.querySelector('.file-list-link').innerHTML;
+    // 활성화된 탭의 active 클래스 제거 후, 현재 탭에 추가
+    var activeTab = document.querySelector(".file-manager-menu a.active");
+    if (activeTab) activeTab.classList.remove("active");
+    fileTab.classList.add('active'); 
+
+    // 현재 탭 이름 설정
+    var tabname = fileTab.innerText.trim(); // .innerHTML 대신 .innerText 사용하여 공백 제거
     document.getElementById("file-list").innerHTML = '';
 
-    if (tabname != 'My Drive'){
+    // 탭 이름에 따라 제목 및 폴더 표시/숨김 처리
+    if (tabname !== 'My Drive') {
       document.getElementById("filetype-title").innerHTML = tabname;
-    }else{
-      document.getElementById("filetype-title").innerHTML = "Recent file";
-    }
-    
-    if (tabname != 'My Drive' && tabname != 'Important' && tabname != 'Recents') {
-      var filterData = allFileList.filter(filelist => filelist.filetype === tabname);
-      document.getElementById("folder-list").style.display = "none";
-    } else if(tabname == "Important"){
-      var filterData = allFileList.filter(filelist => filelist.starred == true);
       document.getElementById("folder-list").style.display = "none";
     } else {
-      var filterData = allFileList;
+      document.getElementById("filetype-title").innerHTML = "Recent file";
       document.getElementById("folder-list").style.display = "block";
     }
 
-    if(tabname == 'Recents'){
-      document.getElementById("folder-list").style.display = "none";
+    // 필터링된 데이터 설정
+    var filterData;
+    if (tabname === "Important") {
+      filterData = allFileList.filter(filelist => filelist.starred === true);
+    } else if (tabname === "Recents") {
+      filterData = allFileList; // 최근 항목은 필터링 없이 전체 리스트 사용
+      document.getElementById("folder-list").style.display = "none"; // 폴더 리스트 숨김
+    } else if (tabname !== 'My Drive') {
+      filterData = allFileList.filter(filelist => filelist.filetype === tabname); // 특정 파일 타입 필터링
+    } else {
+      filterData = allFileList; // My Drive의 경우 전체 파일 리스트 사용
     }
 
+    // 필터된 데이터로 파일 리스트 로드
     loadFileData(filterData);
-  })
+  });
 });
+
 
 
 //Create a new folder

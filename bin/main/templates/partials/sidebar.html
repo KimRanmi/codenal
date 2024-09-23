@@ -1,5 +1,5 @@
-<html data-sidebar="light" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-
+<html data-sidebar="light" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="https://www.ultraq.net.nz/tymeleaf/layout">
 <style>
 .nav-link {
 	color: #abb9e8;
@@ -506,12 +506,10 @@
 							<div class="collapse menu-dropdown" id="sidebarProfile">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
-										<a href="/pages-profile-settings" class="nav-link">
+										<a href="/mypage" class="nav-link">
 											개인정보 상세 </a>
 									</li>
-									<li class="nav-item">
-										<a href="/auth-pass-reset-basic" class="nav-link"> 비밀번호 변경 </a>
-									</li>
+									
 								</ul>
 							</div>
 						</li>
@@ -533,77 +531,63 @@
 							</a>
 						</li>
 						
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="#sidebarApproval" data-bs-toggle="collapse" role="button"
-								aria-expanded="false" aria-controls="sidebarApproval">
-								<i class="las la-file-alt"></i> <span>전자결재</span>
-							</a>
+						<li class="nav-item"><a class="nav-link menu-link"
+							href="#sidebarApproval" data-bs-toggle="collapse" role="button"
+							aria-expanded="false" aria-controls="sidebarApproval"> <i
+								class="las la-file-alt"></i> <span>전자결재</span>
+						</a>
 							<div class="collapse menu-dropdown" id="sidebarApproval">
 								<ul class="nav nav-sm flex-column">
-									<li class="nav-item">
-										<a href="#sidebarApprovalList" class="nav-link" data-bs-toggle="collapse"
-											role="button" aria-expanded="false" aria-controls="sidebarApprovalList"
-											> 결재서 작성
-										</a>
+									<li class="nav-item"><a href="#sidebarApprovalList"
+										class="nav-link" data-bs-toggle="collapse" role="button"
+										aria-expanded="false" aria-controls="sidebarApprovalList">
+											결재서 작성 </a>
 										<div class="collapse menu-dropdown" id="sidebarApprovalList">
 										
 											<ul class="nav nav-sm flex-column">
-												<li class="nav-item">
-													<a th:href="@{/approval/create/1}" class="nav-link"> 근태 신청서
-													</a>
+												<li class="nav-item"><a
+													th:href="@{/approval/leave_create/1}" class="nav-link">
+														근태 신청서 </a></li>
+												<li class="nav-item"><a th:href="@{/approval/create/2}"
+													class="nav-link"> 품의서 </a></li>
+												<li class="nav-item"><a th:href="@{/approval/create/3}"
+													class="nav-link"> 요청서 </a></li>
+											</ul>
+										</div> <a href="#sidebarApprovalManager" class="nav-link"
+										data-bs-toggle="collapse" role="button" aria-expanded="false"
+										aria-controls="sidebarApprovalManager"> 상신함 </a>
+										<div class="collapse menu-dropdown"
+											id="sidebarApprovalManager">
+											<ul class="nav nav-sm flex-column">
+												<li class="nav-item"><a
+													th:href="@{/approval/list(num=${0})}" class="nav-link">대기</a>
 												</li>
-												<li class="nav-item">
-													<a th:href="@{/approval/create/2}" class="nav-link"> 요청서
-													</a>
+												<li class="nav-item"><a
+													th:href="@{/approval/list(num=${1})}" class="nav-link">진행중</a>
 												</li>
-												<li class="nav-item">
-													<a th:href="@{/approval/create/3}" class="nav-link"> 품의서
-													</a>
+												<li class="nav-item"><a
+													th:href="@{/approval/list(num=${2})}" class="nav-link">완료</a>
+												</li>
+												<li class="nav-item"><a
+													th:href="@{/approval/list(num=${3})}" class="nav-link">반려</a>
+												</li>
+												<li class="nav-item"><a
+													th:href="@{/approval/list(num=${4})}" class="nav-link">회수</a>
 												</li>
 											</ul>
-										</div>
-										<a href="#sidebarApprovalManager" class="nav-link" data-bs-toggle="collapse"
-											role="button" aria-expanded="false" aria-controls="sidebarApprovalManager"
-											> 상신함
-										</a>
-										<div class="collapse menu-dropdown" id="sidebarApprovalManager">
+										</div> 
+										<a href="#sidebarApprovalreceive" class="nav-link"
+										data-bs-toggle="collapse" role="button" aria-expanded="false"
+										aria-controls="sidebarApprovalreceive"> 수신함 </a>
+										<div class="collapse menu-dropdown"
+											id="sidebarApprovalreceive">
 											<ul class="nav nav-sm flex-column">
-												<li class="nav-item">
-													<a th:href="@{/approval/list}" class="nav-link"> 대기/진행중
-													</a>
-												</li>
-												<li class="nav-item">
-													<a href="#" class="nav-link"> 완료
-													</a>
-												</li>
-												<li class="nav-item">
-													<a href="#" class="nav-link"> 반려
-													</a>
-												</li>
-												<li class="nav-item">
-													<a href="#" class="nav-link"> 회수
-													</a>
-												</li>
-											</ul>
-										</div>
-										<a href="#sidebarApprovalreceive" class="nav-link" data-bs-toggle="collapse"
-											role="button" aria-expanded="false" aria-controls="sidebarApprovalreceive"
-											> 수신함
-										</a>
-										<div class="collapse menu-dropdown" id="sidebarApprovalreceive">
-											<ul class="nav nav-sm flex-column">
-												<li class="nav-item">
-													<a href="#" class="nav-link"> 대기
-													</a>
-												</li>
-												<li class="nav-item">
-													<a href="#" class="nav-link"> 반려/완료
-													</a>
-												</li>
-												<li class="nav-item">
-													<a href="#" class="nav-link"> 수신참조
-													</a>
-												</li>
+												<li class="nav-item"><a href="#" class="nav-link">
+														대기 </a></li>
+												<li class="nav-item"><a href="#" class="nav-link">
+														반려/완료 </a></li>
+												<li class="nav-item"><a href="#" class="nav-link">
+														수신참조 </a></li>
 											</ul>
 										</div>
 									</li>
@@ -612,7 +596,7 @@
 						</li>
 						
 						<li class="nav-item">
-							<a href="#" class="nav-link menu-link">
+							<a th:href="@{/employee/addressBook}" class="nav-link menu-link">
 								<i class="bx bx-user"></i> <span>주소록</span>
 							</a>
 						</li>
@@ -680,10 +664,12 @@
 							<div class="collapse menu-dropdown" id="sidebarLayouts">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
-										<a href="/admin-join" class="nav-link"> 직원 정보 관리 </a>
+									</li>
+									<li>
+										<a th:href="@{/admin/list}" class="nav-link"> 직원 정보 관리 </a>
 									</li>
 									<li class="nav-item">
-										<a href="/apps-ecommerce-add-product" class="nav-link"> 부서 관리 </a>
+										<a th:href="@{/admin/dept}" class="nav-link"> 부서 관리 </a>
 									</li>
 								</ul>
 							</div>
@@ -956,7 +942,7 @@
 												</li>
 												<li class="nav-item">
 
-													<a href="/mypage" class="nav-link"
+													<a href="/profile-settings" class="nav-link"
 														data-key="t-settings"> Settings </a>
 
 													

@@ -1,104 +1,164 @@
 <!doctype html>
+<<<<<<< HEAD
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+=======
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
 	layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
-	<!--page title-->
 	<div th:replace="partials/title-meta :: title-meta('File Manager')"></div>
 </th:block>
 
 <head>
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
+<!-- jsTree 테마 CSS 포함 -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet" />
+
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- jQuery 포함 (이미 있다면 생략) -->
+
+<!-- jsTree 포함 -->
+
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+	integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+
+ .jstree-icon.ri-building-fill { /* 회사 아이콘 */
+            color: #3e4a6e; 
+            font-size: 24px;
+        }
+        .jstree-icon.ri-team-fill { /* 부서 아이콘 */
+            color: #3577f1; 
+            font-size: 20px;
+        }
+        .jstree-icon.ri-user-2-fill { /* 직원 아이콘 */
+            color: #9a9ba0; 
+            font-size: 16px;
+        }
+
+
+.favorite-icon {
+	font-size: 20px;
+	margin: 0 5px;
+	cursor: pointer; /* 커서 모양을 포인터로 변경 */
+}
+
+/* 채워진 별 아이콘에 대한 스타일 */
+.favorite-icon.fas {
+	color: gold;
+}
+
+.btn:focus {
+	outline: none;
+	box-shadow: none !important;
+	border: none;
+}
+
+.active-link {
+	font-weight: bold;
+	color: #0d6efd; /* 하이라이트 색상 */
+}
+
+/* 공유 문서 탭 스타일 */
+#shared-docs-tabs {
+	display: flex;
+	justify-content: flex-start; /* 왼쪽 정렬 */
+	align-items: center;
+	padding: 0;
+	margin: 10px 0;
+}
+
+#shared-docs-tabs a {
+	padding: 5px 10px; /* 작고 간결하게 패딩 줄임 */
+	font-size: 12px; /* 글자 크기를 작게 설정 */
+	text-align: left; /* 텍스트를 왼쪽 정렬 */
+	margin-right: 5px; /* 탭 간의 간격을 좁힘 */
+	color: #007bff; /* 탭 기본 색상 */
+	border: none;
+	border-bottom: 2px solid transparent;
+	transition: all 0.3s ease; /* 애니메이션 추가 */
+}
+
+#shared-docs-tabs a.active {
+	border-color: #007bff; /* 활성화된 탭에 하이라이트 */
+	font-weight: bold;
+}
+
+#shared-docs-tabs a:hover {
+	color: #0056b3; /* 탭 hover 시 색상 */
+	border-bottom: 2px solid #0056b3; /* hover 시 하단선 */
+}
+
+
+</style>
 </head>
 
 <body>
 	<div layout:fragment="content">
-		
+		<div th:replace="partials/page-title :: page-title('문서함','개인문서')"></div>
 		<div class="chat-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1">
 			<div class="file-manager-sidebar">
 				<div class="p-3 d-flex flex-column h-100">
-					<div class="mb-3">
-						<h5 class="mb-0 fw-semibold">My Drive</h5>
-					</div>
-					<div class="search-box">
-						<input type="text" class="form-control bg-light border-light" placeholder="Search here...">
-						<i class="ri-search-2-line search-icon"></i>
-					</div>
-					<div class="mt-3 mx-n4 px-4 file-menu-sidebar-scroll" data-simplebar>
+
+
+					<div class="mt-3 mx-n4 px-4 file-menu-sidebar-scroll"
+						data-simplebar>
 						<ul class="list-unstyled file-manager-menu">
-							<li>
-								<a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true"
-									aria-controls="collapseExample">
-									<i class="ri-folder-2-line align-bottom me-2"></i> <span class="file-list-link">My
-										Drive</span>
-								</a>
-								<div class="collapse show" id="collapseExample">
-									<ul class="sub-menu list-unstyled">
-										<li>
-											<a href="#!">Assets</a>
-										</li>
-										<li>
-											<a href="#!">Marketing</a>
-										</li>
-										<li>
-											<a href="#!">Personal</a>
-										</li>
-										<li>
-											<a href="#!">Projects</a>
-										</li>
-										<li>
-											<a href="#!">Templates</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							<li>
-								<a href="#!"><i class="ri-file-list-2-line align-bottom me-2"></i> <span
-										class="file-list-link">Documents</span></a>
-							</li>
-							<li>
-								<a href="#!"><i class="ri-image-2-line align-bottom me-2"></i> <span
-										class="file-list-link">Media</span></a>
-							<li>
-								<a href="#!"><i class="ri-history-line align-bottom me-2"></i> <span
-										class="file-list-link">Recents</span></a>
-							</li>
-							<li>
-								<a href="#!"><i class="ri-star-line align-bottom me-2"></i> <span
-										class="file-list-link">Important</span></a>
-							</li>
-							</li>
-							<li>
-								<a href="#!"><i class="ri-delete-bin-line align-bottom me-2"></i> <span
-										class="file-list-link">Deleted</span></a>
-							</li>
+							<li><a href="#" id="personal-docs"
+								class="file-list-link active"><i
+									class="ri-folder-2-line align-bottom me-2"></i>개인문서</a></li>
+							<li><a href="#" id="shared-docs" class="file-list-link"><i
+									class="ri-folder-2-line align-bottom me-2"></i>공유문서</a></li>
+							<li><a href="#" id="favorite-docs" class="file-list-link"><i
+									class="ri-star-line align-bottom me-2"></i>즐겨찾기</a></li>
+							<li><a href="#" id="trash-docs" class="file-list-link"><i
+									class="ri-delete-bin-line align-bottom me-2"></i>휴지통</a></li>
 						</ul>
 					</div>
-
-
 					<div class="mt-auto">
-						<h6 class="fs-11 text-muted text-uppercase mb-3">Storage Status</h6>
+						<h6 class="fs-11 text-muted text-uppercase mb-3">저장 용량</h6>
 						<div class="d-flex align-items-center">
 							<div class="flex-shrink-0">
 								<i class="ri-database-2-line fs-17"></i>
 							</div>
 							<div class="flex-grow-1 ms-3 overflow-hidden">
 								<div class="progress mb-2 progress-sm">
-									<div class="progress-bar bg-success" role="progressbar" style="width: 25%"
-										aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-success" role="progressbar"
+										style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+										aria-valuemax="100"></div>
 								</div>
-								<span class="text-muted fs-12 d-block text-truncate"><b>47.52</b>GB used of
-									<b>119</b>GB</span>
+								<span class="text-muted fs-12 d-block text-truncate"><b>47.52</b>GB
+									used of <b>119</b>GB</span>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="file-manager-content w-100 p-3 py-0">
-				<div class="mx-n3 pt-4 px-4 file-manager-content-scroll" data-simplebar>
-					<div id="folder-list" class="mb-2">
-						<div class="row justify-content-beetwen g-2 mb-3">
 
+			<div class="file-manager-content w-100 p-3 py-0">
+				<div class="mx-n3 pt-4 px-4 file-manager-content-scroll"
+					data-simplebar>
+					<div id="folder-list" class="mb-2">
+						<div class="row justify-content-between g-2 mb-3">
 							<div class="col">
 								<div class="d-flex align-items-center">
 									<div class="flex-shrink-0 me-2 d-block d-lg-none">
@@ -107,574 +167,1062 @@
 											<i class="ri-menu-2-fill align-bottom"></i>
 										</button>
 									</div>
-									<div class="flex-grow-1">
-										<h5 class="fs-16 mb-0">Folders</h5>
-									</div>
 								</div>
 							</div>
-							<!--end col-->
-							<div class="col-auto">
-								<div class="d-flex gap-2 align-items-start">
-									<select class="form-control" data-choices data-choices-search-false
-										name="choices-single-default" id="file-type">
-										<option value="">File Type</option>
-										<option value="All" selected>All</option>
-										<option value="Video">Video</option>
-										<option value="Images">Images</option>
-										<option value="Music">Music</option>
-										<option value="Documents">Documents</option>
-									</select>
-
-									<button class="btn btn-success w-sm create-folder-modal flex-shrink-0"
-										data-bs-toggle="modal" data-bs-target="#createFolderModal"><i
-											class="ri-add-line align-bottom me-1"></i> Create Folders</button>
-								</div>
-							</div>
-							<!--end col-->
 						</div>
-						<!--end row-->
-						<div class="row" id="folderlist-data">
-							<div class="col-xxl-3 col-6 folder-card">
-								<div class="card bg-light shadow-none" id="folder-1">
-									<div class="card-body">
-										<div class="d-flex mb-1">
-											<div class="form-check form-check-danger mb-3 fs-15 flex-grow-1">
-												<input class="form-check-input" type="checkbox" value=""
-													id="folderlistCheckbox_1" checked>
-												<label class="form-check-label" for="folderlistCheckbox_1"></label>
-											</div>
-											<div class="dropdown">
-												<button class="btn btn-ghost-primary btn-icon btn-sm dropdown"
-													type="button" data-bs-toggle="dropdown" aria-expanded="false">
-													<i class="ri-more-2-fill fs-16 align-bottom"></i>
-												</button>
-												<ul class="dropdown-menu dropdown-menu-end">
-													<li><a class="dropdown-item view-item-btn"
-															href="javascript:void(0);">Open</a></li>
-													<li><a class="dropdown-item edit-folder-list"
-															href="#createFolderModal" data-bs-toggle="modal"
-															role="button">Rename</a></li>
-													<li><a class="dropdown-item" href="#removeFolderModal"
-															data-bs-toggle="modal" role="button">Delete</a></li>
-												</ul>
-											</div>
-										</div>
-
-										<div class="text-center">
-											<div class="mb-2">
-												<i class="ri-folder-2-fill align-bottom text-warning display-5"></i>
-											</div>
-											<h6 class="fs-15 folder-name">Projects</h6>
-										</div>
-										<div class="hstack mt-4 text-muted">
-											<span class="me-auto"><b>349</b> Files</span>
-											<span><b>4.10</b>GB</span>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!--end col-->
-							<div class="col-xxl-3 col-6 folder-card">
-								<div class="card bg-light shadow-none" id="folder-2">
-									<div class="card-body">
-										<div class="d-flex mb-1">
-											<div class="form-check form-check-danger mb-3 fs-15 flex-grow-1">
-												<input class="form-check-input" type="checkbox" value=""
-													id="folderlistCheckbox_2">
-												<label class="form-check-label" for="folderlistCheckbox_2"></label>
-											</div>
-											<div class="dropdown">
-												<button class="btn btn-ghost-primary btn-icon btn-sm dropdown"
-													type="button" data-bs-toggle="dropdown" aria-expanded="false">
-													<i class="ri-more-2-fill fs-16 align-bottom"></i>
-												</button>
-												<ul class="dropdown-menu dropdown-menu-end">
-													<li><a class="dropdown-item view-item-btn"
-															href="javascript:void(0);">Open</a></li>
-													<li><a class="dropdown-item edit-folder-list"
-															href="#createFolderModal" data-bs-toggle="modal"
-															role="button">Rename</a></li>
-													<li><a class="dropdown-item" href="#removeFolderModal"
-															data-bs-toggle="modal" role="button">Delete</a></li>
-												</ul>
-											</div>
-										</div>
-
-										<div class="text-center">
-											<div class="mb-2">
-												<i class="ri-folder-2-fill align-bottom text-warning display-5"></i>
-											</div>
-											<h6 class="fs-15 folder-name">Documents</h6>
-										</div>
-										<div class="hstack mt-4 text-muted">
-											<span class="me-auto"><b>2348</b> Files</span>
-											<span><b>27.01</b>GB</span>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!--end col-->
-							<div class="col-xxl-3 col-6 folder-card">
-								<div class="card bg-light shadow-none" id="folder-3">
-									<div class="card-body">
-										<div class="d-flex mb-1">
-											<div class="form-check form-check-danger mb-3 fs-15 flex-grow-1">
-												<input class="form-check-input" type="checkbox" value=""
-													id="folderlistCheckbox_3">
-												<label class="form-check-label" for="folderlistCheckbox_3"></label>
-											</div>
-											<div class="dropdown">
-												<button class="btn btn-ghost-primary btn-icon btn-sm dropdown"
-													type="button" data-bs-toggle="dropdown" aria-expanded="false">
-													<i class="ri-more-2-fill fs-16 align-bottom"></i>
-												</button>
-												<ul class="dropdown-menu dropdown-menu-end">
-													<li><a class="dropdown-item view-item-btn"
-															href="javascript:void(0);">Open</a></li>
-													<li><a class="dropdown-item edit-folder-list"
-															href="#createFolderModal" data-bs-toggle="modal"
-															role="button">Rename</a></li>
-													<li><a class="dropdown-item" href="#removeFolderModal"
-															data-bs-toggle="modal" role="button">Delete</a></li>
-												</ul>
-											</div>
-										</div>
-
-										<div class="text-center">
-											<div class="mb-2">
-												<i class="ri-folder-2-fill align-bottom text-warning display-5"></i>
-											</div>
-											<h6 class="fs-15 folder-name">Media</h6>
-										</div>
-										<div class="hstack mt-4 text-muted">
-											<span class="me-auto"><b>12480</b> Files</span>
-											<span><b>20.87</b>GB</span>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!--end col-->
-							<div class="col-xxl-3 col-6 folder-card">
-								<div class="card bg-light shadow-none" id="folder-4">
-									<div class="card-body">
-										<div class="d-flex mb-1">
-											<div class="form-check form-check-danger mb-3 fs-15 flex-grow-1">
-												<input class="form-check-input" type="checkbox" value=""
-													id="folderlistCheckbox_4" checked>
-												<label class="form-check-label" for="folderlistCheckbox_4"></label>
-											</div>
-											<div class="dropdown">
-												<button class="btn btn-ghost-primary btn-icon btn-sm dropdown"
-													type="button" data-bs-toggle="dropdown" aria-expanded="false">
-													<i class="ri-more-2-fill fs-16 align-bottom"></i>
-												</button>
-												<ul class="dropdown-menu dropdown-menu-end">
-													<li><a class="dropdown-item view-item-btn"
-															href="javascript:void(0);">Open</a></li>
-													<li><a class="dropdown-item edit-folder-list"
-															href="#createFolderModal" data-bs-toggle="modal"
-															role="button">Rename</a></li>
-													<li><a class="dropdown-item" href="#removeFolderModal"
-															data-bs-toggle="modal" role="button">Delete</a></li>
-												</ul>
-											</div>
-										</div>
-										<div class="text-center">
-											<div class="mb-2">
-												<i class="ri-folder-2-fill align-bottom text-warning display-5"></i>
-											</div>
-											<h6 class="fs-15 folder-name">Velzon v1.7.0</h6>
-										</div>
-										<div class="hstack mt-4 text-muted">
-											<span class="me-auto"><b>180</b> Files</span>
-											<span><b>478.65</b>MB</span>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!--end col-->
-						</div>
-						<!--end row-->
 					</div>
+					<!-- 검색창과 검색 버튼 상단에 배치 -->
+
+
 					<div>
 						<div class="d-flex align-items-center mb-3">
-							<h5 class="flex-grow-1 fs-16 mb-0" id="filetype-title">Recent File</h5>
-							<div class="flex-shrink-0">
-								<button class="btn btn-success createFile-modal" data-bs-toggle="modal"
-									data-bs-target="#createFileModal"><i class="ri-add-line align-bottom me-1"></i>
-									Create File</button>
-							</div>
+							<h5 class="flex-grow-1 fs-16 mb-0" id="filetype-title">개인 문서</h5>
 						</div>
-						<div class="table-responsive">
-							<table class="table align-middle table-nowrap mb-0">
-								<thead class="table-active">
-									<tr>
-										<th scope="col">Name</th>
-										<th scope="col">File Item</th>
-										<th scope="col">File Size</th>
-										<th scope="col">Recent Date</th>
-										<th scope="col" class="text-center">Actions</th>
-									</tr>
-								</thead>
-								<tbody id="file-list"></tbody>
-							</table>
-						</div>
-						<ul id="pagination" class="pagination pagination-lg"></ul>
-						<div class="align-items-center mt-2 row g-3 text-center text-sm-start">
-							<div class="col-sm">
-								<div class="text-muted">Showing<span class="fw-semibold">4</span> of <span
-										class="fw-semibold">125</span> Results
+
+						<div class="row g-3 mb-3">
+							<div class="col-xxl-5 col-sm-12">
+								<div class="search-box">
+									<input type="text"
+										class="form-control search bg-light border-light"
+										id="searchKeyword" placeholder="검색어를 입력하세요."> <i
+										class="ri-search-line search-icon"></i>
 								</div>
 							</div>
-							<div class="col-sm-auto">
-								<ul
-									class="pagination pagination-separated pagination-sm justify-content-center justify-content-sm-start mb-0">
-									<li class="page-item disabled">
-										<a href="#" class="page-link">←</a>
-									</li>
-									<li class="page-item">
-										<a href="#" class="page-link">1</a>
-									</li>
-									<li class="page-item active">
-										<a href="#" class="page-link">2</a>
-									</li>
-									<li class="page-item">
-										<a href="#" class="page-link">3</a>
-									</li>
-									<li class="page-item">
-										<a href="#" class="page-link">→</a>
-									</li>
-								</ul>
+							<div class="col-auto">
+								<button type="button" class="btn btn-primary btn-sm-2"
+									onclick="searchFiles()">검색</button>
+							</div>
+						</div>
+
+					</div>
+					<div class="d-flex align-items-center mb-3">
+						<div class="ms-auto">
+							<button id="restore-btn" type="button"
+								class="btn btn-success btn-sm-1"
+								onclick="restoreSelectedFiles()" style="display: none;">복원</button>
+							<!-- 복원 버튼 -->
+							<!-- 다운로드 버튼 수정 -->
+							<button id="download-btn" type="button"
+								class="btn btn-primary btn-sm-1"
+								onclick="downloadSelectedFiles()">다운로드</button>
+							<button type="button" id="share-btn" class="btn btn-secondary"
+								onclick="openShareModal()">파일 공유 설정</button>
+							<button type="button" id="delete-btn"
+								class="btn btn-danger btn-sm-1" onclick="deleteSelectedFiles()">삭제</button>
+							<button type="button" id="file-register-btn"
+								class="btn btn-primary" onclick="openFileDialog()">파일
+								등록</button>
+							<input type="file" id="fileInput" style="display: none;"
+								onchange="uploadFile()">
+						</div>
+					</div>
+
+
+					<!-- 개인 문서 테이블 -->
+					<div id="personal-files-table" class="table-responsive">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all"
+										onclick="toggleSelectAll(this)"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">생성일</th>
+									<th scope="col">공유여부</th>
+									<th scope="col" class="text-center">세부</th>
+								</tr>
+							</thead>
+							<tbody id="file-list">
+								<!-- 개인 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+					<!-- 공유 문서 탭 네비게이션 추가 -->
+					<!-- 공유 문서 탭 네비게이션 추가 -->
+					<div id="shared-docs-tabs">
+						<a class="nav-link active" id="shared-by-me-tab" href="#"
+							onclick="showSharedByMeFiles()">공유한 문서함</a> <a class="nav-link"
+							id="shared-with-me-tab" href="#"
+							onclick="showSharedWithMeFiles()">공유받은 문서함</a>
+					</div>
+
+					<!-- 공유한 문서 테이블 -->
+					<div id="shared-by-me-files-table" class="table-responsive"
+						style="display: block;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-shared-by-me"
+										onclick="toggleSelectAll(this, 'shared-by-me-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">생성일</th>
+									<th scope="col">공유여부</th>
+									<th scope="col" class="text-center">세부</th>
+								</tr>
+							</thead>
+							<tbody id="shared-by-me-file-list">
+								<!-- 공유한 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+
+					<!-- 공유받은 문서 테이블 -->
+					<div id="shared-with-me-files-table" class="table-responsive"
+						style="display: none;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-shared-with-me"
+										onclick="toggleSelectAll(this, 'shared-with-me-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">생성일</th>
+									<th scope="col">등록자</th>
+									<th scope="col" class="text-center">세부</th>
+								</tr>
+							</thead>
+							<tbody id="shared-with-me-file-list">
+								<!-- 공유받은 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+					<div id="favorite-files-table" class="table-responsive"
+						style="display: none;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-favorite"
+										onclick="toggleSelectAll(this, 'favorite-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">생성일</th>
+									<th scope="col">공유여부</th>
+									<th scope="col" class="text-center">세부</th>
+								</tr>
+							</thead>
+							<tbody id="favorite-file-list">
+								<!-- 즐겨찾기 문서 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+
+					<div id="trash-files-table" class="table-responsive"
+						style="display: none;">
+						<table class="table align-middle table-nowrap mb-0">
+							<thead class="table-active">
+								<tr>
+									<th style="width: 5%; text-align: center;"><input
+										type="checkbox" id="select-all-trash"
+										onclick="toggleSelectAll(this, 'trash-checkbox')"
+										style="width: 16px; height: 16px; margin: 0; padding: 0;">
+									</th>
+									<th scope="col">파일명</th>
+									<th scope="col">크기</th>
+									<th scope="col">등록자</th>
+									<th scope="col">생성일</th>
+
+								</tr>
+							</thead>
+							<tbody id="trash-file-list">
+								<!-- 휴지통 파일 목록이 여기에 로드됩니다 -->
+							</tbody>
+						</table>
+					</div>
+					<ul id="pagination" class="pagination pagination-lg"></ul>
+					<div
+						class="align-items-center mt-2 row g-3 text-center text-sm-start">
+
+
+					</div>
+				</div>
+
+			</div>
+				<div id="shareModal" class="modal fade zoomIn" tabindex="-1"
+					aria-labelledby="shareModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered modal-custom-width">
+						<div class="modal-content">
+							<!-- 모달 헤더 -->
+							<div class="modal-header">
+								<h5 class="modal-title" id="shareModalLabel">파일 공유 설정</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close" onclick="closeShareModal()"></button>
+							</div>
+							<!-- 모달 바디 -->
+							<div class="modal-body">
+								<div id="organization-chart">
+									<!-- 조직도가 여기에 로드됩니다 -->
+								</div>
+							</div>
+							<!-- 모달 푸터 -->
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary"
+									data-bs-dismiss="modal" onclick="closeShareModal()">닫기</button>
+								<button type="button" class="btn btn-primary"
+									onclick="shareSelectedFiles()">공유</button>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="file-manager-detail-content p-3 py-0">
-				<div class="mx-n3 pt-3 px-3 file-detail-content-scroll" data-simplebar>
-					<div id="folder-overview">
-						<div class="d-flex align-items-center pb-3 border-bottom border-bottom-dashed">
-							<h5 class="flex-grow-1 fw-semibold mb-0">Overview</h5>
-							<div>
-								<button type="button"
-									class="btn btn-soft-danger btn-icon btn-sm fs-16 close-btn-overview">
-									<i class="ri-close-fill align-bottom"></i>
-								</button>
-							</div>
-						</div>
-						<div id="simple_dount_chart"
-							data-colors='["--vz-info", "--vz-danger", "--vz-primary", "--vz-success"]'
-							class="apex-charts mt-3" dir="ltr"></div>
-						<div class="mt-4">
-							<ul class="list-unstyled vstack gap-4">
-								<li>
-									<div class="d-flex align-items-center">
-										<div class="flex-shrink-0">
-											<div class="avatar-xs">
-												<div class="avatar-title rounded bg-soft-secondary text-secondary">
-													<i class="ri-file-text-line fs-17"></i>
-												</div>
-											</div>
-										</div>
-										<div class="flex-grow-1 ms-3">
-											<h5 class="mb-1 fs-15">Documents</h5>
-											<p class="mb-0 fs-12 text-muted">2348 files</p>
-										</div>
-										<b>27.01 GB</b>
-									</div>
-								</li>
-								<li>
-									<div class="d-flex align-items-center">
-										<div class="flex-shrink-0">
-											<div class="avatar-xs">
-												<div class="avatar-title rounded bg-soft-success text-success">
-													<i class="ri-gallery-line fs-17"></i>
-												</div>
-											</div>
-										</div>
-										<div class="flex-grow-1 ms-3">
-											<h5 class="mb-1 fs-15">Media</h5>
-											<p class="mb-0 fs-12 text-muted">12480 files</p>
-										</div>
-										<b>20.87 GB</b>
-									</div>
-								</li>
-								<li>
-									<div class="d-flex align-items-center">
-										<div class="flex-shrink-0">
-											<div class="avatar-xs">
-												<div class="avatar-title rounded bg-soft-warning text-warning">
-													<i class="ri-folder-2-line fs-17"></i>
-												</div>
-											</div>
-										</div>
-										<div class="flex-grow-1 ms-3">
-											<h5 class="mb-1 fs-15">Projects</h5>
-											<p class="mb-0 fs-12 text-muted">349 files</p>
-										</div>
-										<b>4.10 GB</b>
-									</div>
-								</li>
-								<li>
-									<div class="d-flex align-items-center">
-										<div class="flex-shrink-0">
-											<div class="avatar-xs">
-												<div class="avatar-title rounded bg-soft-primary text-primary">
-													<i class="ri-error-warning-line fs-17"></i>
-												</div>
-											</div>
-										</div>
-										<div class="flex-grow-1 ms-3">
-											<h5 class="mb-1 fs-15">Others</h5>
-											<p class="mb-0 fs-12 text-muted">9873 files</p>
-										</div>
-										<b>33.54 GB</b>
-									</div>
-								</li>
-							</ul>
-						</div>
-						<div class="pb-3 mt-auto">
-							<div class="alert alert-danger d-flex align-items-center mb-0">
-								<div class="flex-shrink-0">
-									<i class="ri-cloud-line text-danger align-bottom display-5"></i>
-								</div>
-								<div class="flex-grow-1 ms-3">
-									<h5 class="text-danger fs-14">Upgrade to Pro</h5>
-									<p class="text-muted mb-2">Get more space for your...</p>
-									<button class="btn btn-sm btn-danger"><i
-											class="ri-upload-cloud-line align-bottom"></i> Upgrade Now</button>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div id="file-overview" class="h-100">
-						<div class="d-flex h-100 flex-column">
-							<div class="d-flex align-items-center pb-3 border-bottom border-bottom-dashed mb-3 gap-2">
-								<h5 class="flex-grow-1 fw-semibold mb-0">File Preview</h5>
-								<div>
-									<button type="button"
-										class="btn btn-ghost-primary btn-icon btn-sm fs-16 favourite-btn">
-										<i class="ri-star-fill align-bottom"></i>
-									</button>
-									<button type="button"
-										class="btn btn-soft-danger btn-icon btn-sm fs-16 close-btn-overview">
-										<i class="ri-close-fill align-bottom"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="pb-3 border-bottom border-bottom-dashed mb-3">
-								<div
-									class="file-details-box bg-light p-3 text-center rounded-3 border border-light mb-3">
-									<div class="display-4 file-icon">
-										<i class="ri-file-text-fill text-secondary"></i>
-									</div>
-								</div>
-								<button type="button" class="btn btn-icon btn-sm btn-ghost-success float-end fs-16"><i
-										class="ri-share-forward-line"></i></button>
-								<h5 class="fs-16 mb-1 file-name">html.docx</h5>
-								<p class="text-muted mb-0 fs-12"><span class="file-size">0.3 KB</span>, <span
-										class="create-date">19 Apr, 2022</span></p>
-							</div>
-							<div>
-								<h5 class="fs-12 text-uppercase text-muted mb-3">File Description :</h5>
-
-								<div class="table-responsive">
-									<table class="table table-borderless table-nowrap table-sm">
-										<tbody>
-											<tr>
-												<th scope="row" style="width: 35%;">File Name :</th>
-												<td class="file-name">html.docx</td>
-											</tr>
-											<tr>
-												<th scope="row">File Type :</th>
-												<td class="file-type">Documents</td>
-											</tr>
-											<tr>
-												<th scope="row">Size :</th>
-												<td class="file-size">0.3 KB</td>
-											</tr>
-											<tr>
-												<th scope="row">Created :</th>
-												<td class="create-date">19 Apr, 2022</td>
-											</tr>
-											<tr>
-												<th scope="row">Path :</th>
-												<td class="file-path">
-													<div class="user-select-all text-truncate">
-														*:\projects\src\assets\images</div>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-
-								<div>
-									<h5 class="fs-12 text-uppercase text-muted mb-3">Share Information:</h5>
-									<div class="table-responsive">
-										<table class="table table-borderless table-nowrap table-sm">
-											<tbody>
-												<tr>
-													<th scope="row" style="width: 35%;">Share Name :</th>
-													<td class="share-name">\\*\Projects</td>
-												</tr>
-												<tr>
-													<th scope="row">Share Path :</th>
-													<td class="share-path">velzon:\Documents\</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-
-							<div class="mt-auto border-top border-top-dashed py-3">
-								<div class="hstack gap-2">
-									<button type="button" class="btn btn-soft-primary w-100"><i
-											class="ri-download-2-line align-bottom me-1"></i> Download</button>
-									<button type="button" class="btn btn-soft-danger w-100 remove-file-overview"
-										data-remove-id="" data-bs-toggle="modal"
-										data-bs-target="#removeFileItemModal"><i
-											class="ri-close-fill align-bottom me-1"></i> Delete</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+			<th:block layout:fragment="pagejs">
+				<!-- 파일 공유 설정 모달 -->
+			
+				<!-- apexcharts -->
+				<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+				<script src="/assets/js/pages/file-manager.init.js"></script>
 
 
-	<th:block layout:fragment="modal">
+			</th:block>
+			<script>
+			        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+			        
+			        
+			        
+			        	
+			        function showSharedFiles() {
+			            hideAllTables();
+			            // 공유문서 탭 보이기
+			            document.getElementById('shared-docs-tabs').style.display = 'block';
+			            document.getElementById('shared-by-me-files-table').style.display = 'block';
+			            document.getElementById('shared-with-me-files-table').style.display = 'none';
+			            document.getElementById('restore-btn').style.display = 'none';
+			            
+			            document.getElementById('shared-by-me-tab').classList.add('active');
+			            document.getElementById('shared-with-me-tab').classList.remove('active');
+			            document.getElementById('download-btn').style.display = 'inline-block';
+			            document.getElementById('file-register-btn').style.display = 'none';
+			            document.getElementById('delete-btn').style.display = 'inline-block';
+			            document.getElementById('share-btn').style.display = 'none';
+			            loadSharedByMeFiles();
+			        }
+			
+			        function showSharedByMeFiles() {
+			            hideAllTables();
+			            document.getElementById('shared-by-me-files-table').style.display = 'block'; // 공유한 문서 테이블 보이기
+			            document.getElementById('shared-with-me-files-table').style.display = 'none'; // 공유받은 문서 테이블 숨기기
+			
+			            // 탭의 클래스 관리
+			            document.getElementById('shared-by-me-tab').classList.add('active');
+			            document.getElementById('shared-with-me-tab').classList.remove('active');
+			
+			            loadSharedByMeFiles(); // 공유한 문서 목록 불러오기
+			        }
+			        function showSharedWithMeFiles() {
+			            hideAllTables();
+			            document.getElementById('shared-by-me-files-table').style.display = 'none'; // 공유한 문서 테이블 숨기기
+			            document.getElementById('shared-with-me-files-table').style.display = 'block'; // 공유받은 문서 테이블 보이기
+			
+			            // 탭의 클래스 관리
+			            document.getElementById('shared-by-me-tab').classList.remove('active');
+			            document.getElementById('shared-with-me-tab').classList.add('active');
+			            
+			
+			            loadSharedWithMeFiles(); // 공유받은 문서 목록 불러오기
+			        }
+			
+			   // 개인 문서, 즐겨찾기, 휴지통에서는 공유문서 탭 숨기기
+			     function showPersonalFiles() {
+			    hideAllTables();
+			    document.getElementById('personal-files-table').style.display = 'block';
+			    document.getElementById('restore-btn').style.display = 'none';
+			    document.getElementById('shared-docs-tabs').style.display = 'none';
+			
+			    // 개인 문서 페이지에서는 다운로드 버튼을 보이게 함
+			    document.getElementById('download-btn').style.display = 'inline-block';
+			    document.getElementById('file-register-btn').style.display = 'inline-block';
+			    document.getElementById('delete-btn').style.display = 'inline-block';
+			    document.getElementById('share-btn').style.display = 'inline-block';
+			    loadPersonalFiles();
+			}
+			
+			     function showFavoriteFiles() {
+			    	    hideAllTables();
+			    	    document.getElementById('favorite-files-table').style.display = 'block';
+			    	    document.getElementById('restore-btn').style.display = 'none';
+			    	    // 공유문서 탭 숨기기
+			    	    document.getElementById('shared-docs-tabs').style.display = 'none';
+			    	    document.getElementById('download-btn').style.display = 'inline-block';
+			    	    document.getElementById('file-register-btn').style.display = 'none';
+			    	    document.getElementById('delete-btn').style.display = 'none'; // 삭제 버튼 숨김
+			    	    document.getElementById('share-btn').style.display = 'none';
+			    	    loadFavoriteFiles();
+			    	}
+			     
+			     function showTrashFiles() {
+			    	    hideAllTables();
+			    	    document.getElementById('trash-files-table').style.display = 'block';
+			    	    document.getElementById('restore-btn').style.display = 'inline-block';
+			    	    document.getElementById('delete-btn').style.display = 'inline-block';
+			    	    // 공유문서 탭 숨기기
+			    	    document.getElementById('shared-docs-tabs').style.display = 'none';
+			    	    document.getElementById('download-btn').style.display = 'none';
+			    	    document.getElementById('file-register-btn').style.display = 'none';
+			    	    document.getElementById('share-btn').style.display = 'none';
+			    	    loadTrashFiles(0); // 첫 번째 페이지 로드
+			    	}
+			
+			     function hideAllTables() {
+			    	    const personalTable = document.getElementById('personal-files-table');
+			    	    if (personalTable) personalTable.style.display = 'none';
+			
+			    	    const sharedByMeTable = document.getElementById('shared-by-me-files-table');
+			    	    if (sharedByMeTable) sharedByMeTable.style.display = 'none';
+			
+			    	    const sharedWithMeTable = document.getElementById('shared-with-me-files-table');
+			    	    if (sharedWithMeTable) sharedWithMeTable.style.display = 'none';
+			
+			    	    const favoriteTable = document.getElementById('favorite-files-table');
+			    	    if (favoriteTable) favoriteTable.style.display = 'none';
+			
+			    	    const trashTable = document.getElementById('trash-files-table');
+			    	    if (trashTable) trashTable.style.display = 'none';
+			    	}	
+			     // 현재 활성화된 테이블을 반환하는 함수
+			     function getActiveTableId() {
+			    if (document.getElementById('personal-files-table') && document.getElementById('personal-files-table').style.display !== 'none') {
+			        return 'personal-files-table';
+			    } else if (document.getElementById('shared-by-me-files-table') && document.getElementById('shared-by-me-files-table').style.display !== 'none') {
+			        return 'shared-by-me-files-table';
+			    } else if (document.getElementById('shared-with-me-files-table') && document.getElementById('shared-with-me-files-table').style.display !== 'none') {
+			        return 'shared-with-me-files-table';
+			    } else if (document.getElementById('favorite-files-table') && document.getElementById('favorite-files-table').style.display !== 'none') {
+			        return 'favorite-files-table';
+			    } else if (document.getElementById('trash-files-table') && document.getElementById('trash-files-table').style.display !== 'none') {
+			        return 'trash-files-table';
+			    }
+			    return null;
+			}
+			
+			        function searchFiles() {
+			            const keyword = document.getElementById('searchKeyword').value.trim();  // 검색어에서 공백 제거
+			            if (!keyword) {  // 검색어가 비어 있을 때
+			                alert('검색어를 입력하세요.');  // 경고 메시지 출력
+			                return;  // 검색 요청 중단
+			            }
+			
+			            const activeTableId = getActiveTableId();  // 활성화된 테이블 확인
+			            let fetchUrl = `/api/documents/search?keyword=${keyword}`;  // 키워드로 검색
+			
+			            fetch(fetchUrl, {
+			                method: 'GET',
+			                headers: {
+			                    'X-CSRF-TOKEN': csrfToken,
+			                    'Content-Type': 'application/json'
+			                }
+			            })
+			            .then(response => response.json())
+			            .then(data => {
+			                const fileList = document.querySelector(`#${activeTableId} tbody`);
+			                fileList.innerHTML = '';  // 기존 목록을 지우고 새 목록을 추가
+			
+			                if (data.length === 0) {
+			                    fileList.innerHTML = '<tr><td colspan="6" class="text-center">검색 결과가 없습니다.</td></tr>';
+			                } else {
+			                    data.forEach(document => {
+			                        const formattedSize = formatFileSize(document.docSize);
+			                        const row = `
+			                            <tr>
+			                                <td style="text-align: center;">
+			                                    <input type="checkbox" class="file-checkbox" value="${document.docNo}">
+			                                </td>
+			                                <td>${document.docName}</td>
+			                                <td>${formattedSize}</td>
+			                                <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+			                                <td>${document.docStatus == 1 ? '공유' : '개인'}</td>
+			                                <td class="text-center"><button class="btn btn-info btn-sm">보기</button></td>
+			                            </tr>
+			                        `;
+			                        fileList.innerHTML += row;
+			                    });
+			                }
+			            })
+			            .catch(error => {
+			                console.error('Error searching files:', error);
+			            });
+			        }
+			        // 모든 파일 선택/해제
+			       function toggleSelectAll(selectAllCheckbox, className = 'file-checkbox') {
+			    const checkboxes = document.querySelectorAll(`.${className}`);
+			    checkboxes.forEach(checkbox => {
+			        checkbox.checked = selectAllCheckbox.checked;
+			    });
+			}
+			
+			    // 선택된 파일 삭제(휴지통 또는 영구 삭제)
+			       function deleteSelectedFiles() {
+			           const activeTableId = getActiveTableId(); // 현재 활성화된 테이블을 확인
+			           let className = 'file-checkbox'; // 기본 체크박스 클래스는 개인 문서용
+			           let deleteUrl = '/api/documents/delete'; // 기본 삭제 URL (휴지통으로 이동)
+			
+			           // 각 테이블별로 체크박스 클래스 설정 및 삭제 URL 설정
+			           if (activeTableId === 'shared-by-me-files-table' || activeTableId === 'shared-with-me-files-table') {
+			               className = 'shared-checkbox'; // 공유 문서 체크박스
+			           } else if (activeTableId === 'favorite-files-table') {
+			               className = 'favorite-checkbox'; // 즐겨찾기 체크박스
+			           } else if (activeTableId === 'trash-files-table') {
+			               className = 'trash-checkbox'; // 휴지통 체크박스
+			               deleteUrl = '/api/documents/delete-permanently'; // 휴지통에서 삭제는 영구 삭제로 설정
+			           }
+			
+			           // 해당 테이블의 체크박스들에서 선택된 파일 ID를 추출
+			           const selectedFiles = [];
+			           const checkboxes = document.querySelectorAll(`.${className}:checked`);
+			
+			           checkboxes.forEach(checkbox => {
+			               selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
+			           });
+			
+			           if (selectedFiles.length === 0) {
+			               alert('삭제할 파일을 선택하세요.');
+			               return;
+			           }
+			
+			           // 서버에 삭제 요청 (영구 삭제 또는 휴지통으로 이동)
+			           fetch(deleteUrl, {
+			               method: 'POST',
+			               headers: {
+			                   'X-CSRF-TOKEN': csrfToken,
+			                   'Content-Type': 'application/json'
+			               },
+			               body: JSON.stringify(selectedFiles) // 선택된 파일 ID 배열을 전송
+			           })
+			           .then(response => response.text())
+			           .then(result => {
+			               alert(result);
+			               // 삭제 후 테이블별로 파일 목록 갱신
+			               if (activeTableId === 'personal-files-table') {
+			                   loadPersonalFiles();  // 개인 파일 목록 갱신
+			               } else if (activeTableId === 'shared-by-me-files-table') {
+			                   loadSharedByMeFiles();    // 공유한 파일 목록 갱신
+			               } else if (activeTableId === 'shared-with-me-files-table') {
+			                   loadSharedWithMeFiles();    // 공유받은 파일 목록 갱신
+			               } else if (activeTableId === 'favorite-files-table') {
+			                   loadFavoriteFiles();  // 즐겨찾기 파일 목록 갱신
+			               } else if (activeTableId === 'trash-files-table') {
+			                   loadTrashFiles();     // 휴지통 파일 목록 갱신
+			               }
+			           })
+			           .catch(error => {
+			               console.error('Error deleting files:', error);
+			           });
+			       }
+			        function openFileDialog() {
+			            document.getElementById('fileInput').click();
+			        }
+			
+			        
+			        function fetchFileList() {
+			            loadPersonalFiles();  // 개인 문서 목록을 다시 로드하는 함수 호출
+			        }
+			       
+			        	
+			        function formatFileSize(bytes) {
+			            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+			            if (bytes === 0) return '0 Byte';
+			            const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+			            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+			        }
+			        
+			        
+			        
+			        
+			        
+			     // 개인 문서 파일 목록 불러오기 (휴지통 파일 제외)
+			  function loadPersonalFiles(page = 0, size = 10) {
+				  fetch(`/api/documents/list-paged?status=0&page=${page}&size=${size}`)
+        .then(response => response.json())
+        .then(data => {
+            const fileList = document.getElementById('file-list');	
+            fileList.innerHTML = '';  // 기존 목록 지우기
 
-		<!-- START CREATE FOLDER MODAL -->
-		<div class="modal fade zoomIn" id="createFolderModal" tabindex="-1" aria-labelledby="createFolderModalLabel"
-			aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content border-0">
-					<div class="modal-header p-3 bg-soft-success">
-						<h5 class="modal-title" id="createFolderModalLabel">Create Folder</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" id="addFolderBtn-close"
-							aria-label="Close"></button>
-					</div>
-					<div class="modal-body">
-						<form autocomplete="off" class="needs-validation createfolder-form" id="createfolder-form"
-							novalidate>
-							<div class="mb-4">
-								<label for="foldername-input" class="form-label">Folder Name</label>
-								<input type="text" class="form-control" id="foldername-input" required
-									placeholder="Enter folder name">
-								<div class="invalid-feedback">Please enter a folder name.</div>
-								<input type="hidden" class="form-control" id="folderid-input" value=""
-									placeholder="Enter folder name">
-							</div>
-							<div class="hstack gap-2 justify-content-end">
-								<button type="button" class="btn btn-ghost-success" data-bs-dismiss="modal"><i
-										class="ri-close-line align-bottom"></i> Close</button>
-								<button type="submit" class="btn btn-primary" id="addNewFolder">Add Folder</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- END CREATE FOLDER MODAL -->
+            if (data.content.length === 0) {
+                fileList.innerHTML = '<tr><td colspan="6" class="text-center">파일이 없습니다.</td></tr>';
+            } else {
+                data.content.forEach(document => {
+                    const isFavorite = document.docStatus === 3; // 상태가 3이면 즐겨찾기
+                    const starClass = isFavorite ? 'fas fa-star' : 'far fa-star'; // Font Awesome 6에 맞게 수정
 
-		<!-- START CREATE FILE MODAL -->
-		<div class="modal fade zoomIn" id="createFileModal" tabindex="-1" aria-labelledby="createFileModalLabel"
-			aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content border-0">
-					<div class="modal-header p-3 bg-soft-success">
-						<h5 class="modal-title" id="createFileModalLabel">Create File</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" id="addFileBtn-close"
-							aria-label="Close"></button>
-					</div>
-					<div class="modal-body">
-						<form autocomplete="off" class="needs-validation createfile-form" id="createfile-form"
-							novalidate>
-							<div class="mb-4">
-								<label for="filename-input" class="form-label">File Name</label>
-								<input type="text" class="form-control" id="filename-input" value="" required
-									placeholder="Enter file name" />
-								<div class="invalid-feedback">Please enter a file name.</div>
-								<input type="hidden" class="form-control" id="fileid-input" value=""
-									placeholder="Enter file name">
-							</div>
-							<div class="hstack gap-2 justify-content-end">
-								<button type="button" class="btn btn-ghost-success" data-bs-dismiss="modal"><i
-										class="ri-close-line align-bottom"></i> Close</button>
-								<button type="submit" class="btn btn-primary" id="addNewFile">Create</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- END CREATE FILE MODAL -->
+                    const row = `
+                        <tr>
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="file-checkbox" value="${document.docNo}">
+                            </td>
+                            <td>${document.docName}</td>
+                            <td>${formatFileSize(document.docSize)}</td>
+                            <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                            <td>${document.docStatus == 1 ? '공유문서' : '개인문서'}</td>
+                            <td class="text-center">
+                                <i class="${starClass} favorite-icon" data-id="${document.docNo}" onclick="toggleFavorite(${document.docNo}, this)"></i>
+                            </td>
+                        </tr>
+                    `;
+                    fileList.innerHTML += row;
+                });
+            }
 
-		<!-- removeFileItemModal -->
-		<div id="removeFileItemModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-							id="close-removefilemodal"></button>
-					</div>
-					<div class="modal-body">
-						<div class="mt-2 text-center">
-							<lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-								colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
-							<div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-								<h4>Are you sure ?</h4>
-								<p class="text-muted mx-4 mb-0">Are you sure you want to remove this item ?</p>
-							</div>
-						</div>
-						<div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-							<button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-							<button type="button" class="btn w-sm btn-danger" id="remove-fileitem">Yes, Delete
-								It!</button>
-						</div>
-					</div>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
+            // 페이지네이션 정보 업데이트
+            updatePagination(data.pageable.pageNumber, data.totalPages, 'loadPersonalFiles');
+        })
+        .catch(error => {
+            console.error('Error fetching personal files:', error);
+        });
+}
 
-		<!-- removeFileItemModal -->
-		<div id="removeFolderModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-							id="close-removeFoldermodal"></button>
-					</div>
-					<div class="modal-body">
-						<div class="mt-2 text-center">
-							<lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-								colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
-							<div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-								<h4>Are you sure ?</h4>
-								<p class="text-muted mx-4 mb-0">Are you sure you want to remove this folder ?</p>
-							</div>
-						</div>
-						<div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-							<button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-							<button type="button" class="btn w-sm btn-danger" id="remove-folderList">Yes, Delete
-								It!</button>
-						</div>
-					</div>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
-	</th:block>
 
-	<th:block layout:fragment="pagejs">
 
-		<!-- apexcharts -->
-		<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+			       
+			  function loadSharedByMeFiles(page = 0, size = 10) {
+				    fetch('/api/documents/shared-by-me')
+				        .then(response => response.json())
+				        .then(data => {
+				            const fileList = document.getElementById('shared-by-me-files-table').querySelector('tbody');
+				            fileList.innerHTML = ''; // 기존 목록 비우기
 
-		<script src="/assets/js/pages/file-manager.init.js"></script>
+				            if (data.length === 0) {
+				                fileList.innerHTML = '<tr><td colspan="6" class="text-center">공유한 파일이 없습니다.</td></tr>';
+				                updatePagination(0, 0, 'loadSharedByMeFiles');
+				            } else {
+				                const pageSize = size;
+				                const totalPages = Math.ceil(data.length / pageSize);
+				                updatePagination(page, totalPages, 'loadSharedByMeFiles');
 
-	</th:block>
+				                const pageData = data.slice(page * pageSize, (page + 1) * pageSize);
+
+				                if (pageData.length === 0) {
+				                    fileList.innerHTML = '<tr><td colspan="6" class="text-center">공유한 파일이 없습니다.</td></tr>';
+				                } else {
+				                    pageData.forEach(document => {
+				                        const row = `
+				                            <tr>
+				                                <td style="text-align: center;">
+				                                    <input type="checkbox" class="shared-checkbox" value="${document.docNo}">
+				                                </td>
+				                                <td>${document.docName}</td>
+				                                <td>${formatFileSize(document.docSize)}</td>
+				                                <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+				                                <td>공유문서</td>
+				                                <td class="text-center">
+				                                <i class="far fa-star favorite-icon" data-id="${document.docNo}" onclick="toggleFavorite(${document.docNo}, this)"></i>
+				                            </td>				                          
+				                            </tr>
+				                        `;
+				                        fileList.innerHTML += row;
+				                    });
+				                }
+				            }
+				        })
+				        .catch(error => {
+				            console.error('Error fetching shared by me files:', error);
+				        });
+				}
+			  function loadSharedWithMeFiles(page = 0, size = 10) {
+				    fetch('/api/documents/shared-with-me')
+				        .then(response => response.json())
+				        .then(data => {
+				            const fileList = document.getElementById('shared-with-me-files-table').querySelector('tbody');
+				            fileList.innerHTML = ''; // 기존 목록 비우기
+
+				            if (data.length === 0) {
+				                fileList.innerHTML = '<tr><td colspan="6" class="text-center">공유받은 파일이 없습니다.</td></tr>';
+				                updatePagination(0, 0, 'loadSharedWithMeFiles');
+				            } else {
+				                const pageSize = size;
+				                const totalPages = Math.ceil(data.length / pageSize);
+				                updatePagination(page, totalPages, 'loadSharedWithMeFiles');
+
+				                const pageData = data.slice(page * pageSize, (page + 1) * pageSize);
+
+				                if (pageData.length === 0) {
+				                    fileList.innerHTML = '<tr><td colspan="6" class="text-center">공유받은 파일이 없습니다.</td></tr>';
+				                } else {
+				                    pageData.forEach(document => {
+				                        const row = `
+				                            <tr>
+				                                <td style="text-align: center;">
+				                                    <input type="checkbox" class="shared-checkbox" value="${document.docNo}">
+				                                </td>
+				                                <td>${document.docName}</td>
+				                                <td>${formatFileSize(document.docSize)}</td>
+				                                <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+				                                <td>${document.docSharer}</td>
+				                                <td class="text-center">
+				                                <i class="far fa-star favorite-icon" data-id="${document.docNo}" onclick="toggleFavorite(${document.docNo}, this)"></i>
+				                            </td>
+				                            </tr>
+				                        `;
+				                        fileList.innerHTML += row;
+				                    });
+				                }
+				            }
+				        })
+				        .catch(error => {
+				            console.error('Error fetching shared with me files:', error);
+				        });
+				}
+			     
+			        // 즐겨찾기 문서 파일 목록 불러오기
+		// 즐겨찾기 문서 파일 목록 불러오기 (페이징 지원)
+function loadFavoriteFiles(page = 0, size = 10) {
+    fetch(`/api/documents/favorites?page=${page}&size=${size}`)
+        .then(response => response.json())
+        .then(data => {
+            const fileList = document.getElementById('favorite-file-list');
+            fileList.innerHTML = ''; // 기존 목록 비우기
+
+            if (data.content.length === 0) {
+                fileList.innerHTML = '<tr><td colspan="6" class="text-center">즐겨찾기한 파일이 없습니다.</td></tr>';
+                updatePagination(data.number, data.totalPages, 'loadFavoriteFiles');
+            } else {
+                data.content.forEach(document => {
+                    const isFavorite = document.docStatus === 3 || document.docStatus === 4; // 3: 개인 + 즐겨찾기, 4: 공유 + 즐겨찾기
+                    const starClass = isFavorite ? 'fas fa-star' : 'far fa-star'; // Font Awesome 6에 맞게 수정
+
+                    const row = `
+                        <tr>
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="favorite-checkbox" value="${document.docNo}">
+                            </td>
+                            <td>${document.docName}</td>
+                            <td>${formatFileSize(document.docSize)}</td>
+                            <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                            <td>${document.docStatus === 1 || document.docStatus === 4 ? '공유문서' : '개인문서'}</td>
+                            <td class="text-center">
+                                <i class="${starClass} favorite-icon" data-id="${document.docNo}" onclick="toggleFavorite(${document.docNo}, this)"></i>
+                            </td>
+                        </tr>
+                    `;
+                    fileList.innerHTML += row;
+                });
+
+                // 페이지네이션 정보 업데이트
+                updatePagination(data.number, data.totalPages, 'loadFavoriteFiles');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching favorite files:', error);
+        });
+}
+
+
+			     // 휴지통 파일 목록 불러오기
+			 function loadTrashFiles(currentPage = 0) {
+    fetch('/api/documents/trash')
+        .then(response => response.json())
+        .then(data => {
+            const fileList = document.getElementById('trash-files-table').querySelector('tbody');
+            fileList.innerHTML = ''; // 기존 목록 비우기
+
+            if (data.length === 0) {
+                fileList.innerHTML = '<tr><td colspan="6" class="text-center">휴지통이 비어 있습니다.</td></tr>';
+                // 페이지네이션 숨기기
+                updatePagination(0, 0, 'loadTrashFiles'); // 빈 페이지에 대해 페이지네이션 숨김
+            } else {
+                const pageSize = 10; // 페이지당 항목 수
+                const totalPages = Math.ceil(data.length / pageSize);
+
+                // 페이지네이션 업데이트
+                updatePagination(currentPage, totalPages, 'loadTrashFiles');
+
+                // 현재 페이지에 해당하는 데이터만 표시
+                const pageData = data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+                pageData.forEach(document => {
+                    const row = `
+                        <tr>
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="trash-checkbox" value="${document.docNo}" style="width: 16px; height: 16px; margin: 0; padding: 0;">
+                            </td>
+                            <td>${document.docName}</td>
+                            <td>${formatFileSize(document.docSize)}</td>
+                            <td>${document.uploaderName}</td> 
+                            <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                        </tr>
+                    `;
+                    fileList.innerHTML += row;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching trash files:', error);
+        });
+}
+			        
+			       
+			     
+			   
+			
+			       
+			
+			       
+			     // 선택된 파일 복원
+			        function restoreSelectedFiles() {
+			            const selectedFiles = [];
+			            const checkboxes = document.querySelectorAll('.trash-checkbox:checked');
+			
+			            checkboxes.forEach(checkbox => {
+			                selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
+			            });
+			
+			            if (selectedFiles.length === 0) {
+			                alert('복원할 파일을 선택하세요.');
+			                return;
+			            }
+			
+			            // 서버에 복원 요청
+			            fetch('/api/documents/restore', {
+			                method: 'POST',
+			                headers: {
+			                    'X-CSRF-TOKEN': csrfToken,
+			                    'Content-Type': 'application/json'
+			                },
+			                body: JSON.stringify(selectedFiles) // 선택된 파일 ID 배열을 전송
+			            })
+			            .then(response => response.text())
+			            .then(result => {
+			                alert(result);
+			                // 복원 후 파일 목록 갱신
+			                loadTrashFiles(); // 휴지통 목록 갱신
+			            })
+			            .catch(error => {
+			                console.error('Error restoring files:', error);
+			            });
+			        }
+			
+			    
+			        
+			        document.addEventListener('DOMContentLoaded', function() {
+			            showPersonalFiles();  // 기본적으로 개인 문서를 보여줌
+			            
+			            // 개인 문서 탭을 기본적으로 active 상태로 설정
+			            document.getElementById('personal-docs').classList.add('active');
+			            // 초기 로드 시 공유문서 탭 숨기기
+			            document.getElementById('shared-docs-tabs').style.display = 'none';
+			        });
+			
+			        // 각각의 메뉴 클릭 시 테이블 전환
+			        document.getElementById('personal-docs').addEventListener('click', function(event) {
+			            event.preventDefault();
+			            showPersonalFiles();
+			        });
+			
+			        document.getElementById('shared-docs').addEventListener('click', function(event) {
+			            event.preventDefault();
+			            showSharedFiles();
+			        });
+			
+			        document.getElementById('favorite-docs').addEventListener('click', function(event) {
+			            event.preventDefault();
+			            showFavoriteFiles();
+			        });
+			
+			        document.getElementById('trash-docs').addEventListener('click', function(event) {
+			            event.preventDefault();
+			            showTrashFiles();
+			        });
+			
+			        
+			        
+			        function downloadSelectedFiles() {
+			            const selectedFiles = [];
+			            const activeTableId = getActiveTableId(); // 현재 활성화된 테이블 확인
+			            let className = 'file-checkbox'; // 기본 체크박스 클래스는 개인 문서용
+			
+			            if (activeTableId === 'shared-by-me-files-table') {
+			                className = 'shared-checkbox'; // 공유 문서 체크박스
+			            } else if (activeTableId === 'shared-with-me-files-table') {
+			                className = 'shared-checkbox'; // 공유받은 문서 체크박스
+			            }
+			
+			            // 선택된 체크박스들에서 파일 ID 추출
+			            const checkboxes = document.querySelectorAll(`.${className}:checked`);
+			            checkboxes.forEach(checkbox => {
+			                selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
+			            });
+			
+			            if (selectedFiles.length === 0) {
+			                alert('다운로드할 파일을 선택하세요.');
+			                return;
+			            }
+			
+			            // 파일이 1개일 때는 바로 다운로드
+			            if (selectedFiles.length === 1) {
+			                downloadFile(selectedFiles[0]);
+			            } else {
+			                // 파일이 여러 개일 때는 하나씩 순차적으로 다운로드
+			                selectedFiles.forEach(fileId => {
+			                    downloadFile(fileId);
+			                });
+			            }
+			        }
+			
+			        function downloadFile(fileId) {
+			            fetch(`/api/documents/download?docId=${fileId}`, {  
+			                method: 'GET',
+			                headers: {
+			                    'X-CSRF-TOKEN': csrfToken
+			                }
+			            })
+			            .then(response => {
+			                if (!response.ok) {
+			                    throw new Error('Network response was not ok');
+			                }
+			                const contentDisposition = response.headers.get('Content-Disposition');
+			                let fileName = 'downloaded_file';
+
+			                if (contentDisposition) {
+			                    let fileNameMatch = contentDisposition.match(/filename\*=UTF-8''(.+)/);
+			                    if (fileNameMatch != null && fileNameMatch.length > 1) {
+			                        fileName = decodeURIComponent(fileNameMatch[1]);
+			                    } else {
+			                        fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+			                        if (fileNameMatch != null && fileNameMatch.length > 1) {
+			                            fileName = fileNameMatch[1];
+			                        }
+			                    }
+			                }
+
+			                return response.blob().then(blob => ({ fileName, blob }));
+			            })
+			            .then(({ fileName, blob }) => {
+			                const url = window.URL.createObjectURL(blob);
+			                const a = document.createElement('a');
+			                a.href = url;
+			                a.download = fileName;
+			                document.body.appendChild(a);
+			                a.click();
+			                a.remove();
+			                window.URL.revokeObjectURL(url);
+			            })
+			            .catch(error => {
+			                console.error('파일 다운로드 중 오류가 발생했습니다:', error);
+			                alert('파일 다운로드 중 오류가 발생했습니다.');
+			            });
+			        }
+			    
+
+			
+			        // 페이지네이션 업데이트 및 페이지 이동 처리 함수
+			     function updatePagination(currentPage, totalPages, loadFunctionName) {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = ''; // 기존의 페이지네이션 지우기
+
+    // 파일이 없거나 totalPages가 1인 경우 페이지네이션을 표시하지 않음
+    if (totalPages <= 1) return;
+
+    // 이전 페이지 화살표
+    if (currentPage > 0) {
+        pagination.innerHTML += `
+            <li class="page-item">
+                <a href="#" class="page-link" onclick="${loadFunctionName}(${currentPage - 1})">&lt;</a>
+            </li>
+        `;
+    }
+
+    // 페이지 번호 생성
+    for (let i = 0; i < totalPages; i++) {
+        pagination.innerHTML += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a href="#" class="page-link" onclick="${loadFunctionName}(${i})">${i + 1}</a>
+            </li>
+        `;
+    }
+
+    // 다음 페이지 화살표
+    if (currentPage < totalPages - 1) {
+        pagination.innerHTML += `
+            <li class="page-item">
+                <a href="#" class="page-link" onclick="${loadFunctionName}(${currentPage + 1})">&gt;</a>
+            </li>
+        `;
+    }
+}
+			        // 파일 업로드 처리 및 페이지 갱신
+			        function uploadFile() {
+			            const fileInput = document.getElementById('fileInput');
+			            const formData = new FormData();
+			            formData.append('file', fileInput.files[0]);
+			
+			            fetch('/api/documents/upload', {
+			                method: 'POST',
+			                headers: {
+			                    'X-CSRF-TOKEN': csrfToken
+			                },
+			                body: formData
+			            })
+			            .then(response => response.text())
+			            .then(result => {
+			                alert(result);
+			                loadPersonalFiles();  // 업로드 후 첫 페이지 로드
+			            })
+			            .catch(error => {
+			                console.error('Error uploading file:', error);
+			            });
+			        }
+			
+			       
+			        function toggleFavorite(docId, icon) {
+			            const isFavorite = icon.classList.contains('fas'); // 'fas' 클래스 여부로 즐겨찾기 상태 확인
+
+			            // 서버로 즐겨찾기 상태 업데이트 요청
+			            fetch(`/api/documents/favorite`, {
+			                method: 'POST',
+			                headers: {
+			                    'X-CSRF-TOKEN': csrfToken,
+			                    'Content-Type': 'application/json'
+			                },
+			                body: JSON.stringify([docId])
+			            })
+			            .then(response => response.text())
+			            .then(result => {
+			                // 알림창 대신 아이콘 상태만 변경
+			                if (isFavorite) {
+			                    icon.classList.remove('fas');
+			                    icon.classList.add('far'); // 빈 별 아이콘으로 변경
+			                    icon.style.color = ''; // 기본 색상으로
+			                } else {
+			                    icon.classList.remove('far');
+			                    icon.classList.add('fas'); // 채워진 별 아이콘으로 변경
+			                    icon.style.color = 'gold'; // 즐겨찾기 상태는 금색
+			                }
+
+			                // 현재 활성화된 테이블이 즐겨찾기인 경우 목록 갱신
+			                const activeTableId = getActiveTableId();
+			                if (activeTableId === 'favorite-files-table') {
+			                    loadFavoriteFiles(); // 현재 페이지 유지 또는 원하는 페이지로 변경 가능
+			                }
+			            })
+			            .catch(error => {
+			                console.error('Error toggling favorite:', error);
+			            });
+			        }
+			        //                  ------------------------------파일공유설정 모달 설정 
+			function openShareModal() {
+    const selectedFiles = getSelectedFiles();
+    if (selectedFiles.length === 0) {
+        alert('공유할 파일을 선택하세요.');
+        return;
+    }
+    
+    var shareModalElement = document.getElementById('shareModal');
+    
+    // 새로운 모달 인스턴스를 생성하는 대신, 항상 같은 모달을 사용하게 설정
+    var myModal = bootstrap.Modal.getOrCreateInstance(shareModalElement);
+
+    // 모달을 열기
+    myModal.show();
+    loadOrganizationChart();
+}
+
+			function closeShareModal() {
+			    var shareModalElement = document.getElementById('shareModal');
+			    var myModal = bootstrap.Modal.getInstance(shareModalElement);
+
+			    if (myModal) {
+			        myModal.hide();
+			    }
+			}
+
+			        function loadOrganizationChart() {
+			            $.ajax({
+			                url: '/employee/addressBook/tree-menu',
+			                method: 'GET',
+			                dataType: 'json',
+			                success: function (data) {
+			                    const formattedData = formatDataForJsTree(data);
+
+			                    // jsTree 초기화
+			                    $('#organization-chart').jstree('destroy'); // 기존 트리 제거
+			                    $('#organization-chart').jstree({
+			                        'core': {
+			                            'data': formattedData
+			                        },
+			                        'checkbox': {
+			                            'keep_selected_style': false
+			                        },
+			                        'plugins': ['checkbox']
+			                    });
+			                },
+			                error: function (xhr, status, error) {
+			                    console.error('Error loading organization chart:', error);
+			                }
+			            });
+			        }
+
+			        function formatDataForJsTree(nodes) {
+			            return nodes.map(node => {
+			                return {
+			                    id: node.nodeId,
+			                    text: node.nodeName,
+			                    state: {
+			                        opened: node.nodeState.opened
+			                    },
+			                    children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
+			                    icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+			                };
+			            });
+			        }
+
+			        function getSelectedEmployees() {
+			            const selectedNodes = $('#organization-chart').jstree('get_checked', true);
+			            // 직원(사원) 노드만 필터링 (자식이 없는 노드)
+			            const employeeIds = selectedNodes
+			                .filter(node => !node.children || node.children.length === 0)
+			                .map(node => parseInt(node.id));
+			            return employeeIds;
+			        }
+			        
+			        
+			        function shareSelectedFiles() {
+			            const selectedFiles = getSelectedFiles();
+			            const selectedEmployees = getSelectedEmployees();
+
+			            if (selectedEmployees.length === 0) {
+			                alert('공유할 사원을 선택하세요.');
+			                return;
+			            }
+
+			            fetch('/api/documents/share', {
+			                method: 'POST',
+			                headers: {
+			                    'X-CSRF-TOKEN': csrfToken,
+			                    'Content-Type': 'application/json'
+			                },
+			                body: JSON.stringify({
+			                    docIds: selectedFiles,
+			                    empIds: selectedEmployees
+			                })
+			            })
+			            .then(response => response.text())
+			            .then(result => {
+			                alert(result);
+			                closeShareModal();
+			                loadPersonalFiles(); // 목록 갱신을 위해 동일한 함수 호출
+			            })
+			            .catch(error => {
+			                console.error('Error sharing files:', error);
+			            });
+			        }
+	
+
+			        // 선택된 파일 ID 가져오기
+			        function getSelectedFiles() {
+			            const checkboxes = document.querySelectorAll('.file-checkbox:checked');
+			            return Array.from(checkboxes).map(checkbox => parseInt(checkbox.value));
+			        }
+
+			       
+			    </script>
+			</th:block>
 </body>
+</html>	

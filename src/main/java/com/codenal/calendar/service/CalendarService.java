@@ -9,11 +9,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.codenal.employee.domain.Departments;
-import com.codenal.employee.domain.DepartmentsDto;
-import com.codenal.employee.domain.Jobs;
-import com.codenal.employee.repository.DepartmentsRepository;
-import com.codenal.employee.repository.JobsRepository;
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+import com.codenal.admin.repository.DepartmentsRepository;
+import com.codenal.admin.repository.JobsRepository;
 import com.codenal.calendar.domain.Calendar;
 import com.codenal.calendar.domain.CalendarDto;
 import com.codenal.calendar.repository.CalendarRepository;
@@ -42,11 +41,11 @@ public class CalendarService {
 		Employee emp = employeeRepository.findByEmpId(empId);
 		EmployeeDto dto = EmployeeDto.fromEntity(emp);
 		
-		int detpNo = dto.getDeptNo();
-		Departments dept = departmentsRepository.findByDeptNo((long) detpNo);
+		Long detpNo = dto.getDeptNo();
+		Departments dept = departmentsRepository.findByDeptNo(detpNo);
 		
 		int jodNo = dto.getJobNo();
-		Jobs job = jobsRepository.findByJobNo((long) jodNo);
+		Jobs job = jobsRepository.findByJobNo(jodNo);
 		System.out.println(job.getJobName());
 		String[] str = {dto.getEmpName(), dept.getDeptName(),job.getJobName()};
 		// jobs, jobsDto 생성 후 부서명, 직급명 각자 레포지토리에서 가져온 후 String 객체 만들어서 거기다 넣어서 리턴 후 js에서 출력하기

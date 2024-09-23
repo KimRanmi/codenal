@@ -13751,7 +13751,7 @@ span.flatpickr-weekday {
 .departments > li:nth-child(2).department:before {
   border: none;
 }
-.departments::after {
+.department::after {
   content: "";
   display: block;
   position: absolute;
@@ -13765,12 +13765,12 @@ span.flatpickr-weekday {
   left: 9.1%;
 }
 @media screen and (max-width: 767px) {
-  .departments > li:first-child {
+  .department > li:first-child {
     width: 40%;
     left: 10%;
     margin-left: 2px;
   }
-  .departments::after {
+  .department::after {
     border-right: none;
     left: 0;
     width: 50%;

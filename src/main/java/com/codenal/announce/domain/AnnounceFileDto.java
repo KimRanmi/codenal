@@ -14,15 +14,18 @@ import lombok.ToString;
 @ToString
 @Builder
 public class AnnounceFileDto {
-
-	private Long announce_no;
+	
+	private int file_no;
+	private Announce announce;
 	private String file_ori_name;
 	private String file_new_name;
 	private String file_path;
 	
+	
 	public AnnounceFile toEntity() {
 		return AnnounceFile.builder()
-				.announceNo(announce_no)
+				.fileNo(file_no)
+				.announce(announce)
 				.fileOriName(file_ori_name)
 				.fileNewName(file_new_name)
 				.filePath(file_path)
@@ -32,10 +35,11 @@ public class AnnounceFileDto {
 	
 	public AnnounceFileDto toDto(AnnounceFile announceFile) {
 		return AnnounceFileDto.builder()
-				.announce_no(getAnnounce_no())
-				.file_ori_name(getFile_ori_name())
-				.file_new_name(getFile_new_name())
-				.file_path(getFile_path())
+				.file_no(announceFile.getFileNo())
+				.announce(announceFile.getAnnounce())
+				.file_ori_name(announceFile.getFileOriName())
+				.file_new_name(announceFile.getFileNewName())
+				.file_path(announceFile.getFilePath())
 				.build();
 	}
 }

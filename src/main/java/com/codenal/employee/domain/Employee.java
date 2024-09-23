@@ -1,16 +1,23 @@
-
-
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+import com.codenal.announce.domain.Announce;
+import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.annual.domain.AnnualLeaveUsage;
+import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.Referrer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -57,7 +64,7 @@ public class Employee {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "emp_end")
     private LocalDate empEnd;
-
+ 
     @Column(name = "emp_status")
     private String empStatus;
 
@@ -67,12 +74,36 @@ public class Employee {
     @Column(name = "emp_sign_image")
     private String empSignImage;
 
-    @Column(name = "dept_no")
-    private Integer deptNo;
+    @ManyToOne
+    @JoinColumn(name = "dept_no", referencedColumnName = "dept_no")
+    private Departments departments;
 
-    @Column(name = "job_no")
-    private Integer jobNo;
+    @ManyToOne
+    @JoinColumn(name = "job_no",  referencedColumnName = "job_no")
+    private Jobs jobs;
 
     @Column(name = "emp_auth")
     private String empAuth;
+    
+    //전자결재
+    @OneToMany(mappedBy = "employee")
+    private List<Approval> approvals;
+    
+    //연차사용내역
+    @OneToMany(mappedBy = "employee")
+    private List<AnnualLeaveManage> annualLeaveManages;
+    
+    //수신참조자
+    @OneToMany(mappedBy = "employee")
+    private List<Referrer> referrers;
+    
+    @OneToMany(mappedBy = "employee")
+    private List<AnnualLeaveUsage> annualLeaveUsages;
+    
+    @OneToMany(mappedBy = "employee")
+    private List<Announce> announces;
 }
+
+
+	
+   

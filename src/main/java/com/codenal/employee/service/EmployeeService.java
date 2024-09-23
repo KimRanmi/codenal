@@ -27,6 +27,12 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
+    public Employee selectEmpId(String empId) {
+    	Employee emp = employeeRepository.findByEmpName(empId);
+    	return emp;
+    }
+    
+
     public void saveEmployee(Employee employee) {
         employeeRepository.save(employee); // 데이터베이스에 변경 사항 저장
     }
@@ -35,10 +41,5 @@ public class EmployeeService {
     public Employee getEmployeeById(Long empId) {
         return employeeRepository.findByEmpId(empId);
     }
-
-   
-
-
-  
-
 }
+   
