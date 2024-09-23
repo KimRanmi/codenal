@@ -11,9 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.codenal.meeting.domain.MeetingRoom;
 import com.codenal.meeting.domain.MeetingRoomDto;
+import com.codenal.meeting.domain.MeetingRoomReserve;
+import com.codenal.meeting.domain.MeetingRoomReserveDto;
 import com.codenal.meeting.domain.MeetingRoomTime;
 import com.codenal.meeting.domain.MeetingRoomTimeDto;
 import com.codenal.meeting.repository.MeetingRoomRepository;
+import com.codenal.meeting.repository.MeetingRoomReserveRepository;
 import com.codenal.meeting.repository.MeetingRoomTimeRepository;
 
 @Service
@@ -21,13 +24,28 @@ public class MeetingRoomService {
 	
 	private MeetingRoomRepository meetingRoomRepository;
 	private MeetingRoomTimeRepository meetingRoomTimeRepository;
+	private MeetingRoomReserveRepository meetingRoomReserveRepository;
 	
 	@Autowired
-	public MeetingRoomService(MeetingRoomRepository meetingRoomRepository, MeetingRoomTimeRepository meetingRoomTimeRepository) {
+	public MeetingRoomService(MeetingRoomRepository meetingRoomRepository, MeetingRoomTimeRepository meetingRoomTimeRepository, MeetingRoomReserveRepository meetingRoomReserveRepository) {
 		this.meetingRoomRepository = meetingRoomRepository;
 		this.meetingRoomTimeRepository = meetingRoomTimeRepository;
+		this.meetingRoomReserveRepository = meetingRoomReserveRepository;
 	}
 	
+	// 회의실 예약
+	public MeetingRoomReserve meetingRoomReserve(MeetingRoomReserveDto dto) {
+		int result = 0;
+		MeetingRoomReserve reserve = MeetingRoomReserve.builder()
+				.meetingRoomNo(dto.getMeeting_room_no())
+				.empId(dto.getEmp_id())
+				.meetingRoomReserveDate(dto.getMeeting_room_reserve_date())
+				.meetingRoomReserveTimeNo(dto.getMeeting_room_reserve_time_no())
+				.build();
+		return meetingRoomReserveRepository.save(reserve);
+	}
+	
+	// 회의실 리스트 뽑기
 	public List<MeetingRoomDto> meetingRoomList() {
 		List<MeetingRoom> mr = meetingRoomRepository.findAll();
 		System.out.println(mr);
@@ -40,6 +58,7 @@ public class MeetingRoomService {
 		return mrDto;
 	}
 	
+	// 회의실 예약 시간 리스트 뽑기
 	public List<MeetingRoomTimeDto> meetingRoomTimeList(){
 		List<MeetingRoomTime> time = meetingRoomTimeRepository.findAll();
 		List<MeetingRoomTimeDto> timeDto = new ArrayList<MeetingRoomTimeDto>();

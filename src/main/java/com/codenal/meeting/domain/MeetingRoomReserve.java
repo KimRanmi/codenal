@@ -41,5 +41,8 @@ public class MeetingRoomReserve {
 	
 	@Column(name = "meeting_room_end_time")
 	private Time meetingRoomEndTime;
+	
+	@Column(name = "meeting_room_reserve_time_no")
+	private Long meetingRoomReserveTimeNo;
 
 }

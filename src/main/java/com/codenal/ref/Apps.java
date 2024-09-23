@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.codenal.employee.domain.Employee;
+import com.codenal.employee.domain.EmployeeDto;
+import com.codenal.employee.service.EmployeeService;
 import com.codenal.meeting.domain.MeetingRoom;
 import com.codenal.meeting.domain.MeetingRoomDto;
 import com.codenal.meeting.domain.MeetingRoomTimeDto;
@@ -19,10 +22,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class Apps {
 	
 	private MeetingRoomService meetingRoomService;
+	private EmployeeService employeeService;
 	
 	@Autowired
-	public Apps(MeetingRoomService meetingRoomService) {
+	public Apps(MeetingRoomService meetingRoomService, EmployeeService employeeService) {
 		this.meetingRoomService = meetingRoomService;
+		this.employeeService = employeeService;
 	}
 	
 
@@ -74,10 +79,13 @@ public class Apps {
 	public String apps_ecommerce_product_details(Model model) {
 		List<MeetingRoomDto> mr = meetingRoomService.meetingRoomList();
 		List<MeetingRoomTimeDto> time = meetingRoomService.meetingRoomTimeList();
+		Long empId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName()) ;
 		model.addAttribute("meetingRoom", mr);
 		model.addAttribute("meetingRoomTime", time);
 		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());
-		System.out.println(mr);
+		Employee emp = employeeService.getEmployeeById(empId);
+		EmployeeDto empDto = EmployeeDto.fromEntity(emp);
+		model.addAttribute("empAuth" , empDto.getEmpAuth());
 		return "apps/ecommerce-product-details";
 	}
 	

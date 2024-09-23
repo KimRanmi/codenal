@@ -205,20 +205,17 @@ fetch('/meetingRoom', {
 	
 
 const formData = document.getElementById("meetingRoomForm1");
-/*document.getElementById("reserve_submit").onclick=function(event){
-	console.log(event);
-}*/
 formData.addEventListener('submit', (e) => {
 	e.preventDefault();
 	
 	let vali_check = false;
 	let vali_text = "";
-	if (formData.reserve_date.value == "") {
+	if (formData.meeting_room_reserve_date.value == "") {
 		vali_text += '예약 날짜를 선택하세요.';
-		formData.reserve_date.focus();
-	} else if (formData.reserve_time[0].checked == false) {
+		formData.meeting_room_reserve_date.focus();
+	} else if (formData.meeting_room_reserve_time_no[0].checked == false) {
 		vali_text += '예약 시간을 선택하세요.';
-		formData.reserve_time[0].focus();
+		formData.meeting_room_reserve_time_no[0].focus();
 	} else {
 		vali_check = true;
 	}
@@ -232,31 +229,43 @@ formData.addEventListener('submit', (e) => {
 		
 		let checkTime = [];
 		
-		for(let i=0; i<formData.reserve_time.length; i++){
-			if(formData.reserve_time[i].checked == true){
-				checkTime.push(formData.reserve_time[i].value);
+		for(let i=0; i<formData.meeting_room_reserve_time_no.length; i++){
+			if(formData.meeting_room_reserve_time_no[i].checked == true){
+				checkTime.push(formData.meeting_room_reserve_time_no[i].value);
 			}
 		}
 		
-		console.log(meetingRoomNo);
+		console.log(formData.meeting_room_reserve_date.value.substring(0,2));
+		let dateFormat = new Date();
+		dateFormat.setDate(formData.meeting_room_reserve_date.value.substring(0,2))
+		let reserveDate = dateFormat.getFullYear()+"-"+(dateFormat.getMonth()+1).toString().padStart(2, '0')+"-"+dateFormat.getDate().toString().padStart(2, '0');
 		
 		const payload = new FormData(formData);
-		console.log(payload);
-		fetch('/meetingRoomReserve',{
+		console.log(reserveDate);
+		/*fetch('/meetingRoomReserve',{
 			method:'POST',
 			headers: {
 				'X-CSRF-TOKEN': csrfToken
 			},
-			body:{
-				'emp_id' : empId,
-				'meeting_room_reserve_date' : formData.reserve_date.value,
-			}
+			body: payload,
 		})
 		.then(response => response.json())
 		.then(data=>{
 			
 			alert('성공');
-		})
+		})*/
+		
+		const xhr = new XMLHttpRequest();
+		xhr.open("post", "/meetingRoomReserve", true);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				alert('성공');
+			}
+		}
+		const header = document.getElementById("_csrf_header").value;
+		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+		xhr.setRequestHeader(header, csrfToken);
+		xhr.send("meetingRoomNo="+meetingRoomNo+"&reserveDate="+reserveDate+"&reserveTime="+checkTime+"&reserveEmpId="+empId);
 	}
 
 })

@@ -1,5 +1,7 @@
 package com.codenal.meeting.controller;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,10 @@ import com.codenal.meeting.domain.MeetingRoomReserve;
 import com.codenal.meeting.domain.MeetingRoomReserveDto;
 import com.codenal.meeting.domain.MeetingRoomTimeDto;
 import com.codenal.meeting.service.MeetingRoomService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class MeetingController {
@@ -46,10 +52,16 @@ public class MeetingController {
 	
 	@ResponseBody
 	@PostMapping("/meetingRoomReserve")
-	public Map<String, Object> meetingRoomDetail(MeetingRoomReserveDto dto){
-		Map<String, Object> result = new HashMap<String, Object>();
-		System.out.println(dto);
-		return result;
+	public void meetingRoomDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		MeetingRoomReserveDto reserveDto = new MeetingRoomReserveDto();
+		reserveDto.setMeeting_room_no(Long.parseLong(request.getParameter("meetingRoomNo")));
+		reserveDto.setMeeting_room_reserve_date(LocalDate.parse(request.getParameter("reserveDate")));
+		reserveDto.setMeeting_room_reserve_time_no(Long.parseLong(request.getParameter("reserveTime")));
+		reserveDto.setEmp_id(Long.parseLong(request.getParameter("reserveEmpId")));
+		if(meetingRoomService.meetingRoomReserve(reserveDto) != null) {
+			
+			System.out.println("성공");
+		};
 	}
 
 }
