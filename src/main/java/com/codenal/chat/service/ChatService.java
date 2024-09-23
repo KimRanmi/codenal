@@ -42,6 +42,7 @@ public class ChatService {
 	}
 	
 	
+	
 	@Transactional
 	public ChatRoom createChat(ChatRoomDto roomDto, List<String> empIds, Long userId) {
 		// 채팅방 이름 저장할 직원 이름 정보
@@ -127,19 +128,18 @@ public class ChatService {
 	
 	// chat detail 부분
 	@Transactional
-	public List<ChatMsg> selectChatRoomOne(int roomNo, String empId) {
-		Long empid= Long.parseLong(empId);
+	public ChatRoom selectChatRoomOne(int roomNo, Long empId) {
 		// 채팅 참여자 정보와 채팅 메시지 불러오기
 		// 채팅방 입장 순간 알림온 메시지 읽은 상태로 update
 		ChatRoom chatRoom = chatRoomRepository.findByRoomNo(roomNo);
-		Employee employee = employeeRepository.findByEmpId(empid);
+		Employee employee = employeeRepository.findByEmpId(empId);
 		// 내 참가자 번호 불러오기
 		ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
-		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
 		// 메시지 상태들이 'Y'인 메시지 불러오기  --> 필요없는거 같긴 함
-		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
+//		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
+		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
 		
-		return msgNo;
+		return chatRoom;
 	}
 	
 	
@@ -160,7 +160,7 @@ public class ChatService {
 
 			ChatMsg savedMsg = chatMsgRepository.save(target); // 채팅 메시지 정보 저장
 			
-			List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoom(room.getRoomNo(), userNo); // 본인을 제외한 참여자 정보
+			List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoom(room, userNo); // 본인을 제외한 참여자 정보
 			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
 				ChatRead read = ChatRead.builder()
 						.chatMsg(savedMsg)
