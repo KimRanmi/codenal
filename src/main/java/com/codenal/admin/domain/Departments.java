@@ -28,20 +28,20 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Setter
+@Setter 
 @Builder
-public class Departments {
+public class Departments { 
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "dept_no")
-    private int deptNo;	// 부서 번호
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "dept_no")
+	private Long deptNo; // 부서 번호
 
     @Column(name = "dept_name", nullable = false)
     private String deptName;	// 부서명
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "dept_create_date")
+    @Column(name = "dept_create_date", nullable = false)
     @CreationTimestamp
     private LocalDate deptCreateDate;	// 부서 개설일
     
@@ -50,5 +50,6 @@ public class Departments {
     
     @OneToMany(mappedBy = "departments")
     private List<AnnounceReadAuthority> readAuthorities;
+
 
 }
