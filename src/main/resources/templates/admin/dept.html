@@ -144,15 +144,14 @@
 										</th:block>
 										<!-- 부서 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-											<tr th:each="department, deptStat : ${resultList.content}">												
+											<tr th:each="departments, deptStat : ${resultList.content}">												
 												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+deptStat.count}" style="text-align: center;"></td>
-												<td th:text="${department.deptName}" style="text-align: center;"></td>
-												<td style="text-align: center;"></td>
-												<td th:text="${#dates.format(department.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
+												<td th:text="${departments.deptName}" style="text-align: center;"></td>
+												<td th:text="'empCount: ' + (${departments.empCount} ?: 0)" style="text-align: center;"></td>
+												<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
 												<td style="text-align: center;"></td> 
 											</tr>
 										</th:block>
-
 									</tbody>
 								</table>
 								<!-- <div class="noresult" style="display: none">
@@ -214,73 +213,73 @@
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
 
 		<script>
-						$(document).ready(function () {				
-						    // 트리 메뉴
-						    $.ajax({
-						        url: '/admin/dept/tree-menu',
-						        method: 'GET',
-						        dataType: 'json',
-						        success: function (data) {		
-						        
-						           /*  if (!data || data.length === 0) {
-						                console.error('Received data is empty or undefined.');
-						                return;
-						            } */
-	
-						            // TreeMenuDto
-						            const formatDataForJsTree = (nodes) => {
-						                return nodes.map(node => {
-						                    return {
-						                        id: node.nodeId,
-						                        text: node.nodeName,
-						                        state: {
-						                            opened: false	// 직원은 처음에 접어둠
-						                        },
-						                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
-						                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-						                        		// 부서 아이콘 : 직원 아이콘
-						                    };
-						                });
-						            };
+		$(document).ready(function () {				
+		    // 트리 메뉴
+		    $.ajax({
+		        url: '/admin/dept/tree-menu',
+		        method: 'GET',
+		        dataType: 'json',
+		        success: function (data) {		
+		        
+		           /*  if (!data || data.length === 0) {
+		                console.error('Received data is empty or undefined.');
+		                return;
+		            } */
 
-						            const formattedData = formatDataForJsTree(data);
+		            // TreeMenuDto
+		            const formatDataForJsTree = (nodes) => {
+		                return nodes.map(node => {
+		                    return {
+		                        id: node.nodeId,
+		                        text: node.nodeName,
+		                        state: {
+		                            opened: false	// 직원은 처음에 접어둠
+		                        },
+		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
+		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+		                        		// 부서 아이콘 : 직원 아이콘
+		                    };
+		                });
+		            };
 
-						            // 그룹웨어 회사 이름
-						            const companyNode = {
-						                id: 'companyName',
-						                text: 'withXwork', // 위드워크 회사명
-						                state: {
-						                    opened: true
-						                },
-						                children: formattedData, 
-						                icon: 'ri-building-fill' // 회사 아이콘
-						            };
+		            const formattedData = formatDataForJsTree(data);
 
-						            // jsTree 초기화
-						            $('#treeMenu').jstree({
-						                'core': {
-						                    "animation": 0,
-						                    "check_callback": false,
-						                    'data': [companyNode] 
-						                },
-						                "plugins": ["types"],
-						                "types": {
-						                    "default": {
-						                        "icon": "ri-team-fill"	// 부서 아이콘
-						                    },
-						                    "file": {
-						                        "icon": "ri-user-2-fill"	// 직원 아이콘
-						                    }
-						                }
-						            });
-						        },
-						       /*  error: function (xhr, status, error) {
-						            console.error('Error loading tree menu data:', error);
-						        } */
-						    });
-						});
+		            // 그룹웨어 회사 이름
+		            const companyNode = {
+		                id: 'companyName',
+		                text: 'withXwork', // 위드워크 회사명
+		                state: {
+		                    opened: true
+		                },
+		                children: formattedData, 
+		                icon: 'ri-building-fill' // 회사 아이콘
+		            };
 
-						</script>
+		            // jsTree 초기화
+		            $('#treeMenu').jstree({
+		                'core': {
+		                    "animation": 0,
+		                    "check_callback": false,
+		                    'data': [companyNode] 
+		                },
+		                "plugins": ["types"],
+		                "types": {
+		                    "default": {
+		                        "icon": "ri-team-fill"	// 부서 아이콘
+		                    },
+		                    "file": {
+		                        "icon": "ri-user-2-fill"	// 직원 아이콘
+		                    }
+		                }
+		            });
+		        },
+		       /*  error: function (xhr, status, error) {
+		            console.error('Error loading tree menu data:', error);
+		        } */
+		    });
+		});
+
+		</script>				
 
 	</th:block>
 </body>

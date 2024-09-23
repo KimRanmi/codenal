@@ -38,8 +38,9 @@ public class DeptViewController {
 	public String searchAll(Model model,
 			@PageableDefault(page = 0, size = 10, sort = "deptCreateDate", direction = Sort.Direction.DESC) Pageable pageable,
 			@ModelAttribute("searchDto") DepartmentsDto searchDto) {
+		System.out.println("searchAll 메소드 시작");
 
-		// 셀렉트 박스 통합
+		// 검색
 		Page<DepartmentsDto> resultList = deptService.searchDeptName(searchDto, pageable);
 
 		model.addAttribute("resultList", resultList);
@@ -47,8 +48,8 @@ public class DeptViewController {
 
 		return "admin/dept";
 	}
-	
-	
+
+
 	// TreeMenu(JsTree)
 	@GetMapping("/tree-menu")
 	@ResponseBody
