@@ -2,98 +2,84 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}">
-
+<head>
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
 <title>전자결재 상세</title>
 <!-- Bootstrap CSS -->
 <th:block layout:fragment="pagetitle" />
 <link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
 	rel="stylesheet">
+<!-- Dropzone CSS -->
 <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
 	type="text/css" />
+<!-- 토슽 api -->
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+<script
+	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-.jstree-icon.ri-building-fill {
-	color: #3e4a6e;
-	font-size: 24px;
-}
 
-.jstree-icon.ri-team-fill {
-	color: #3577f1;
-	font-size: 20px;
-}
-
-.jstree-icon.ri-user-2-fill {
-	color: #9a9ba0;
-	font-size: 16px;
-}
 .project-thumbnail-img{
 			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
 		}
+
 </style>
 </head>
 <body>
 	<div layout:fragment="content">
 		<div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
-		<div class="row" style="margin-left: 30px;">
+		<div class="row" style="margin-left: 30px;" >
 			<div class="col-lg-12">
 				<div style="background-color: white; width: 1750px; height: 1150px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
-							<input type="hidden" name="approvalNo" id="approvalNo"
-								th:value="${dto.approval.approvalNo}"> <input
-								type="hidden" id="csrf_token" th:value="${_csrf.token}" /> <input
-								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
-							<input type="hidden" th:value="${emp.empId}" id="login_id">
+								<input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}" >
+								<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
+								<input type="hidden" th:value="${emp.empSignImage}" id="sign_img">
+								<input type="hidden" th:value="${emp.empId}" id="login_id">
 							<br>
 							<div class="mb-3" style="width: 600px;">
-								<label class="form-label" for="project-title-input">제목</label> <input
-									type="text" class="form-control" id="project-title-input"
+								<label class="form-label" for="project-title-input">제목</label> 
+								<input type="text" class="form-control" id="project-title-input"
 									th:value="${dto.approval.approvalTitle}" name="approval_title"
-									th:disabled="${dto.approval.approvalStatus != 4}"
-									style="width: 500px;">
+									th:disabled="${dto.approval.approvalStatus != 4}" style="width: 500px;">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-author-input">기안자</label>
-								<input type="text" class="form-control"
-									th:value="${dto.employee.empName}" id="project-author-input"
-									readonly style="width: 500px;" name="emp_id">
+								<input type="text" class="form-control" th:value="${dto.employee.empName}"
+									id="project-author-input" readonly style="width: 500px;" name="emp_id">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-date-input">기안일</label> <input
 									type="text" class="form-control" id="project-date-input"
 									readonly style="width: 500px;" name="approval_reg_date"
 									th:value=${dto.approval.approvalRegDate}>
-							</div>
+							</div>		
 							<div class="mb-3" style="width: 600px;">
-
+							
 								<!-- status가 4가 아닐 때 -->
-								<div th:if="${dto.approval.approvalStatus != 4}">
-									<div th:if="${dto.file == null}">
-										<label class="form-label" for="file-upload">파일첨부</label> <input
-											class="form-control" id="file-upload" type="file"
-											accept="image/png, image/gif, image/jpeg"
-											style="width: 500px;">
-									</div>
-
-									<div th:if="${dto.file != null}">
-										<label class="form-label" for="file-link">첨부파일</label> <a
-											id="file-link" class="form-control"
-											th:text="${dto.file.fileOriName}"
-											th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}"
-											name="file" style="width: 500px;"></a>
-									</div>
-								</div>
-
+							    <div th:if="${dto.approval.approvalStatus != 4}">
+								    <div th:if="${dto.file == null}">
+								        <label class="form-label" for="file-upload">파일첨부</label>
+								        <input class="form-control" id="file-upload"
+								               type="file" accept="image/png, image/gif, image/jpeg"
+								               style="width: 500px;" >
+								    </div>
+	
+								    <div th:if="${dto.file != null}">
+								        <label class="form-label" for="file-link">첨부파일</label>
+								        <a id="file-link" class="form-control"
+								           th:text="${dto.file.fileOriName}"
+								           th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}" 
+								           name="file" style="width: 500px;"></a>
+								    </div>
+							    </div>
+							    
 							</div>
-
+							
 							<div class="mb-3">
 								<label class="form-label" for="references">수신참조자</label><br>
 								<input id="references" type="text"
@@ -111,204 +97,158 @@
 							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려 -->
 							<br>
 							<div style="margin-left: 1300px; margin-top: 60px;">
-								<div
-									th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
-									<button type="button" class="btn btn-secondary w-sm" id="revoke">회수</button>
-								</div>
-								<div th:each="agree, iterStat : ${dto.agree}"
-									th:if="${dto.employee.empId != emp.empId and agree.approvalStatus == 1}">
-									<button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
-									<button type="button" class="btn btn-danger w-sm">반려</button>
-								</div>
-								<div th:each="approver, iterStat : ${dto.approver}"
-									th:if="${dto.employee.empId != emp.empId and approver.approvalStatus == 1}">
-									<button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
-									<button type="button" class="btn btn-danger w-sm">반려</button>
-								</div>
-							</div>
-
-							<!-- 합의자 결재자 확인처리 해야함 -->
-							<div style="margin-top: -1200px; margin-left: 900px;">
-							<label>합의자</label>
-							<table
-								style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-								<tr>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-										<img
-										th:if="${dto.agree.size() > 0 and dto.agree[0].approvalStatus == 2}"
-										th:src="${dto.agree[0].employee.empSignImage}"
-										style="max-width: 100%; max-height: 100%;" />
-									</td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-										<img
-										th:if="${dto.agree.size() > 1 and dto.agree[1].approvalStatus == 2}"
-										th:src="${dto.agree[1].employee.empSignImage}"
-										style="max-width: 100%; max-height: 100%;" />
-									</td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-										<img
-										th:if="${dto.agree.size() > 2 and dto.agree[2].approvalStatus == 2}"
-										th:src="${dto.agree[2].employee.empSignImage}"
-										style="max-width: 100%; max-height: 100%;" />
-									</td>
-								</tr>
-							</table>
-							<table style="border-collapse: collapse; border-spacing: 0;">
-								<tr>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-										class="selectedName"
-										th:text="${dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"></td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-										class="selectedName"
-										th:text="${dto.agree.size() > 1 ? dto.agree[1].employee.empName : ''}"></td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-										class="selectedName"
-										th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"></td>
-								</tr>
-							</table>
-							<br> <label>결재자</label>
-							<table
-								style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-								<tr>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-										<img
-										th:if="${dto.approver.size() > 0 and dto.approver[0].approvalStatus == 2 }"
-										th:src="${dto.approver[0].employee.empSignImage}"
-										style="max-width: 100%; max-height: 100%;" />
-									</td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-										<img
-										th:if="${dto.approver.size() > 1 and dto.approver[1].approvalStatus == 2 }"
-										th:src="${dto.approver[1].employee.empSignImage}"
-										style="max-width: 100%; max-height: 100%;" />
-									</td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-										<img
-										th:if="${dto.approver.size() > 2 and dto.approver[2].approvalStatus == 2 }"
-										th:src="${dto.approver[2].employee.empSignImage}"
-										style="max-width: 100%; max-height: 100%;" />
-									</td>
-								</tr>
-							</table>
-							<table style="border-collapse: collapse; border-spacing: 0;">
-								<tr>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-										th:text="${dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
-										class="selectedName2"></td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-										th:text="${dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
-										class="selectedName2"></td>
-									<td
-										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-										th:text="${dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
-										class="selectedName2"></td>
-								</tr>
-							</table>
+						<div
+							th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
+							<button type="button" class="btn btn-secondary w-sm" id="revoke">회수</button>
 						</div>
+						<div th:each="agree, iterStat : ${dto.agree}"
+							th:if="${agree.approvalStatus == 1 and emp.empId == agree.employee.empId}">
+							<button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
+							<button type="button" class="btn btn-danger w-sm">반려</button>
+						</div>
+						<div th:each="approver, iterStat : ${dto.approver}"
+							th:if="${approver.approvalStatus == 1 and emp.empId == approver.employee.empId}">
+							<button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
+							<button type="button" class="btn btn-danger w-sm">반려</button>
+						</div>
+					</div>
+							<!-- 합의자 결재자 확인처리 해야함 -->
+							<div style="margin-top:-1050px; margin-left:900px;">
+								<label>합의자</label>
+								<table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+								    <tr>
+									    <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+									        <img th:if="${dto.agree.size() > 0 and dto.agree[0].approvalStatus != 0}" 
+									             th:src="${dto.agree[0].employee.empSignImage}" 
+									             style="max-width: 100%; max-height: 100%;"/>
+									    </td>
+									    <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+									        <img th:if="${dto.agree.size() > 1 and dto.agree[1].approvalStatus != 0}" 
+									             th:src="${dto.agree[1].employee.empSignImage}" 
+									             style="max-width: 100%; max-height: 100%;"/>
+									    </td>
+									    <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+									        <img th:if="${dto.agree.size() > 2 and dto.agree[2].approvalStatus != 0}" 
+									             th:src="${dto.agree[2].employee.empSignImage}" 
+									             style="max-width: 100%; max-height: 100%;"/>
+									    </td>
+									</tr>
+								</table>
+								<table style="border-collapse: collapse; border-spacing: 0;">
+								     <tr>
+								        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+								            class="selectedName"
+								            th:text="${ dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"></td>
+								        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+								            class="selectedName"
+								            th:text="${dto.agree.size() > 1 ?dto.agree[1].employee.empName : ''}" ></td>
+								        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+								            class="selectedName"
+								            th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"></td>
+								    </tr>
+								</table>
+								<br> <label>결재자</label>
+								<table
+									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"
+											></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+									</tr>
+								</table>
+								<table style="border-collapse: collapse; border-spacing: 0;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${ dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
+											class="selectedName2"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${ dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
+											class="selectedName2"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${ dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
+											class="selectedName2"></td>
+									</tr>
+								</table>
+							</div>
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-		<script
-			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-		<script
-			src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-		<script
-			src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
-
-		
 		<script>
-		// 기존 데이터 불러오면서 토스트 api 설정.
-		const content = document.getElementById('contentDiv');
-		const contentEditor = new toastui.Editor({
-            el: document.querySelector('#approval_edit'),
-            width: '1300px',
-            height: '500px',
-            initialValue: content.textContent,
-            initialEditType: 'wysiwyg',
-            previewStyle: 'vertical',
-            hideModeSwitch: true
-        });
-	    
-		document.addEventListener('DOMContentLoaded', () => {
-		    contentEditor();
-		    updateEditorContent();
-		});
+			// 기존 데이터 불러오면서 토스트 api 설정.
+			const content = document.getElementById('contentDiv');
+			const contentEditor = new toastui.Editor({
+                el: document.querySelector('#approval_edit'),
+                width: '1300px',
+                height: '500px',
+                initialValue: content.textContent,
+                initialEditType: 'wysiwyg',
+                previewStyle: 'vertical',
+                hideModeSwitch: true
+            });
+		    
+			document.addEventListener('DOMContentLoaded', () => {
+			    contentEditor();
+			    updateEditorContent();
+			});
 
-		// 카테고리 선택하면서 카테고리 선택했을 때의 스크립트 코드
-		 function updateEditorContent() {
-	        const selectElement = document.getElementById('category-select');
-	        const selectedOption = selectElement.options[selectElement.selectedIndex];
-	        const formContent = selectedOption.getAttribute('data-content');
+		 </script>
+		 
+		
+				<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 회수 버튼 클릭 시 처리
+        const revokeButton = document.getElementById('revoke');
+        if (revokeButton) {
+            document.getElementById('revoke').addEventListener('click', function() {
+                const id = document.getElementById('approvalNo').value;
+                const csrfToken = document.getElementById('csrf_token').value;
 
-	        // 토스트 에디터 내용 저장한 값 불러옴
-	        contentEditor.setHTML(formContent);
-	    }
-	 </script>
-
-		<!-- 회수함 이동 -->
-		<script>
-	    document.addEventListener('DOMContentLoaded', function() {
-	        // 회수 버튼 클릭 시 처리
-	        const revokeButton = document.getElementById('revoke');
-	        if (revokeButton) {
-	            document.getElementById('revoke').addEventListener('click', function() {
-	                const id = document.getElementById('approvalNo').value;
-	                const csrfToken = document.getElementById('csrf_token').value;
-
-	                if (confirm('회수함으로 이동하시겠습니까?')) {
-	                    fetch('/approval/revoke', {
-	                        method: 'POST',
-	                        headers: {
-	                            'Content-Type': 'application/json',
-	                            'X-CSRF-TOKEN': csrfToken
-	                        },
-	                        body: JSON.stringify({ approvalNo: id })
-	                    })
-	                    .then(response => response.json())
-	                    .then(data => {
-	                        console.log(data.res_code);
-	                        if (data.res_code === '200') {
-	                            Swal.fire({
-	                                icon: 'success',
-	                                title: "성공",
-	                                text: data.res_msg
-	                            }).then(() => {
-	                                location.href = "/approval/list?num=4";
-	                            });
-	                        } else {
-	                            Swal.fire({
-	                                icon: 'error',
-	                                title: '실패',
-	                                text: data.res_msg
-	                            });
-	                        }
-	                    });
-	                }
-	            }); 
-	        }
-	    }); 
-	    </script>
-
-
+                if (confirm('회수함으로 이동하시겠습니까?')) {
+                    fetch('/approval/revoke', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({ approvalNo: id })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.res_code);
+                        if (data.res_code === '200') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: "성공",
+                                text: data.res_msg
+                            }).then(() => {
+                                location.href = "/approval/list?num=4";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: '실패',
+                                text: data.res_msg
+                            });
+                        }
+                    }); 
+                }
+            }); 
+        }
+    });
+</script>
+		
 		<!-- 승인으로 이동 -->
 		<script>
 			document.getElementById('consent').addEventListener('click',function(){
-				console.log(1);
 				const id = document.getElementById('approvalNo').value;
 				const csrfToken = document.getElementById('csrf_token').value;
 				const signImg = document.getElementById("sign_img").value;
@@ -343,7 +283,7 @@
 			                    title: "성공",
 			                    text: data.res_msg
 			                }).then(() => {
-			                    location.href = "/approval/inboxList?num=2";
+			                    location.href = "/approval/inboxList?num=1";
 			                });
 			            } else {
 			                Swal.fire({

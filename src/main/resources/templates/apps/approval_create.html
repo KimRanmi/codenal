@@ -1,11 +1,6 @@
 <!doctype html>
-<<<<<<< HEAD
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
-=======
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
->>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
+
 <head>
 <meta charset="UTF-8">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -13,17 +8,12 @@
 
 <th:block layout:fragment="pagetitle" />
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
-	type="text/css" />
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 
 <style>
 .jstree-icon.ri-building-fill {
@@ -124,31 +114,27 @@
 							</div>
 
 							<!-- 모달 생성 -->
-							<div class="modal fade" id="staticBackdrop"
-								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-								role="dialog" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered" role="document">
-									<div class="modal-content">
-										<div class="modal-body text-left">
-											<div class="mt-1">
-												<h4 class="mb-3">직원 등록</h4>
-												<div id="treeMenu"></div>
-												<div id="treeAdd"></div>
-												<div class="hstack gap-9">
-													<a id="successBtn" class="btn btn-success">완료</a> <a
-														href="javascript:void(0);"
-														class="btn btn-link link-success fw-medium"
-														data-bs-dismiss="modal"><i
-														class="ri-close-line me-1 align-middle" id="resetBtn"></i>초기화</a>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
+							<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+							    <div class="modal-dialog modal-dialog-centered" role="document">
+							        <div class="modal-content">
+							            <div class="modal-header">
+							                <h5 class="modal-title" id="myModalLabel">직원 등록</h5>
+							                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							            </div>
+							            <div class="modal-body text-left">
+							                <div id="treeMenu"></div>
+							                <div id="treeAdd"></div>
+							            </div>
+							            <div class="modal-footer">
+							                <button type="button" class="btn btn-light" data-bs-dismiss="modal">초기화</button>
+							                <button type="button" class="btn btn-success" id="successBtn">완료</button>
+							            </div>
+							        </div>
+							    </div>
 							</div>
 
 							<!-- 합의자, 결재자 선택  -->
-							<div style="margin-top: -1080px; margin-left: 900px;">
+							<div style="margin-top: -1150px; margin-left: 900px;">
 								<label>합의자</label>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;" data-name="">
@@ -216,17 +202,17 @@
 			</div>
 		</div>
 
-		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-		<script
-			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-		<script
-			src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-		<script
-			src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+		
+		
 
 
 
-		<!-- 모달 관련 js -->
+
+			<!-- 모달 관련 js -->
 			<script>
 			
 			// 로그인 한 사람 은 트리구조에서 지우기 
@@ -256,7 +242,7 @@
 		                    .map(node => ({
 		                        id: node.nodeId,
 		                        text: node.nodeName,
-		                        state: { opened: false },
+		                        state: { opened: true },
 		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
 		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
 		                    }));
@@ -284,8 +270,8 @@
 		                        check_callback: false,
 		                        data: [companyNode]
 		                    },
-		                    plugins: ["types", "selectbox"],
-		                    types: {
+		                    'plugins': ['checkbox'],
+		                    "types": {
 		                        default: { icon: "ri-team-fill" },
 		                        file: { icon: "ri-user-2-fill" }
 		                    }
@@ -306,9 +292,9 @@
 		                if (modalElement) {
 		                    const modal = new bootstrap.Modal(modalElement, {
 		                        backdrop: 'static',
-		                        keyboard: false // ESC로 닫기 방지
+		                        keyboard: false 
 		                    });
-		                    modal.show(); // 모달 표시
+		                    modal.show(); 
 		                    
 		                    // 등록 버튼 이벤트
 		                    $(document).on('click', '#successBtn', function() {

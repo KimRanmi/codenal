@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.Approver;
 
 public interface ApproverRepository extends JpaRepository<Approver, Long>{
@@ -46,5 +47,8 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	@Modifying
 	@Query("update Approver a set a.approvalStatus = 1 where a.approval.approvalNo =?1 and a.approverPriority = ?2")
 	int updateNextEmpIdStatus(Long approvalNo, int nextCurrentPriority);
+	
+	// approver 조회
+	List<Approver> findByApproval(Approval approval);
 	
 }

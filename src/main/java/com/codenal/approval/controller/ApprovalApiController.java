@@ -219,17 +219,16 @@ public class ApprovalApiController {
 			Map<String, List<Long>> approverList = new HashMap<String,List<Long>>();
 			approverList.put("합의자", agree);
 			approverList.put("결재자", approver);
-						
-			Map<String, Long> apn = new HashMap<String,Long>();
-			apn.put("결재번호", updateApproval.getApprovalNo());
+			
+			System.out.println("Updated Approval: " + updateApproval);
+			System.out.println("Approver List: " + approverList);
 						
 			approverService.updateApprover(approverList,updateApproval);
 			
-			
-			
+
 			
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "전자결재 정상적으로 수정되었습니다.");
+			resultMap.put("res_msg", "대기함으로 이동합니다.");
 			ApprovalFileDto alf = new ApprovalFileDto();
 			alf.setApproval(updateApproval);
 
@@ -241,8 +240,8 @@ public class ApprovalApiController {
 
 					String savedFileName = approvalFileService.upload(file, updateApproval);
 					if (savedFileName == null) {
-						resultMap.put("res_code", "404");
-						resultMap.put("res_msg", "파일 업로드에 실패했습니다.");
+						resultMap.put("res_code", "200");
+						resultMap.put("res_msg", "대기함으로 이동합니다.");
 						return resultMap;
 					}
 				}

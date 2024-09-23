@@ -155,27 +155,23 @@
 							</div>
 							
 							<!-- 모달 생성 -->
-							<div class="modal fade" id="staticBackdrop"
-								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-								role="dialog" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered" role="document">
-									<div class="modal-content">
-										<div class="modal-body text-left">
-											<div class="mt-1">
-												<h4 class="mb-3">직원 등록</h4>
-												<div id="treeMenu"></div>
-												<div id="treeAdd"></div>
-												<div class="hstack gap-9">
-													<a id="successBtn" class="btn btn-success">완료</a> <a
-														href="javascript:void(0);"
-														class="btn btn-link link-success fw-medium"
-														data-bs-dismiss="modal"><i
-														class="ri-close-line me-1 align-middle" id="resetBtn"></i>초기화</a>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
+							<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+							    <div class="modal-dialog modal-dialog-centered" role="document">
+							        <div class="modal-content">
+							            <div class="modal-header">
+							                <h5 class="modal-title" id="myModalLabel">직원 등록</h5>
+							                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							            </div>
+							            <div class="modal-body text-left">
+							                <div id="treeMenu"></div>
+							                <div id="treeAdd"></div>
+							            </div>
+							            <div class="modal-footer">
+							                <button type="button" class="btn btn-light" data-bs-dismiss="modal">초기화</button>
+							                <button type="button" class="btn btn-success" id="successBtn">완료</button>
+							            </div>
+							        </div>
+							    </div>
 							</div>
 							
 							<!-- 합의자, 결재자 선택  -->
@@ -315,10 +311,14 @@
 		                        check_callback: false,
 		                        data: [companyNode]
 		                    },
-		                    plugins: ["types", "selectbox"],
+		                    plugins: ["types", "checkbox"],
 		                    types: {
 		                        default: { icon: "ri-team-fill" },
 		                        file: { icon: "ri-user-2-fill" }
+		                    },
+		                    selectbox: {
+		                        multiple: true, 
+		                        select: true    
 		                    }
 		                }).on('select_node.jstree', function(e, data) {
 		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
@@ -502,7 +502,7 @@
 						Swal.fire({
 							icon: 'success',
 							title : '성공',
-							text : data.reg_msg
+							text : data.res_msg
 						}).then(() =>{
 							location.href = "/approval/list?num=0";
 						});
@@ -510,7 +510,7 @@
 						Swal.fire({
 							icon : 'error',
 							title : '실패',
-							text : data.reg_msg
+							text : data.res_msg
 						})
 					}
 				})

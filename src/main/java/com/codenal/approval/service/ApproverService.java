@@ -133,11 +133,11 @@ public class ApproverService {
 				List<Long> agree = (List<Long>)obj.get("합의자");
 				List<Long> approver = (List<Long>)obj.get("결재자");
 				
-				// 존재하지 않을수도 있는 경우를 위한 타입
-				Optional<Approver> apv = approverRepository.findById(updateApproval.getApprovalNo());
-				
-				// 기존에 있던 approver들 삭제
-				approverRepository.delete(apv.get());
+				// approver 지우기
+				List<Approver> approverList = approverRepository.findByApproval(updateApproval);
+				for (Approver apv : approverList) {
+				    approverRepository.delete(apv);
+				}
 				
 				// 합의자 등록 (합의자는 없을 수도 있음)
 				if(!agree.isEmpty()) {
