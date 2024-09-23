@@ -10,6 +10,6 @@ import com.codenal.document.domain.DocumentSharedUsersId; // 복합 키 클래�
 
 @Repository
 public interface DocumentSharedUsersRepository extends JpaRepository<DocumentSharedUsers, DocumentSharedUsersId> {
-    // custom 메서드 추가
-    List<DocumentSharedUsers> findByDocSharedWithEmpId(Long docSharedWithEmpId); // 필드명 수정
+	boolean existsById(DocumentSharedUsersId id);
+    List<DocumentSharedUsers> findByDocSharedWithEmpId(Long docSharedWithEmpId);
 }

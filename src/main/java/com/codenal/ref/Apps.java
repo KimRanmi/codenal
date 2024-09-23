@@ -8,11 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class Apps {
 	
 
-	@GetMapping("/admin-join")
-	public String admin_join() {
-		return "admin/join";
-	}
-
 	@GetMapping("/apps-calendar")
 	public String apps_calendar() {
 		return "apps/calendar";

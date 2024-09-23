@@ -1,6 +1,6 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
@@ -8,16 +8,16 @@
 </th:block>
 
 <head>
- 	<!-- Cleave.js CDN 추가 -->
-   <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
-     <!-- flatpickr CSS 추가 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <!-- flatpickr JS 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-      <!-- SweetAlert2 CSS 추가 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <!-- SweetAlert2 JS 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Cleave.js CDN 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+<!-- flatpickr CSS 추가 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- flatpickr JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- SweetAlert2 CSS 추가 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- SweetAlert2 JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -26,115 +26,99 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card">
-				<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
+					<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
 					<form id="employeeAddFrm" class="was-validated" method="POST">
 						<div class="card-header">
-							<h5 class="card-title mb-0">신규 직원 등록</h5>
+							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: bold;">신규 직원 등록</h5>
 						</div>
 						<div class="card-body">
 							<div class="row g-4">
-							
-							<!-------------------- 이름 + 사번---------------------->
+
+								<!-------------------- 이름 + 사번---------------------->
 								<div class="col-lg-6">
 									<div>
-										<label for="admin-new-name" class="form-label" name="emp_name">이름<span
-												class="text-danger">*</span></label>
-										<input type="text" class="form-control" id="admin-new-name" 
-												placeholder="이름을 입력하세요." required />
+										<label for="admin-new-name" class="form-label" name="emp_name">이름<span class="text-danger">*</span></label> 
+										<input type="text" class="form-control" id="admin-new-name" placeholder="이름을 입력하세요." required />
 										<div class="invalid-feedback">필수 정보</div>
 									</div>
 								</div>
 								<div class="col-lg-6">
 									<div>
-										<label for="admin-new-id" class="form-label" name="emp_id">사번<span 
-											class="text-danger"></span></label>
+										<label for="admin-new-id" class="form-label" name="emp_id">사번<span class="text-danger"></span></label> 
 										<input type="text" class="form-control" id="admin-new-id" disabled />
 									</div>
 								</div>
-							<!-------------------- 개인 번호 + 주민 등록 번호 ---------------------->
+								<!-------------------- 개인 번호 + 주민 등록 번호 ---------------------->
 								<div class="col-lg-6">
 									<div>
-										<label for="admin-new-phone" class="form-label" name="emp_phone">개인 번호<span
-												class="text-danger">*</span></label>
-										<input type="text" class="form-control" id="admin-new-phone" 
-												placeholder="번호를 입력하세요. (숫자만)" required>
+										<label for="admin-new-phone" class="form-label" name="emp_phone" >개인 번호<span class="text-danger">*</span></label> 
+										<input type="text" class="form-control" id="admin-new-phone" placeholder="번호를 입력하세요. (숫자만)" required>
 										<div class="invalid-feedback">필수 정보</div>
 									</div>
 								</div>
 								<div class="col-lg-6">
 									<div>
-										<label for="admin-new-ssn" class="form-label" name="emp_ssn">주민 등록 번호<span
-												class="text-danger">*</span></label>
-										<input type="text" class="form-control" id="admin-new-ssn" 
-												placeholder="주민 등록 번호를 입력하세요. (숫자만)" required />		
+										<label for="admin-new-ssn" class="form-label" name="emp_ssn">주민 등록 번호<span class="text-danger">*</span></label> 
+										<input type="text" class="form-control" id="admin-new-ssn" placeholder="주민 등록 번호를 입력하세요. (숫자만)" required />
 										<div class="invalid-feedback">필수 정보</div>
 									</div>
 								</div>
-			
-							<!-------------------- 주소 + 상세 주소 ---------------------->
+
+								<!-------------------- 주소 + 상세 주소 ---------------------->
 								<div class="col-md-6">
 									<div>
-										<label for="admin-new-address" class="form-label" name="emp_address">주소 <span
-												class="text-danger"></span></label>
-										<input type="text" class="form-control" id="admin-new-address"
-											placeholder="주소를 검색하세요." />		
+										<label for="admin-new-address" class="form-label" name="emp_address">주소 <span class="text-danger"></span></label> 
+										<input type="text" class="form-control" id="admin-new-address" placeholder="주소를 검색하세요." />
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div>
-										<label for="admin-new-address-detail" class="form-label" name="emp_address_detail">상세 주소 <span
-												class="text-danger"></span></label>
-										<input type="text" class="form-control" id="admin-new-address-detail"
-											placeholder="상세 주소를 입력하세요" />		
+										<label for="admin-new-address-detail" class="form-label" name="emp_address_detail">상세 주소 <span class="text-danger"></span></label> 
+										<input type="text" class="form-control" id="admin-new-address-detail" placeholder="상세 주소를 입력하세요" />
 									</div>
 								</div>
-								
-							<!-------------------- 부서 + 직급 ---------------------->
+
+								<!-------------------- 부서 + 직급 ---------------------->
 								<div class="col-md-6">
-								    <div>
-								        <label for="admin-new-dept" class="form-label" name="dept_no">부서</label>
-								        <input type="text" class="form-control" id="admin-new-dept"
-											placeholder="부서를 입력하세요" />		
-								        <!-- <select name="deptCode" id="dept" class="form-select">
+									<div>
+										<label for="admin-new-dept" class="form-label" name="dept_no">부서</label> 
+										<input type="text" class="form-control" id="admin-new-dept" placeholder="부서를 입력하세요" />
+										<!-- <select name="deptCode" id="dept" class="form-select">
 								            <option value="">부서를 선택하세요.</option>
 								        </select>
 								        <div class="invalid-feedback">필수 정보</div> -->
-								    </div>
+									</div>
 								</div>
 
 								<div class="col-md-6">
 									<div>
-										<label for="admin-new-job" class="form-label" name="job_no">직급</label>
-										 <input type="text" class="form-control" id="admin-new-job"
-											placeholder="직급을 입력하세요" />		
+										<label for="admin-new-job" class="form-label" name="job_no">직급</label> 
+										<input type="text" class="form-control" id="admin-new-job" placeholder="직급을 입력하세요" />
 										<div class="invalid-feedback">필수 정보</div>
 									</div>
 								</div>
-								
-							<!-------------------- 입사일 + 퇴사일 ---------------------->
-								 <div class="col-lg-6">
-                                    <div>
-                                        <label for="admin-new-hire" class="form-label">입사일 <span
-                                                class="text-danger">*</span></label>
-                                      	<input type="text" class="form-control" id="admin-new-hire" name="emp_hire"
-                                            data-provider="flatpickr" data-date-format="Y-m-d"
-                                            placeholder="입사일을 선택하세요." required /> 
-                                        <div class="invalid-feedback">필수 정보</div>
-                                    </div>
-                                </div>
+
+								<!-------------------- 입사일 + 퇴사일 ---------------------->
 								<div class="col-lg-6">
 									<div>
-										<label for="admin-new-end" class="form-label">퇴사일 <span
-												class="text-danger"></span></label>
-										<input type="text" class="form-control" id="admin-new-end" disabled />		
+										<label for="admin-new-hire" class="form-label">입사일 <span class="text-danger">*</span></label> 
+										<input type="text" class="form-control" id="admin-new-hire" name="emp_hire" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="입사일을 선택하세요." required />
+										<div class="invalid-feedback">필수 정보</div>
 									</div>
 								</div>
-							<!-------------------- 완료 + 취소 ---------------------->
+								<div class="col-lg-6">
+									<div>
+										<label for="admin-new-end" class="form-label">퇴사일 <span class="text-danger"></span></label> 
+										<input type="text" class="form-control" id="admin-new-end" disabled />
+									</div>
+								</div>
+								<!-------------------- 완료 + 취소 ---------------------->
 								<div class="col-lg-12">
-									<div class="hstack justify-content-end gap-2">
-										<input type="submit" class="btn btn-primary" value="등록">
-										<button type="button" class="btn btn-ghost-danger"><i
-												class="ri-close-line align-bottom"></i> 취소</button>
+									<div class="hstack gap-2 justify-content-end">
+										<input type="submit" class="btn btn-primary btn-border w-xs" value="등록">
+										<input type="submit" class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs" value="취소" 
+										th:onclick="|location.href='@{/admin/list}'|">
+																			
 									</div>
 								</div>
 							</div>
@@ -152,17 +136,18 @@
 
 	<th:block layout:fragment="pagejs">
 
-	<script>
-	/* 	개인 번호 (000-0000-0000) */
-	if (document.querySelector("#admin-new-phone")) {
+		<script>
+	/* 	개인 번호 (010-0000-0000) */
+		if (document.querySelector("#admin-new-phone")) {
 	    var cleaveBlocks = new Cleave('#admin-new-phone', {
-	        delimiters: ['-', '-'],
-	        blocks: [3, 4, 4]
+	        delimiters: ['010-', '-'],
+	        blocks: [0, 4, 4]
 	    });
 	}
 	
 	/* 주민 등록 번호 (000000-0000000) */
 	if (document.querySelector("#admin-new-ssn")) {
+		  document.querySelector("#admin-new-phone").value = '010-'
 	    var cleaveBlocks = new Cleave('#admin-new-ssn', {
 	        delimiters: ['-', '-'],
 	        blocks: [6, 7]
@@ -207,6 +192,9 @@
 	    const dept_no = document.getElementById("admin-new-dept").value;
 	    const job_no = document.getElementById("admin-new-job").value;
 	    const emp_hire = document.getElementById("admin-new-hire").value;
+	    const emp_address = document.getElementById("admin-new-address").value;
+	    const emp_address_detail = document.getElementById("admin-new-address-detail").value;
+
 	    
 	    if (emp_name === '') {
 	        vali_text = "이름을 입력하세요";
@@ -239,14 +227,18 @@
 	    }
 	
 	    // 서버로 전송할 데이터 객체
-	    const emp_auth = 'USER';  // 직원 USER 고정 NULL 안 되게 해놓기
+	    const emp_auth = 'USER';  
+	    const emp_status = 'Y';
 	    const obj = {
 		    empName: emp_name,
 		    empPhone: emp_phone,
 		    empSsn: emp_ssn,
+		    empAddress: emp_address,
+		    empAddressDetail: emp_address_detail,
 		    deptNo: dept_no,
 		    jobNo: job_no,
 		    empHire: emp_hire,
+		    empStatus : emp_status,
 		    empAuth: emp_auth
 		};
 
@@ -254,7 +246,7 @@
 	    const jsonData = JSON.stringify(obj);
 	    const csrfToken = document.getElementById("csrf_token").value;
 	
-	    fetch('/join', {
+	    fetch('/admin/join', {
 	        method: 'POST',
 	        headers: {
 	            "Content-Type": "application/json;charset=utf-8",
@@ -263,29 +255,29 @@
 	        },     
 	        body: jsonData
 	    })
-	  
+
 	        
-	    .then(response => response.json())
+	     .then(response => response.json())
 	    .then(data => {
 	        if (data.res_code === '200') {
 	            Swal.fire({
 	                icon: 'success',
-	                title: '성공',
+	                title: '등록 성공!',
 	                text: data.res_msg,
 	                confirmButtonText: "닫기"
 	            }).then(() => {
-	                location.href = "/board";
+	                location.href = "/admin/list";
 	            });
 	        } else {
 	            Swal.fire({
 	                icon: 'error',
-	                title: '실패',
+	                title: '등록 실패!',
 	                text: data.res_msg,
 	                confirmButtonText: "닫기"
 	            });
 	        }
 	       
-	    });
+	    }); 
 	});
 	</script>
 	</th:block>

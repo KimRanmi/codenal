@@ -26,6 +26,7 @@ public class DocumentDto {
     private String docPath;
     private BigDecimal docSize;
     private Long docEmpId;
+    private String uploaderName; 
 
     // 엔터티를 DTO로 변환하는 메서드
     public static DocumentDto fromEntity(Documents documents) {
@@ -38,6 +39,7 @@ public class DocumentDto {
                 .docPath(documents.getDocPath())
                 .docSize(documents.getDocSize())
                 .docEmpId(documents.getDocEmpId())
+                .uploaderName(documents.getEmployee() != null ? documents.getEmployee().getEmpName() : "Unknown")  // 직원 이름 설정
                 .build();
     }
 

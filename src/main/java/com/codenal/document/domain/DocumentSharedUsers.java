@@ -22,6 +22,7 @@ public class DocumentSharedUsers {
     private Long docSharedWithEmpId;
 
     @ManyToOne
+    @MapsId("docSharedNo") // 복합 키의 일부로 설정된 docSharedNo와 연동
     @JoinColumn(name = "doc_shared_no", referencedColumnName = "doc_no")
     private Documents documents;
 }

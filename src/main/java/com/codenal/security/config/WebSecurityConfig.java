@@ -5,10 +5,14 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,6 +29,8 @@ import com.codenal.security.service.SecurityService;
 public class WebSecurityConfig {
 
 	private final DataSource dataSource;
+	
+	
 
 	@Autowired
 	public WebSecurityConfig(DataSource dataSource) {
@@ -34,16 +40,22 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityService securityService) throws Exception {
 		http
-		 // CORS 설정 적용
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+		// CORS 설정 적용
+		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
-				 .requestMatchers("/list").permitAll() 
-				 .requestMatchers("/mypage/**").authenticated()
-				 .requestMatchers("/documents/**").authenticated() 
-				 .anyRequest().authenticated()
+				.requestMatchers("/admin/list").permitAll()
+				.requestMatchers("/admin/join").permitAll()
+				.requestMatchers("/admin/dept").permitAll()
+				.requestMatchers("/announce/createEnd").permitAll()
+				.requestMatchers("/announce/delete/**").permitAll()
+				.requestMatchers("/announce/updateEnd/**").permitAll()
+				.requestMatchers("/employee/addressBook/**").permitAll()
+				.requestMatchers("/mypage/**").authenticated()
+				.requestMatchers("/documents/**").authenticated() 
+				.anyRequest().authenticated()
 				)
-		
+
 		.formLogin(login ->
 		login.loginPage("/auth-signin-basic")
 		.loginProcessingUrl("/auth-signin-basic")
@@ -70,19 +82,19 @@ public class WebSecurityConfig {
 	}
 
 	// CORS 설정을 위한 Bean 정의
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용할 도메인 설정
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 허용할 메서드 설정
-        configuration.setAllowedHeaders(List.of("*")); // 허용할 헤더 설정
-        configuration.setAllowCredentials(true); // 자격 증명 허용 설정
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용할 도메인 설정
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 허용할 메서드 설정
+		configuration.setAllowedHeaders(List.of("*")); // 허용할 헤더 설정
+		configuration.setAllowCredentials(true); // 자격 증명 허용 설정
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 적용
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration); // 모든 경로에 적용
 
-        return source;
-    }
+		return source;
+	}
 	@Bean
 	public MyLoginSuccessHandler myLoginSuccessHandler() {
 		return new MyLoginSuccessHandler();
@@ -100,10 +112,17 @@ public class WebSecurityConfig {
 		return jdbcTokenRepository;
 	}
 
-	
-
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return (web -> 
+		web.ignoring()
+		.requestMatchers(
+				PathRequest.toStaticResources().atCommonLocations()
+				));
 	}
 }

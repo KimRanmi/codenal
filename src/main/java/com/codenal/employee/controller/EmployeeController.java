@@ -53,9 +53,6 @@ public class EmployeeController {
                                 @RequestParam(value = "empAddress", required = false) String empAddress,
                                 @RequestParam(value = "empAddressDetail", required = false) String empAddressDetail,
                                 @RequestParam(value = "signatureImage",required = false) String signatureImage,
-
-                            
-
                                 Authentication authentication,HttpSession session) {
         Long empId = Long.parseLong(authentication.getName());
 

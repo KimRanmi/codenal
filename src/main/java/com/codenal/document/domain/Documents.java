@@ -1,9 +1,27 @@
 package com.codenal.document.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.codenal.employee.domain.Employee;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "documents")
@@ -40,4 +58,9 @@ public class Documents {
 
     @Column(name = "doc_emp_id")  // 문서 등록한 직원 ID
     private Long docEmpId;
+    
+ // 직원과 연관관계 설정 (ManyToOne)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doc_emp_id", referencedColumnName = "emp_id", insertable = false, updatable = false)
+    private Employee employee;
 }
