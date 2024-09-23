@@ -26,21 +26,22 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		         +"WHERE a.approvalStatus = ?1 and e.empId = ?2 ")
 		Page<Object[]> findList(int num,Long id,Pageable pageable);
 		
+		
 		// 수신리스트
-		@Query(value="SELECT a,f,v FROM Approval a "
-				 + "JOIN a.employee e "
-		         + "JOIN a.approvalCategory c "
-		         + "JOIN c.approvalForm f "
-		         + "JOIN a.approver v "
-		         + "where a.approvalStatus = ?1 and v.employee.empId = ?2 and v.approverPriority =?3 "
-		         + "ORDER BY v.approverPriority ASC",
-		         countQuery = "SELECT count(DISTINCT a) FROM Approval a "
-		         +"JOIN a.employee e "
-		         +"JOIN a.approvalCategory c "
-		         +"JOIN c.approvalForm f "
-		         +"JOIN a.approver v "
-		         +"WHERE a.approvalStatus = ?1 and v.employee.empId= ?2 and v.approverPriority =?3")
-		Page<Object[]> findinboxList(int num,Long id,int priority,Pageable pageable);
+		@Query(value = "SELECT a, f, v FROM Approval a "
+	             + "JOIN a.employee e "
+	             + "JOIN a.approvalCategory c "
+	             + "JOIN c.approvalForm f "
+	             + "JOIN a.approver v "
+	             + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2 ",
+	       countQuery = "SELECT count(DISTINCT a) FROM Approval a "
+	                  + "JOIN a.employee e "
+	                  + "JOIN a.approvalCategory c "
+	                  + "JOIN c.approvalForm f "
+	                  + "JOIN a.approver v "
+	                  + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2")
+		Page<Object[]> findinboxList(int status, Long empId, Pageable pageable);
+
 		
 		
 		// usage값이 null일 수도 있어서 left join 처리
@@ -58,6 +59,6 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		Approval findByApprovalNo(Long approvalNo);
 		
 		@Modifying
-		@Query(value="update Approval a set a.approvalStatus = ?1 where a.approvalNo = ?2 ")
+		@Query(value="update Approval a set a.approvalStatus = ?1 where a.approvalNo = ?2")
 		int updateStatus(int status,Long approvalNo);
 }

@@ -20,7 +20,8 @@ import lombok.ToString;
 
 public class ApproverDto {
 	
-	private Long approval_no;
+	private Long approver_no;
+	private Approval approval;
 	private Employee employee;
 	private String approver_type;
 	private int approval_status;
@@ -35,6 +36,7 @@ public class ApproverDto {
 				.approvalDate(approval_date)
 				.rejectComment(reject_comment)
 				.approverPriority(approver_priority)
+				.approval(approval)
 				.build();
 	}
 	
@@ -45,6 +47,7 @@ public class ApproverDto {
 				.approval_date(a.getApprovalDate())
 				.reject_comment(a.getRejectComment())
 				.approver_priority(a.getApproverPriority())
+				.approval(approval)
 				.build();
 	}
 }

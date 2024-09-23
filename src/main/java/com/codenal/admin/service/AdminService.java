@@ -14,11 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import com.codenal.admin.domain.Departments;
-
-import com.codenal.admin.domain.Jobs;
 import com.codenal.admin.repository.AdminRepository;
+import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.annual.domain.AnnualLeaveManageDto;
+import com.codenal.annual.repository.AnnualLeaveManageRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 
@@ -29,12 +28,14 @@ public class AdminService {
 	// 암호화
 	// Spring Security 설정 클래스에서 PasswordEncoder를 빈으로 등록
 	private final AdminRepository adminRepository;
+	private final AnnualLeaveManageRepository annualLeaveManageRepository;
 
 	@Autowired
 	public AdminService(PasswordEncoder passwordEncoder,
-			AdminRepository adminRepository) {
+			AdminRepository adminRepository, AnnualLeaveManageRepository annualLeaveManageRepository) {
 		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
+		this.annualLeaveManageRepository = annualLeaveManageRepository;
 	}
 
 	// ------------------ 신규 직원 등록
@@ -65,7 +66,15 @@ public class AdminService {
 
 			Employee employee = dto.toEntity();
 			adminRepository.save(employee); // DB 저장
-
+			
+			// 연차 초기화
+			AnnualLeaveManageDto almDto = new AnnualLeaveManageDto();
+			
+			almDto.setEmployee(employee);
+			
+			AnnualLeaveManage alm = almDto.toEntity();
+			annualLeaveManageRepository.save(alm);
+			
 			result = 1;
 
 		} catch (Exception e) {

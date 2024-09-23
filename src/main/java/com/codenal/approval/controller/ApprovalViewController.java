@@ -48,7 +48,8 @@ public class ApprovalViewController {
 		this.employeeService = employeeService;
 		this.addressBookService = addressBookService;
 	}
-
+	
+	// 품의서 , 요청서 이동
 	// 생성 nav에서 숫자값을 받아와서 create로 전달(휴가신청서는 따로 관리)
 	@GetMapping("/approval/create/{no}")
 	public String createApproval(Model model, @PathVariable("no") int no) {
@@ -105,6 +106,7 @@ public class ApprovalViewController {
 	@GetMapping("/approval/inboxList")
 	public String inboxListApproval(Model model, @RequestParam(value="num", defaultValue="0") int num,
 			@PageableDefault(page = 0, size = 10, sort = "approvalNo", direction = Sort.Direction.DESC) Pageable pageable) {
+		
 		// 현재 인증된 사용자 정보 가져오기
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
@@ -114,12 +116,14 @@ public class ApprovalViewController {
 		
 		model.addAttribute("resultList", resultList);
 		
+		System.out.println("리스트 출력 : "+resultList);
+		
 		model.addAttribute("num", num);
 
 		return "apps/approval_list_inbox";
 	}
 
-	// 상세 조회
+	// 상신함 상세 조회
 	@GetMapping("/approval/{approval_no}")
 	public String selectApprovalOne(Model model, @PathVariable("approval_no") Long approval_no) {
 		String returnResult = null;
@@ -164,6 +168,7 @@ public class ApprovalViewController {
 		
 		return "apps/" + returnResult;
 	}
+	
 
 	// 회수함에서 상세조회
 	@GetMapping("/approval/detail/{approval_no}")
@@ -173,6 +178,13 @@ public class ApprovalViewController {
 		System.out.println("상세조회 시작");
 
 		Map<String, Object> resultList = approvalService.detailApproval(approval_no);
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Long id = Long.parseLong(username);
+
+		Employee emp = employeeService.getEmployeeById(id);
+		
 
 		// 타입에 따라 리턴값 다르게 처리 -> 1이면 근태신청서 2면 품의서 3이면 요청서
 		ApprovalBaseFormType af = (ApprovalBaseFormType) resultList.get("baseForm");
@@ -198,6 +210,7 @@ public class ApprovalViewController {
 		model.addAttribute("dto", resultList);
 		model.addAttribute("type", typeInt);
 		model.addAttribute("cateList", cateList);
+		model.addAttribute("emp", emp);
 		return "apps/" + returnResult;
 	}
 

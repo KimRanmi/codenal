@@ -3,6 +3,7 @@ package com.codenal.approval.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -28,81 +29,163 @@ public class ApproverService {
 		this.employeeRepository = employeeRepository;
 	}
 	
+	
+	// 결재자, 합의자 등록 (상태 수정)
+	@Transactional
 	public void createApprover(Map<String, List<Long>> obj, Approval createdApproval) {
 		
 		// 합의자, 결재자 담아오기
 		List<Long> agree = (List<Long>)obj.get("합의자");
 		List<Long> approver = (List<Long>)obj.get("결재자");
 		
-		// 합의자 등록
-		for(int i=0; i<agree.size();i++) {
-			Long id = agree.get(i);
-			System.out.println(id);
-			Employee emp = employeeRepository.findByEmpId(id);
-			Approver approvers = Approver.builder()
-									.approval(createdApproval)
-									.approverPriority(i+1)
-									.approverType("합의자")
-									.employee(emp)
-									.build();
+		// 합의자 등록 (합의자는 없을 수도 있음)
+		if(!agree.isEmpty()) {
+			Long firstId = agree.get(0);
+			for(int i=0; i<agree.size();i++) {
+				Long id = agree.get(i);
+				System.out.println(id);
+				Employee emp = employeeRepository.findByEmpId(id);
+				Approver approvers = Approver.builder()
+						.approval(createdApproval)
+						.approverPriority(i+1)
+						.approverType("합의자")
+						.employee(emp)
+						.build();
+				approverRepository.save(approvers);
+			}
+			approverRepository.firstUpdateStatus(firstId,createdApproval.getApprovalNo());
 			
-			approverRepository.save(approvers);
-		}
-		
-		// 결재자 등록
-		for(int i=0; i<approver.size();i++) {
-			Long id = approver.get(i);
-			Employee emp = employeeRepository.findByEmpId(id);
-			Approver approvers = Approver.builder()
-									.approval(createdApproval)
-									.approverPriority(agree.size()+i+1)
-									.approverType("결재자")
-									.employee(emp)
-									.build();
+			// 결재자 등록
+			for(int i=0; i<approver.size();i++) {
+				Long id = approver.get(i);
+				Employee emp = employeeRepository.findByEmpId(id);
+				Approver approvers = Approver.builder()
+						.approval(createdApproval)
+						.approverPriority(agree.size()+i+1)
+						.approverType("결재자")
+						.employee(emp)
+						.build();
+				
+				approverRepository.save(approvers);
+			}
 			
-			approverRepository.save(approvers);
+		}else { // 합의자가 없을경우 결재자를 우선순위 1로 두기
+			Long firstId = approver.get(0);
+			for(int i=0; i<approver.size();i++) {
+				Long id = approver.get(i);
+				Employee emp = employeeRepository.findByEmpId(id);
+				Approver approvers = Approver.builder()
+						.approval(createdApproval)
+						.approverPriority(agree.size()+i+1)
+						.approverType("결재자")
+						.employee(emp)
+						.build();
+				
+				approverRepository.save(approvers);
+			}
+			approverRepository.firstUpdateStatus(firstId,createdApproval.getApprovalNo());
 		}
 		
 		
 	}
 	
 	
-	// approver 1순위 -> 2순위
 	@Transactional
 	public int consentApprover(Long no, Long loginId) {
-		int status = 1;
-		// 전자결재 테이블 상태 변경
-		int ape = approvalRepository.updateStatus(status, no);
+	    int status = 1; 
+	    int approverStatus = 2;
+	    int app = 0;
+	    
+	    // 결재 시간
+	    LocalDateTime ldt = LocalDateTime.now();
 
-		// 현재 approver 우선순위 상태 확인
-		int currentPriority = approverRepository.findApproverPriority(no, loginId);
+	    // 현재 approver 우선순위 상태 확인 
+	    int currentPriority = approverRepository.findApproverPriority(no, loginId);
+	    
+	    // 결재자 카운트
+	    Long approverCount = approverRepository.countApprover(no);
+	    
+	    // 전자결재 상태 변경 (첫 번째 결재자일 경우)
+	    if (currentPriority == 1) {
+	        approvalRepository.updateStatus(status, no);
+	    }
+	    
+	    // 결재자 상태 변경
+	    app = approverRepository.updateStatus(approverStatus, ldt, no, loginId);
+	    System.out.println("출력 : "+app);
+	    
+	    // 다음 결재자 상태 변경
+	    approverRepository.updateNextEmpIdStatus(no, currentPriority + 1);
 
-		// 결재자 카운트
-		Long approverCount = approverRepository.countApprover(no);
+	    // 마지막 결재자인 경우 전자결재 완료 처리
+	    if (currentPriority == approverCount) {
+	        approvalRepository.updateStatus(2, no); 
+	    }
 
-		// 결재자 테이블 상태 변경
-		LocalDateTime ldt = LocalDateTime.now();
-		int app = approverRepository.updateStatus(status, ldt, no, loginId);
-
-		if (app == 0) {
-			// 다음 우선순위 결재자가 있는지 확인
-			if (currentPriority < approverCount) {
-				int nextPriority = currentPriority + 1;
-				int nextApproverCount = approverRepository.findByApprovalNoAndPriority(no, nextPriority, loginId);
-
-				if (nextApproverCount > 0) {
-					// 다음 우선순위 결재자 상태 업데이트
-					approverRepository.updateStatus(status, ldt, no, loginId);
+	    return app;
+	}
+	
+	
+	// 합의자 결재자 수정하기
+	@Transactional
+	public void updateApprover(Map<String, List<Long>> obj, Approval updateApproval) {
+		// 합의자, 결재자 담아오기
+				List<Long> agree = (List<Long>)obj.get("합의자");
+				List<Long> approver = (List<Long>)obj.get("결재자");
+				
+				// 존재하지 않을수도 있는 경우를 위한 타입
+				Optional<Approver> apv = approverRepository.findById(updateApproval.getApprovalNo());
+				
+				// 기존에 있던 approver들 삭제
+				approverRepository.delete(apv.get());
+				
+				// 합의자 등록 (합의자는 없을 수도 있음)
+				if(!agree.isEmpty()) {
+					Long firstId = agree.get(0);
+					for(int i=0; i<agree.size();i++) {
+						Long id = agree.get(i);
+						System.out.println(id);
+						Employee emp = employeeRepository.findByEmpId(id);
+						Approver approvers = Approver.builder()
+								.approval(updateApproval)
+								.approverPriority(i+1)
+								.approverType("합의자")
+								.employee(emp)
+								.build();
+						approverRepository.save(approvers);
+					}
+					approverRepository.firstUpdateStatus(firstId,updateApproval.getApprovalNo());
+					
+					// 결재자 등록
+					for(int i=0; i<approver.size();i++) {
+						Long id = approver.get(i);
+						Employee emp = employeeRepository.findByEmpId(id);
+						Approver approvers = Approver.builder()
+								.approval(updateApproval)
+								.approverPriority(agree.size()+i+1)
+								.approverType("결재자")
+								.employee(emp)
+								.build();
+						
+						approverRepository.save(approvers);
+					}
+					
+				}else { // 합의자가 없을경우 결재자를 우선순위 1로 두기
+					Long firstId = approver.get(0);
+					for(int i=0; i<approver.size();i++) {
+						Long id = approver.get(i);
+						Employee emp = employeeRepository.findByEmpId(id);
+						Approver approvers = Approver.builder()
+								.approval(updateApproval)
+								.approverPriority(agree.size()+i+1)
+								.approverType("결재자")
+								.employee(emp)
+								.build();
+						
+						approverRepository.save(approvers);
+					}
+					approverRepository.firstUpdateStatus(firstId,updateApproval.getApprovalNo());
 				}
-			}else {
-				approverRepository.updateStatus(status, ldt, no, loginId);
-				status = 3;
-				approvalRepository.updateStatus(status,no);
-			}
-		}
-		System.out.println("ape : " + ape);
-		System.out.println("app" + app);
-
-		return app;
+				
 	}
 }

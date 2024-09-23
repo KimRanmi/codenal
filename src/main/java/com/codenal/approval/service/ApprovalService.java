@@ -89,12 +89,11 @@ public class ApprovalService {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
+
 		  
-		  Approver apv = approverRepository.findByEmpId(emp.getEmpId());
-		  System.out.println("우선순위 : "+apv.getApproverPriority());
-		  
-		  // 우선순위 기준으로 받아오기
-	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),apv.getApproverPriority(),pageable);
+	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),pageable);
+	      
+	      System.out.println(approvalList);
 	      
 	      List<Map<String, Object>> responseList = new ArrayList<>();
 	      for (Object[] objects : approvalList.getContent()) {
@@ -124,7 +123,6 @@ public class ApprovalService {
       ApprovalFile file = approvalFileRepository.findByApprovalApprovalNo(approval_no);
       Object[] obj = object.get(0);
       
-      
       Approval approval = (Approval) obj[0];
       Employee employee = (Employee) obj[1];
       ApprovalBaseFormType baseForm = (ApprovalBaseFormType) obj[2];
@@ -149,12 +147,13 @@ public class ApprovalService {
       result.put("approver",approver);
       return result;
    }
+   
 
    // 전자결재 저장 (품의서, 요청서)
    public Approval createApproval(Map<String,Object> obj) {
       
       Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
-      System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+      
       
       ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
       System.out.println("카테고리 출력 : "+ac);

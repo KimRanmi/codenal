@@ -110,7 +110,7 @@ public class ApprovalApiController {
 			@RequestParam(value = "end_date", required = false) LocalDate endDate,
 			@RequestParam("form_code") String formCode,
 			@RequestParam(value = "time_period", required = false) String timePeriod,
-			@RequestParam(value = "file", required = false) MultipartFile file,
+			@RequestPart(value = "file", required = false) MultipartFile file,
 			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
@@ -147,11 +147,11 @@ public class ApprovalApiController {
 			if (file != null) {
 				if (approvalFileService.upload(file, createdApproval) != null) {
 					resultMap.put("res_code", "200");
-					resultMap.put("res_msg", "전자결재 등록 성공");
+					resultMap.put("res_msg", "등록 성공하였습니다. 리스트로 이동합니다.");
 				}
 			}
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "전자결재 등록 성공");
+			resultMap.put("res_msg", "등록 성공하였습니다. 리스트로 이동합니다.");
 		}
 		return resultMap;
 	}
@@ -176,6 +176,7 @@ public class ApprovalApiController {
 		if (approvalService.revoke(num) > 0) {
 			System.out.println("회수 이동");
 			resultMap.put("res_code", "200");
+			resultMap.put("res_msg", "회수함으로 이동합니다.");
 		}
 
 		return resultMap;
@@ -213,6 +214,18 @@ public class ApprovalApiController {
 		System.out.println("파일 수정 : " + file.getName());
 
 		if (updateApproval != null) {
+			
+			// 결재자 테이블로 수정하기
+			Map<String, List<Long>> approverList = new HashMap<String,List<Long>>();
+			approverList.put("합의자", agree);
+			approverList.put("결재자", approver);
+						
+			Map<String, Long> apn = new HashMap<String,Long>();
+			apn.put("결재번호", updateApproval.getApprovalNo());
+						
+			approverService.updateApprover(approverList,updateApproval);
+			
+			
 			
 			
 			resultMap.put("res_code", "200");

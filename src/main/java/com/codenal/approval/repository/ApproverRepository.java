@@ -22,16 +22,12 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	// 결재 승인 시 상태 변경
 	@Modifying
 	@Query("UPDATE Approver a SET a.approvalStatus = ?1, a.approvalDate = ?2 "
-	      + "WHERE a.approval.approvalNo = ?3 AND a.employee.empId = ?4 AND a.approverPriority = 1")
+	      + "WHERE a.approval.approvalNo = ?3 AND a.employee.empId = ?4")
 	int updateStatus(int status, LocalDateTime ldt, Long approvalNo, Long loginId);
 	
 	// 현재 우선순위 확인 
 	@Query("select a.approverPriority from Approver a where a.approval.approvalNo = ?1 and a.employee.empId = ?2")
 	int findApproverPriority(Long approvalNo, Long empId);
-	
-	// 다음 순위 확인
-	@Query("select a.approverPriority from Approver a where a.approval.approvalNo = ?1 and a.approverPriority=?2 and a.employee.empId = ?3")
-	int findByApprovalNoAndPriority(Long approvalNo, int count, Long loginId);
 	
 	// 결재자 몇순위까지 있는지 카운트
 	@Query("select count(a) from Approver a where a.approval.approvalNo =?1")
@@ -40,4 +36,15 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	//
 	@Query("select a from Approver a where a.employee.empId =?1")
 	Approver findByEmpId(Long empId);
+	
+	// 결재 처음 등록 시 첫번째 합의자 또는 결재자 상태 업데이트
+	@Modifying
+	@Query("update Approver a set a.approvalStatus = 1 where a.employee.empId =?1 and a.approval.approvalNo = ?2")
+	int firstUpdateStatus(Long id, Long approvalNo);
+	
+	// 다음 결재자 status 변경
+	@Modifying
+	@Query("update Approver a set a.approvalStatus = 1 where a.approval.approvalNo =?1 and a.approverPriority = ?2")
+	int updateNextEmpIdStatus(Long approvalNo, int nextCurrentPriority);
+	
 }

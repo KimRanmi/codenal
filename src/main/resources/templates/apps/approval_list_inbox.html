@@ -80,39 +80,34 @@
 										</thead>
 										<tbody class="list form-check-all" style="text-align: center;">
 											<!-- 수신함 상태 -->
-											<tr th:each="approval, approvalStat : ${resultList.content}"
-												th:if="${num == 0 and (approval['approval'].approvalStatus == 0) }">
-												
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
-												<td
-													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
-												<td><a
-													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
-													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td th:switch="${approval['approval'].approvalStatus}">
-													<span th:case="0">대기</span>
-												</td>
-												<td th:text="${approval['approval'].employee.empName}"></td>
-												<td th:text="${approval['approval'].approvalRegDate}"></td>
-											</tr>
-											<!-- 진행 -->
 											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 1 and approval['approval'].approvalStatus == 1}">
+												th:if="${num == 1 and approval['approver'].approvalStatus == 1}">
 												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
 													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
 													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td th:switch="${approval['approval'].approvalStatus}">
-													<span th:case="1">승인</span>
-												</td>
+												<td>대기</td>
 												<td th:text="${approval['employee'].empName}"></td>
 												<td th:text="${approval['approval'].approvalRegDate}"></td>
 											</tr>
-											<!-- 완료 상태 -->
+											<!-- 완료 -->
 											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 2 and approval['approval'].approvalStatus == 2}">
+												th:if="${num == 2 and approval['approver'].approvalStatus == 2}">
+												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+												<td
+													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
+												<td><a
+													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
+													th:text="${approval['approval'].approvalTitle}"></a></td>
+												<td>완료</td>
+												<td th:text="${approval['employee'].empName}"></td>
+												<td th:text="${approval['approval'].approvalRegDate}"></td>
+											</tr>
+											<!-- 반려 상태 -->
+											<tr th:each="approval : ${resultList.content}"
+												th:if="${num == 3 and approval['approval'].approvalStatus == 3}">
 												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
@@ -126,7 +121,7 @@
 
 											<!-- 수신참조 상태 -->
 											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 3 and approval['approval'].approvalStatus == 3}">
+												th:if="${num == 4 and approval['approval'].approvalStatus == 4}">
 												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>

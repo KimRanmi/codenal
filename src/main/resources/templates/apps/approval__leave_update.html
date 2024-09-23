@@ -253,118 +253,135 @@ select, input[type=date], input[type=text] {
 		<script
 			src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
 		
-		<script>
-	    const selectArray = []; // 선택된 이름을 저장할 배열
-	    let buttonId = '';
-	
-	    $('#button_modal1, #button_modal2').click(function() {
-	        console.log('모달이 열렸습니다.'); // 모달 열림 로그
-	        buttonId = this.id;
-	        console.log(buttonId);
-	        
-	        // 선택 배열 초기화
-	        selectArray.length = 0; 
-	
-	        $.ajax({
-	            url: '/approval/modal', // 데이터를 가져올 URL
-	            method: 'GET',
-	            dataType: 'json',
-	            success: function(data) {
-	                console.log(data); // 데이터 로그
-	
-	                // jsTree용 데이터 형식 변환
-	                const formatDataForJsTree = (nodes) => {
-	                    return nodes.map(node => ({
-	                        id: node.nodeId,
-	                        text: node.nodeName,
-	                        state: { opened: false },
-	                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
-	                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-	                    }));
-	                };
-	
-	                const formattedData = formatDataForJsTree(data);
-	                const companyNode = {
-	                    id: 'companyName',
-	                    text: 'withXwork',
-	                    state: { opened: true },
-	                    children: formattedData,
-	                    icon: 'ri-building-fill'
-	                };
-	
-	                // 기존 jsTree 인스턴스 제거
-	                if ($('#treeMenu').data('jstree')) {
-	                    $('#treeMenu').jstree("destroy");
-	                }
-	
-	                // jsTree 초기화
-	                $('#treeMenu').jstree({
-	                    'core': {
-	                        animation: 0,
-	                        check_callback: false,
-	                        data: [companyNode]
-	                    },
-	                    plugins: ["types", "selectbox"],
-	                    types: {
-	                        default: { icon: "ri-team-fill" },
-	                        file: { icon: "ri-user-2-fill" }
-	                    }
-	                }).on('select_node.jstree', function(e, data) {
-	                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
-	                    selectArray.length = 0; // 배열 초기화
-	
-	                    selectedNodes.forEach(node => {
-	                        if (node.parent !== 'companyName') {
-	                            selectArray.push(node.text); // 선택된 자식 노드의 이름 추가
-	                            console.log(node.text); // 자식 노드 이름 출력
-	                        }
-	                    });
-	                });
-	
-	                // 모달 표시
-	                const modalElement = document.getElementById('staticBackdrop');
-	                if (modalElement) {
-	                    const modal = new bootstrap.Modal(modalElement, {
-	                        backdrop: 'static',
-	                        keyboard: false // ESC로 닫기 방지
-	                    });
-	                    modal.show(); // 모달 표시
-	                    
-	                    // 등록 버튼 이벤트
-	                    $(document).on('click', '#successBtn', function() {
-	                        const selectNameElements = buttonId === "button_modal1" 
-	                            ? document.querySelectorAll('.selectedName') 
-	                            : document.querySelectorAll('.selectedName2');
-	
-	                        selectNameElements.forEach((element, index) => {
-	                            element.textContent = selectArray[index] // 선택된 이름 또는 비워두기
-	                        });
-	
-	                        modal.hide(); // 모달 닫기
-	                    });
-	
-	                 // 초기화 버튼 이벤트 -> 이건 나중에 수정
-	                    $(document).on('click', '#resetBtn', function() {
-	                        const selectNameElements = buttonId === "button_modal1" 
-	                            ? document.querySelectorAll('.selectedName') 
-	                            : document.querySelectorAll('.selectedName2');
+		<!-- 모달 관련 js -->
+			<script>
+			
+			// 로그인 한 사람 은 트리구조에서 지우기 
+			const loginId = document.getElementById('emp_id').value;
+		    const selectArray = []; // 선택된 이름을 저장할 배열
+		    let buttonId = '';
+		    
+		    $('#button_modal1, #button_modal2').click(function() {
+		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
+		        buttonId = this.id;
+		        console.log(buttonId);
+		        
+		        // 선택 배열 초기화
+		        selectArray.length = 0; 
+		
+		        $.ajax({
+		            url: '/approval/modal', // 데이터를 가져올 URL
+		            method: 'GET',
+		            dataType: 'json',
+		            success: function(data) {
+		                console.log(data); // 데이터 로그
+		
+		                // jsTree용 데이터 형식 변환. 지금 로그인한 사람 정보는 제외
+		                const formatDataForJsTree = (nodes) => {
+		                    return nodes
+		                    .filter(node => node.nodeId.toString() !== loginId)
+		                    .map(node => ({
+		                        id: node.nodeId,
+		                        text: node.nodeName,
+		                        state: { opened: false },
+		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
+		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+		                    }));
+						
+		                };
+		                const formattedData = formatDataForJsTree(data);
+		                const formattedDataLength = formattedData.length; 
+		                const companyNode = {
+		                    id: 'companyName',
+		                    text: 'withXwork',
+		                    state: { opened: true },
+		                    children: formattedData,
+		                    icon: 'ri-building-fill'
+		                };
+		
+		                // 기존 jsTree 인스턴스 제거
+		                if ($('#treeMenu').data('jstree')) {
+		                    $('#treeMenu').jstree("destroy");
+		                }
+		
+		                // jsTree 초기화
+		                $('#treeMenu').jstree({
+		                    'core': {
+		                        animation: 0,
+		                        check_callback: false,
+		                        data: [companyNode]
+		                    },
+		                    plugins: ["types", "selectbox"],
+		                    types: {
+		                        default: { icon: "ri-team-fill" },
+		                        file: { icon: "ri-user-2-fill" }
+		                    }
+		                }).on('select_node.jstree', function(e, data) {
+		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
+		                    selectArray.length = 0; // 배열 초기화
+		
+		                    selectedNodes.forEach(node => {
+		                        if (node.parent !== 'companyName') {
+		                            selectArray.push({id: node.id, text: node.text}); // 선택된 자식 노드의 이름 추가, 데이터 베이스에 보낼 id 설정
+		                            console.log(node);
+		                        }
+		                    });
+		                });
+		
+		                // 모달 표시
+		                const modalElement = document.getElementById('staticBackdrop');
+		                if (modalElement) {
+		                    const modal = new bootstrap.Modal(modalElement, {
+		                        backdrop: 'static',
+		                        keyboard: false // ESC로 닫기 방지
+		                    });
+		                    modal.show(); // 모달 표시
+		                    
+		                    // 등록 버튼 이벤트
+		                    $(document).on('click', '#successBtn', function() {
+		                        const selectNameElements = buttonId === "button_modal1" 
+		                            ? document.querySelectorAll('.selectedName') 
+		                            : document.querySelectorAll('.selectedName2');
+		
+		                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
 
-	                        selectNameElements.forEach((element) => {
-	                            if (element) { // 요소가 존재하는지 확인
-	                                element.innerHTML = ''; // 비워두기
-	                            } else {
-	                                console.warn("해당 요소가 존재하지 않습니다."); // 요소가 없을 때 경고 로그
-	                            }
-	                        });
-	                        selectArray.length = 0; // 배열 초기화
-	                    });
-	                } else {
-	                    console.error("모달 요소를 찾을 수 없습니다.");
-	                }
-	            }
-	        });
-	    });
-	</script>
+		                            for (let index = 0; index < length; index++) {
+		                                // selectArray[index]가 정의되어 있는지 확인
+		                                if (selectArray[index]) {
+		                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
+		                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
+		                                } else {
+		                                    selectNameElements[index].textContent = ''; // 비워두기
+		                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
+		                                }
+		                            }
+		
+		                        modal.hide(); // 모달 닫기
+		                    });
+		
+		                 // 초기화 버튼 이벤트 -> 이건 나중에 수정
+		                    $(document).on('click', '#resetBtn', function() {
+		                        const selectNameElements = buttonId === "button_modal1" 
+		                            ? document.querySelectorAll('.selectedName') 
+		                            : document.querySelectorAll('.selectedName2');
+
+		                        selectNameElements.forEach((element) => {
+		                            if (element) { // 요소가 존재하는지 확인
+		                                element.innerHTML = ''; // 비워두기
+		                            } else {
+		                                console.warn("해당 요소가 존재하지 않습니다."); // 요소가 없을 때 경고 로그
+		                            }
+		                        });
+		                        selectArray.length = 0; // 배열 초기화
+		                    });
+		                } else {
+		                    console.error("모달 요소를 찾을 수 없습니다.");
+		                }
+		            }
+		        });
+		    });
+		</script>
+
 		
 		
 		
@@ -409,12 +426,29 @@ select, input[type=date], input[type=text] {
             const id = document.getElementById('approvalNo').value;
             const payload = new FormData(form);
             const csrfToken = document.getElementById('csrf_token').value;
-            const content = contentEditor.getHTML();
-            payload.append("approval_content", content);
             
-            payload.forEach((value, key) => {
-                console.log(`${key}: ${value}`);
-            });
+            // 협의자, 결재자 데이터 가져오기(String 상태여서 number 형변환)
+            const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
+            .map(td => {
+            	const value = td.getAttribute('data-name');
+            	return value ? Number(value) : null;
+            })
+             .filter(Boolean);
+            
+            
+            const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
+            .map(td => {
+           	 const value = td.getAttribute('data-name');
+           	 return value ? Number(value) : null;
+            })
+            .filter(Boolean);
+
+           /* 토스트 api 안에 값 저장 */
+           const content = contentEditor.getHTML();
+           
+           	payload.append("approval_content", content);
+			payload.append("agree", agree);
+			payload.append("approver",approver);
             fetch('/approval/leaveUpdate/'+id,{
                 method: 'PUT',
                 headers: {
