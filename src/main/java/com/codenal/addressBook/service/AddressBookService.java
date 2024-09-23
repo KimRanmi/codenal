@@ -30,7 +30,7 @@ public class AddressBookService {
 		this.adminRepository = adminRepository;
 	}
 
-	// ------------------직원 목록 검색 2 (직원 정보)
+	// ------------------직원 목록 검색 (직원 정보)
 	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
 	    Page<Employee> addressBookSearch = null;
 

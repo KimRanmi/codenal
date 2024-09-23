@@ -84,6 +84,7 @@ public class AdminViewController {
 		return "admin/detail";
 	}
 
+	
 	// 직원 정보 상세 조회 (퇴사하고 JSON 반환)
 	@GetMapping("/detail/{empId}/json")
 	@ResponseBody

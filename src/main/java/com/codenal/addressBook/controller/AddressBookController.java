@@ -25,33 +25,37 @@ import com.codenal.employee.domain.EmployeeDto;
 @RequestMapping("/employee/addressBook")
 public class AddressBookController {
 
-    private final AddressBookService addressBookService;
+	private final AddressBookService addressBookService;
 
-    @Autowired
-    public AddressBookController(AddressBookService addressBookService) {
-        this.addressBookService = addressBookService;
-    }
+	@Autowired
+	public AddressBookController(AddressBookService addressBookService) {
+		this.addressBookService = addressBookService;
+	}
 
-    // 주소록 검색
-    @GetMapping("")
-    public String searchByEmployeeInfo(Model model,
-            @PageableDefault(page = 0, size = 10, sort = "empId", direction = Sort.Direction.DESC) Pageable pageable,
-            @ModelAttribute("searchDto") EmployeeDto searchDto) {
+	// 주소록 검색
+	@GetMapping("")
+	public String searchByEmployeeInfo(Model model,
+			@PageableDefault(page = 0, size = 10, sort = "empId", direction = Sort.Direction.DESC) Pageable pageable,
+			@ModelAttribute("searchDto") EmployeeDto searchDto) {
 
-        Page<EmployeeDto> resultList = addressBookService.searchByEmployeeInfo(searchDto, pageable);
+		Page<EmployeeDto> resultList = addressBookService.searchByEmployeeInfo(searchDto, pageable);
 
-        model.addAttribute("resultList", resultList);
-        model.addAttribute("searchDto", searchDto);
+		model.addAttribute("resultList", resultList);
+		model.addAttribute("searchDto", searchDto);
 
-        return "employee/addressBook";
-    }
+		return "employee/addressBook";
+	}
 
-    // TreeMenu(JsTree)
-    @GetMapping("/tree-menu")
-    @ResponseBody
-    public List<TreeMenuDto> getTreeMenu() {
-        List<TreeMenuDto> treeMenu = addressBookService.getTreeMenu();
 
-        return addressBookService.getTreeMenu();
-    }
+	// TreeMenu(JsTree)
+	@GetMapping("/tree-menu")
+	@ResponseBody
+	public List<TreeMenuDto> getTreeMenu() {
+		List<TreeMenuDto> treeMenu = addressBookService.getTreeMenu();
+
+		return addressBookService.getTreeMenu();
+	}
+
+
+
 }
