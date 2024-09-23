@@ -46,40 +46,44 @@ public class WebSecurityConfig {
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
 				.requestMatchers("/admin/list").permitAll()
 				.requestMatchers("/admin/join").permitAll()
+				.requestMatchers("/admin/update/**").permitAll()
 				.requestMatchers("/admin/dept").permitAll()
 				.requestMatchers("/announce/createEnd").permitAll()
 				.requestMatchers("/announce/delete/**").permitAll()
 				.requestMatchers("/announce/updateEnd/**").permitAll()
 				.requestMatchers("/employee/addressBook/**").permitAll()
+				.requestMatchers("/approval/**").authenticated()
+				.requestMatchers("/approval/update/**").authenticated()
+				.requestMatchers("/list").permitAll() 
 				.requestMatchers("/mypage/**").authenticated()
 				.requestMatchers("/documents/**").authenticated() 
 				.anyRequest().authenticated()
 				)
 
-		.formLogin(login ->
-		login.loginPage("/auth-signin-basic")
-		.loginProcessingUrl("/auth-signin-basic")
-		.usernameParameter("emp_id")
-		.passwordParameter("emp_pw")
-		.permitAll()
-		.defaultSuccessUrl("/", true)
-		.successHandler(myLoginSuccessHandler())
-		.failureHandler(myLoginFailureHandler())
-				)
-		.logout((logout) -> logout
-				.logoutUrl("/auth-logout-basic")
-				.logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
+				.formLogin(login ->
+				login.loginPage("/auth-signin-basic")
+				.loginProcessingUrl("/auth-signin-basic")
+				.usernameParameter("emp_id")
+				.passwordParameter("emp_pw")
 				.permitAll()
-				)
-		.rememberMe((rememberMe) -> rememberMe
-				.key("uniqueAndSecret")
-				.tokenValiditySeconds(86400*7)
-				.userDetailsService(securityService)
-				);
+				.defaultSuccessUrl("/", true)
+				.successHandler(myLoginSuccessHandler())
+				.failureHandler(myLoginFailureHandler())
+						)
+				.logout((logout) -> logout
+						.logoutUrl("/auth-logout-basic")
+						.logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
+						.permitAll()
+						)
+				.rememberMe((rememberMe) -> rememberMe
+						.key("uniqueAndSecret")
+						.tokenValiditySeconds(86400*7)
+						.userDetailsService(securityService)
+						);
 
 
-		return http.build();
-	}
+				return http.build();
+			}
 
 	// CORS 설정을 위한 Bean 정의
 	@Bean

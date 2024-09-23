@@ -28,7 +28,7 @@ import com.codenal.employee.domain.EmployeeDto;
 @Service
 public class AdminService {
 
-	private final PasswordEncoder passwordEncoder;
+	// private final PasswordEncoder passwordEncoder;
 	// 암호화
 	// Spring Security 설정 클래스에서 PasswordEncoder를 빈으로 등록
 	private final AdminRepository adminRepository;
@@ -36,9 +36,8 @@ public class AdminService {
 	private final JobsRepository jobsRepository;
 
 	@Autowired
-	public AdminService(PasswordEncoder passwordEncoder,
-			AdminRepository adminRepository, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository) {
-		this.passwordEncoder = passwordEncoder;
+	public AdminService(AdminRepository adminRepository, DepartmentsRepository departmentsRepository, 
+			JobsRepository jobsRepository) {
 		this.adminRepository = adminRepository;
 		this.departmentsRepository = departmentsRepository;
 		this.jobsRepository = jobsRepository;
@@ -49,14 +48,19 @@ public class AdminService {
 
 		int result = -1;
 		try {
-			// 기본 비밀번호 'work1234'암호화
+
+			// 기본 비밀번호 'work1234' 설정
 			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
-				String defaultPassword = passwordEncoder.encode("work1234");
-				dto.setEmpPw(defaultPassword);
-			} else {
-				// 비밀번호가 제공되었을 경우 암호화
-				dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+				dto.setEmpPw("work1234");
 			}
+			// 기본 비밀번호 'work1234'암호화
+			//			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
+			//				String defaultPassword = passwordEncoder.encode("work1234");
+			//				dto.setEmpPw(defaultPassword);
+			//			} else {
+			//				// 비밀번호가 제공되었을 경우 암호화
+			//				dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+			//			}
 
 			// 1. emp_hire 날짜를 기반으로 6자리 값 생성 (YYMMDD)
 			LocalDate hireDate = dto.getEmpHire();  // DTO에서 `emp_hire` 값을 가져옴
@@ -180,21 +184,49 @@ public class AdminService {
 		Employee e = adminRepository.findByEmpId(empId);
 		return EmployeeDto.fromEntity(e);
 	}
-	
-	// 부서 목록
-	public List<DepartmentsDto> getAllDepartments() {
-	    List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
-	    return departments.stream()
-	                      .map(DepartmentsDto::fromEntity) // Departments 객체를 DepartmentsDto로 변환
-	                      .collect(Collectors.toList());
+
+
+	// ---------------- 직원 비밀번호 변경 
+	public void resetEmployeePassword(Long empId, String newPw) {
+		EmployeeDto e = employeeDetail(empId);
+		e.setEmpPw(newPw); // 암호화하지 않고 저장
+		
+		adminRepository.save(e.toEntity());
 	}
-	
-	// 직급 목록
+
+
+	// ---------------- 직원 퇴사
+	@Transactional
+	public boolean emdEndDate(Long empId , LocalDate empEnd) {
+		try {
+			Employee e = adminRepository.findById(empId).get();
+
+			e.setEmpEnd(empEnd);  // 퇴사일 설정
+			e.setEmpStatus("N");  // empStatus 'N'으로 변경
+
+			adminRepository.save(e);	// 저장
+			return true;
+		} catch (Exception e) {
+
+			return false;
+		}
+	}
+
+
+	// 부서 셀렉트
+	public List<DepartmentsDto> getAllDepartments() {
+		List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
+		return departments.stream()
+				.map(DepartmentsDto::fromEntity)
+				.collect(Collectors.toList());
+	}
+
+	// 직급 셀렉트
 	public List<JobsDto> getAllJobs() {
-	    List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
-	    return jobs.stream()
-	               .map(JobsDto::fromEntity) // Jobs 객체를 JobsDto로 변환
-	               .collect(Collectors.toList());
+		List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
+		return jobs.stream()
+				.map(JobsDto::fromEntity) 
+				.collect(Collectors.toList());
 	}
 
 
@@ -202,21 +234,18 @@ public class AdminService {
 	// ---------------- 직원 정보 수정
 	@Transactional
 	public Employee employeeUpdate(Long empId, EmployeeDto dto) { 
-	    Employee e = adminRepository.findByEmpId(empId);
+		Employee e = adminRepository.findByEmpId(empId);
 
-	    e.setEmpName(dto.getEmpName());
+		e.setEmpName(dto.getEmpName());
 
-	    Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
-	    e.setDepartments(department);
+		Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+		e.setDepartments(department);
 
-	    Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
-	    e.setJobs(job);
+		Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+		e.setJobs(job);
 
-	    return adminRepository.save(e);
+		return adminRepository.save(e);
 	}
-
-
-
 
 
 
