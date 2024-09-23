@@ -40,7 +40,11 @@
 					<i class="ri-record-circle-line"></i>
 				</button>
 			</div>
-
+			
+			<!-- 로그인 멤버 아이디 추출 -->
+			<input type="hidden" id="empId" th:value="${empId}">
+			<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
+			
 			<div id="scrollbar">
 				<div class="container-fluid">
 
@@ -49,7 +53,7 @@
 					<ul class="navbar-nav" id="navbar-nav">
 						<li class="menu-title"><span data-key="t-menu">메뉴</span></li>
 						<li class="nav-item">
-							<a class="nav-link menu-link" href="/dashboard-projects"
+							<a class="nav-link menu-link" href="/"
 								role="button" aria-expanded="false">
 								<i class="ri-home-4-line"></i> <span>메인화면</span>
 							</a>
@@ -539,6 +543,7 @@
 										aria-expanded="false" aria-controls="sidebarApprovalList">
 											결재서 작성 </a>
 										<div class="collapse menu-dropdown" id="sidebarApprovalList">
+										
 											<ul class="nav nav-sm flex-column">
 												<li class="nav-item"><a
 													th:href="@{/approval/leave_create/1}" class="nav-link">
@@ -636,11 +641,12 @@
 							</a> 
 							<div class="collapse menu-dropdown" id="sidebarReserve">
 								<ul class="nav nav-sm flex-column">
-									<li class="nav-item">
-										<a href="/apps-ecommerce-product-details" class="nav-link"> 회의실 예약 </a>
+									<li class="nav-item" >
+										<a href="/apps-ecommerce-product-details" class="nav-link" > 회의실 예약 </a>
+										<!-- <a th:if="${empAuth} == 'ADMIN'" href="/apps-ecommerce-product-details" class="nav-link" > 회의실 관리 </a> -->
 									</li>
 									<li class="nav-item">
-										<a href="/apps-ecommerce-add-product" class="nav-link"> 회의실 관리(관리자용) </a>
+										<a href="/apps-meeting-room-check" class="nav-link"> 회의실 추가 </a>
 									</li>
 									<li class="nav-item">
 										<a href="/apps-ecommerce-cart" class="nav-link"> 회의실 예약 확인 </a>
@@ -1490,5 +1496,23 @@
 		<div class="vertical-overlay"></div>
 	</div>
 </body>
+
+<script type="text/javascript">
+window.onload=()=>{
+consol.log('확인');
+const csrfToken = document.getElementById('csrf_token').value;
+fetch('/sidebar', {
+	method: 'POST',
+	headers: {
+            'X-CSRF-TOKEN': csrfToken
+        }
+})
+.then(response => response.json())
+.then(data => {
+	alert('성공');
+});
+	
+}
+</script>
 
 </html>

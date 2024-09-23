@@ -1,6 +1,9 @@
 package com.codenal.meeting.domain;
 
 import java.sql.Time;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,16 +29,18 @@ public class MeetingRoomTime {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long meetingRoomTimeNo;
 	
-	@Id
 	@Column(name = "meeting_room_no")
 	private Long meetingRoomNo;
 	
-	@Id
+	@JsonFormat(pattern = "hh-mm")
 	@Column(name = "meeting_room_start_time")
 	private Time meetingRoomStartTime;
 	
-	@Id
+	@JsonFormat(pattern = "hh-mm")
 	@Column(name = "meeting_room_end_time")
 	private Time meetingRoomEndTime;
+	
+	@Column(name = "meeting_room_ampm")
+	private String meetingRoomAmpm;
 
 }

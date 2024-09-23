@@ -11,6 +11,7 @@ var start_date = document.getElementById("event-start-date");
 var timepicker1 = document.getElementById("timepicker1");
 var timepicker2 = document.getElementById("timepicker2");
 const csrfToken = document.getElementById('csrf_token').value;
+const writer = document.getElementById("empId").value;
 var date_range = null;
 var T_check = null;
 var eventContent = null;
@@ -18,7 +19,7 @@ var defaultEvents = [];
 
 const fetchEventList = () => {
 		return new Promise((resolve,reject)=>{
-			fetch('/eventList', {
+			fetch('/eventList'+writer, {
 				method: 'POST',
 				headers: {
 		                'X-CSRF-TOKEN': csrfToken
@@ -36,24 +37,26 @@ const fetchEventList = () => {
 						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
 						case 5 : data.eventList[i].calendar_schedule_category = 'bg-soft-danger'; break;
 					}
-
-					data[i] = {
-						id: data.eventList[i].calendar_schedule_no,
-				        title: data.eventList[i].calendar_schedule_title,
-				        start: new Date(data.eventList[i].calendar_schedule_start_date),
-				        end: new Date(data.eventList[i].calendar_schedule_end_date),
-				        className: data.eventList[i].calendar_schedule_category,
-				        location: data.eventList[i].calendar_schedule_location,
-				        description: data.eventList[i].calendar_schedule_content,
-				        writer: data.eventList[i].calendar_schedule_writer,
-				        color: data.eventList[i].calendar_schedule_color
-					}
+						
+						data[i] = {
+							id: data.eventList[i].calendar_schedule_no,
+					        title: data.eventList[i].calendar_schedule_title,
+					        start: new Date(data.eventList[i].calendar_schedule_start_date),
+					        end: new Date(data.eventList[i].calendar_schedule_end_date),
+					        className: data.eventList[i].calendar_schedule_category,
+					        location: data.eventList[i].calendar_schedule_location,
+					        description: data.eventList[i].calendar_schedule_content,
+					        writer: data.eventList[i].calendar_schedule_writer
+						}
+					
 					defaultEvents[i] = data[i];
 				}
 				resolve(defaultEvents);
 			})
 		})
 	}
+	
+	
 
 document.addEventListener("DOMContentLoaded", function () {
     flatPickrInit();
@@ -206,6 +209,9 @@ document.addEventListener("DOMContentLoaded", function () {
 				if (xhr.readyState == 4 && xhr.status == 200) {
 				}
 			}
+			const header = document.getElementById("_csrf_header").value;
+			xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+			xhr.setRequestHeader(header, csrfToken);
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 			xhr.send("category="+categoryNo+"&title="+eventEl.innerText+"&writer="+writer+"&start_date="+startDate);
             return {
@@ -385,6 +391,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 document.getElementById("event-timepicker1-tag").innerHTML = tConvert(gt_time);
                 document.getElementById("event-timepicker2-tag").innerHTML = tConvert(ed_time);
+                
+                
+                var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
+                    return x.id == selectedEvent.id
+                });
+                let eventWriter = defaultEvents[indexOfSelectedEvent].writer;
+                console.log(eventWriter+'확인');
+                
+                fetch('/eventWriter'+eventWriter, {
+				method: 'POST',
+				headers: {
+		                'X-CSRF-TOKEN': csrfToken
+		            },
+				})
+				.then(response => response.json())
+				.then(data => {
+					let empName = data.name;
+					let empDept = data.dept;
+					let empJob = data.job;
+					
+		            document.getElementById("event-writer").innerHTML = empDept+' '+empName+' '+empJob;
+				})
+                
+                
             }
             newEventData = null;
             modalTitle.innerText = selectedEvent.title;
@@ -422,7 +452,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 defaultEvents[indexOfSelectedEvent].description = (info.event._def.extendedProps.description) ? info.event._def.extendedProps.description : '';
                 defaultEvents[indexOfSelectedEvent].location = (info.event._def.extendedProps.location) ? info.event._def.extendedProps.location : '';
                 defaultEvents[indexOfSelectedEvent].writer = info.event.writer;
-                defaultEvents[indexOfSelectedEvent].color = info.event.color;
             }
             upcomingEvent(defaultEvents);
         }
@@ -556,6 +585,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	        	alert(data.res_msg);
 	        })*/
 	        
+	        console.log('작성자'+writer);
 	        if(eventContent == null){
 				console.log('생성');
 				const xhr = new XMLHttpRequest();
@@ -565,7 +595,6 @@ document.addEventListener("DOMContentLoaded", function () {
 						alert('성공');
 					}
 				}
-				let writer = 12345678;
 				const header = document.getElementById("_csrf_header").value;
 				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
 				xhr.setRequestHeader(header, csrfToken);
@@ -589,8 +618,10 @@ document.addEventListener("DOMContentLoaded", function () {
 						alert('성공');
 					}
 				}
-				let writer = 12345678;
 				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				const header = document.getElementById("_csrf_header").value;
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				xhr.setRequestHeader(header, csrfToken);
 				updateStartDate = updateStartDate.getFullYear()+'-'+(updateStartDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateStartDate.getDate().toString().padStart(2, '0')
 				+' '+updateStartDate.getHours().toString().padStart(2, '0')+':'+updateStartDate.getMinutes().toString().padStart(2, '0');
 				
@@ -621,10 +652,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 selectedEvent.setAllDay(all_day);
                 selectedEvent.setExtendedProp("description", eventDescription);
                 selectedEvent.setExtendedProp("location", event_location);
+                selectedEvent.setProp("writer", writer);
                 var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
                     return x.id == selectedEvent.id
                 });
                 if (defaultEvents[indexOfSelectedEvent]) {
+					defaultEvents[indexOfSelectedEvent].category = categoryNo;
                     defaultEvents[indexOfSelectedEvent].title = updatedTitle;
                     defaultEvents[indexOfSelectedEvent].start = updateStartDate;
                     defaultEvents[indexOfSelectedEvent].end = updateEndDate;
@@ -632,6 +665,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     defaultEvents[indexOfSelectedEvent].className = updatedCategory;
                     defaultEvents[indexOfSelectedEvent].description = eventDescription;
                     defaultEvents[indexOfSelectedEvent].location = event_location;
+                    defaultEvents[indexOfSelectedEvent].writer = writer;
                 }
                 calendar.render();
                 // default
@@ -925,7 +959,7 @@ function tConvert(time) {
     var t = time.split(":");
     var hours = t[0];
     var minutes = t[1];
-    var newformat = hours >= 12 ? '오전' : '오후';
+    var newformat = hours >= 12 ? '오후' : '오전';
     hours = hours % 12;
     hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;
