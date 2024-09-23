@@ -16,11 +16,15 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
 	List<ChatParticipants> findByChatRoom(Employee empId);
 
 	// 본인을 제외한 참여자 정보 조회
-	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.employee != ?2 ")
-	List<ChatParticipants> findByChatRoom(int roomNo, Long empId);
+	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.participantNo != ?2 ")
+	List<ChatParticipants> findByChatRoom(int roomNo, int userNo);
 
 	// 내가 선택한 채팅방의 참가번호
+	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.participantNo = ?2 ")
+	ChatParticipants findByParticipants(ChatRoom roomNo, int userNo);
+	
+	// 내가 선택한 채팅방의 참가번호
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.employee = ?2 ")
-	ChatParticipants findByParticipants(ChatRoom roomNo, Employee empId);
+	ChatParticipants findByEmpId(ChatRoom roomNo, Employee empId);
 
 }

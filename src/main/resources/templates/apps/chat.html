@@ -13,7 +13,100 @@
 <!-- glightbox css -->
 <link rel="stylesheet"
 	href="/assets/libs/glightbox/css/glightbox.min.css">
+    <script>
+        let websocket;
 
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.chat_room').forEach(chatRoom => {
+                chatRoom.addEventListener('click', function(event) {
+                    event.preventDefault(); // 페이지 이동 방지
+
+                    console.log("Chat room clicked");
+
+                    const roomNo = this.getAttribute('data-room-no'); // a 태그에서 roomNo 가져오기
+
+                    if (!websocket || websocket.readyState === WebSocket.CLOSED) {
+                        websocket = new WebSocket("ws://localhost:8083/chatting");
+
+                        websocket.onopen = () => {
+                            console.log("=== 웹소켓 연결됨 ===");
+                            const obj = {
+                                    chat_type: "init",
+                                    room_no: parseInt(roomNo) // 방 번호를 정수로 변환하여 사용
+
+                                };
+                                websocket.send(JSON.stringify(obj)); // 이전 메시지 요청
+
+                            // 버튼 클릭 이벤트 등록
+                            document.getElementById('send_btn').onclick = function() {
+                                const msg = document.getElementById('chat-input').value;
+                                const obj = setMsgObj('msg', msg);
+                                websocket.send(JSON.stringify(obj));
+                                console.log("메시지 전송:", obj);
+                            };
+                        };
+
+                        websocket.onmessage = (response) => {
+                            console.log("메시지 수신:", response.data);
+                            const data = JSON.parse(response.data);
+                            
+                            // 메시지 타입에 따라 처리
+                            if (data.chat_type === "msg") {
+                                // 일반 메시지 처리
+                                displayMessage(data);
+                            } else if (data.chat_type === "init") {
+                                // 이전 메시지 처리
+                                data.messages.forEach(msg => {
+                                    displayMessage(msg);
+                                });
+                            }
+                        };
+
+                        // 메시지를 화면에 추가하는 함수
+                        function displayMessage(message) {
+                            const chatContainer = document.getElementById('chat-container'); // 채팅 메시지를 보여줄 DOM 요소
+                            const messageElement = document.createElement('div'); // 메시지 요소 생성
+                            
+                            // 메시지 내용 설정
+                            messageElement.className = 'chat-message';
+                            messageElement.innerText = `${message.sender}: ${message.content}`; // 예시: '보낸사람: 메시지내용'
+                            
+                            // 채팅 컨테이너에 추가
+                            chatContainer.appendChild(messageElement);
+                        }
+
+                        websocket.onclose = () => {
+                            console.log("연결 종료됨");
+                        };
+                    } else {
+                        console.log("이미 연결되어 있습니다.");
+                    }
+
+                    // 페이지 이동
+                    const url = this.getAttribute('href');
+                    history.pushState(null, '', url);
+                });
+            });
+        });
+
+        // 객체 생성자 함수
+        function setMsgObj(chatType, chatMsg) {
+            const roomNo = this.getAttribute('data-room-no'); // 방 번호 가져오기
+            const senderNo = document.getElementById('sender_no').value;
+            const participantNo = document.getElementById('participant_no').value;
+            const isFromSender = (senderNo === participantNo) ? 'Y' : 'N';
+            const obj = {
+                chat_type: chatType,
+                msg_content: chatMsg,
+                room_no: roomNo,
+                sender_no: senderNo,
+                participant_no: participantNo,
+                is_from_sender: isFromSender,
+                msg_type: '2'
+            };
+            return obj;
+        }
+    </script>
 </head>
 
 <body>
@@ -77,7 +170,8 @@
 									<!-- 1:1 채팅방 불러오기 -->
 									<li id="contact-id" data-name="direct-message" class="" th:each="chat : ${chatList}">
 										<div th:if="${chat.chatRoom.roomType==1}">
-										<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="unread-msg-user">
+										<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="chat_room unread-msg-user"
+										 data-room-no="${chat.chatRoom.roomNo}">
 											<div class="d-flex align-items-center">
 												<div
 													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
@@ -111,7 +205,9 @@
 									id="channelList">
 									<li id="contact-id" data-name="channel" th:each="chat : ${chatList}">
 										<div th:if="${chat.chatRoom.roomType==2}">
-										<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="unread-msg-user">
+										<!-- 웹소켓 연결부분 -->
+										<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="chat_room unread-msg-user"
+										 data-room-no="${chat.chatRoom.roomNo}">
 											<div class="d-flex align-items-center">
 												<div
 													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
@@ -155,6 +251,8 @@
 			</div>
 			<div class="user-chat w-100 overflow-hidden" th:if="${chat!=null}">
 
+				<body>
+	<div layout:fragment="content">
 				<div class="chat-content d-lg-flex">
 					<!-- start chat conversation section -->
 					<div class="w-100 overflow-hidden position-relative">
@@ -242,6 +340,7 @@
 								</div>
 								<!-- end chat user head -->
 								
+								
 								<!-- 채팅 대화 화면 시작 -->
 								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation"
 									data-simplebar>
@@ -251,10 +350,25 @@
 											<span class="visually-hidden">로딩중...</span>
 										</div>
 									</div> -->
+									
+								<input type="text" th:value="${chat.roomNo}" id="room_no">
+								<span sec:authentication="principal.employeeDto.empId" id="emp_id"></span>
+								<div th:each="participant : ${chat.participants}">
+									<!-- 나의 참가자 번호 조회 -->
+									<div th:if="${participant.employee.empId == #authentication.principal.employeeDto.empId}">
+										<input type="text" th:value="${participant.participantNo}" id="sender_no">나
+									</div>
+									<!-- 나를 제외한 참가자 번호 조회 -->
+									<div th:if="${participant.employee.empId != #authentication.principal.employeeDto.empId}">
+										<input type="text" th:value="${participant.participantNo}" id="participant_no">상대
+									</div>
+								</div>
+								
 									<ul class="list-unstyled chat-conversation-list"
-										id="users-conversation">
-<!-- 										<li th:text="${chat.}">
-										</li> -->
+										id="users-conversation" th:each="msg : ${chat.messages}">
+ 										<li th:text="${msg.msgContent}" >
+										</li>
+										<!-- 이부분 동적으로 불러오기 -->
 
 									</ul>
 									<!-- end chat-conversation-list -->
@@ -289,7 +403,7 @@
 										<div class="col-auto">
 											<div class="chat-input-links ms-2">
 												<div class="links-list-item">
-													<button type="submit"
+													<button type="submit" id="send_btn"
 														class="btn btn-success chat-send waves-effect waves-light">
 														<i class="ri-send-plane-2-fill align-bottom"></i>
 													</button>
@@ -324,8 +438,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
+
 
 
 	<th:block layout:fragment="modal">
@@ -479,13 +592,17 @@
 		<script src="/assets/libs/fg-emoji-picker/fgEmojiPicker.js"></script>
 
 		<!-- chat init js -->
-		<script src="/assets/js/pages/chat.init.js"></script>
+		<!-- <script src="/assets/js/pages/chat.init.js"></script> -->
 		
 		<script src="/assets/js/pages/project-overview.init.js"></script>
 	</th:block>
 	
 	<!-- 캔버스? -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+
+
+
 
 </body>
 

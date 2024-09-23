@@ -96,8 +96,5 @@ public class Employee {
     
     @OneToMany(mappedBy = "employee")
     private List<ChatParticipants> participants;
-    
-    @OneToMany(mappedBy = "employee")
-    private List<ChatMsg> messages;
 
 }

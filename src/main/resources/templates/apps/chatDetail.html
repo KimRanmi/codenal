@@ -9,7 +9,58 @@
 </th:block>
 
 <head>
+				<script>
+				document.addEventListener('DOMContentLoaded', () => {
+					const websocket = new WebSocket("ws://localhost:8083/chatting");
+	
+	
+	
+					websocket.onmessage = (response) => {
+					    console.log("Message received:", response.data);
+					};
+	
+					websocket.onclose = () => {
+					    console.log("Connection closed");
+					};
+	
+					
+					// 버튼을 클릭하면 양방향 통신 시작
+					document.getElementById('send_btn').addEventListener('click', function() {
+					    const msg = document.getElementById('chat-input').value;
+						const obj = setMsgObj('msg',msg);
+					    websocket.send(JSON.stringify(obj));
+					});
+					
+					// 서버에 접속이 되었을때 실행될 함수
+					websocket.onopen = (data) =>{
+						console.log("=== 접속 ===");
+						const obj = setMsgObj("open",'');
+						websocket.send(JSON.stringify(obj));
+					}
+					
+					// 객체 생성자 함수
+					let setMsgObj = function(chatType, chatMsg){
+					    const roomNo = document.getElementById('room_no').value;
+					    const senderNo = document.getElementById('sender_no').value;
+					    const participantNo = document.getElementById('participant_no').value;
+					    const isFromSender = (senderNo == participantNo) ? 'Y' : 'N';
+					    const msg = document.getElementById('chat-input').value;
+					    const obj = {
+					    		chat_type : chatType,
+					    		msg_content : chatMsg,
+						        room_no: roomNo,
+						        sender_no: senderNo,
+						        participant_no: participantNo,
+						        is_from_sender: isFromSender,
+						        msg_content: msg,
+						        msg_type: '2'
+					    }
+					    return obj;
+					}
+				});
+					
 
+				</script>
 </head>
 
 <body>
@@ -101,6 +152,7 @@
 								</div>
 								<!-- end chat user head -->
 								
+								
 								<!-- 채팅 대화 화면 시작 -->
 								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation"
 									data-simplebar>
@@ -110,10 +162,25 @@
 											<span class="visually-hidden">로딩중...</span>
 										</div>
 									</div> -->
+									
+								<input type="text" th:value="${chat.roomNo}" id="room_no">
+								<span sec:authentication="principal.employeeDto.empId" id="emp_id"></span>
+								<div th:each="participant : ${chat.participants}">
+									<!-- 나의 참가자 번호 조회 -->
+									<div th:if="${participant.employee.empId == #authentication.principal.employeeDto.empId}">
+										<input type="text" th:value="${participant.participantNo}" id="sender_no">나
+									</div>
+									<!-- 나를 제외한 참가자 번호 조회 -->
+									<div th:if="${participant.employee.empId != #authentication.principal.employeeDto.empId}">
+										<input type="text" th:value="${participant.participantNo}" id="participant_no">상대
+									</div>
+								</div>
+								
 									<ul class="list-unstyled chat-conversation-list"
-										id="users-conversation">
-<!-- 										<li th:text="${chat.}">
-										</li> -->
+										id="users-conversation" th:each="msg : ${chat.messages}">
+ 										<li th:text="${msg.msgContent}" >
+										</li>
+										<!-- 이부분 동적으로 불러오기 -->
 
 									</ul>
 									<!-- end chat-conversation-list -->
@@ -148,7 +215,7 @@
 										<div class="col-auto">
 											<div class="chat-input-links ms-2">
 												<div class="links-list-item">
-													<button type="submit"
+													<button type="submit" id="send_btn"
 														class="btn btn-success chat-send waves-effect waves-light">
 														<i class="ri-send-plane-2-fill align-bottom"></i>
 													</button>
@@ -196,7 +263,7 @@
 		<script src="/assets/js/pages/chat.init.js"></script>
 		
 	</th:block>
-	
+
 </body>
 
 </html>

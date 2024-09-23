@@ -61,5 +61,8 @@ public class ChatParticipants {
 	
 	@OneToMany(mappedBy = "chatParticipant")
 	private List<ChatRead> chatReads;
+	
+	@OneToMany(mappedBy = "chatParticipant")
+    private List<ChatMsg> messages;
 
 }

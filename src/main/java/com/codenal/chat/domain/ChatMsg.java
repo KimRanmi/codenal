@@ -39,8 +39,8 @@ public class ChatMsg {
 	private ChatRoom chatRoom;
 	
 	@ManyToOne
-	@JoinColumn(name="sender_id")
-	private Employee employee;
+	@JoinColumn(name="sender_no")
+	private ChatParticipants chatParticipant;
 	
 	@Column(name="msg_content")
 	private String msgContent;

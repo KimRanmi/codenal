@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.codenal.chat.domain.ChatMsg;
 import com.codenal.chat.domain.ChatMsgDto;
 import com.codenal.chat.domain.ChatParticipants;
 import com.codenal.chat.domain.ChatRoom;
@@ -62,13 +63,17 @@ public class ChatController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = (User)authentication.getPrincipal();
 		String username = user.getUsername();
+		Long userId = Long.parseLong(username);
         model.addAttribute("username", username);
         
      // username을 empIds 리스트에 추가
         empIds.add(username);
         
+    	// 조건 추가 -> 있는 1:1 채팅인 경우 새로운 방을 생성하지 않고 기존 채팅방으로 이동함@@@@@@@@@
+
+        
         Map<String, String> resultMap = new HashMap<>();
-        ChatRoom chatRoom = chatService.createChat(roomDto, empIds);
+        ChatRoom chatRoom = chatService.createChat(roomDto, empIds, userId);
         if(chatRoom != null) {
         	resultMap.put("res_code", "200");
         	resultMap.put("res_msg", "채팅방을 생성했습니다.");
@@ -77,30 +82,30 @@ public class ChatController {
         return resultMap;
 	}
 	
-	// 채팅방 메시지 조회 --> 여기서부터 웹소켓?
-	@GetMapping("/chatList/{roomNo}")
-	public String startChatting(@PathVariable("roomNo") int roomNo, Model model) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = (User)authentication.getPrincipal();
-		String username = user.getUsername();
-		Long empId = Long.parseLong(username);
-        model.addAttribute("username", username);
-		
-		List<ChatParticipants> participantList = chatService.participantListSelect(username);  	// 활성 상태의 참여중인 채팅 목록 조회
-		model.addAttribute("chatList",participantList);
-		
-		List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);  // 채팅방 초대버튼 클릭시 조회할 직원목록
-		model.addAttribute("employeeList",employeeList);
-		
-		ChatRoom chat = chatService.selectChatRoomOne(roomNo, empId);
-		model.addAttribute("chat",chat);
-		
-		
-//		List<ChatMsgDto> resultList = chatService.selectChatMsgList(roomNo, empId);
-//		model.addAttribute("resultList", resultList);
-		
-		return "apps/chat";
-	}
+//	// 채팅방 상세 조회 --> 여기서부터 웹소켓 연결해야함  --> 웹소켓으로 옮기기
+//	@GetMapping("/chatList/{roomNo}")
+//	public String startChatting(@PathVariable("roomNo") int roomNo, Model model) {
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		User user = (User)authentication.getPrincipal();
+//		String username = user.getUsername();
+//		Long empId = Long.parseLong(username);
+//        model.addAttribute("username", username);
+//		
+//		List<ChatParticipants> participantList = chatService.participantListSelect(username);  	// 활성 상태의 참여중인 채팅 목록 조회
+//		model.addAttribute("chatList",participantList);
+//		
+//		List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);  // 채팅방 초대버튼 클릭시 조회할 직원목록
+//		model.addAttribute("employeeList",employeeList);
+//		
+//		List<ChatMsg> chat = chatService.selectChatRoomOne(roomNo, username);
+//		model.addAttribute("chat",chat);
+//		
+//		
+////		List<ChatMsgDto> resultList = chatService.selectChatMsgList(roomNo, empId);
+////		model.addAttribute("resultList", resultList);
+//		
+//		return "apps/chat";
+//	}
 	
 	// 채팅 메시지 전송
 	// @PostMapping
