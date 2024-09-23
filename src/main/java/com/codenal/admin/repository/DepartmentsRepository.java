@@ -1,5 +1,6 @@
 package com.codenal.admin.repository;
 
+
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -22,4 +23,5 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	// 2. 부서명 검색
 	Page<Departments> findByDeptNameContaining(String deptName, Pageable pageable);
 }
+
 
