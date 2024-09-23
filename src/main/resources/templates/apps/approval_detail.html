@@ -1,35 +1,42 @@
 <!doctype html>
-<<<<<<< HEAD
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
-=======
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}">
->>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
-<head>
+
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
 <title>전자결재 상세</title>
 <!-- Bootstrap CSS -->
 <th:block layout:fragment="pagetitle" />
 <link
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
-<!-- Dropzone CSS -->
 <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
 	type="text/css" />
-<!-- 토슽 api -->
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-<script
-	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 <style>
-.project-thumbnail-img {
-	border: 1px solid #d3d3d3;
-	border-radius: 4px;
-	height: 35px;
+.jstree-icon.ri-building-fill {
+	color: #3e4a6e;
+	font-size: 24px;
 }
+
+.jstree-icon.ri-team-fill {
+	color: #3577f1;
+	font-size: 20px;
+}
+
+.jstree-icon.ri-user-2-fill {
+	color: #9a9ba0;
+	font-size: 16px;
+}
+.project-thumbnail-img{
+			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
+		}
 </style>
 </head>
 <body>
@@ -95,7 +102,7 @@
 							</div>
 							<br>
 							<div th:text="${dto.approval.approvalContent}"
-								style="display: none" id="contentDiv"></div>
+							style="display: none" id="contentDiv"></div>
 							<!-- 토스트 api -->
 							<div class="col-lg-11" style="margin-left: -15px;">
 								<label>내용</label>
@@ -103,139 +110,155 @@
 							</div>
 							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려 -->
 							<br>
-							<div style="margin-left: 1300px; margin-top: 70px;">
+							<div style="margin-left: 1300px; margin-top: 60px;">
 								<div
 									th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
-									<button type="button" class="btn btn-secondary w-sm"
-										id="revoke">회수</button>
+									<button type="button" class="btn btn-secondary w-sm" id="revoke">회수</button>
 								</div>
-								<div th:each="agree, iterStat : ${dto.agree}" 
-								     th:if="${agree.approvalStatus == 1}">
-								    <button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
-								    <button type="button" class="btn btn-danger w-sm">반려</button>
+								<div th:each="agree, iterStat : ${dto.agree}"
+									th:if="${dto.employee.empId != emp.empId and agree.approvalStatus == 1}">
+									<button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
+									<button type="button" class="btn btn-danger w-sm">반려</button>
 								</div>
-								<div th:each="approver, iterStat : ${dto.approver}" 
-								     th:if="${approver.approvalStatus == 1}">
-								    <button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
-								    <button type="button" class="btn btn-danger w-sm">반려</button>
+								<div th:each="approver, iterStat : ${dto.approver}"
+									th:if="${dto.employee.empId != emp.empId and approver.approvalStatus == 1}">
+									<button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
+									<button type="button" class="btn btn-danger w-sm">반려</button>
 								</div>
-																	
 							</div>
 
 							<!-- 합의자 결재자 확인처리 해야함 -->
-							<div class="approver-container"  style="margin-top:-1050px; margin-left:900px;">
-								<label>합의자</label>
-								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<img
-											th:if="${dto.agree.size() > 0 and dto.agree[0].approvalStatus == 2}"
-											th:src="${dto.agree[0].employee.empSignImage}"
-											style="max-width: 100%; max-height: 100%;" />
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<img
-											th:if="${dto.agree.size() > 1 and dto.agree[1].approvalStatus == 2}"
-											th:src="${dto.agree[1].employee.empSignImage}"
-											style="max-width: 100%; max-height: 100%;" />
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<img
-											th:if="${dto.agree.size() > 2 and dto.agree[2].approvalStatus == 2}"
-											th:src="${dto.agree[2].employee.empSignImage}"
-											style="max-width: 100%; max-height: 100%;" />
-										</td>
-									</tr>
-								</table>
-								<table style="border-collapse: collapse; border-spacing: 0;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"
-											th:text="${dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"
-											th:text="${dto.agree.size() > 1 ? dto.agree[1].employee.empName : ''}"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"
-											th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"></td>
-									</tr>
-								</table>
-								<br> <label>결재자</label>
-								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<img
-											th:if="${dto.approver.size() > 0 and dto.approver[0].approvalStatus == 2 }"
-											th:src="${dto.approver[0].employee.empSignImage}"
-											style="max-width: 100%; max-height: 100%;" />
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<img
-											th:if="${dto.approver.size() > 1 and dto.approver[1].approvalStatus == 2 }"
-											th:src="${dto.approver[1].employee.empSignImage}"
-											style="max-width: 100%; max-height: 100%;" />
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<img
-											th:if="${dto.approver.size() > 2 and dto.approver[2].approvalStatus == 2 }"
-											th:src="${dto.approver[2].employee.empSignImage}"
-											style="max-width: 100%; max-height: 100%;" />
-										</td>
-									</tr>
-								</table>
-								<table style="border-collapse: collapse; border-spacing: 0;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											th:text="${dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
-											class="selectedName2"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											th:text="${dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
-											class="selectedName2"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											th:text="${dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
-											class="selectedName2"></td>
-									</tr>
-								</table>
-							</div>
+							<div style="margin-top: -1200px; margin-left: 900px;">
+							<label>합의자</label>
+							<table
+								style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+								<tr>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+										<img
+										th:if="${dto.agree.size() > 0 and dto.agree[0].approvalStatus == 2}"
+										th:src="${dto.agree[0].employee.empSignImage}"
+										style="max-width: 100%; max-height: 100%;" />
+									</td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+										<img
+										th:if="${dto.agree.size() > 1 and dto.agree[1].approvalStatus == 2}"
+										th:src="${dto.agree[1].employee.empSignImage}"
+										style="max-width: 100%; max-height: 100%;" />
+									</td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+										<img
+										th:if="${dto.agree.size() > 2 and dto.agree[2].approvalStatus == 2}"
+										th:src="${dto.agree[2].employee.empSignImage}"
+										style="max-width: 100%; max-height: 100%;" />
+									</td>
+								</tr>
+							</table>
+							<table style="border-collapse: collapse; border-spacing: 0;">
+								<tr>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+										class="selectedName"
+										th:text="${dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"></td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+										class="selectedName"
+										th:text="${dto.agree.size() > 1 ? dto.agree[1].employee.empName : ''}"></td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+										class="selectedName"
+										th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"></td>
+								</tr>
+							</table>
+							<br> <label>결재자</label>
+							<table
+								style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+								<tr>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+										<img
+										th:if="${dto.approver.size() > 0 and dto.approver[0].approvalStatus == 2 }"
+										th:src="${dto.approver[0].employee.empSignImage}"
+										style="max-width: 100%; max-height: 100%;" />
+									</td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+										<img
+										th:if="${dto.approver.size() > 1 and dto.approver[1].approvalStatus == 2 }"
+										th:src="${dto.approver[1].employee.empSignImage}"
+										style="max-width: 100%; max-height: 100%;" />
+									</td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+										<img
+										th:if="${dto.approver.size() > 2 and dto.approver[2].approvalStatus == 2 }"
+										th:src="${dto.approver[2].employee.empSignImage}"
+										style="max-width: 100%; max-height: 100%;" />
+									</td>
+								</tr>
+							</table>
+							<table style="border-collapse: collapse; border-spacing: 0;">
+								<tr>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+										th:text="${dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
+										class="selectedName2"></td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+										th:text="${dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
+										class="selectedName2"></td>
+									<td
+										style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+										th:text="${dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
+										class="selectedName2"></td>
+								</tr>
+							</table>
+						</div>
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
+		
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+		<script
+			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+		<script
+			src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+
+		
 		<script>
-			// 기존 데이터 불러오면서 토스트 api 설정.
-			const content = document.getElementById('contentDiv');
-			const contentEditor = new toastui.Editor({
-                el: document.querySelector('#approval_edit'),
-                width: '1300px',
-                height: '500px',
-                initialValue: content.textContent,
-                initialEditType: 'wysiwyg',
-                previewStyle: 'vertical',
-                hideModeSwitch: true
-            });
-		    
-			document.addEventListener('DOMContentLoaded', () => {
-			    contentEditor();
-			    updateEditorContent();
-			});
+		// 기존 데이터 불러오면서 토스트 api 설정.
+		const content = document.getElementById('contentDiv');
+		const contentEditor = new toastui.Editor({
+            el: document.querySelector('#approval_edit'),
+            width: '1300px',
+            height: '500px',
+            initialValue: content.textContent,
+            initialEditType: 'wysiwyg',
+            previewStyle: 'vertical',
+            hideModeSwitch: true
+        });
+	    
+		document.addEventListener('DOMContentLoaded', () => {
+		    contentEditor();
+		    updateEditorContent();
+		});
 
-		 </script>
+		// 카테고리 선택하면서 카테고리 선택했을 때의 스크립트 코드
+		 function updateEditorContent() {
+	        const selectElement = document.getElementById('category-select');
+	        const selectedOption = selectElement.options[selectElement.selectedIndex];
+	        const formContent = selectedOption.getAttribute('data-content');
 
+	        // 토스트 에디터 내용 저장한 값 불러옴
+	        contentEditor.setHTML(formContent);
+	    }
+	 </script>
 
 		<!-- 회수함 이동 -->
 		<script>
