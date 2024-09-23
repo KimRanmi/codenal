@@ -622,18 +622,29 @@
 		
 		// 비밀번호 변경  부분  ------------------------------------------
 		document.getElementById('passwordChangeForm').addEventListener('submit', function(event) {
-    	event.preventDefault();  // 기본 제출 동작 방지
-
+    event.preventDefault();
     const oldPassword = document.getElementById('oldpasswordInput').value;
     const newPassword = document.getElementById('newpasswordInput').value;
     const confirmPassword = document.getElementById('confirmpasswordInput').value;
+    
+    const messageDiv = document.getElementById('passwordChangeMessage');
+    messageDiv.innerText = ''; // 기존 메시지 초기화
+    messageDiv.classList.remove('text-success', 'text-danger');
 
     // 새 비밀번호와 확인 비밀번호가 일치하는지 클라이언트에서 먼저 확인
-    if (newPassword !== confirmPassword) {
-        document.getElementById('passwordChangeMessage').innerText = "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.";
+     if (newPassword !== confirmPassword) {
+        messageDiv.innerText = "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.";
+        messageDiv.classList.add('text-danger');
         return;
     }
 
+     // 2. 비밀번호 유효성 검증
+     const validationError = validatePassword(newPassword);
+     if (validationError) {
+         messageDiv.innerText = validationError;
+         messageDiv.classList.add('text-danger');
+         return;
+     }
     const formData = new FormData();
     formData.append('oldPassword', oldPassword);
     formData.append('newPassword', newPassword);
@@ -648,10 +659,11 @@
     })
     .then(response => response.json())
     .then(data => {
-        const messageDiv = document.getElementById('passwordChangeMessage');
         if (data.success) {
             messageDiv.innerText = '비밀번호가 성공적으로 변경되었습니다.';
             messageDiv.classList.add('text-success');
+            // 비밀번호 변경 성공 시 폼 초기화 또는 추가 작업 수행
+            document.getElementById('passwordChangeForm').reset();
         } else {
             messageDiv.innerText = '비밀번호 변경에 실패했습니다: ' + data.error;
             messageDiv.classList.add('text-danger');
@@ -659,9 +671,45 @@
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('passwordChangeMessage').innerText = '서버 오류가 발생했습니다.';
+        messageDiv.innerText = '서버 오류가 발생했습니다.';
+        messageDiv.classList.add('text-danger');
     });
 });
+		
+		function validatePassword(password) {
+		    if (!password) {
+		        return "비밀번호는 필수 입력 사항입니다.";
+		    }
+
+		    // 1. 길이 확인
+		    if (password.length < 7 || password.length > 15) {
+		        return "비밀번호는 7~15자이어야 합니다.";
+		    }
+
+		    // 2. 문자 종류 확인
+		    const upperCasePattern = /[A-Z]/;
+		    const lowerCasePattern = /[a-z]/;
+		    const digitPattern = /[0-9]/;
+		    const specialCharPattern = /[!@#$%^&*(),.?":{}|<>]/;
+
+		    let typesCount = 0;
+		    if (upperCasePattern.test(password)) typesCount++;
+		    if (lowerCasePattern.test(password)) typesCount++;
+		    if (digitPattern.test(password)) typesCount++;
+		    if (specialCharPattern.test(password)) typesCount++;
+
+		    if (typesCount < 2) {
+		        return "비밀번호는 대문자, 소문자, 숫자, 특수문자 중 2가지 이상을 조합해야 합니다.";
+		    }
+
+		    // 3. 동일한 문자 또는 숫자 3번 연속 사용 금지
+		    const consecutivePattern = /(.)\1\1/;
+		    if (consecutivePattern.test(password)) {
+		        return "동일한 문자 또는 숫자를 3번 연속 사용할 수 없습니다.";
+		    }
+
+		    return null; // 유효한 비밀번호
+		}
 		
 	// 카카오 주소 api  부분 
 		  function openDaumPostcode() {
