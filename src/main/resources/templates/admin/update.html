@@ -8,6 +8,14 @@
 </th:block>
 
 <head>
+<style>
+/* 사번, 개인번호, 주민등록번호, 주소, 상세주소, 입사일, 퇴사일 */
+#lastnameInput, #phonenumberInput, #emailInput, #addressInput,
+	#addressDetailInput, #hireDateInput, #endDateInput {
+	background-color: #eeeeeea8;
+	border: 1px solid #e6e6e6;
+}
+</style>
 </head>
 
 <body>
@@ -27,27 +35,27 @@
 								style="font-size: 18px; text-align: center; font-weight: bold;">
 									<i class="fas fa-home"></i> 직원 정보
 							</a></li>
-							<li class="nav-item col-lg-1"><a class="nav-link"
-								data-bs-toggle="tab" href="#changePassword" role="tab"
-								style="font-size: 18px; text-align: center; font-weight: bold;">
-									<i class="far fa-user"></i> 퇴사 관리
-							</a></li>
 						</ul>
 					</div>
 
 					<div class="card-body">
 						<div class="tab-content">
 							<!-- ------------------------직원 정보----------------------------- -->
-							<div class="tab-pane active" id="personalDetails" role="tabpanel">
-								<form th:action="@{/admin/detail}" th:method="post"
-									th:if="${employeeDetail != null}">
+							<div class="tab-pane active" id="personalUpdate" role="tabpanel">
+								<form
+									th:action="@{/admin/update/{empId}(empId=${employeeUpdate.empId})}"
+									th:object="${employeeUpdate}" method="post">
+									<input type="hidden" th:name="${_csrf.parameterName}"
+										th:value="${_csrf.token}" />
+
 									<div class="row">
 										<!-- 이름 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="firstnameInput" class="form-label">이름</label> <input
-													type="text" class="form-control" id="firstnameInput"
-													th:value="${employeeDetail.empName}" readonly>
+												<label for="firstnameInput" class="form-label">이름<span
+													class="text-danger">*</span></label> <input type="text"
+													class="form-control" id="firstnameInput"
+													th:field="*{empName}">
 											</div>
 										</div>
 
@@ -56,7 +64,7 @@
 											<div class="mb-3">
 												<label for="lastnameInput" class="form-label">사번</label> <input
 													type="text" class="form-control" id="lastnameInput"
-													th:value="${employeeDetail.empId}" readonly>
+													th:field="*{empId}" readonly>
 											</div>
 										</div>
 
@@ -65,8 +73,7 @@
 											<div class="mb-3">
 												<label for="phonenumberInput" class="form-label">개인
 													번호</label> <input type="text" class="form-control"
-													id="phonenumberInput" th:value="${employeeDetail.empPhone}"
-													readonly>
+													id="phonenumberInput" th:field="*{empPhone}" readonly>
 											</div>
 										</div>
 
@@ -75,7 +82,7 @@
 											<div class="mb-3">
 												<label for="emailInput" class="form-label">주민 등록 번호</label>
 												<input type="text" class="form-control" id="emailInput"
-													th:value="${employeeDetail.empSsn}" readonly>
+													th:field="*{empSsn}" readonly>
 											</div>
 										</div>
 
@@ -84,7 +91,7 @@
 											<div class="mb-3">
 												<label for="addressInput" class="form-label">주소</label> <input
 													type="text" class="form-control" id="addressInput"
-													th:value="${employeeDetail.empAddress}" readonly>
+													th:field="*{empAddress}" readonly>
 											</div>
 										</div>
 
@@ -93,26 +100,36 @@
 											<div class="mb-3">
 												<label for="addressDetailInput" class="form-label">상세
 													주소</label> <input type="text" class="form-control"
-													id="addressDetailInput"
-													th:value="${employeeDetail.empAddressDetail}" readonly>
+													id="addressDetailInput" th:field="*{empAddressDetail}"
+													readonly>
 											</div>
 										</div>
 
 										<!-- 부서 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="departmentInput" class="form-label">부서</label> <input
-													type="text" class="form-control" id="departmentInput"
-													th:value="${employeeDetail.deptName}" readonly>
+												<label for="departmentInput" class="form-label">부서<span
+													class="text-danger">*</span></label> <select class="form-control"
+													id="departmentInput" th:field="*{deptNo}">
+													<option value="" disabled>부서를 선택하세요.</option>
+													<option th:each="dept : ${departments}"
+														th:value="${dept.deptNo}" th:text="${dept.deptName}"
+														th:selected="${dept.deptNo} == ${employeeUpdate.deptNo}"></option>
+												</select>
 											</div>
 										</div>
 
 										<!-- 직급 -->
 										<div class="col-lg-6">
 											<div class="mb-3">
-												<label for="jobInput" class="form-label">직급</label> <input
-													type="text" class="form-control" id="jobInput"
-													th:value="${employeeDetail.jobName}" readonly>
+												<label for="jobInput" class="form-label">직급<span
+													class="text-danger">*</span></label> <select class="form-control"
+													id="jobInput" th:field="*{jobNo}">
+													<option value="" disabled>직급을 선택하세요.</option>
+													<option th:each="job : ${jobs}" th:value="${job.jobNo}"
+														th:text="${job.jobName}"
+														th:selected="${job.jobNo} == ${employeeUpdate.jobNo}"></option>
+												</select>
 											</div>
 										</div>
 
@@ -121,7 +138,7 @@
 											<div class="mb-3">
 												<label for="hireDateInput" class="form-label">입사일</label> <input
 													type="text" class="form-control" id="hireDateInput"
-													th:value="${employeeDetail.empHire}" readonly>
+													th:field="*{empHire}" readonly>
 											</div>
 										</div>
 
@@ -130,111 +147,18 @@
 											<div class="mb-3">
 												<label for="endDateInput" class="form-label">퇴사일</label> <input
 													type="text" class="form-control" id="endDateInput"
-													th:value="${employeeDetail.empEnd}" readonly>
+													th:field="*{empEnd}" readonly>
 											</div>
 										</div>
 
-										<!--임시 비밀번호 발급 / 정보 수정 / 취소 -->
+										<!-- 완료/취소 버튼 -->
 										<div class="col-lg-12">
 											<div class="hstack gap-3 justify-content-end">
-												<!-- 임시 비밀번호 발급 버튼 -->
-												<button type="button"
-													class="btn btn-success btn-border w-lg"
-													data-bs-toggle="modal" data-bs-target="#zoomInModal">
-													임시 비밀번호 발급</button>
-												<!-- 모달 -->
-												<div id="zoomInModal" class="modal fade zoomIn"
-													tabindex="-1" aria-labelledby="zoomInModalLabel"
-													aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h4 class="modal-title" id="zoomInModalLabel"
-																	style="font-size: 18px; font-weight: bold;">임시
-																	비밀번호 발급</h4>
-																<button type="button" class="btn-close"
-																	data-bs-dismiss="modal" aria-label="Close"></button>
-															</div>
-															<div class="modal-body">
-																<h5 class="fs-16">
-																	<span th:text="${employeeDetail.empName}"></span>님에게 임시
-																	비밀번호를 발급하시겠습니까?
-																</h5>
-																<form>
-																	<div class="row g-3">
-																		<div class="col-xxl-12">
-																			<div></div>
-																		</div>
-																		<div class="col-xxl-12">
-																			<div>
-																				<label for="emailInput" class="form-label"
-																					style="font-size: 16px; font-weight: bold;">관리자
-																					비밀번호</label> <input type="password" class="form-control"
-																					id="emailInput" placeholder="비밀번호를 입력하세요.">
-																				<div class="invalid-feedback"></div>
-																			</div>
-																		</div>
-																	</div>
-																</form>
-															</div>
-															<div class="modal-footer">
-																<button type="button" class="btn btn-light"
-																	data-bs-dismiss="modal">Close</button>
-																<button type="button" class="btn btn-primary">Save
-																	Changes</button>
-															</div>
-														</div>
-														<!-- /.modal-content -->
-													</div>
-													<!-- /.modal-dialog -->
-												</div>
-												<!-- /.modal -->
-
-												<!-- --------------------- -->
-
-
-												<!-- 수정 버튼 -->
 												<button type="submit"
-													class="btn btn-primary btn-border w-xs">수정</button>
-
-												<!-- 이전 버튼 -->
+													class="btn btn-primary btn-border w-xs">완료</button>
 												<button type="button"
 													class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs"
-													th:onclick="|location.href='@{/admin/}'|">이전</button>
-											</div>
-										</div>
-
-									</div>
-								</form>
-							</div>
-
-							<!-- ------------------------퇴사 관리----------------------------- -->
-							<div class="tab-pane" id="changePassword" role="tabpanel">
-								<form action="javascript:void(0);">
-									<div class="row g-4">
-										<!-- 퇴사일 -->
-										<div class="col-lg-1"></div>
-										<div class="col-lg-5">
-											<div>
-												<label for="oldpasswordInput" class="form-label">퇴사일</label>
-												<input type="password" class="form-control"
-													id="oldpasswordInput">
-											</div>
-										</div>
-										<!-- 관리자 비밀번호 -->
-										<div class="col-lg-5">
-											<div>
-												<label for="newpasswordInput" class="form-label">관리자
-													비밀번호</label> <input type="password" class="form-control"
-													id="newpasswordInput" placeholder="비밀번호를 입력해주세요.">
-											</div>
-										</div>
-										<div class="col-lg-1"></div>
-
-										<div class="col-lg-14">
-											<div class="hstack justify-content-end">
-												<button type="submit"
-													class="btn btn-primary btn-border w-xs">퇴사</button>
+													th:onclick="|location.href='@{/admin/detail}'|">취소</button>
 											</div>
 										</div>
 									</div>
@@ -254,5 +178,4 @@
 		<script src="/assets/js/pages/modal.init.js"></script>
 	</th:block>
 </body>
-
 </html>

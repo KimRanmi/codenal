@@ -5,16 +5,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.DepartmentsDto;
+import com.codenal.admin.domain.Jobs;
+import com.codenal.admin.domain.JobsDto;
 import com.codenal.admin.repository.AdminRepository;
+import com.codenal.admin.repository.DepartmentsRepository;
+import com.codenal.admin.repository.JobsRepository;
 import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveManageDto;
 import com.codenal.annual.repository.AnnualLeaveManageRepository;
@@ -24,18 +30,22 @@ import com.codenal.employee.domain.EmployeeDto;
 @Service
 public class AdminService {
 
-	private final PasswordEncoder passwordEncoder;
+	// private final PasswordEncoder passwordEncoder;
 	// 암호화
 	// Spring Security 설정 클래스에서 PasswordEncoder를 빈으로 등록
 	private final AdminRepository adminRepository;
 	private final AnnualLeaveManageRepository annualLeaveManageRepository;
+	private final DepartmentsRepository departmentsRepository;
+	private final JobsRepository jobsRepository;
+
 
 	@Autowired
-	public AdminService(PasswordEncoder passwordEncoder,
-			AdminRepository adminRepository, AnnualLeaveManageRepository annualLeaveManageRepository) {
-		this.passwordEncoder = passwordEncoder;
+	public AdminService(AdminRepository adminRepository, DepartmentsRepository departmentsRepository, 
+			JobsRepository jobsRepository,  AnnualLeaveManageRepository annualLeaveManageRepository) {
 		this.adminRepository = adminRepository;
 		this.annualLeaveManageRepository = annualLeaveManageRepository;
+		this.departmentsRepository = departmentsRepository;
+		this.jobsRepository = jobsRepository;
 	}
 
 	// ------------------ 신규 직원 등록
@@ -43,14 +53,19 @@ public class AdminService {
 
 		int result = -1;
 		try {
-			// 기본 비밀번호 'work1234'암호화
+
+			// 기본 비밀번호 'work1234' 설정
 			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
-				String defaultPassword = passwordEncoder.encode("work1234");
-				dto.setEmpPw(defaultPassword);
-			} else {
-				// 비밀번호가 제공되었을 경우 암호화
-				dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+				dto.setEmpPw("work1234");
 			}
+			// 기본 비밀번호 'work1234'암호화
+			//			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
+			//				String defaultPassword = passwordEncoder.encode("work1234");
+			//				dto.setEmpPw(defaultPassword);
+			//			} else {
+			//				// 비밀번호가 제공되었을 경우 암호화
+			//				dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+			//			}
 
 			// 1. emp_hire 날짜를 기반으로 6자리 값 생성 (YYMMDD)
 			LocalDate hireDate = dto.getEmpHire();  // DTO에서 `emp_hire` 값을 가져옴
@@ -184,34 +199,65 @@ public class AdminService {
 	}
 
 
-	// ---------------- 직원 정보 수정
-	@Transactional
-	public Employee employeeUpdate(EmployeeDto dto) { 
-	
-		EmployeeDto temp = selectUpdate(dto.getEmpId());
-
-		temp.setEmpName(dto.getEmpName());
-		temp.setDeptNo(dto.getDeptNo());
-		temp.setJobNo(dto.getJobNo());
-
-		Employee e = temp.toEntity();
-		return adminRepository.save(e);
+	// ---------------- 직원 비밀번호 변경 
+	public void resetEmployeePassword(Long empId, String newPw) {
+		EmployeeDto e = employeeDetail(empId);
+		e.setEmpPw(newPw); // 암호화하지 않고 저장
+		
+		adminRepository.save(e.toEntity());
 	}
 
-	public EmployeeDto selectUpdate(Long empId) {
-		
+
+	// ---------------- 직원 퇴사
+	@Transactional
+	public boolean emdEndDate(Long empId , LocalDate empEnd) {
+		try {
+			Employee e = adminRepository.findById(empId).get();
+
+			e.setEmpEnd(empEnd);  // 퇴사일 설정
+			e.setEmpStatus("N");  // empStatus 'N'으로 변경
+
+			adminRepository.save(e);	// 저장
+			return true;
+		} catch (Exception e) {
+
+			return false;
+		}
+	}
+
+
+	// 부서 셀렉트
+	public List<DepartmentsDto> getAllDepartments() {
+		List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
+		return departments.stream()
+				.map(DepartmentsDto::fromEntity)
+				.collect(Collectors.toList());
+	}
+
+	// 직급 셀렉트
+	public List<JobsDto> getAllJobs() {
+		List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
+		return jobs.stream()
+				.map(JobsDto::fromEntity) 
+				.collect(Collectors.toList());
+	}
+
+
+
+	// ---------------- 직원 정보 수정
+	@Transactional
+	public Employee employeeUpdate(Long empId, EmployeeDto dto) { 
 		Employee e = adminRepository.findByEmpId(empId);
 
-		EmployeeDto dto = EmployeeDto.builder()
-				.empId(e.getEmpId())
-				.empName(e.getEmpName())
-				.deptNo(e.getDepartments().getDeptNo())
-				// .deptName(e.getDepartments().getDeptName()) 
-				.jobNo(e.getJobs().getJobNo())
-				// .jobName(e.getJobs().getJobName()) 
-				.build();
+		e.setEmpName(dto.getEmpName());
 
-		return dto;
+		Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+		e.setDepartments(department);
+
+		Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+		e.setJobs(job);
+
+		return adminRepository.save(e);
 	}
 
 
@@ -238,7 +284,5 @@ public class AdminService {
 	//	Board result = boardRepository.save(board);
 	//	return result;
 	//}
-
-
 
 }

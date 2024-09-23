@@ -1,12 +1,18 @@
 package com.codenal.calendar.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+import com.codenal.admin.repository.DepartmentsRepository;
+import com.codenal.admin.repository.JobsRepository;
 import com.codenal.calendar.domain.Calendar;
 import com.codenal.calendar.domain.CalendarDto;
 import com.codenal.calendar.repository.CalendarRepository;
@@ -20,11 +26,31 @@ public class CalendarService {
 	
 	private final CalendarRepository calendarRepository;
 	private final EmployeeRepository employeeRepository;
+	private final DepartmentsRepository departmentsRepository;
+	private final JobsRepository jobsRepository;
 	
 	@Autowired
-	public CalendarService(CalendarRepository calendarRepository, EmployeeRepository employeeRepository) {
+	public CalendarService(CalendarRepository calendarRepository, EmployeeRepository employeeRepository, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository) {
 		this.calendarRepository = calendarRepository;
 		this.employeeRepository = employeeRepository;
+		this.departmentsRepository = departmentsRepository;
+		this.jobsRepository = jobsRepository;
+	}
+	
+	public String[] eventWriter(Long empId) {
+		Employee emp = employeeRepository.findByEmpId(empId);
+		EmployeeDto dto = EmployeeDto.fromEntity(emp);
+		
+		Long detpNo = dto.getDeptNo();
+		Departments dept = departmentsRepository.findByDeptNo(detpNo);
+		
+		int jodNo = dto.getJobNo();
+		Jobs job = jobsRepository.findByJobNo(jodNo);
+		System.out.println(job.getJobName());
+		String[] str = {dto.getEmpName(), dept.getDeptName(),job.getJobName()};
+		// jobs, jobsDto 생성 후 부서명, 직급명 각자 레포지토리에서 가져온 후 String 객체 만들어서 거기다 넣어서 리턴 후 js에서 출력하기
+		
+		return str;
 	}
 	
 	public void modifyEvent(CalendarDto dto) {
@@ -69,7 +95,7 @@ public class CalendarService {
 		return result;
 	}
 	
-	public List<CalendarDto> selectEvent(){
+	public List<CalendarDto> selectEvent(Long writerId){
 		List<Calendar> eventList = calendarRepository.findAll();
 		List<CalendarDto> eventDtoList = new ArrayList<CalendarDto>();
 		for(Calendar c : eventList) {
@@ -78,7 +104,11 @@ public class CalendarService {
 			Employee empName = employeeRepository.findByEmpId(writer);
 			EmployeeDto empNameDto = EmployeeDto.fromEntity(empName);
 			calendarDto.setCalendar_schedule_writer_name(empNameDto.getEmpName());
-			eventDtoList.add(calendarDto);
+			System.out.println("확인"+writerId);
+			if((calendarDto.getCalendar_schedule_category() != 1) || (calendarDto.getCalendar_schedule_category() == 1 && calendarDto.getCalendar_schedule_writer().equals(writerId))) {
+				eventDtoList.add(calendarDto);
+				
+			}
 		}
 		System.out.println("확인"+eventDtoList);
 		return eventDtoList;

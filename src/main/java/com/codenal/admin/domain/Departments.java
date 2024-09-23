@@ -41,7 +41,7 @@ public class Departments {
     private String deptName;	// 부서명
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "dept_create_date")
+    @Column(name = "dept_create_date", nullable = false)
     @CreationTimestamp
     private LocalDate deptCreateDate;	// 부서 개설일
     

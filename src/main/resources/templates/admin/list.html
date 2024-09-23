@@ -1,6 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
-layout:decorate="~{layout}" data-sidebar="light">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
@@ -10,7 +9,23 @@ layout:decorate="~{layout}" data-sidebar="light">
 <head>
 <!-- Sweet Alert css-->
 <link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+<style>
+.card-body.pt-0 { /* 몸통 높이 고정(동적X) */
+	height: 592.5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	padding-bottom: 60px;
+}
 
+.pagination { /* 페이징 위치 고정 */
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+</style>
 </head>
 
 <body>
@@ -29,9 +44,7 @@ layout:decorate="~{layout}" data-sidebar="light">
 									<div class="row g-3">
 										<!-- 신규 직원 등록 버튼 -->
 										<div class="col-xxl-3 col-sm-7">
-											<a th:href="@{/admin/join}" class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" id="create-btn" 
-											style="width: 50%; font-size: 18px; padding: 3px;  border: 1px solid  #299cdb;"> 
-											<i class="ri-add-line align-bottom me-1"></i> 신규 직원 등록
+											<a th:href="@{/admin/join}" class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" id="create-btn" style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;"> <i class="ri-add-line align-bottom me-1"></i> 신규 직원 등록
 											</a>
 										</div>
 
@@ -88,9 +101,7 @@ layout:decorate="~{layout}" data-sidebar="light">
 									<div class="row g-3">
 										<!-- 신규 직원 등록 버튼 -->
 										<div class="col-xxl-3 col-sm-7">
-											<a th:href="@{/admin/join}" class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" 
-											id="create-btn" style="width: 60%; font-size: 18px; padding: 3px; border: 1px solid  #299cdb;"> 
-											<i class="ri-add-line align-bottom me-1"></i> 신규 직원 등록
+											<a th:href="@{/admin/join}" class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" id="create-btn" style="width: 60%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;"> <i class="ri-add-line align-bottom me-1"></i> 신규 직원 등록
 											</a>
 										</div>
 
@@ -166,6 +177,7 @@ layout:decorate="~{layout}" data-sidebar="light">
 									<tbody>
 										<!-- 직원 목록이 비어 있을 때 -->
 										<th:block th:if="${#lists.isEmpty(resultList.content)}">
+
 											<tr>
 												<td colspan="6" style="text-align: center;">직원 목록이 없습니다.</td>
 											</tr>
@@ -173,17 +185,16 @@ layout:decorate="~{layout}" data-sidebar="light">
 
 										<!-- 직원 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-										    <tr th:each="employee, employeeStat : ${resultList.content}" 
-										        th:onclick="|location.href='@{/admin/detail/{empId}(empId=${employee.empId})}'|"
-										        style="cursor: pointer;">
-										        <td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}" style="text-align: center;"></td>
-										        <td th:text="${employee.empId}" style="text-align: center;"></td>
-										        <td th:text="${employee.empName}" style="text-align: center;"></td>
-										        <td th:text="${employee.deptName}" style="text-align: center;"></td>
-										        <td th:text="${employee.jobName}" style="text-align: center;"></td>
-										        <td th:text="${employee.empPhone}" style="text-align: center;"></td>
-										        <td th:text="${employee.empStatus eq 'Y' ? '재직' : '퇴사'}" style="text-align: center;"></td>
-										    </tr>
+
+											<tr th:each="employee, employeeStat : ${resultList.content}" th:onclick="|location.href='@{/admin/detail/{empId}(empId=${employee.empId})}'|" style="cursor: pointer;">
+												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+employeeStat.count}" style="text-align: center;"></td>
+												<td th:text="${employee.empId}" style="text-align: center;"></td>
+												<td th:text="${employee.empName}" style="text-align: center;"></td>
+												<td th:text="${employee.deptName}" style="text-align: center;"></td>
+												<td th:text="${employee.jobName}" style="text-align: center;"></td>
+												<td th:text="${employee.empPhone}" style="text-align: center;"></td>
+												<td th:text="${employee.empStatus eq 'Y' ? '재직' : '퇴사'}" style="text-align: center;"></td>
+											</tr>
 										</th:block>
 
 
@@ -191,37 +202,32 @@ layout:decorate="~{layout}" data-sidebar="light">
 									</tbody>
 								</table>
 								<br>
-								<!-- 	<div class="d-flex justify-content-end">
-								<div class="pagination-wrap hstack gap-2">
-									<a class="page-item pagination-prev disabled" href="#">
-										Previous
-									</a>
-									<ul class="pagination listjs-pagination mb-0"></ul>
-									<a class="page-item pagination-next" href="#">
-										Next
-									</a>
-								</div>
-							</div> -->
+
 								<!-- ----------------------페이징------------------------------- -->
-								<div class="center" th:if="${!resultList.isEmpty()}">
-									<div class="pagination" th:with="
-										pageNumber = ${resultList.pageable.pageNumber},
-										pageSize = ${resultList.pageable.pageSize},
-										totalPages = ${resultList.totalPages},
-										startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-										tempEndPage = ${startPage + pageSize - 1},
-										endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
-										">
-										<th:block th:if="${!resultList.first}">
-											<a th:href="${resultList.first} ? '#' : @{/admin/list(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;</a>
-										</th:block>
-										<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용 -->
-										<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
-											<a th:text="${page}" th:href="@{/admin/list(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
-										</th:block>
-										<th:block th:if="${!resultList.last}">
-											<a th:href="${resultList.last} ? '#' : @{/admin/list(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;</a>
-										</th:block>
+								<div class="col-lg-6">
+									<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
+										<ul class="pagination" th:with="
+									        pageNumber = ${resultList.pageable.pageNumber},
+									        pageSize = ${resultList.pageable.pageSize},
+									        totalPages = ${resultList.totalPages},
+									        startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+									        tempEndPage = ${startPage + pageSize - 1},
+									        endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+									        ">
+											<!-- 이전 -->
+											<th:block th:if="${!resultList.first}">
+												<li class="page-item"><a class="page-link" th:href="${resultList.first} ? '#' : @{/admin/list(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a></li>
+											</th:block>
+											<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용 -->
+											<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+												<li class="page-item"><a class="page-link" th:text="${page}" th:href="@{/admin/list(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
+											</th:block>
+											<ul class="pagination listjs-pagination mb-0"></ul>
+											<!-- 이후 -->
+											<th:block th:if="${!resultList.last}">
+												<li class="page-item"><a class="page-link" th:href="${resultList.last} ? '#' : @{/admin/list(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a></li>
+											</th:block>
+										</ul>
 									</div>
 								</div>
 							</div>
@@ -235,12 +241,11 @@ layout:decorate="~{layout}" data-sidebar="light">
 
 	<th:block layout:fragment="pagejs">
 		<!-- list.js min js -->
-		<script src="/assets/libs/list.js/list.min.js"></script>
+		<!-- 		<script src="/assets/libs/list.js/list.min.js"></script> -->
 		<!--list pagination js-->
 		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
-		
-		<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-		
+		<script src="/assets/libs/prismjs/prism.js"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> -->
 	</th:block>
 </body>
 
