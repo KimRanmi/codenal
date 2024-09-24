@@ -18,6 +18,7 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	//  직원 정보 수정
 	Departments findByDeptNo(Long deptNo);
 
+
 	// 주소록
 	// 1. JsTree
 	List<Departments> findAll();
@@ -39,5 +40,8 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	       "GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
 	Page<DepartmentsCount> findByDeptNameContainingWithEmployeeCount(@Param("deptName") String deptName, Pageable pageable);
 
+	
+	// 부서 추가
+	boolean existsByDeptName(String deptName);
 
 }

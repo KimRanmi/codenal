@@ -38,7 +38,7 @@ public class DeptViewController {
 	public String searchAll(Model model,
 			@PageableDefault(page = 0, size = 10, sort = "deptCreateDate", direction = Sort.Direction.DESC) Pageable pageable,
 			@ModelAttribute("searchDto") DepartmentsDto searchDto) {
-		System.out.println("searchAll 메소드 시작");
+		// System.out.println("확인");
 
 		// 검색
 		Page<DepartmentsDto> resultList = deptService.searchDeptName(searchDto, pageable);
@@ -58,4 +58,11 @@ public class DeptViewController {
 		// System.out.println("Tree Menu Data: " + treeMenu);  
 		return addressBookService.getTreeMenu();
 	}
-} 
+
+
+	// 부서 추가
+	@GetMapping("/addDept")
+	public String joinPage() {
+		return "admin/dept/addDept";
+	}
+}

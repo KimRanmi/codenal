@@ -1,7 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}" data-sidebar="light">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
@@ -10,17 +8,16 @@
 
 <head>
 <!-- Font Awesome 라이브러리 추가 -->
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <!-- jsTree 테마 CSS 포함 -->
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 <!-- jQuery 포함 -->
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 <!-- jsTree 포함 -->
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 <style>
 .jstree-icon.ri-building-fill { /* 회사 아이콘 */
 	color: #3e4a6e;
@@ -68,13 +65,11 @@
 					<!-- 조직도 이름 -->
 					<div class="card-header border-0">
 						<div class="col-sm">
-							<h5 class="card-title mb-0"
-								style="font-size: 18px; font-weight: bold;">조직도</h5>
+							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: bold;">조직도</h5>
 						</div>
 					</div>
 					<!-- 조직도 Api -->
-					<div
-						class="card-body border border-dashed border-end-0 border-start-0">
+					<div class="card-body border border-dashed border-end-0 border-start-0">
 						<!-- <div class="mb-3"></div> -->
 						<div id="treeMenu"></div>
 					</div>
@@ -87,40 +82,33 @@
 					<!----------목록 이름------------>
 					<div class="card-header border-0">
 						<div class="col-sm">
-							<h5 class="card-title mb-0"
-								style="font-size: 18px; font-weight: bold;">부서 목록</h5>
+							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: bold;">부서 목록</h5>
 						</div>
 					</div>
 					<!----------목록 상단------------>
-					<div
-						class="card-body border border-dashed border-end-0 border-start-0">
+					<div class="card-body border border-dashed border-end-0 border-start-0">
 						<div class="row g-3">
 							<div class="mb-1"></div>
 							<div class="col-md-4">
-								<button
-									class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center"
-									data-bs-toggle="modal" data-bs-target="#addDept"
-									style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
+								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal" data-bs-target="#addDept" style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
 									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
 								</button>
 
 								<!-- 부서 추가 모달 -->
-								<div id="addDept" class="modal fade zoomIn" tabindex="-1"
-									aria-labelledby="zoomInModalLabel" aria-hidden="true">
+								<div id="addDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered">
 										<div class="modal-content">
 											<div class="modal-header bg-light p-3">
 												<h5 class="modal-title" id="exampleModalLabel">부서 추가</h5>
-												<button type="button" class="btn-close"
-													data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
 											</div>
-											<form class="tablelist-form" autocomplete="off">
+											<form class="was-validated" autocomplete="off" id="addDeptForm">
 												<div class="modal-body">
 													<div class="mb-3">
-														<label for="customername-field" class="form-label"
-															style="font-size: 15px;">부서명</label> <input type="text"
-															class="form-control" required />
-														<div class="invalid-feedback"></div>
+														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> 
+														<span class="text-danger">*</span> 
+														<input type="text" class="form-control" id="validationTextarea" name="deptName" required />
+														<div class="invalid-feedback">부서명을 입력해주세요.</div>
 													</div>
 												</div>
 
@@ -140,16 +128,13 @@
 							<div class="col-md-3"></div>
 							<div class="col-md-4">
 								<div class="search-box">
-									<input type="text" class="form-control search"
-										placeholder="부서명을 입력해 주세요."> <i
-										class="ri-search-line search-icon"></i>
+									<input type="text" class="form-control search" placeholder="부서명을 입력해 주세요."> <i class="ri-search-line search-icon"></i>
 								</div>
 							</div>
 							<!-- 검색 버튼 -->
 							<div class="col-md-1">
 								<div>
-									<button type="submit" class="btn btn-primary w-100"
-										style="font-size: 18px; padding: 3px;">검색</button>
+									<button type="submit" class="btn btn-primary w-100" style="font-size: 18px; padding: 3px;">검색</button>
 								</div>
 							</div>
 							<div class="mb-2"></div>
@@ -161,14 +146,12 @@
 					<div class="card-body pt-0">
 						<div>
 							<div class="table-responsive table-card mb-3">
-								<table
-									class="table align-middle table-nowrap table-striped mb-0">
+								<table class="table align-middle table-nowrap table-striped mb-0">
 									<thead class="table-light">
 										<tr>
 											<th scope="col" style="text-align: center; font-size: 15px;">번호</th>
 											<th scope="col" style="text-align: center; font-size: 15px;">부서명</th>
-											<th scope="col" style="text-align: center; font-size: 15px;">인원
-												수</th>
+											<th scope="col" style="text-align: center; font-size: 15px;">인원 수</th>
 											<th scope="col" style="text-align: center; font-size: 15px;">개설일</th>
 											<th scope="col" style="text-align: center; font-size: 15px;">수정/삭제</th>
 										</tr>
@@ -178,39 +161,22 @@
 										<!-- 부서 목록이 비어 있을 때 -->
 										<th:block th:if="${#lists.isEmpty(resultList.content)}">
 											<tr>
-												<td colspan="6" style="text-align: center;">부서 목록이
-													없습니다.</td>
+												<td colspan="6" style="text-align: center;">부서 목록이 없습니다.</td>
 											</tr>
 										</th:block>
 										<!-- 부서 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
 											<tr th:each="departments, deptStat : ${resultList.content}">
-												<td
-													th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+deptStat.count}"
-													style="text-align: center;"></td>
-												<td th:text="${departments.deptName}"
-													style="text-align: center;"></td>
-												<td th:text="${departments.empCount ?: 0} + '명'"
-													style="text-align: center;"></td>
-												<td
-													th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}"
-													style="text-align: center;"></td>
+												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+deptStat.count}" style="text-align: center;"></td>
+												<td th:text="${departments.deptName}" style="text-align: center;"></td>
+												<td th:text="${departments.empCount ?: 0} + '명'" style="text-align: center;"></td>
+												<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
 												<td>
 													<ul class="list-inline hstack gap-2 mb-0" style="text-align: center;">
-														<li class="list-inline-item edit" data-bs-toggle="tooltip"
-															data-bs-trigger="hover" data-bs-placement="top"
-															title="Edit"><a href="#editDept"
-															data-bs-toggle="modal"
-															class="text-primary d-inline-block edit-item-btn"> <i
-																class="ri-pencil-fill fs-16"></i>
+														<li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit"><a href="#editDept" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn"> <i class="ri-pencil-fill fs-16"></i>
 														</a></li>
 
-														<li class="list-inline-item" data-bs-toggle="tooltip"
-															data-bs-trigger="hover" data-bs-placement="top"
-															title="Remove"><a
-															class="text-danger d-inline-block remove-item-btn"
-															data-bs-toggle="modal" href="#deleteModal"> <i
-																class="ri-delete-bin-5-fill fs-16"></i>
+														<li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove"><a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteModal"> <i class="ri-delete-bin-5-fill fs-16"></i>
 														</a></li>
 													</ul>
 												</td>
@@ -220,21 +186,17 @@
 								</table>
 
 								<!-- 부서 수정 모달 -->
-								<div id="editDept" class="modal fade zoomIn" tabindex="-1"
-									aria-labelledby="zoomInModalLabel" aria-hidden="true">
+								<div id="editDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered">
 										<div class="modal-content">
 											<div class="modal-header bg-light p-3">
 												<h5 class="modal-title">부서명 수정</h5>
-												<button type="button" class="btn-close"
-													data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
 											</div>
 											<form class="tablelist-form" autocomplete="off">
 												<div class="modal-body">
 													<div class="mb-3">
-														<label for="customername-field" class="form-label"
-															style="font-size: 15px;">부서명</label> <input type="text"
-															class="form-control" required />
+														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> <input type="text" class="form-control" required />
 														<div class="invalid-feedback"></div>
 													</div>
 												</div>
@@ -253,10 +215,8 @@
 
 								<br>
 								<div class="col-lg-6">
-									<div class="d-flex justify-content-end mt-2 pagination"
-										th:if="${!resultList.isEmpty()}">
-										<ul class="pagination"
-											th:with="
+									<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
+										<ul class="pagination" th:with="
 									        pageNumber = ${resultList.pageable.pageNumber},
 									        pageSize = ${resultList.pageable.pageSize},
 									        totalPages = ${resultList.totalPages},
@@ -266,22 +226,16 @@
 									        ">
 											<!-- 이전 -->
 											<th:block th:if="${!resultList.first}">
-												<li class="page-item"><a class="page-link"
-													th:href="${resultList.first} ? '#' : @{/admin/dept(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a></li>
+												<li class="page-item"><a class="page-link" th:href="${resultList.first} ? '#' : @{/admin/dept(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a></li>
 											</th:block>
 											<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용 -->
-											<th:block
-												th:each="page: ${#numbers.sequence(startPage, endPage)}">
-												<li class="page-item"><a class="page-link"
-													th:text="${page}"
-													th:href="@{/admin/dept(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}"
-													th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
+											<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+												<li class="page-item"><a class="page-link" th:text="${page}" th:href="@{/admin/dept(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
 											</th:block>
 											<ul class="pagination listjs-pagination mb-0"></ul>
 											<!-- 이후 -->
 											<th:block th:if="${!resultList.last}">
-												<li class="page-item"><a class="page-link"
-													th:href="${resultList.last} ? '#' : @{/admin/dept(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a></li>
+												<li class="page-item"><a class="page-link" th:href="${resultList.last} ? '#' : @{/admin/dept(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a></li>
 											</th:block>
 										</ul>
 									</div>
@@ -305,6 +259,10 @@
 		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
 		<!-- icon -->
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
+		
+		<script src="/assets/libs/prismjs/prism.js"></script>
+
+		<script src="/assets/js/pages/form-validation.init.js"></script>
 
 		<script>
 		$(document).ready(function () {				
@@ -372,6 +330,48 @@
 		        } */
 		    });
 		});
+		
+		
+		/* 부서 추가 모달 */
+		document.getElementById('addDeptForm').addEventListener('submit', function(event) {
+		    event.preventDefault(); 
+		    
+		    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+		    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+		
+		    const deptName = document.querySelector('input[name="deptName"]').value;
+		
+		    fetch('/api/addDepartments', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		            [csrfHeader]: csrfToken
+		        },
+		        body: JSON.stringify({deptName}) 
+		    })
+		    .then(response => {
+			    if (!response.ok) {
+			    	console.error('Response status:', response.status);
+			        throw new Error('서버 응답에 문제가 있습니다.');
+			    }
+			    return response.json();
+			})
+			
+		    .then(data => {
+			    if (data.res_code === "200") {  // 성공 코드 체크
+			        alert('부서가 추가되었습니다.');
+			        location.reload();  // 목록을 새로고침하여 업데이트
+			    } else {
+			        alert(data.res_msg || '부서 추가에 실패했습니다.');
+			    }
+			})
+
+		    .catch(error => {
+		        console.error('에러 발생:', error);
+		        alert('서버와 통신 중 에러가 발생했습니다.');
+		    });
+		});
+
 
 		</script>
 

@@ -1,10 +1,13 @@
 package com.codenal.admin.service;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.DepartmentsCount;
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.repository.DepartmentsRepository;
@@ -33,7 +36,7 @@ public class DeptService {
 			deptNameSearch = departmentsRepository.findByDeptNameContainingWithEmployeeCount(searchDto.getDeptName(), pageable);
 		}
 
-		System.out.println("(서비스)부서 수: " + deptNameSearch.getContent().size());
+		//System.out.println("(서비스)부서 수: " + deptNameSearch.getContent().size());
 
 		Page<DepartmentsDto> deptNameSearchList = deptNameSearch.map(projection -> {
 			DepartmentsDto dto = new DepartmentsDto();
@@ -47,4 +50,31 @@ public class DeptService {
 		return deptNameSearchList;
 	}
 
+
+	// 부서 추가
+	public int addDepartment(DepartmentsDto dto) {
+		try {
+			// 중복 체크 로직
+			if (departmentsRepository.existsByDeptName(dto.getDeptName())) {
+				throw new IllegalArgumentException("이미 존재하는 부서명입니다.");
+			}
+
+			Departments d = Departments.builder()
+					.deptName(dto.getDeptName())
+					.deptCreateDate(LocalDate.now())
+					.build();
+			departmentsRepository.save(d);
+
+			return 1;
+
+		} catch (IllegalArgumentException e) {
+			// 중복된 부서명이 있을 때 처리
+			System.out.println("Error: " + e.getMessage());
+			return 0;
+		} catch (Exception e) {
+			// 그 외의 일반적인 에러 처리
+			System.out.println("Error: " + e.getMessage());
+			return 0;
+		}
+	}
 }

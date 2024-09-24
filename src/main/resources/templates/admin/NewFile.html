@@ -1,7 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}" data-sidebar="light">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
@@ -10,17 +8,13 @@
 
 <head>
 <!-- Font Awesome 라이브러리 추가 -->
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <!-- jsTree 테마 CSS 포함 -->
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 <!-- jQuery 포함 -->
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 <!-- jsTree 포함 -->
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
 <style>
 .card-body.pt-0 { /* 몸통 높이 고정(동적X) */
 	height: 592.5px;
@@ -41,35 +35,19 @@
 </head>
 
 <body>
-	<!-- 부서 수정 모달 -->
-	<div id="editDept" class="modal fade zoomIn" tabindex="-1"
-									aria-labelledby="zoomInModalLabel" aria-hidden="true">
-									<div class="modal-dialog modal-dialog-centered">
-										<div class="modal-content">
-											<div class="modal-header bg-light p-3">
-												<h5 class="modal-title">부서명 수정</h5>
-												<button type="button" class="btn-close"
-													data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
-											</div>
-											<form class="tablelist-form" autocomplete="off">
-												<div class="modal-body">									
-													<div class="mb-3">
-														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label>
-														<input type="text" class="form-control" required />
-														<div class="invalid-feedback"></div>
-													</div>
-												</div>
-												<div class="modal-footer">
-													<div class="hstack gap-2 justify-content-end">
-														<button type="submit" class="btn btn-success" id="add-btn">수정</button>
-													</div>
-												</div>
-											</form>
+	<div>
+		<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> 
+			<span class="text-danger">*</span> 
+			<input type="text" class="form-control" id="detail-emp-end" name="emp_end" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="퇴사일을 선택하세요." required />
+		<div class="invalid-feedback">퇴사일을 선택해주세요.</div>
+	</div>
 
-										</div>
-									</div>
-								</div>
-								<!-- 모달 창 끝 -->
+	<div class="mb-3">
+		<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> 
+		<input type="text" class="form-control" name="deptName" required />
+		<div class="invalid-feedback">부서명을 입력해주세요.</div>
+	</div>
+
 
 	<th:block layout:fragment="pagejs">
 
@@ -79,74 +57,7 @@
 		<!-- icon -->
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
 
-		<script>
-		$(document).ready(function () {				
-		    // 트리 메뉴
-		    $.ajax({
-		        url: '/admin/dept/tree-menu',
-		        method: 'GET',
-		        dataType: 'json',
-		        success: function (data) {		
-		        
-		           /*  if (!data || data.length === 0) {
-		                console.error('Received data is empty or undefined.');
-		                return;
-		            } */
 
-		            // TreeMenuDto
-		            const formatDataForJsTree = (nodes) => {
-		                return nodes.map(node => {
-		                    return {
-		                        id: node.nodeId,
-		                        text: node.nodeName,
-		                        state: {
-		                            opened: false	// 직원은 처음에 접어둠
-		                        },
-		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
-		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-		                        		// 부서 아이콘 : 직원 아이콘
-		                    };
-		                });
-		            };
-
-		            const formattedData = formatDataForJsTree(data);
-
-		            // 그룹웨어 회사 이름
-		            const companyNode = {
-		                id: 'companyName',
-		                text: 'withXwork', // 위드워크 회사명
-		                state: {
-		                    opened: true
-		                },
-		                children: formattedData, 
-		                icon: 'ri-building-fill' // 회사 아이콘
-		            };
-
-		            // jsTree 초기화
-		            $('#treeMenu').jstree({
-		                'core': {
-		                    "animation": 0,
-		                    "check_callback": false,
-		                    'data': [companyNode] 
-		                },
-		                "plugins": ["types"],
-		                "types": {
-		                    "default": {
-		                        "icon": "ri-team-fill"	// 부서 아이콘
-		                    },
-		                    "file": {
-		                        "icon": "ri-user-2-fill"	// 직원 아이콘
-		                    }
-		                }
-		            });
-		        },
-		       /*  error: function (xhr, status, error) {
-		            console.error('Error loading tree menu data:', error);
-		        } */
-		    });
-		});
-
-		</script>
 
 	</th:block>
 </body>
