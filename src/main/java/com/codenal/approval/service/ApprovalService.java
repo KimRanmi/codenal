@@ -22,12 +22,14 @@ import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.domain.Approver;
+import com.codenal.approval.domain.Referrer;
 import com.codenal.approval.repository.ApprovalBaseFormTypeRepository;
 import com.codenal.approval.repository.ApprovalCategoryRepository;
 import com.codenal.approval.repository.ApprovalFileRepository;
 import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.approval.repository.ApproverRepository;
+import com.codenal.approval.repository.ReferrerRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
@@ -44,6 +46,7 @@ public class ApprovalService {
    private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
    private final ApprovalFileRepository approvalFileRepository;
    private final ApproverRepository approverRepository;
+   private final ReferrerRepository referrerRepository;
 
    @Autowired
    public ApprovalService(ApprovalRepository approvalRepository, 
@@ -53,7 +56,8 @@ public class ApprovalService {
          ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository,
          AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
          ApprovalFileRepository approvalFileRepository,
-         ApproverRepository approverRepository) {
+         ApproverRepository approverRepository,
+         ReferrerRepository referrerRepository) {
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -62,9 +66,10 @@ public class ApprovalService {
       this.annualLeaveUsageRepository = annualLeaveUsageRepositroy;
       this.approvalFileRepository = approvalFileRepository;
       this.approverRepository = approverRepository;
+      this.referrerRepository = referrerRepository;
    }
 
-   // 리스트 조회
+   // 상신리스트 조회
    public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id) {
 	  
 	  Employee emp = employeeRepository.findByEmpId(id);
@@ -84,13 +89,12 @@ public class ApprovalService {
       return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
    
-   // 수신리스트
+   // 수신리스트 조회
    public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,int num2,Long id) {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 
-		  
 	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),pageable);
 	      
 	      System.out.println(approvalList);
@@ -113,6 +117,32 @@ public class ApprovalService {
 	      return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
 	   }
    
+   // 수신참조 리스트 조회
+   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,Long id) {
+		  
+		  Employee emp = employeeRepository.findByEmpId(id);
+		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
+
+	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),pageable);
+	      
+	      System.out.println(referrerList);
+	      
+	      List<Map<String, Object>> responseList = new ArrayList<>();
+	      for (Object[] objects : referrerList.getContent()) {
+	         Approval approval = (Approval) objects[0];
+	         ApprovalForm approvalForm = (ApprovalForm) objects[1];
+	         int num = approval.getApprovalStatus();
+	         
+	         Map<String, Object> map = new HashMap<>();
+	         map.put("approval", approval);
+	         map.put("employee",approval.getEmployee());
+	         map.put("formType", approvalForm);
+	         map.put("num", num);
+	         responseList.add(map);
+	         
+	      }
+	      return new PageImpl<>(responseList, pageable, referrerList.getTotalElements());
+	   }
    
    
    // 상세조회
@@ -136,6 +166,12 @@ public class ApprovalService {
       
       List<Approver> agree = approverRepository.findByApproverNo_Agree(approval_no);
       List<Approver> approver = approverRepository.findByApproverNo_Approver(approval_no);
+      List<Referrer> referrer = referrerRepository.findByApproval(approval);
+      
+      
+      System.out.println("agree : "+agree);
+      System.out.println("referrer : "+referrer);
+      
       
       result.put("approval", approval);
       result.put("employee", employee);
@@ -145,6 +181,7 @@ public class ApprovalService {
       result.put("file", file);
       result.put("agree", agree);
       result.put("approver",approver);
+      result.put("referrer", referrer);
       return result;
    }
    

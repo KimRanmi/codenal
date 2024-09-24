@@ -74,7 +74,7 @@
 								<label class="form-label" for="references">수신참조자</label><br>
 								<input id="references" type="text"
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-									class="selectedName3">
+									class="form-control" readonly data-id="">
 							</div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-thumbnail-img">양식</label><br>
@@ -82,7 +82,7 @@
 									<select class="form-control" id="category-select"
 										style="width: 500px;" name="form_code"
 										onchange="updateEditorContent()">
-										<option>-- 선택하세요 --</option>
+										<option value="">-- 선택하세요 --</option>
 										<option th:each="cate : ${cateList}"
 											th:text="${cate.form_name}" id="cateList"
 											th:value="${cate.form_code}"
@@ -93,7 +93,7 @@
 									<select class="form-control" id="category-select"
 										style="width: 500px;" name="form_code"
 										onchange="updateEditorContent()">
-										<option>-- 선택하세요 --</option>
+										<option value="">-- 선택하세요 --</option>
 										<option th:each="cate : ${cateList}"
 											th:value="${cate.form_code}" th:text="${cate.form_name}"
 											id="cateList" th:data-content="${cate.form_content}">
@@ -135,37 +135,7 @@
 
 							<!-- 합의자, 결재자 선택  -->
 							<div style="margin-top: -1150px; margin-left: 900px;">
-								<label>합의자</label>
-								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;" data-name="">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal1">선택</button>
-
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-									</tr>
-								</table>
-								<table style="border-collapse: collapse; border-spacing: 0;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" data-group="agree"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" data-group="agree"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" data-group="agree"></td>
-									</tr>
-								</table>
-								<br> <label>결재자</label>
+								<button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
 									<tr>
@@ -173,9 +143,6 @@
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal2">선택</button>
 
 										</td>
 										<td
@@ -186,7 +153,34 @@
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2" data-group="approver"></td>
+											class="selectedName" data-group="agree"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											class="selectedName" data-group="agree"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											class="selectedName" data-group="agree"></td>
+									</tr>
+								</table>
+								<br>
+								<button type="button" class="btn btn-light waves-effect" id="button_modal2">결재자</button>
+								<table
+									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+										</td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+									</tr>
+								</table>
+								<table style="border-collapse: collapse; border-spacing: 0;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											class="selectedName2" data-group="approver" id="approver"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
 											class="selectedName2" data-group="approver"></td>
@@ -214,132 +208,137 @@
 
 			<!-- 모달 관련 js -->
 			<script>
-			
-			// 로그인 한 사람 은 트리구조에서 지우기 
-			const loginId = document.getElementById('emp_id').value;
-		    const selectArray = []; // 선택된 이름을 저장할 배열
-		    let buttonId = '';
-		    
-		    $('#button_modal1, #button_modal2').click(function() {
-		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
-		        buttonId = this.id;
-		        console.log(buttonId);
-		        
-		        // 선택 배열 초기화
-		        selectArray.length = 0; 
-		
-		        $.ajax({
-		            url: '/approval/modal', // 데이터를 가져올 URL
-		            method: 'GET',
-		            dataType: 'json',
-		            success: function(data) {
-		                console.log(data); // 데이터 로그
-		
-		                // jsTree용 데이터 형식 변환. 지금 로그인한 사람 정보는 제외
-		                const formatDataForJsTree = (nodes) => {
-		                    return nodes
-		                    .filter(node => node.nodeId.toString() !== loginId)
-		                    .map(node => ({
-		                        id: node.nodeId,
-		                        text: node.nodeName,
-		                        state: { opened: true },
-		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
-		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-		                    }));
-						
-		                };
-		                const formattedData = formatDataForJsTree(data);
-		                const formattedDataLength = formattedData.length; 
-		                const companyNode = {
-		                    id: 'companyName',
-		                    text: 'withXwork',
-		                    state: { opened: true },
-		                    children: formattedData,
-		                    icon: 'ri-building-fill'
-		                };
-		
-		                // 기존 jsTree 인스턴스 제거
-		                if ($('#treeMenu').data('jstree')) {
-		                    $('#treeMenu').jstree("destroy");
-		                }
-		
-		                // jsTree 초기화
-		                $('#treeMenu').jstree({
-		                    'core': {
-		                        animation: 0,
-		                        check_callback: false,
-		                        data: [companyNode]
-		                    },
-		                    'plugins': ['checkbox'],
-		                    "types": {
-		                        default: { icon: "ri-team-fill" },
-		                        file: { icon: "ri-user-2-fill" }
-		                    }
-		                }).on('select_node.jstree', function(e, data) {
-		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
-		                    selectArray.length = 0; // 배열 초기화
-		
-		                    selectedNodes.forEach(node => {
-		                        if (node.parent !== 'companyName') {
-		                            selectArray.push({id: node.id, text: node.text}); // 선택된 자식 노드의 이름 추가, 데이터 베이스에 보낼 id 설정
-		                            console.log(node);
-		                        }
-		                    });
-		                });
-		
-		                // 모달 표시
-		                const modalElement = document.getElementById('staticBackdrop');
-		                if (modalElement) {
-		                    const modal = new bootstrap.Modal(modalElement, {
-		                        backdrop: 'static',
-		                        keyboard: false 
-		                    });
-		                    modal.show(); 
-		                    
-		                    // 등록 버튼 이벤트
-		                    $(document).on('click', '#successBtn', function() {
-		                        const selectNameElements = buttonId === "button_modal1" 
-		                            ? document.querySelectorAll('.selectedName') 
-		                            : document.querySelectorAll('.selectedName2');
-		
-		                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
+    // 로그인 한 사람은 트리구조에서 지우기 
+    const loginId = document.getElementById('emp_id').value;
+    const selectArray = []; // 선택된 이름을 저장할 배열
+    let buttonId = '';
+    
+    $('#button_modal1, #button_modal2, #references').click(function() {
+        buttonId = this.id;
+        console.log(buttonId);
+        
+        // 선택 배열 초기화
+        selectArray.length = 0; 
 
-		                            for (let index = 0; index < length; index++) {
-		                                // selectArray[index]가 정의되어 있는지 확인
-		                                if (selectArray[index]) {
-		                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
-		                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
-		                                } else {
-		                                    selectNameElements[index].textContent = ''; // 비워두기
-		                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
-		                                }
-		                            }
-		
-		                        modal.hide(); // 모달 닫기
-		                    });
-		
-		                 // 초기화 버튼 이벤트 -> 이건 나중에 수정
-		                    $(document).on('click', '#resetBtn', function() {
-		                        const selectNameElements = buttonId === "button_modal1" 
-		                            ? document.querySelectorAll('.selectedName') 
-		                            : document.querySelectorAll('.selectedName2');
+        $.ajax({
+            url: '/approval/modal', // 데이터를 가져올 URL
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                console.log(data); // 데이터 로그
 
-		                        selectNameElements.forEach((element) => {
-		                            if (element) { // 요소가 존재하는지 확인
-		                                element.innerHTML = ''; // 비워두기
-		                            } else {
-		                                console.warn("해당 요소가 존재하지 않습니다."); // 요소가 없을 때 경고 로그
-		                            }
-		                        });
-		                        selectArray.length = 0; // 배열 초기화
-		                    });
-		                } else {
-		                    console.error("모달 요소를 찾을 수 없습니다.");
-		                }
-		            }
-		        });
-		    });
-		</script>
+                // jsTree용 데이터 형식 변환. 지금 로그인한 사람 정보는 제외
+                const formatDataForJsTree = (nodes) => {
+                    return nodes
+                    .filter(node => node.nodeId.toString() !== loginId)
+                    .map(node => ({
+                        id: node.nodeId,
+                        text: node.nodeName,
+                        state: { opened: true },
+                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
+                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+                    }));
+                };
+
+                const formattedData = formatDataForJsTree(data);
+                const companyNode = {
+                    id: 'companyName',
+                    text: 'withXwork',
+                    state: { opened: true },
+                    children: formattedData,
+                    icon: 'ri-building-fill'
+                };
+
+                // 기존 jsTree 인스턴스 제거
+                if ($('#treeMenu').data('jstree')) {
+                    $('#treeMenu').jstree("destroy");
+                }
+
+                // jsTree 초기화
+                $('#treeMenu').jstree({
+                    'core': {
+                        animation: 0,
+                        check_callback: false,
+                        data: [companyNode]
+                    },
+                    'plugins': ['checkbox'],
+                    "types": {
+                        default: { icon: "ri-team-fill" },
+                        file: { icon: "ri-user-2-fill" }
+                    }
+                }).on('select_node.jstree', function(e, data) {
+                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
+                    selectArray.length = 0; // 배열 초기화
+
+                    selectedNodes.forEach(node => {
+                        if (node.parent !== 'companyName') {
+                            selectArray.push({id: node.id, text: node.text}); // 선택된 자식 노드의 이름 추가
+                            console.log(node);
+                        }
+                    });
+                });
+
+                // 모달 표시
+                const modalElement = document.getElementById('staticBackdrop');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement, {
+                        backdrop: 'static',
+                        keyboard: false 
+                    });
+                    modal.show(); 
+                    
+                    $(document).on('click', '#successBtn', function() {
+                        if (buttonId === "references") {
+                            const selectedNames = selectArray.map(item => item.text).join(' '); // 선택된 이름을 결합
+                            const selectNameElement = document.getElementById('references'); 
+
+                            selectNameElement.value = selectedNames; // 결합된 문자열 설정
+                            selectNameElement.setAttribute("data-id", selectArray.map(item => item.id).join(' '));  // json 데이터로 보낼 때 쓸 data-id 값도 넣어주기
+
+                        } else {
+                            const selectNameElements = buttonId === "button_modal1" 
+                                ? document.querySelectorAll('.selectedName') 
+                                : document.querySelectorAll('.selectedName2');
+
+                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
+
+                            for (let index = 0; index < length; index++) {
+                                if (selectArray[index]) {
+                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
+                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
+                                } else {
+                                    selectNameElements[index].textContent = ''; // 비워두기
+                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
+                                }
+                            }
+                        }
+                        modal.hide(); // 모달 닫기
+                    });
+
+                    // 초기화 버튼 이벤트
+                    $(document).on('click', '#resetBtn', function() {
+                        const selectNameElements = buttonId === "button_modal1" 
+                            ? document.querySelectorAll('.selectedName') 
+                            : document.querySelectorAll('.selectedName2');
+
+                        selectNameElements.forEach((element) => {
+                            if (element) { // 요소가 존재하는지 확인
+                                element.innerHTML = ''; // 비워두기
+                            } else {
+                                console.warn("해당 요소가 존재하지 않습니다."); // 요소가 없을 때 경고 로그
+                            }
+                        });
+                        selectArray.length = 0; // 배열 초기화
+                    });
+                } else {
+                    console.error("모달 요소를 찾을 수 없습니다.");
+                }
+            }
+        });
+    });
+</script>
+
+		
 
 		<!-- 폼 안에 필요한 값 불러오기 -->
 		<script>
@@ -369,7 +368,8 @@
 
         const form = document.getElementById("approvalForm");
         form.addEventListener('submit', (e) => {
-            e.preventDefault();
+            e.preventDefault(); 
+            
             const payload = new FormData(form);
             const csrfToken = document.getElementById('csrf_token').value;
             
@@ -403,14 +403,46 @@
             	 return value ? Number(value) : null;
              })
              .filter(Boolean);
-
+             
+             // 수신참조자 값 가져오기
+             const dataIdValues = document.querySelectorAll('#references[data-id]');
+			 const references = Array.from(dataIdValues)
+			    .map(element => element.getAttribute('data-id').split(' ')) // data-id 속성 값 가져오기
+             
+             
             /* 토스트 api 안에 값 저장 */
             const content = contentEditor.getHTML();
             
             payload.append("approval_content", content);
 			payload.append("agree", agree);
 			payload.append("approver",approver);
-            
+			payload.append("references", references);
+			
+			// 유효성 검사
+		    let vali_check = true; 
+		    let vali_text = "";
+		
+		    if (form.approval_title.value === "") {
+		        vali_text += '제목을 입력하세요.\n';
+		        form.approval_title.focus();
+		        vali_check = false; 
+		    } else if (form.form_code.value === "") {
+		        vali_text += "카테고리를 선택하세요.\n";
+		        document.getElementById('category-select').focus();
+		        vali_check = false; 
+		    } else if (approver.length === 0) {
+		        vali_text += '결재자를 선택하세요.\n';
+		        vali_check = false; 
+		    }
+		
+		    if (!vali_check) {
+		        Swal.fire({
+		            icon: 'info',
+		            title: '실패',
+		            text: vali_text
+		        });
+            }else{
+			
 			payload.forEach((value, key) => {
 			    console.log(`${key}: ${value}`);
 			});
@@ -441,6 +473,7 @@
                     });
                 }
             });
+        }
         });
     </script>
 	</div>

@@ -149,7 +149,7 @@ select, input[type=date] {
 
 							<!-- 합의자, 결재자 선택  -->
 							<div style="margin-top: -1200px; margin-left: 900px;">
-								<label>합의자</label>
+								<button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;"
 									data-name="">
@@ -158,9 +158,6 @@ select, input[type=date] {
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal1">선택</button>
 
 										</td>
 										<td
@@ -180,7 +177,8 @@ select, input[type=date] {
 											class="selectedName" data-group="agree"></td>
 									</tr>
 								</table>
-								<br> <label>결재자</label>
+								<br> 
+								<button type="button" class="btn btn-light waves-effect" id="button_modal2">결재자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
 									<tr>
@@ -188,9 +186,6 @@ select, input[type=date] {
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal2">선택</button>
 
 										</td>
 										<td
@@ -421,43 +416,65 @@ select, input[type=date] {
 			    
 			    /* 데이터 저장 */
 			    const form = document.getElementById("approvalForm");
-			    form.addEventListener('submit', (e) => {
-			        e.preventDefault();
-			        const payload = new FormData(form);
-			        const csrfToken = document.getElementById('csrf_token').value;
-			   	
-			        const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
-		             .map(td => {
-		             	const value = td.getAttribute('data-name');
-		             	return value ? Number(value) : null;
-		             })
-		              .filter(Boolean);
-		             
-		             
-		             const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
-		             .map(td => {
-		            	 const value = td.getAttribute('data-name');
-		            	 return value ? Number(value) : null;
-		             })
-		             .filter(Boolean);
-
-		            /* 토스트 api 안에 값 저장 */
-		            const content = contentEditor.getHTML();
-		            
-		            payload.append("approval_content", content);
-					payload.append("agree", agree);
-					payload.append("approver",approver);
-		            
-					payload.forEach((value, key) => {
-					    console.log(`${key}: ${value}`);
-					});
-					
+				form.addEventListener('submit', (e) => {
+			    e.preventDefault();
+			    const payload = new FormData(form);
+			    const csrfToken = document.getElementById('csrf_token').value;
+			
+			    const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
+			        .map(td => {
+			            const value = td.getAttribute('data-name');
+			            return value ? Number(value) : null;
+			        })
+			        .filter(Boolean);
+			
+			    const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
+			        .map(td => {
+			            const value = td.getAttribute('data-name');
+			            return value ? Number(value) : null;
+			        })
+			        .filter(Boolean);
+			
+			    // 토스트 API 안에 값 저장
+			    const content = contentEditor.getHTML();
+			    payload.append("approval_content", content);
+			    payload.append("agree", agree);
+			    payload.append("approver", approver);
+			
+			    payload.forEach((value, key) => {
+			        console.log(`${key}: ${value}`);
+			    });
+			
+			    // 유효성 검사
+			    let vali_check = true; // 기본값을 true로 설정
+			    let vali_text = "";
+			
+			    if (form.approval_title.value === "") {
+			        vali_text += '제목을 입력하세요.\n';
+			        form.approval_title.focus();
+			        vali_check = false; 
+			    } else if (form.form_code.value === "") {
+			        vali_text += "카테고리를 선택하세요.\n";
+			        document.getElementById('category-select').focus();
+			        vali_check = false; 
+			    } else if (approver.length === 0) {
+			        vali_text += '결재자를 선택하세요.\n';
+			        vali_check = false; 
+			    }
+			
+			    if (!vali_check) {
+			        Swal.fire({
+			            icon: 'info',
+			            title: '실패',
+			            text: vali_text
+			        });
+			    } else {
 			        fetch('/approval_leave', {
 			            method: 'POST',
 			            headers: {
 			                'X-CSRF-TOKEN': csrfToken
 			            },
-			            body: payload 
+			            body: payload
 			        })
 			        .then(response => response.json())
 			        .then(data => {
@@ -477,9 +494,9 @@ select, input[type=date] {
 			                    text: data.res_msg
 			                });
 			            }
-			        })
-			    });
-			    
+			        });
+			    }
+			});
     	</script>
 	</div>
 </body>

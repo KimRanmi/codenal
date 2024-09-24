@@ -52,7 +52,8 @@ public class ApprovalApiController {
 			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("form_code") String formCode,
 			@RequestPart(value = "file", required = false) MultipartFile file,
-			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
+			@RequestParam(value = "references", required = false) List<Long> references) {
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
 		resultMap.put("res_code", "404");
@@ -67,8 +68,6 @@ public class ApprovalApiController {
 		list.put("내용", approvalContent);
 		list.put("이름", emp_id);
 		list.put("폼코드", form_code);
-			
-		System.out.println("합의자 : "+agree);
 
 		Approval createdApproval = approvalService.createApproval(list);
 
@@ -79,10 +78,11 @@ public class ApprovalApiController {
 			approverList.put("합의자", agree);
 			approverList.put("결재자", approver);
 			
-			Map<String, Long> no = new HashMap<String,Long>();
-			no.put("결재번호", createdApproval.getApprovalNo());
-			
+			// 결재자 정보 등록
 			approverService.createApprover(approverList,createdApproval);
+			
+			// 수신참조자 정보 등록
+			approverService.createReferences(references,createdApproval);
 			
 			
 			//파일 데이터
@@ -111,7 +111,8 @@ public class ApprovalApiController {
 			@RequestParam("form_code") String formCode,
 			@RequestParam(value = "time_period", required = false) String timePeriod,
 			@RequestPart(value = "file", required = false) MultipartFile file,
-			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
+			@RequestParam(value = "references", required = false) List<Long> references) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
@@ -142,7 +143,10 @@ public class ApprovalApiController {
 			Map<String, Long> no = new HashMap<String,Long>();
 			no.put("결재번호", createdApproval.getApprovalNo());
 						
-			approverService.createApprover(approverList,createdApproval);			
+			approverService.createApprover(approverList,createdApproval);	
+			
+			// 수신참조자 정보 등록
+			approverService.createReferences(references,createdApproval);
 
 			if (file != null) {
 				if (approvalFileService.upload(file, createdApproval) != null) {
@@ -189,7 +193,8 @@ public class ApprovalApiController {
 			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("form_code") String formCode,
 			@PathVariable("approvalNo") Long no, @RequestPart(name = "file", required = false) MultipartFile file,
-			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
+			@RequestParam(value = "references", required = false) List<Long> references) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
@@ -222,10 +227,12 @@ public class ApprovalApiController {
 			
 			System.out.println("Updated Approval: " + updateApproval);
 			System.out.println("Approver List: " + approverList);
-						
+			
+			// 결재 수정
 			approverService.updateApprover(approverList,updateApproval);
 			
-
+			// 수신 참조자 수정
+			approverService.updateReferrer(references,updateApproval);
 			
 			resultMap.put("res_code", "200");
 			resultMap.put("res_msg", "대기함으로 이동합니다.");

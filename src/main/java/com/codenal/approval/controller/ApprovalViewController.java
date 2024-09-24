@@ -114,6 +114,11 @@ public class ApprovalViewController {
 
 		Page<Map<String, Object>> resultList = approvalService.selectApprovalinBoxList(pageable, num, id);
 		
+		if(num == 4) {
+			resultList = approvalService.selectReferrerList(pageable, id);
+		}
+		
+		
 		model.addAttribute("resultList", resultList);
 		
 		System.out.println("리스트 출력 : "+resultList);

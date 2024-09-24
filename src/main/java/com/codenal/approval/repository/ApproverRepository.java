@@ -34,10 +34,6 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	@Query("select count(a) from Approver a where a.approval.approvalNo =?1")
 	Long countApprover(Long approvalNo);
 	
-	//
-	@Query("select a from Approver a where a.employee.empId =?1")
-	Approver findByEmpId(Long empId);
-	
 	// 결재 처음 등록 시 첫번째 합의자 또는 결재자 상태 업데이트
 	@Modifying
 	@Query("update Approver a set a.approvalStatus = 1 where a.employee.empId =?1 and a.approval.approvalNo = ?2")

@@ -27,7 +27,8 @@ public class Referrer {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Column(name="referrer_no")
+    private Long referrerNo;
 	
 	@ManyToOne
 	@JoinColumn(name="approval_no")
