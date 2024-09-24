@@ -12,12 +12,23 @@
 <!--Swiper slider css-->
 <link href="assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet"
 	type="text/css" />
+	
+	<style type="text/css">
+		.flatpickr-monthDropdown-months {
+			display: none;
+		}
+		.numInputWrapper {
+			display: none;
+		}
+	</style>
 </head>
 
 <body>
 	<div layout:fragment="content">
+		<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
+		<input type="hidden" id="_csrf_header" value="X-CSRF-Token"/>
 		<div
-			th:replace="partials/page-title :: page-title('회의실 예약','Ecommerce')"></div>
+			th:replace="partials/page-title :: page-title('회의실 예약','메인화면')"></div>
 
 		<div class="row">
 
@@ -36,10 +47,9 @@
 						<div class="live-preview">
 							<div class="list-group">
 
+								
 
-
-								<a
-									class="list-group-item list-group-item-action nav-link active show"
+								<!-- <a class="list-group-item list-group-item-action nav-link active show"
 									id="custom-v-pills-home-tab" data-bs-toggle="pill"
 									href="#custom-v-pills-home" role="tab"
 									aria-controls="custom-v-pills-home" aria-selected="true">
@@ -54,37 +64,8 @@
 											<p class="mb-0">3층 301호실</p>
 										</div>
 									</div>
-								</a> <a class="list-group-item list-group-item-action nav-link show"
-									id="custom-v-pills-messages-tab" data-bs-toggle="pill"
-									href="#custom-v-pills-messages" role="tab"
-									aria-controls="custom-v-pills-messages">
-									<div class="d-flex align-items-center">
-										<div class="flex-shrink-0">
-											<img class="rounded" alt="100x100" width="150"
-												src="assets/images/small/img-1.jpg">
-										</div>
-										<div class="flex-grow-1 ms-3 mb-5">
-											<p class="card-title mb-2" style="font-weight: bold;">회의실
-												B</p>
-											<p class="mb-0">3층 301호실</p>
-										</div>
-									</div>
-								</a> <a class="list-group-item list-group-item-action nav-link show"
-									id="custom-v-pills-profile-tab" data-bs-toggle="pill"
-									href="#custom-v-pills-profile" role="tab"
-									aria-controls="custom-v-pills-profile">
-									<div class="d-flex align-items-center">
-										<div class="flex-shrink-0">
-											<img class="rounded" alt="100x100" width="150"
-												src="assets/images/small/img-2.jpg">
-										</div>
-										<div class="flex-grow-1 ms-3 mb-5">
-											<p class="card-title mb-2" style="font-weight: bold;">회의실
-												C</p>
-											<p class="mb-0">3층 301호실</p>
-										</div>
-									</div>
-								</a>
+								</a>  -->
+								
 							</div>
 						</div>
 						<!-- end card-body -->
@@ -96,665 +77,94 @@
 			<!-- end col -->
 
 			<div class="col-xxl-8">
-				<div class="card card-width-300 px-3">
-					<div class="tab-pane fade active show" id="custom-v-pills-home"
-						role="tabpanel" aria-labelledby="custom-v-pills-home-tab">
-						<div class="card-header align-items-center d-flex">
-							<h4 class="card-title mb-0 flex-grow-1">회의실 A</h4>
-
-						</div>
-						<div class="card-body">
-							<div class="mx-n3">
-								<div data-simplebar style="max-height: 640px;" class="px-3">
-									<div class="row gx-lg-4">
-										<div class="col-xl-12 mb-4">
-											<img class="rounded" alt=""  width="100%"
-												src="assets/images/profile-bg.jpg">
+				<div class="card card-width-300 px-3 meetingRoom">
+					<div class='tab-pane fade active show' id='meetingRoomDetail1'
+						role='tabpanel' aria-labelledby='custom-v-pills-home-tab' th:if="${#lists.isEmpty(meetingRoom)}">
+						<div class='card-body'>
+							<div class='mx-n3'>
+								<div data-simplebar style="height: 640px;" class='px-3'>
+									<div class='row gx-lg-4'>
+										<div class='card-header align-items-center d-flex'>
+											<h4 class='card-title mb-0 flex-grow-1'> <span th:text="${meetingRoomDetail.meeting_room_name}"></span> 예약 가능한 회의실이 없습니다.</h4>
 										</div>
-										<div class="col-xl-12">
-											<div class="mt-xl-0 mt-5">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				<div class="tab-content text-muted mt-3 mt-lg-0">
+					<div th:if="${!#lists.isEmpty(meetingRoom)}" class='tab-pane fade meetingRoomActive' th:each="meetingRoomDetail : ${meetingRoom}" id='meetingRoomDetail' th:attr="id=meetingRoomDetail+${meetingRoomDetail.meeting_room_no}"
+						role='tabpanel' aria-labelledby='custom-v-pills-home-tab'>
+						<div class='card-header align-items-center d-flex'>
+							<h4 class='card-title mb-0 flex-grow-1' th:text="${meetingRoomDetail.meeting_room_name}"></h4>
+						</div>
+						<div class='card-body'>
+							<div class='mx-n3'>
+								<div data-simplebar style="max-height: 640px;" class='px-3'>
+									<div class='row gx-lg-4'>
+										<div class='col-xl-12 mb-4'>
+											<div class='rounded' th:style=" 'width: 100%; height: 250px; background-image: url('+${meetingRoomDetail.meeting_room_img}+'); background-repeat: no-repeat; background-size: cover; background-position: center'"></div>
+											<!-- <img class='rounded' alt=''  width='100%' height="100px" th:src='@{${meetingRoomDetail.meeting_room_img}}'> -->
+										</div>
+										<div class='col-xl-12'>
+											<div class='mt-xl-0 mt-5'>
 												<div class="d-flex">
-													<div class="flex-grow-1">
-														<h4>회의실A</h4>
-														<div class="hstack gap-3 flex-wrap">
+													<div class='flex-grow-1'>
+														<h4 th:text="${meetingRoomDetail.meeting_room_name}">회의실A</h4>
+														<div class='hstack gap-3 flex-wrap mb-4'>
 															<div>
-																<a href="#" class="text-primary d-block"> 3층 301호 </a>
+																<a href='#' class='text-primary d-block' th:text="${meetingRoomDetail.meeting_room_place}"> 3층 301호 </a>
 															</div>
-															<div class="vr"></div>
-															<div class="text-muted">
-																기자재 : <span class="text-body fw-medium"> TV, 화이트
-																	보드, 빔 프로젝터 </span>
+															<div class='vr'></div>
+															<div class='text-muted'>기자재 : <span class='text-body fw-medium' th:text="${meetingRoomDetail.meeting_room_info}"> TV, 화이트 보드, 빔 프로젝터 </span>
 															</div>
 														</div>
 													</div>
-													<div class="flex-shrink-0">
-														<div>
-															<a href="/apps-ecommerce-add-product"
-																class="btn btn-light" data-bs-toggle="tooltip"
-																data-bs-placement="top" title="Edit"><i
-																class="ri-pencil-fill align-bottom"></i></a>
-														</div>
-													</div>
-												</div>
-
-
-											<form id="meetingRoomForm">
-												<div class="col-lg-12">
-													<div class="mt-3 upcoming-scheduled rangeMode animate arrowTop arrowLeft open">
-														<input type="text" class="form-control"
-															data-provider="flatpickr" data-date-format="d M, Y"
-															data-deafult-date="today" data-minDate="05 09,2024"
-															data-maxDate="30 09,2024" data-inline-date="true">
-													</div>
-												</div>
-
-												<div class="row">
-													<div class="col-xl-5  mt-4">
-														<h5 class="fs-16 fw-bold">오전</h5>
-															<div class="mb-3">
-															<input type="radio" class="btn-check " name="btnradio"
-																id="btnradio1" autocomplete="off" value="9:00~9:50"> <label
-																class="btn btn-outline-secondary" for="btnradio1" style="width: 125px">
-																9 : 00 ~ 9 : 50
-																</label> 
-															<input type="radio" class="btn-check" name="btnradio"
-																id="btnradio2" autocomplete="off" value="10:00~10:50"> <label
-																class="btn btn-outline-secondary" for="btnradio2" style="width: 125px">
-																10 : 00 ~ 10 : 50
-																</label> 
-															<input type="radio" class="btn-check" name="btnradio"
-																id="btnradio3" autocomplete="off" value="11:00~11:50"> <label
-																class="btn btn-outline-secondary" for="btnradio3" style="width: 125px">
-																11 : 00 ~ 11 : 50
-																</label>
-															</div>
-														<h5 class="fs-16 fw-bold">오후</h5>
-															<div class="mb-3">
-															<input type="radio" class="btn-check" name="btnradio"
-																id="btnradio4" autocomplete="off" value="1:00~1:50"> <label
-																class="btn btn-outline-secondary" for="btnradio4" style="width: 125px">
-																1 : 00 ~ 1 : 50
-																</label> 
-															<input type="radio" class="btn-check" name="btnradio"
-																id="btnradio5" autocomplete="off" value="2:00~2:50"> <label
-																class="btn btn-outline-secondary" for="btnradio5" style="width: 125px">
-																2 : 00 ~ 2 : 50
-																</label> 
-															<input type="radio" class="btn-check" name="btnradio"
-																id="btnradio6" autocomplete="off" value="3:00~3:50"> <label
-																class="btn btn-outline-secondary" for="btnradio6" style="width: 125px">
-																3 : 00 ~ 3 : 50
-																</label>
-																<input type="radio" class="btn-check" name="btnradio"
-																id="btnradio7" autocomplete="off" value="4:00~4:50"> <label
-																class="btn btn-outline-secondary" for="btnradio7" style="width: 125px">
-																4 : 00 ~ 4 : 50
-																</label> 
-															<input type="radio" class="btn-check" name="btnradio"
-																id="btnradio8" autocomplete="off" value="5:00~5:50"> <label
-																class="btn btn-outline-secondary" for="btnradio8" style="width: 125px">
-																5 : 00 ~ 5 : 50
-																</label>
-															</div>
-														</div>
-													<div class="col-xl-6  mt-4">
-														<h5 class="fs-16 fw-bold">참여 직원</h5>
-														<div class="avatar-group ">
-															<a href="javascript: void(0);" class="avatar-group-item"
-																data-bs-toggle="tooltip" data-bs-trigger="hover"
-																data-bs-placement="top" title="Brent Gonzalez">
-																<div class="avatar-xs">
-																	<img src="assets/images/users/avatar-3.jpg" alt=""
-																		class="rounded-circle img-fluid">
-																</div>
-															</a> <a href="javascript: void(0);" class="avatar-group-item"
-																data-bs-toggle="tooltip" data-bs-trigger="hover"
-																data-bs-placement="top" title="Sylvia Wright">
-																<div class="avatar-xs">
-																	<div class="avatar-title rounded-circle bg-secondary">
-																		S</div>
-																</div>
-															</a> <a href="javascript: void(0);" class="avatar-group-item"
-																data-bs-toggle="tooltip" data-bs-trigger="hover"
-																data-bs-placement="top" title="Ellen Smith">
-																<div class="avatar-xs">
-																	<img src="assets/images/users/avatar-4.jpg" alt=""
-																		class="rounded-circle img-fluid">
-																</div>
-															</a> <a href="javascript: void(0);" class="avatar-group-item"
-																data-bs-toggle="tooltip" data-bs-trigger="hover"
-																data-bs-placement="top" title="Add Members">
-																<div class="avatar-xs" data-bs-toggle="modal"
-																	data-bs-target="#inviteMembersModal">
-																	<div
-																		class="avatar-title fs-16 rounded-circle bg-light border-dashed border text-primary">
-																		+</div>
-																</div>
+													<div class='flex-shrink-0'>
+														<div th:if="${empAuth} == 'ADMIN'">
+															<a href='/apps-ecommerce-add-product'
+																class='btn btn-light' data-bs-toggle='tooltip'
+																data-bs-placement='top' title='Edit'>
+																<i class='ri-pencil-fill align-bottom'></i>
 															</a>
 														</div>
 													</div>
-													<!-- end col -->
-													<input type="submit" class="btn btn-primary " value="회의실 예약">
 												</div>
-											</form>
-												<!-- end row -->
-													<div class="row">
-													</div>
-												</div>
-										</div>
-									</div>
-									<!-- end card body -->
-								</div>
-								<!-- end card -->
-							</div>
-							<!-- end col-->
-
-						</div>
-						<!-- end row-->
-						<div class="tab-content text-muted mt-3 mt-lg-0">
-							<div class="tab-pane fade" id="custom-v-pills-messages"
-								role="tabpanel" aria-labelledby="custom-v-pills-messages-tab">
-								<div class="card-header align-items-center d-flex">
-									<h4 class="card-title mb-0 flex-grow-1">회의실 B</h4>
-
-								</div>
-								<div class="card-body">
-									<div class="row gx-lg-4">
-										<figure class="figure">
-											<img src="assets/images/small/img-4.jpg"
-												class="figure-img img-fluid rounded" alt="...">
-											<figcaption class="figure-caption">A caption for
-												the above image.</figcaption>
-										</figure>
-
-										<div class="col-xl-8">
-											<div class="mt-xl-0 mt-5">
-												<div class="d-flex">
-													<div class="flex-grow-1">
-														<h4>회의실B</h4>
-														<div class="hstack gap-3 flex-wrap">
-															<div>
-																<a href="#" class="text-primary d-block">Tommy
-																	Hilfiger</a>
-															</div>
-															<div class="vr"></div>
-															<div class="text-muted">
-																Seller : <span class="text-body fw-medium">Zoetic
-																	Fashion</span>
-															</div>
-															<div class="vr"></div>
-															<div class="text-muted">
-																Published : <span class="text-body fw-medium">26
-																	Mar, 2021</span>
+												<form id='meetingRoomForm' th:attr="id=meetingRoomForm+${meetingRoomDetail.meeting_room_no}">
+													<input type="hidden" id="reserve_meeting_room_no" name="reserve_meeting_room_no" th:value="${meetingRoomDetail.meeting_room_no}">
+													<input type="hidden" id="empId" th:value="${empId}">
+													<div class='row'>
+														<div class='col-lg-7 mb-4'>
+															<div class='mt-3 upcoming-scheduled rangeMode animate arrowTop arrowLeft open'>
+																<input type='text' class='form-control' name="meeting_room_reserve_date"
+																	data-provider='flatpickr' data-date-format='d M, Y'
+																	data-deafult-date='today' data-minDate='05 09,2024'
+																	data-maxDate='30 09,2024' data-inline-date='true'>
 															</div>
 														</div>
-													</div>
-													<div class="flex-shrink-0">
-														<div>
-															<a href="/apps-ecommerce-add-product"
-																class="btn btn-light" data-bs-toggle="tooltip"
-																data-bs-placement="top" title="Edit"><i
-																class="ri-pencil-fill align-bottom"></i></a>
+														<div class='col-xl-5  mt-4'>
+															<h5 class='fs-16 fw-bold'>예약 시간</h5>
+																<div class='mb-3'>
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}">
+																		<input type="radio" class='btn-check ' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
+																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
+																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
+																		style='width: 120px' th:text="${meetingRoomTimeDetail.meeting_room_start_time +' ~ '+meetingRoomTimeDetail.meeting_room_end_time}"> 9 : 00 ~ 9 : 50 </label>
+																	</th:block>
+																</div>
 														</div>
+														<input th:if="${empAuth} == 'ADMIN'" type="submit" class='btn btn-primary' id="reserve_submit" value='회의실 예약'>
 													</div>
-												</div>
-
-												<div class="d-flex flex-wrap gap-2 align-items-center mt-3">
-													<div class="text-muted fs-16">
-														<span class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span>
-													</div>
-													<div class="text-muted">( 5.50k Customer Review )</div>
-												</div>
-
-												<div class="row mt-4">
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-money-dollar-circle-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">Price :</p>
-																	<h5 class="mb-0">$120.40</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-file-copy-2-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">No. of Orders :</p>
-																	<h5 class="mb-0">2,234</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-stack-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">Available Stocks :</p>
-																	<h5 class="mb-0">1,230</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-inbox-archive-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">Total Revenue :</p>
-																	<h5 class="mb-0">$60,645</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-												</div>
-
-												<div class="row">
-													<div class="col-xl-6">
-														<div class="mt-4">
-															<h5 class="fs-14">Sizes :</h5>
-															<div class="d-flex flex-wrap gap-2">
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="Out of Stock">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio1"
-																		disabled> <label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio1">S</label>
-																</div>
-
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="04 Items Available">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio2">
-																	<label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio2">M</label>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="06 Items Available">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio3">
-																	<label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio3">L</label>
-																</div>
-
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="Out of Stock">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio4"
-																		disabled> <label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio4">XL</label>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-
-													<div class="col-xl-6">
-														<div class=" mt-4">
-															<h5 class="fs-14">Colors :</h5>
-															<div class="d-flex flex-wrap gap-2">
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="Out of Stock">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-primary"
-																		disabled>
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="03 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-secondary">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="03 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-success">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="02 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-info">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="01 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-warning">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="04 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-danger">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="03 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-light">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="04 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-dark">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-												</div>
-												<!-- end row -->
+												</form>
 											</div>
 										</div>
 									</div>
-									<!-- end card body -->
 								</div>
-								<!-- end card -->
 							</div>
-							<!-- end col-->
-
 						</div>
 						<!-- end row-->
-						<div class="tab-content text-muted mt-3 mt-lg-0">
-							<div class="tab-pane fade" id="custom-v-pills-profile"
-								role="tabpanel" aria-labelledby="custom-v-pills-profile-tab">
-								<div class="card-header align-items-center d-flex">
-									<h4 class="card-title mb-0 flex-grow-1">회의실 C</h4>
-
-								</div>
-								<div class="card-body">
-									<div class="row gx-lg-4">
-										<figure class="figure">
-											<img src="assets/images/small/img-4.jpg"
-												class="figure-img img-fluid rounded" alt="...">
-											<figcaption class="figure-caption">A caption for
-												the above image.</figcaption>
-										</figure>
-
-										<div class="col-xl-8">
-											<div class="mt-xl-0 mt-5">
-												<div class="d-flex">
-													<div class="flex-grow-1">
-														<h4>회의실C</h4>
-														<div class="hstack gap-3 flex-wrap">
-															<div>
-																<a href="#" class="text-primary d-block">Tommy
-																	Hilfiger</a>
-															</div>
-															<div class="vr"></div>
-															<div class="text-muted">
-																Seller : <span class="text-body fw-medium">Zoetic
-																	Fashion</span>
-															</div>
-															<div class="vr"></div>
-															<div class="text-muted">
-																Published : <span class="text-body fw-medium">26
-																	Mar, 2021</span>
-															</div>
-														</div>
-													</div>
-													<div class="flex-shrink-0">
-														<div>
-															<a href="/apps-ecommerce-add-product"
-																class="btn btn-light" data-bs-toggle="tooltip"
-																data-bs-placement="top" title="Edit"><i
-																class="ri-pencil-fill align-bottom"></i></a>
-														</div>
-													</div>
-												</div>
-
-												<div class="d-flex flex-wrap gap-2 align-items-center mt-3">
-													<div class="text-muted fs-16">
-														<span class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span> <span
-															class="mdi mdi-star text-warning"></span>
-													</div>
-													<div class="text-muted">( 5.50k Customer Review )</div>
-												</div>
-
-												<div class="row mt-4">
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-money-dollar-circle-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">Price :</p>
-																	<h5 class="mb-0">$120.40</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-file-copy-2-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">No. of Orders :</p>
-																	<h5 class="mb-0">2,234</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-stack-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">Available Stocks :</p>
-																	<h5 class="mb-0">1,230</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<div class="col-lg-3 col-sm-6">
-														<div class="p-2 border border-dashed rounded">
-															<div class="d-flex align-items-center">
-																<div class="avatar-sm me-2">
-																	<div
-																		class="avatar-title rounded bg-transparent text-success fs-24">
-																		<i class="ri-inbox-archive-fill"></i>
-																	</div>
-																</div>
-																<div class="flex-grow-1">
-																	<p class="text-muted mb-1">Total Revenue :</p>
-																	<h5 class="mb-0">$60,645</h5>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-												</div>
-
-												<div class="row">
-													<div class="col-xl-6">
-														<div class="mt-4">
-															<h5 class="fs-14">Sizes :</h5>
-															<div class="d-flex flex-wrap gap-2">
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="Out of Stock">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio1"
-																		disabled> <label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio1">S</label>
-																</div>
-
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="04 Items Available">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio2">
-																	<label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio2">M</label>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="06 Items Available">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio3">
-																	<label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio3">L</label>
-																</div>
-
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="Out of Stock">
-																	<input type="radio" class="btn-check"
-																		name="productsize-radio" id="productsize-radio4"
-																		disabled> <label
-																		class="btn btn-soft-primary avatar-xs rounded-circle p-0 d-flex justify-content-center align-items-center"
-																		for="productsize-radio4">XL</label>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-
-													<div class="col-xl-6">
-														<div class=" mt-4">
-															<h5 class="fs-14">Colors :</h5>
-															<div class="d-flex flex-wrap gap-2">
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="Out of Stock">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-primary"
-																		disabled>
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="03 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-secondary">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="03 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-success">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="02 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-info">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="01 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-warning">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="04 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-danger">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="03 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-light">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-																<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-																	data-bs-placement="top" title="04 Items Available">
-																	<button type="button"
-																		class="btn avatar-xs p-0 d-flex align-items-center justify-content-center border rounded-circle fs-20 text-dark">
-																		<i class="ri-checkbox-blank-circle-fill"></i>
-																	</button>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-												</div>
-												<!-- end row -->
-											</div>
-										</div>
-									</div>
-									<!-- end card body -->
-								</div>
-								<!-- end card -->
-							</div>
-							<!-- end col-->
-
-						</div>
-						<!-- end row-->
+						
+					</div>
 					</div>
 				</div>
 			</div>

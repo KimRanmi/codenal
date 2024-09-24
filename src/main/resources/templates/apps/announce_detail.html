@@ -1,6 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
@@ -47,7 +46,7 @@
 															class="fw-medium"
 															th:text="${announceList.employee.empName}"></span>
 													</div>
-													<div th:text="${announceList.employee.department.deptName}">
+													<div th:text="${announceList.employee.departments.deptName}">
 													<span class="fw-medium" th:text="${announceList.employee.jobs.jobName}"></span>
 													</div>
 													<div class="vr"></div>

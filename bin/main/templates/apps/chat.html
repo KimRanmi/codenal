@@ -1,6 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
@@ -453,7 +452,7 @@
 						        if (data.res_code === '200') {
 						            alert(data.res_msg);
 						            location.href = `/chatList`;
-						            /* location.href = `/chatList/chatRoom/detail/${data.roomNo}`; // 서버에서 받은 `roomNo`로 URL을 설정 */
+						            location.href = `/chatList/${data.roomNo}`; // 서버에서 받은 `roomNo`로 URL을 설정
 						        } else {
 						            alert('실패: ' + data.res_msg);
 						        }

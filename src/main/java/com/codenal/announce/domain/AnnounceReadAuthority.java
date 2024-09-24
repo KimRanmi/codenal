@@ -35,9 +35,9 @@ public class AnnounceReadAuthority {
 	
 	@ManyToOne
 	@JoinColumn(name="dept_no")
-	private Departments department;
+	private Departments departments;
 
 	@ManyToOne
 	@JoinColumn(name="job_no")
-	private Jobs job;
+	private Jobs jobs;
 }

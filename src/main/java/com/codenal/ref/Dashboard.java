@@ -1,13 +1,16 @@
 package com.codenal.ref;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class Dashboard {
 
 	@GetMapping("/")
-	public String index() {
+	public String index(Model model) {
+		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());
 		return "dashboard/projects";
 	}
 	

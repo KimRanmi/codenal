@@ -73,12 +73,12 @@ public class ChatController {
         if(chatRoom != null) {
         	resultMap.put("res_code", "200");
         	resultMap.put("res_msg", "채팅방을 생성했습니다.");
-//        	resultMap.put("roomNo", String.valueOf(chatRoom.getRoomNo()));  채팅방 조회 넘어가는 url
+        	resultMap.put("roomNo", String.valueOf(chatRoom.getRoomNo()));  // 채팅방 조회 넘어가는 url
         }
         return resultMap;
 	}
 	
-	// 채팅방 메시지 조회 --> 여기서부터 웹소켓?
+	// 채팅방 메시지 조회
 	@GetMapping("/chatList/{roomNo}")
 	public String startChatting(@PathVariable("roomNo") int roomNo, Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -102,8 +102,5 @@ public class ChatController {
 		
 		return "apps/chatDetail";
 	}
-	
-	// 채팅 메시지 전송
-	// @PostMapping
 	
 }

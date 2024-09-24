@@ -24,6 +24,7 @@ public class MeetingRoomReserveDto {
 	private LocalDate meeting_room_reserve_date;
 	private Time meeting_room_start_time;
 	private Time meeting_room_end_time;
+	private Long meeting_room_reserve_time_no;
 	
 	public MeetingRoomReserve toEntity() {
 		return MeetingRoomReserve.builder()
@@ -33,6 +34,7 @@ public class MeetingRoomReserveDto {
 				.meetingRoomReserveDate(meeting_room_reserve_date)
 				.meetingRoomStartTime(meeting_room_start_time)
 				.meetingRoomEndTime(meeting_room_end_time)
+				.meetingRoomReserveTimeNo(meeting_room_reserve_time_no)
 				.build();
 	}
 	
@@ -44,6 +46,7 @@ public class MeetingRoomReserveDto {
 				.meeting_room_reserve_date(reserve.getMeetingRoomReserveDate())
 				.meeting_room_start_time(reserve.getMeetingRoomStartTime())
 				.meeting_room_end_time(reserve.getMeetingRoomEndTime())
+				.meeting_room_reserve_time_no(reserve.getMeetingRoomReserveTimeNo())
 				.build();
 	}
 

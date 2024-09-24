@@ -1,183 +1,338 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<<<<<<< HEAD
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
+=======
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}">
+>>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
 <head>
-    <!-- Meta and Bootstrap CSS -->
-    <meta charset="UTF-8">
-    <title>전자결재 등록</title>
-    <!-- Bootstrap CSS -->
-    <th:block layout:fragment="pagetitle" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Dropzone CSS -->
-    <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
-    <!-- 토슽 api -->
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    <style>
-        #modal {
-            position: fixed;
-            display: none;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
-            background-color: white;
-            border: 1px solid #b9b9b9;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-        .modal-content {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 20px;
-            height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        .modal-item {
-            border: 1px solid #b9b9b9;
-            width: 20px;
-            height: 20px;
-            display: contents;
-            align-items: center;
-            justify-content: center;
-            margin: 5px;
-            cursor: pointer;
-            user-select: none;
-        }
-        .modal-item.selected {
-            color: cornflowerblue;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: center;
-            padding: 10px;
-            border-top: 1px solid #b9b9b9;
-        }
-        .modal-item.disabled {
-            color: #b9b9b9;
-            cursor: not-allowed;
-        }
-    </style>
+<!-- Meta and Bootstrap CSS -->
+<meta charset="UTF-8">
+<title>전자결재 상세</title>
+<!-- Bootstrap CSS -->
+<th:block layout:fragment="pagetitle" />
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Dropzone CSS -->
+<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
+	type="text/css" />
+<!-- 토슽 api -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+<script
+	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+.project-thumbnail-img {
+	border: 1px solid #d3d3d3;
+	border-radius: 4px;
+	height: 35px;
+}
+</style>
 </head>
 <body>
-    <div layout:fragment="content">
-        <div th:replace="partials/page-title :: page-title('전자결재 작성', '전자결재')"></div>
-        <div class="row" style="margin-left:30px;">
-            <div class="col-lg-8">
-                <div style="background-color:white; width:1300px; height:1150px;">
-                    <div style="margin-left:50px; margin-top:-20px;">
-                        <form>
-                        <br>
-                        <div class="mb-3" style="width:600px;">
-                            <label class="form-label" for="project-title-input">제목</label>
-                            <input type="text" class="form-control" id="project-title-input" th:value="${dto.approval_title}" disabled style="width:500px;">
-                        </div>
-                        <div class="mb-3" style="width:600px;">
-                            <label class="form-label" for="project-author-input">기안자</label>
-                            <input type="text" class="form-control" id="project-author-input" disabled style="width:500px;">
-                        </div>
-                        <div class="mb-3" style="width:600px;">
-                            <label class="form-label" for="project-date-input">기안일</label>
-                            <input type="text" class="form-control" id="project-date-input" disabled style="width:500px;" th:value=${dto.approval_reg_date}>
-                        </div>
-                        <div class="mb-3" style="width:600px;">
-                            <label class="form-label" for="project-thumbnail-img">파일첨부</label>
-                            <input class="form-control" id="project-thumbnail-img" type="file" accept="image/png, image/gif, image/jpeg" style="width:500px;">
-                        </div>
-                        <div class="mb-3">
-					        <label class="form-label" for="references">수신참조자</label><br>
-					        <input id="references" type="text" style="width:500px; height:35px; border:1px solid #d3d3d3; border-radius:4px;" class="selectedName3">
-    					</div>
-                        <br>
-                        <!-- 토스트 api -->
-                        <div class="col-lg-8" style="margin-left : -15px;">
-    						<label>내용</label>
-        					<div id="approval_edit"></div>
-						</div>
-                        <!-- Buttons -->
-                        <br>
-                        <div style="margin-left:950px;">
-                            <button type="submit" class="btn btn-secondary w-sm">승인</button>
-                            <button type="submit" class="btn btn-danger w-sm">반려</button>
-                        </div>
-                        <!-- Sign-off and Approval Tables -->
-                        <div style="margin-top:-1000px; margin-left:600px;">
-                        
-                        <label>합의자</label>  
-					    <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-					        <tr>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align:center;"></td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align:center;">
-					                <input type="button" value="선택" style="background-color:white; border:white;" id="button_modal1">
-					            </td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align:center;"></td>
-					        </tr>
-					    </table>
-					    <table style="border-collapse: collapse; border-spacing: 0;">
-					        <tr>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName"></td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName"></td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName"></td>
-					        </tr>
-					    </table>
-					    <br>
-					    
-					    <label>결재자</label> 
-					    <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-					        <tr>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align:center;"></td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align:center;">
-					                <div style="display:none" class="modal2">
-					                    <label>직원 선택</label>
-					                </div>
-					                <input type="button" value="선택" style="background-color:white; border:white;" id="button_modal2">
-					            </td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align:center;"></td>
-					        </tr>
-					    </table>
-					    <table style="border-collapse: collapse; border-spacing: 0;">
-					        <tr>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2"></td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2"></td>
-					            <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2"></td>
-					        </tr>
-					    </table>
-                        </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- 모달 창 -->
-		    <div id="modal">
-		        <div style="text-align: center;">결재자 선택</div>
-		        <div class="modal-content"> <!-- 이건 불러오는 값 ! 미리 내가 설정해놓은 것  -->
-		            <div class="modal-item">이과장</div>
-		            <div class="modal-item">박과장</div>
-		            <div class="modal-item">김과장</div>
-		            <div class="modal-item">최과장</div>
-		            <!-- 추가적인 사람들 -->
-		        </div>
-		        <div class="modal-footer">
-		            <button id="selectButton" style="background-color: cadetblue; border: 0px; border-radius: 30px; ">선택</button>
-		            <button id="closeButton" style="background-color: red; border: 0px; border-radius: 30px;">닫기</button>
-		        </div>
-		    </div>
-        </div>
-	    <script> /* 토스트 api 설정 */
-		       const contentEditor = new toastui.Editor({
-		       el: document.querySelector('#approval_edit'),
-		       width: '100%',
-		       height: '500px',
-		       initialEditType: 'wysiwyg',
-		       previewStyle: 'vertical',
-		       hideModeSwitch: true
-    		});
-    	</script>
-    	
-    	
-    	
-    </div>
+	<div layout:fragment="content">
+		<div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
+		<div class="row" style="margin-left: 30px;">
+			<div class="col-lg-12">
+				<div style="background-color: white; width: 1750px; height: 1150px;">
+					<div style="margin-left: 50px; margin-top: -20px;">
+						<form id="approvalForm">
+							<input type="hidden" name="approvalNo" id="approvalNo"
+								th:value="${dto.approval.approvalNo}"> <input
+								type="hidden" id="csrf_token" th:value="${_csrf.token}" /> <input
+								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
+							<input type="hidden" th:value="${emp.empId}" id="login_id">
+							<br>
+							<div class="mb-3" style="width: 600px;">
+								<label class="form-label" for="project-title-input">제목</label> <input
+									type="text" class="form-control" id="project-title-input"
+									th:value="${dto.approval.approvalTitle}" name="approval_title"
+									th:disabled="${dto.approval.approvalStatus != 4}"
+									style="width: 500px;">
+							</div>
+							<div class="mb-3" style="width: 600px;">
+								<label class="form-label" for="project-author-input">기안자</label>
+								<input type="text" class="form-control"
+									th:value="${dto.employee.empName}" id="project-author-input"
+									readonly style="width: 500px;" name="emp_id">
+							</div>
+							<div class="mb-3" style="width: 600px;">
+								<label class="form-label" for="project-date-input">기안일</label> <input
+									type="text" class="form-control" id="project-date-input"
+									readonly style="width: 500px;" name="approval_reg_date"
+									th:value=${dto.approval.approvalRegDate}>
+							</div>
+							<div class="mb-3" style="width: 600px;">
+
+								<!-- status가 4가 아닐 때 -->
+								<div th:if="${dto.approval.approvalStatus != 4}">
+									<div th:if="${dto.file == null}">
+										<label class="form-label" for="file-upload">파일첨부</label> <input
+											class="form-control" id="file-upload" type="file"
+											accept="image/png, image/gif, image/jpeg"
+											style="width: 500px;">
+									</div>
+
+									<div th:if="${dto.file != null}">
+										<label class="form-label" for="file-link">첨부파일</label> <a
+											id="file-link" class="form-control"
+											th:text="${dto.file.fileOriName}"
+											th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}"
+											name="file" style="width: 500px;"></a>
+									</div>
+								</div>
+
+							</div>
+
+							<div class="mb-3">
+								<label class="form-label" for="references">수신참조자</label><br>
+								<input id="references" type="text"
+									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
+									class="selectedName3">
+							</div>
+							<br>
+							<div th:text="${dto.approval.approvalContent}"
+								style="display: none" id="contentDiv"></div>
+							<!-- 토스트 api -->
+							<div class="col-lg-11" style="margin-left: -15px;">
+								<label>내용</label>
+								<div id="approval_edit"></div>
+							</div>
+							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려 -->
+							<br>
+							<div style="margin-left: 1300px; margin-top: 70px;">
+								<div
+									th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
+									<button type="button" class="btn btn-secondary w-sm"
+										id="revoke">회수</button>
+								</div>
+								<div th:each="agree, iterStat : ${dto.agree}" 
+								     th:if="${agree.approvalStatus == 1}">
+								    <button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
+								    <button type="button" class="btn btn-danger w-sm">반려</button>
+								</div>
+								<div th:each="approver, iterStat : ${dto.approver}" 
+								     th:if="${approver.approvalStatus == 1}">
+								    <button type="button" class="btn btn-secondary w-sm" id="consent">승인</button>
+								    <button type="button" class="btn btn-danger w-sm">반려</button>
+								</div>
+																	
+							</div>
+
+							<!-- 합의자 결재자 확인처리 해야함 -->
+							<div class="approver-container"  style="margin-top:-1050px; margin-left:900px;">
+								<label>합의자</label>
+								<table
+									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+											<img
+											th:if="${dto.agree.size() > 0 and dto.agree[0].approvalStatus == 2}"
+											th:src="${dto.agree[0].employee.empSignImage}"
+											style="max-width: 100%; max-height: 100%;" />
+										</td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+											<img
+											th:if="${dto.agree.size() > 1 and dto.agree[1].approvalStatus == 2}"
+											th:src="${dto.agree[1].employee.empSignImage}"
+											style="max-width: 100%; max-height: 100%;" />
+										</td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+											<img
+											th:if="${dto.agree.size() > 2 and dto.agree[2].approvalStatus == 2}"
+											th:src="${dto.agree[2].employee.empSignImage}"
+											style="max-width: 100%; max-height: 100%;" />
+										</td>
+									</tr>
+								</table>
+								<table style="border-collapse: collapse; border-spacing: 0;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											class="selectedName"
+											th:text="${dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											class="selectedName"
+											th:text="${dto.agree.size() > 1 ? dto.agree[1].employee.empName : ''}"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											class="selectedName"
+											th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"></td>
+									</tr>
+								</table>
+								<br> <label>결재자</label>
+								<table
+									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+											<img
+											th:if="${dto.approver.size() > 0 and dto.approver[0].approvalStatus == 2 }"
+											th:src="${dto.approver[0].employee.empSignImage}"
+											style="max-width: 100%; max-height: 100%;" />
+										</td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+											<img
+											th:if="${dto.approver.size() > 1 and dto.approver[1].approvalStatus == 2 }"
+											th:src="${dto.approver[1].employee.empSignImage}"
+											style="max-width: 100%; max-height: 100%;" />
+										</td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
+											<img
+											th:if="${dto.approver.size() > 2 and dto.approver[2].approvalStatus == 2 }"
+											th:src="${dto.approver[2].employee.empSignImage}"
+											style="max-width: 100%; max-height: 100%;" />
+										</td>
+									</tr>
+								</table>
+								<table style="border-collapse: collapse; border-spacing: 0;">
+									<tr>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
+											class="selectedName2"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
+											class="selectedName2"></td>
+										<td
+											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+											th:text="${dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
+											class="selectedName2"></td>
+									</tr>
+								</table>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			// 기존 데이터 불러오면서 토스트 api 설정.
+			const content = document.getElementById('contentDiv');
+			const contentEditor = new toastui.Editor({
+                el: document.querySelector('#approval_edit'),
+                width: '1300px',
+                height: '500px',
+                initialValue: content.textContent,
+                initialEditType: 'wysiwyg',
+                previewStyle: 'vertical',
+                hideModeSwitch: true
+            });
+		    
+			document.addEventListener('DOMContentLoaded', () => {
+			    contentEditor();
+			    updateEditorContent();
+			});
+
+		 </script>
+
+
+		<!-- 회수함 이동 -->
+		<script>
+	    document.addEventListener('DOMContentLoaded', function() {
+	        // 회수 버튼 클릭 시 처리
+	        const revokeButton = document.getElementById('revoke');
+	        if (revokeButton) {
+	            document.getElementById('revoke').addEventListener('click', function() {
+	                const id = document.getElementById('approvalNo').value;
+	                const csrfToken = document.getElementById('csrf_token').value;
+
+	                if (confirm('회수함으로 이동하시겠습니까?')) {
+	                    fetch('/approval/revoke', {
+	                        method: 'POST',
+	                        headers: {
+	                            'Content-Type': 'application/json',
+	                            'X-CSRF-TOKEN': csrfToken
+	                        },
+	                        body: JSON.stringify({ approvalNo: id })
+	                    })
+	                    .then(response => response.json())
+	                    .then(data => {
+	                        console.log(data.res_code);
+	                        if (data.res_code === '200') {
+	                            Swal.fire({
+	                                icon: 'success',
+	                                title: "성공",
+	                                text: data.res_msg
+	                            }).then(() => {
+	                                location.href = "/approval/list?num=4";
+	                            });
+	                        } else {
+	                            Swal.fire({
+	                                icon: 'error',
+	                                title: '실패',
+	                                text: data.res_msg
+	                            });
+	                        }
+	                    });
+	                }
+	            }); 
+	        }
+	    }); 
+	    </script>
+
+
+		<!-- 승인으로 이동 -->
+		<script>
+			document.getElementById('consent').addEventListener('click',function(){
+				console.log(1);
+				const id = document.getElementById('approvalNo').value;
+				const csrfToken = document.getElementById('csrf_token').value;
+				const signImg = document.getElementById("sign_img").value;
+				const loginId = document.getElementById("login_id").value;
+				
+				 if (signImg === null || signImg === '') {
+			            Swal.fire({
+			                icon: 'warning',
+			                title: '서명 이미지가 없습니다!',
+			                text: '프로필 페이지로 이동합니다.',
+			            }).then(() => {
+			                location.href = '/mypage'; // 프로필 페이지로 이동
+			            }); 
+			            return;
+			        }
+					
+					if(confirm('승인하시겠습니까?')){
+					fetch('/approver/consent' ,{
+						method: 'POST',
+	                    headers: {
+	                        'Content-Type': 'application/json',
+	                        'X-CSRF-TOKEN': csrfToken
+	                    },
+	                    body: JSON.stringify({ approvalNo: id, loginId: loginId })
+					})
+					.then(response => response.json())
+			        .then(data => {
+			            console.log(data.res_code);
+			            if (data.res_code === '200') {
+			                Swal.fire({
+			                    icon: 'success',
+			                    title: "성공",
+			                    text: data.res_msg
+			                }).then(() => {
+			                    location.href = "/approval/inboxList?num=2";
+			                });
+			            } else {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: '실패',
+			                    text: data.res_msg
+			                });
+			            }
+			        });
+			    }
+			}); 
+	</script>
+	</div>
 </body>
 </html>

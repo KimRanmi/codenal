@@ -1,35 +1,52 @@
 package com.codenal.document.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codenal.document.domain.DocumentDto;
+import com.codenal.document.domain.DocumentSharedUsers;
+import com.codenal.document.domain.DocumentSharedUsersId;
 import com.codenal.document.domain.Documents;
 import com.codenal.document.repository.DocumentRepository;
-import com.codenal.employee.domain.Employee;
+import com.codenal.document.repository.DocumentSharedUsersRepository;
 
 @Service
 public class DocumentService {
 
     @Autowired
     private DocumentRepository documentRepository;
+    
+    @Autowired
+    private DocumentSharedUsersRepository documentSharedUsersRepository;
+    
+    private static final int STATUS_PERSONAL = 0; // 개인 문서
+    private static final int STATUS_SHARED = 1;  // 공유 문서
+    private static final int STATUS_TRASH = 2;   // 휴지통 문서
+    private static final int STATUS_PERSONAL_FAVORITE = 3;   // 개인문서 + 즐겨찾기
+    private static final int STATUS_SHARED_FAVORITE = 4;   // 공유문서 + 즐겨찾기
+    
+    private Long getCurrentUserId() {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String empIdString = authentication.getName();  // 현재 사용자의 empId를 가져옴
+	    return Long.parseLong(empIdString);  // empId를 Long 타입으로 변환하여 반환
+	}
 
     // 모든 문서를 조회하는 메서드
     public List<DocumentDto> getDocumentList() {
         List<Documents> documents = documentRepository.findAll();
         return documents.stream()
-                .map(document -> DocumentDto.builder()
-                        .docName(document.getDocName())
-                        .docNewName(document.getDocNewName())
-                        .docStatus(document.getDocStatus())
-                        .docCreatedDate(document.getDocCreatedDate())
-                        .docPath(document.getDocPath())
-                        .docSize(document.getDocSize())
-                        .docEmpId(document.getDocEmpId())
-                        .build())
+                .map(DocumentDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -47,7 +64,163 @@ public class DocumentService {
 
         documentRepository.save(document);
     }
+
+    // 키워드(파일명)로만 문서를 검색하는 메서드
+    public List<DocumentDto> searchDocumentsByKeyword(String keyword) {
+        List<Documents> documents = documentRepository.findByDocNameContainingIgnoreCase(keyword);
+        return documents.stream()
+                .map(DocumentDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+ // 문서 상태를 2로 변경하여 휴지통으로 이동시키는 메서드
+    public void moveDocumentsToTrash(List<Long> docIds) {
+        List<Documents> documents = documentRepository.findAllById(docIds);
+        documents.forEach(document -> document.setDocStatus(2)); // 모든 문서를 휴지통(2)로 이동
+        documentRepository.saveAll(documents);
+    }
+
+    // 상태별 문서 목록 조회
+    public List<DocumentDto> getDocumentsByStatus(int status) {
+        List<Documents> documents = documentRepository.findByDocStatus(status);
+        return documents.stream()
+                .map(DocumentDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // 문서를 복원하는 메서드 (휴지통에서 개인 문서로 복원, 상태를 0으로 변경)
+    public void restoreDocuments(List<Long> docIds) {
+        List<Documents> documents = documentRepository.findAllById(docIds);
+        documents.forEach(document -> document.setDocStatus(0)); // 상태를 개인 문서(0)로 변경
+        documentRepository.saveAll(documents);
+    }
+
+
+    // 문서를 영구적으로 삭제하는 메서드 (휴지통에서 완전히 삭제)
+    public void deleteDocumentsPermanently(List<Long> docIds) {
+        documentRepository.deleteAllById(docIds); // 문서 영구 삭제
+    }
+    
+    public List<DocumentDto> getDocumentsByStatusNot(int status) {
+        List<Documents> documents = documentRepository.findAllByDocStatusNot(status);
+        return documents.stream()
+                        .map(DocumentDto::fromEntity)
+                        .collect(Collectors.toList());
+    }
+    
+    // 공유한 문서 조회
+    public List<DocumentDto> getDocumentsSharedByMe(Long empId) {
+        List<Documents> documents = documentRepository.findByDocEmpIdAndDocStatus(empId, 1);  // 상태 1: 공유 문서
+        return documents.stream()
+                        .map(DocumentDto::fromEntity)
+                        .collect(Collectors.toList());
+    }
+
+ // 공유받은 문서 조회
+    public List<DocumentDto> getDocumentsSharedWithMe(Long empId) {
+        // 공유받은 문서를 조회하려면 DocumentSharedUsers 테이블을 통해 문서 ID를 가져와야 함
+        List<DocumentSharedUsers> sharedUsers = documentSharedUsersRepository.findByDocSharedWithEmpId(empId);
+        List<Documents> documents = sharedUsers.stream()
+                .map(DocumentSharedUsers::getDocuments)
+                .collect(Collectors.toList());
+
+        return documents.stream()
+                .map(DocumentDto::fromEntity)
+                .collect(Collectors.toList());
+    }
     
     
-  
+ // 파일 ID로 문서를 조회하는 메서드
+    public Documents getDocumentById(Long docId) {
+        return documentRepository.findById(docId)
+            .orElseThrow(() -> new RuntimeException("해당 문서를 찾을 수 없습니다: " + docId));
+    }
+    
+    
+    public Page<Documents> getDocumentsByStatus(int docStatus, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return documentRepository.findByDocStatus(docStatus, pageable);
+    }
+ 
+    
+    @Transactional
+    public void toggleFavoriteDocuments(List<Long> docIds) throws Exception {
+        List<Documents> documents = documentRepository.findAllById(docIds);
+        for (Documents doc : documents) {
+            if (doc.getDocStatus() == 2) { // 휴지통에 있는 문서는 즐겨찾기할 수 없음
+                throw new Exception("휴지통에 있는 문서는 즐겨찾기할 수 없습니다.");
+            }
+            switch (doc.getDocStatus()) {	
+                case 0: // 개인문서
+                    doc.setDocStatus(3); // 개인문서 + 즐겨찾기
+                    break;
+                case 1: // 공유문서
+                    doc.setDocStatus(4); // 공유문서 + 즐겨찾기
+                    break;
+                case 3: // 개인문서 + 즐겨찾기
+                    doc.setDocStatus(0); // 개인문서로 되돌리기
+                    break;
+                case 4: // 공유문서 + 즐겨찾기
+                    doc.setDocStatus(1); // 공유문서로 되돌리기
+                    break;
+                default:
+                    throw new Exception("지원되지 않는 문서 상태입니다.");
+            }
+        }
+        documentRepository.saveAll(documents);
+    }
+
+    // 즐겨찾기 문서 조회
+    public Page<DocumentDto> getFavoriteDocuments(Long empId, Pageable pageable) {
+        List<Integer> statuses = Arrays.asList(STATUS_PERSONAL_FAVORITE, STATUS_SHARED_FAVORITE); // 3, 4
+        Page<Documents> documentsPage = documentRepository.findByDocEmpIdAndDocStatusIn(empId, statuses, pageable);
+        return documentsPage.map(DocumentDto::fromEntity);
+    }
+
+    @Transactional
+    public void shareDocuments(List<Long> docIds, List<Long> empIds) {
+        List<Documents> documents = documentRepository.findAllById(docIds);
+        List<Documents> updatedDocuments = new ArrayList<>();
+
+        for (Documents document : documents) {
+            int currentStatus = document.getDocStatus();
+            boolean statusChanged = false;
+
+            // 현재 docStatus에 따라 적절히 업데이트
+            if (currentStatus == 0) { // 0: 개인문서
+                document.setDocStatus(1); // 1: 공유문서
+                statusChanged = true;
+            } else if (currentStatus == 3) { // 3: 개인문서 + 즐겨찾기
+                document.setDocStatus(4); // 4: 공유문서 + 즐겨찾기
+                statusChanged = true;	
+            }
+            // 이미 공유된 문서 (1 또는 4)는 상태 변경하지 않음
+
+            if (statusChanged) {
+                updatedDocuments.add(document);
+            }
+
+            // 공유 대상자 관리
+            for (Long empId : empIds) {
+                DocumentSharedUsersId id = new DocumentSharedUsersId(document.getDocNo(), empId);
+                if (!documentSharedUsersRepository.existsById(id)) {
+                    DocumentSharedUsers sharedUser = DocumentSharedUsers.builder()
+                        .docSharedNo(document.getDocNo())
+                        .docSharedWithEmpId(empId)
+                        .documents(document)
+                        .build();
+                    documentSharedUsersRepository.save(sharedUser);
+                }
+            }
+        }
+
+        // 변경된 문서들을 한 번에 저장
+        if (!updatedDocuments.isEmpty()) {
+            documentRepository.saveAll(updatedDocuments);
+        }
+    }
 }
+	
+    
+    
+

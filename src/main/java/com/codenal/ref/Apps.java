@@ -1,20 +1,39 @@
 package com.codenal.ref;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.codenal.employee.domain.Employee;
+import com.codenal.employee.domain.EmployeeDto;
+import com.codenal.employee.service.EmployeeService;
+import com.codenal.meeting.domain.MeetingRoom;
+import com.codenal.meeting.domain.MeetingRoomDto;
+import com.codenal.meeting.domain.MeetingRoomTimeDto;
+import com.codenal.meeting.service.MeetingRoomService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class Apps {
 	
-
-	@GetMapping("/admin-join")
-	public String admin_join() {
-		return "admin/join";
+	private MeetingRoomService meetingRoomService;
+	private EmployeeService employeeService;
+	
+	@Autowired
+	public Apps(MeetingRoomService meetingRoomService, EmployeeService employeeService) {
+		this.meetingRoomService = meetingRoomService;
+		this.employeeService = employeeService;
 	}
+	
 
 	@GetMapping("/apps-calendar")
-	public String apps_calendar() {
+	public String apps_calendar(Model model) {
+		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());
 		return "apps/calendar";
 	}
 	
@@ -22,6 +41,11 @@ public class Apps {
 	public String apps_chat(Model model) {
 		model.addAttribute("page","appchat");
 		return "apps/chat";
+	}
+	
+	@GetMapping("/apps-meeting-room-check")
+	public String apps_chat() {
+		return "apps/meeting-room-check";
 	}
 	
 	@GetMapping("/apps-mailbox")
@@ -44,8 +68,19 @@ public class Apps {
 		return "apps/ecommerce-products";
 	}
 	
+	// 회의실 예약
+	
 	@GetMapping("/apps-ecommerce-product-details")
-	public String apps_ecommerce_product_details() {
+	public String apps_ecommerce_product_details(Model model) {
+		List<MeetingRoomDto> mr = meetingRoomService.meetingRoomList();
+		List<MeetingRoomTimeDto> time = meetingRoomService.meetingRoomTimeList();
+		Long empId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName()) ;
+		model.addAttribute("meetingRoom", mr);
+		model.addAttribute("meetingRoomTime", time);
+		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());
+		Employee emp = employeeService.getEmployeeById(empId);
+		EmployeeDto empDto = EmployeeDto.fromEntity(emp);
+		model.addAttribute("empAuth" , empDto.getEmpAuth());
 		return "apps/ecommerce-product-details";
 	}
 	

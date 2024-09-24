@@ -1,10 +1,12 @@
-
 package com.codenal.employee.domain;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,34 +35,18 @@ public class EmployeeDto {
     private String empStatus;
     private String empProfilePicture;
     private String empSignImage;
-    private Integer deptNo;
-    private Integer jobNo;
+    private Long deptNo;
+    private String deptName; // 추가
+    private int jobNo;
+    private String jobName;  // 추가
     private String empAuth;
+    
+    private int search_type = 1; // int는 null 인식X
+    private String search_text;
 
     private List<GrantedAuthority> authorities;
-
-    // 엔터티를 DTO로 변환하는 메서드
-    public static EmployeeDto fromEntity(Employee employee) {
-        return EmployeeDto.builder()
-                .empId(employee.getEmpId())
-                .empPw(employee.getEmpPw())
-                .empName(employee.getEmpName())
-                .empSsn(employee.getEmpSsn())
-                .empPhone(employee.getEmpPhone())
-                .empAddress(employee.getEmpAddress())
-                .empAddressDetail(employee.getEmpAddressDetail())
-                .empHire(employee.getEmpHire()) 
-                .empEnd(employee.getEmpEnd())
-                .empStatus(employee.getEmpStatus())
-                .empProfilePicture(employee.getEmpProfilePicture())
-                .empSignImage(employee.getEmpSignImage())
-                .deptNo(employee.getDeptNo())
-                .jobNo(employee.getJobNo())
-                .empAuth(employee.getEmpAuth())
-                .build();
-    }
-
- // DTO를 엔터티로 변환하는 메서드
+    
+    // DTO를 엔터티로 변환하는 메서드
     public Employee toEntity() {
         return Employee.builder()
                 .empId(empId)
@@ -72,14 +58,34 @@ public class EmployeeDto {
                 .empAddressDetail(empAddressDetail)
                 .empHire(empHire)
                 .empEnd(empEnd)
-                .empStatus(empStatus)
+                .empStatus(empStatus != null ? empStatus : "Y") 
                 .empProfilePicture(empProfilePicture)
                 .empSignImage(empSignImage)
-                .deptNo(deptNo)
-                .jobNo(jobNo)
+                .departments(Departments.builder().deptNo(deptNo).build()) 
+                .jobs(Jobs.builder().jobNo(jobNo).build())  
                 .empAuth(empAuth != null ? empAuth : "USER")
                 .build();
     }
-
+    
+    // 엔터티를 DTO로 변환하는 메서드
+    public static EmployeeDto fromEntity(Employee employee) {
+    	return EmployeeDto.builder()
+    			.empId(employee.getEmpId())
+    			.empPw(employee.getEmpPw())
+    			.empName(employee.getEmpName())
+    			.empSsn(employee.getEmpSsn())
+    			.empPhone(employee.getEmpPhone())
+    			.empAddress(employee.getEmpAddress())
+    			.empAddressDetail(employee.getEmpAddressDetail())
+    			.empHire(employee.getEmpHire()) 
+    			.empEnd(employee.getEmpEnd())
+    			.empStatus(employee.getEmpStatus() != null ? employee.getEmpStatus() : "Y")
+    			.empProfilePicture(employee.getEmpProfilePicture())
+    			.empSignImage(employee.getEmpSignImage())
+    			.deptNo(employee.getDepartments().getDeptNo())
+                .deptName(employee.getDepartments().getDeptName()) 
+                .jobNo(employee.getJobs().getJobNo())
+                .jobName(employee.getJobs().getJobName())
+    			.build();
+    }
 }
-
