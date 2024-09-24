@@ -19,8 +19,6 @@ import com.codenal.addressBook.domain.TreeMenuDto;
 import com.codenal.addressBook.service.AddressBookService;
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.service.DeptService;
-import com.codenal.employee.domain.EmployeeDto;
-
 @Controller
 @RequestMapping("/admin/dept")
 public class DeptViewController {
@@ -68,8 +66,10 @@ public class DeptViewController {
 	}
 
 	// 부서명 수정
-	 @GetMapping("/dept/edit")
-	    public String editDeptPage() {
-	        return "admin/dept/edit";
-	    }
+	@GetMapping("/dept/edit/{dept_no}")
+	public String editDeptPage(@PathVariable("dept_no")Long dept_no, Model model){
+		DepartmentsDto dto = deptService.editDeptName(dept_no);
+		model.addAttribute("editDept",dto);
+		return "admin/dept";
+	}
 }

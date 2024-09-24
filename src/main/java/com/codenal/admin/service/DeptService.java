@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.DepartmentsCount;
@@ -70,7 +71,7 @@ public class DeptService {
 
 		} catch (IllegalArgumentException e) {
 			// 중복된 부서명이 있을 때 처리
-		//	System.out.println("Error: " + e.getMessage());
+			//	System.out.println("Error: " + e.getMessage());
 			return 0;
 		} catch (Exception e) {
 			// 그 외의 일반적인 에러 처리
@@ -78,19 +79,32 @@ public class DeptService {
 			return 0;
 		}
 	}
-	
-	
-	// 부서명 수정만 처리하는 메서드
-	public void editDepartment(DepartmentsDto departmentsDto) {
-        // 부서 번호로 엔티티를 생성하여 업데이트 작업
-        Departments department = departmentsRepository.findByDeptNo(departmentsDto.getDeptNo());
 
-        if (department == null) {
-            throw new IllegalArgumentException("존재하지 않는 부서입니다.");
-        }
 
-        // 부서명 수정
-        department.setDeptName(departmentsDto.getDeptName());
-        departmentsRepository.save(department); // 변경된 부서 정보 저장
-    }
+	// 부서명 수정
+	@Transactional
+	public Departments editDepartment(DepartmentsDto dto) { 
+
+		if (departmentsRepository.existsByDeptNameAndDeptNoNot(dto.getDeptName(), dto.getDeptNo())) {
+			throw new IllegalArgumentException("이미 존재하는 부서명입니다.");
+		}
+
+		DepartmentsDto temp = editDeptName(dto.getDeptNo());
+		temp.setDeptName(dto.getDeptName());
+
+		Departments dept = temp.toEntity();
+		return departmentsRepository.save(dept);
+	}
+
+
+	public DepartmentsDto editDeptName(Long dept_no) {
+		Departments d = departmentsRepository.findByDeptNo(dept_no);
+
+		DepartmentsDto dto = DepartmentsDto.builder()
+				.deptNo(d.getDeptNo())	
+				.deptName(d.getDeptName())
+				.build();
+
+		return dto;
+	}
 }
