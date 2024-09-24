@@ -251,6 +251,10 @@ public class DocumentApiController {
         }
     }
 
-    
+    @PostMapping("/shared-users")
+    public ResponseEntity<List<Long>> getSharedUsers(@RequestBody List<Long> docIds) {
+        List<Long> sharedUsers = documentService.findSharedUsersByDocIds(docIds);
+        return ResponseEntity.ok(sharedUsers);
+    }
 
 }
