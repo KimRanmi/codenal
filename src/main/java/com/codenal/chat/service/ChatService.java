@@ -111,19 +111,21 @@ public class ChatService {
 		return chatLists;
 	}
 	
-	// 본인의 활성 상태의 참여중인 채팅방 목록 조회
-//	public List<ChatRoomDto> chatListSelect(String username){
-//		Long empId = Long.parseLong(username);
-//		Employee emp = employeeRepository.findByEmpId(empId);
-//		List<ChatRoom> chatLists = chatRoomRepository.findByEmpId(emp);
-//		List<ChatRoomDto> chatListDto = new ArrayList<ChatRoomDto>();
-//		for(ChatRoom chatList :chatLists) {
-//			ChatRoomDto dto = new ChatRoomDto().toDto(chatList);
-//			chatListDto.add(dto);
-//		}
-//		
-//		return chatListDto;
-//	}
+	// 내가 속하면서 나를 제외한 채팅방 참가자 정보 조회
+	public List<ChatParticipants> notMeParticipant(String username){
+		Long empId = Long.parseLong(username);
+		Employee emp = employeeRepository.findByEmpId(empId);
+		List<ChatParticipants> chatLists = chatParticipantsRepository.findByNotMeChatRoom(emp);
+		List<ChatParticipantsDto> chatListDto = new ArrayList<ChatParticipantsDto>();
+		for(ChatParticipants chatList :chatLists) {
+			ChatParticipantsDto dto = new ChatParticipantsDto().toDto(chatList);
+			dto.setRoom_no(chatList.getChatRoom().getRoomNo());
+			dto.setEmp_id(chatList.getEmployee().getEmpId());
+			chatListDto.add(dto);
+		}
+		return chatLists;
+	}
+
 	
 	
 	// chat detail 부분
@@ -160,7 +162,7 @@ public class ChatService {
 			ChatMsg savedMsg = chatMsgRepository.save(target); // 채팅 메시지 정보 저장
 			
 			ChatParticipants participantNo = chatParticipantsRepository.findByParticipants(room,dto.getParticipant_no());
-//			List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoom(room, userNo); // 본인을 제외한 참여자 정보
+//			List<ChatParticipants> participants = chatParticipantsRepository.findByNotMeChatRoom(room, userNo); // 본인을 제외한 참여자 정보
 //			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
 				ChatRead read = ChatRead.builder()
 						.chatMsg(savedMsg)

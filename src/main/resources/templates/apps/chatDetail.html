@@ -43,6 +43,7 @@
 	        const textNode = document.createTextNode(msg);
 	        li.appendChild(textNode);
 	        li.className += ' my_chat';
+	        li.style.listStyleType = 'none';
 	   		li.style.textAlign = flag === 'Y' ? 'right' : 'left'; // 정렬 설정
 	
 	        // users-conversation 요소에 li를 자식으로 추가
@@ -67,6 +68,7 @@
 	
 	    // 메시지 전송 버튼 클릭 시 이벤트 리스너
 	    document.getElementById('send_btn').addEventListener('click', function() {
+	    	event.preventDefault();
 	        const msg = document.getElementById('chat_input').value;
 	        const obj = setMsgObj('msg', msg);
 	        if (socket.readyState === WebSocket.OPEN) {
@@ -116,19 +118,19 @@
 														class="ri-arrow-left-s-line align-bottom"></i></a>
 												</div>
 												<div class="flex-grow-1 overflow-hidden">
-													<div class="d-flex align-items-center">
+													<div class="d-flex align-items-center"  th:each="c : ${chat.participants}" th:if="${#strings.toString(c.employee.empId) != username}">
 														<div
 															class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
 															<!-- 직원 프로필 이미지 -->
-															<img src="/assets/images/users/avatar-2.jpg"
-																class="rounded-circle avatar-xs" alt="선택 직원이 저장한 프로필 사진">
+															<img th:src="${c.employee.empProfilePicture != null ? c.employee.empProfilePicture : '/assets/images/users/avatar-1.jpg'}"
+															class="rounded-circle avatar-xs" alt="선택 직원이 저장한 프로필 사진">
 														</div>
 														<div class="flex-grow-1 overflow-hidden">
 															<h5 class="text-truncate mb-0 fs-16">
 																<a class="text-reset username"
 																	data-bs-toggle="offcanvas"
 																	href="#chatUserProfileCanvasExample"
-																	aria-controls="userProfileCanvasExample" th:text="${chat.chatName}"></a>
+																	aria-controls="userProfileCanvasExample" th:text="${c.employee.empName}"></a>
 															</h5>
 														</div>
 													</div>
@@ -197,23 +199,24 @@
 										</div>
 									</div> -->
 									
-								<input type="text" th:value="${chat.roomNo}" id="room_no">
-								<span sec:authentication="principal.employeeDto.empId" id="emp_id"></span>
+								<input type="hidden" th:value="${chat.roomNo}" id="room_no">
 								<div th:each="participant : ${chat.participants}">
 									<!-- 나의 참가자 번호 조회 -->
 									<div th:if="${participant.employee.empId == #authentication.principal.employeeDto.empId}">
-										<input type="text" th:value="${participant.participantNo}" id="sender_no">나
+										<input type="hidden" th:value="${participant.participantNo}" id="sender_no">
 									</div>
 									<!-- 나를 제외한 참가자 번호 조회 -->
 									<div th:if="${participant.employee.empId != #authentication.principal.employeeDto.empId}">
-										<input type="text" th:value="${participant.participantNo}" id="participant_no">상대
+										<input type="hidden" th:value="${participant.participantNo}" id="participant_no">
 									</div>
 								</div>
-								
-									<ul class="list-unstyled chat-conversation-list" th:each="msg : ${chat.messages}">
- 										<li class="my_chat" th:text="${msg.msgContent}">
-										</li>
-									</ul>
+								<div th:each="msg : ${chat.messages}">
+								    <ul class="list-unstyled"
+								        th:style="${#strings.trim(msg.msgType) == '1' ? 'text-align:center;' : (msg.chatParticipant.employee.empId == #authentication.principal.employeeDto.empId ? 'text-align:right;' : 'text-align:left;')}">
+								        <li class="my_chat" th:text="${msg.msgContent}">
+								        </li>
+								    </ul>
+								</div>
 									<!-- 이부분 동적으로 불러오기 -->
 									<ul id="users-conversation">
 									

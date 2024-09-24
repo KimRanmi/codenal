@@ -74,19 +74,19 @@
 								<!-- 참여중인 채팅 목록 -->
 								<ul class="list-unstyled chat-list chat-user-list" id="userList">
 									<!-- 1:1 채팅방 불러오기 -->
-									<li id="contact-id" data-name="direct-message" class="" th:each="chat : ${chatList}">
+									<li id="contact-id" data-name="direct-message" class="" th:each="chat : ${notMeParticipantList}">
 										<div th:if="${chat.chatRoom.roomType==1}">
 										<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="unread-msg-user">
-											<div class="d-flex align-items-center">
+											<div class="d-flex align-items-center" th:if="chat.employee.empId != session.empId">
 												<div
 													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
 													<div class="avatar-xxs">
-														<img src="assets/images/users/avatar-2.jpg"
-															class="rounded-circle img-fluid userprofile">
+													<img th:src="${chat.employee.empProfilePicture != null ? chat.employee.empProfilePicture : '/assets/images/users/avatar-1.jpg'}"
+															class="rounded-circle img-fluid userprofile" alt="선택 직원이 저장한 프로필 사진">
 													</div>
 												</div>
 												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0" th:text="${chat.chatRoom.chatName}"></p>
+													<p class="text-truncate mb-0" th:text="${chat.employee.empName}"></p>
 												</div>
 												<div class="ms-auto">
 													<span class="badge badge-soft-dark rounded p-1">99+</span>

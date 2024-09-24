@@ -50,6 +50,9 @@ public class ChatController {
         List<ChatParticipants> participantList = chatService.participantListSelect(username);  	// 활성 상태의 참여중인 채팅 목록 조회
         model.addAttribute("chatList",participantList);
         
+        List<ChatParticipants> notMeParticipantList = chatService.notMeParticipant(username);  // 같이 속한 채팅방 참가자의 정보 조회
+        model.addAttribute("notMeParticipantList",notMeParticipantList);
+        
 		List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);  // 채팅방 초대버튼 클릭시 조회할 직원목록
 		model.addAttribute("employeeList",employeeList);
 		return "apps/chat";
