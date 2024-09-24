@@ -35,8 +35,8 @@ public class MeetingRoom {
 	@Column(name = "meeting_room_place")
 	private String meetingRoomPlace;
 	
-	@Column(name = "meeting_room_info")
-	private String meetingRoomInfo;
+	@Column(name = "meeting_room_amenity")
+	private String meetingRoomAmenity;
 	
 	@Column(name = "meeting_room_img")
 	private String meetingRoomImg;

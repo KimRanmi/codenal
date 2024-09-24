@@ -33,6 +33,30 @@ public class MeetingRoomService {
 		this.meetingRoomReserveRepository = meetingRoomReserveRepository;
 	}
 	
+	// 회의실 삭제
+	public int MeetingRoomDelete(Long roomNo) {
+		int result = 0;
+		
+		try {
+			meetingRoomRepository.deleteById(roomNo);
+			result = 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	// 회의실 추가
+	public MeetingRoom MeetingRoomCreate(MeetingRoomDto dto) {
+		MeetingRoom create = MeetingRoom.builder()
+				.meetingRoomName(dto.getMeeting_room_name())
+				.meetingRoomPlace(dto.getMeeting_room_place())
+				.meetingRoomAmenity(dto.getMeeting_room_amenity())
+				.meetingRoomImg(dto.getMeeting_room_img())
+				.build();
+		return meetingRoomRepository.save(create);
+	}
+	
 	// 회의실 예약
 	public MeetingRoomReserve meetingRoomReserve(MeetingRoomReserveDto dto) {
 		int result = 0;

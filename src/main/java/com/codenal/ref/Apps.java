@@ -81,6 +81,7 @@ public class Apps {
 		Employee emp = employeeService.getEmployeeById(empId);
 		EmployeeDto empDto = EmployeeDto.fromEntity(emp);
 		model.addAttribute("empAuth" , empDto.getEmpAuth());
+		System.out.println(empDto);
 		return "apps/ecommerce-product-details";
 	}
 	
