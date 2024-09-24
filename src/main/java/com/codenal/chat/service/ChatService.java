@@ -145,31 +145,31 @@ public class ChatService {
 	
 	// 메시지 전송시 생성
 	@Transactional
-	public int createChatMsg(ChatMsgDto dto, int userNo) {
+	public int createChatMsg(ChatMsgDto dto) {
 		int result = -1; 
 		try {
 			ChatRoom room = chatRoomRepository.findByRoomNo(dto.getRoom_no());
-			ChatParticipants participantNo = chatParticipantsRepository.findByParticipants(room, userNo);
-						ChatMsg target = ChatMsg.builder()
+			ChatParticipants senderNo = chatParticipantsRepository.findByParticipants(room,dto.getSender_no());
+			ChatMsg target = ChatMsg.builder()					.chatRoom(room)
+					.chatParticipant(senderNo)
 					.msgContent(dto.getMsg_content())
-					.chatRoom(room)
-					.chatParticipant(participantNo)
 					.msgStatus('Y')
 					.msgType(dto.getMsg_type())
 					.build();
 
 			ChatMsg savedMsg = chatMsgRepository.save(target); // 채팅 메시지 정보 저장
 			
-			List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoom(room, userNo); // 본인을 제외한 참여자 정보
-			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
+			ChatParticipants participantNo = chatParticipantsRepository.findByParticipants(room,dto.getParticipant_no());
+//			List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoom(room, userNo); // 본인을 제외한 참여자 정보
+//			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
 				ChatRead read = ChatRead.builder()
 						.chatMsg(savedMsg)
-						.chatParticipant(participant)
+						.chatParticipant(participantNo)
 						.isReceiverRead('N')
 						.build();
 				chatReadRepository.save(read);
 				result = 1;
-			}
+//			}
 			
 		}catch(Exception e) {
 			e.printStackTrace();

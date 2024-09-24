@@ -27,7 +27,6 @@ public class ChatMsgDto {
 	private int room_no;
 	private int sender_no;
 	private int participant_no;
-	private char is_from_sender;
 	
 	public ChatMsg toEntity() {
 		return ChatMsg.builder()

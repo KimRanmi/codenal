@@ -1,5 +1,6 @@
 package com.codenal.chat.config;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,22 +49,39 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 			ObjectMapper objectMapper = new ObjectMapper();
 			// JSON -> SendMessage 형태 변환
 			ChatMsgDto msg = objectMapper.readValue(payload, ChatMsgDto.class);
-	
+			
+			Map<String,String> resultMap = new HashMap<String,String>();
+			
 			switch(msg.getChat_type()){
 				case "open":
 					clients.put(msg.getSender_no(), session); // 클라이언트 등록
 					System.out.println("=== 등록 확인 ===");
-					for(Integer senderNo : clients.keySet()) {
-						System.out.println(senderNo +" : "+clients.get(senderNo));
-					}		
+					System.out.println("현재 접속중인 클라이언트: " + clients);
 				break;
 				case "msg":
-					for(Integer senderNo : clients.keySet()) {
-					chatService.createChatMsg(msg, senderNo);  // 메시지 처리
-					}
+					  // 메시지를 DB에 저장
+					  if(chatService.createChatMsg(msg)>0) {
+						  resultMap.put("res_code", "200");
+						  resultMap.put("res_msg", "채팅 전송을 완료했습니다.");
+						  resultMap.put("msg_content", msg.getMsg_content());
+						  resultMap.put("sender_no", String.valueOf(msg.getSender_no()));
+						  TextMessage resultMsg 
+							= new TextMessage(objectMapper.writeValueAsString(resultMap));
+							
+						  for (WebSocketSession client : clients.values()) {
+							        if (client.isOpen()) {  // 세션이 열려있는지 확인
+							            System.out.println("Sending message to client: " + client);
+							            client.sendMessage(resultMsg);
+							        } else {
+							            System.out.println("Client " + " is not connected.");
+							        }
+							    }
+					  }
 				break;
 			}
 		}
+		
+
 	
 		// 클라이언트가 연결을 끊었을 때 설정
 		@Override

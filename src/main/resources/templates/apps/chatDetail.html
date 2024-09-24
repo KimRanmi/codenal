@@ -5,62 +5,115 @@
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('Chat')"></div>
+	<div th:replace="~{partials/title-meta :: title-meta('Chat')}"></div>
 </th:block>
 
 <head>
-				<script>
-				document.addEventListener('DOMContentLoaded', () => {
-					const websocket = new WebSocket("ws://localhost:8083/chatting");
-	
-	
-	
-					websocket.onmessage = (response) => {
-					    console.log("Message received:", response.data);
-					};
-	
-					websocket.onclose = () => {
-					    console.log("Connection closed");
-					};
-	
-					
-					// 버튼을 클릭하면 양방향 통신 시작
-					document.getElementById('send_btn').addEventListener('click', function() {
-					    const msg = document.getElementById('chat-input').value;
-						const obj = setMsgObj('msg',msg);
-					    websocket.send(JSON.stringify(obj));
-					});
-					
-					// 서버에 접속이 되었을때 실행될 함수
-					websocket.onopen = (data) =>{
-						console.log("=== 접속 ===");
-						const obj = setMsgObj("open",'');
-						websocket.send(JSON.stringify(obj));
-					}
-					
-					// 객체 생성자 함수
-					let setMsgObj = function(chatType, chatMsg){
-					    const roomNo = document.getElementById('room_no').value;
-					    const senderNo = document.getElementById('sender_no').value;
-					    const participantNo = document.getElementById('participant_no').value;
-					    const isFromSender = (senderNo == participantNo) ? 'Y' : 'N';
-					    const msg = document.getElementById('chat-input').value;
-					    const obj = {
-					    		chat_type : chatType,
-					    		msg_content : chatMsg,
-						        room_no: roomNo,
-						        sender_no: senderNo,
-						        participant_no: participantNo,
-						        is_from_sender: isFromSender,
-						        msg_content: msg,
-						        msg_type: '2'
-					    }
-					    return obj;
-					}
-				});
-					
 
-				</script>
+<script>
+let socket;
+let reconnectInterval = 1000; // 재연결 시도 간격 (1초)
+
+document.addEventListener('DOMContentLoaded', function() {
+    connect();
+});
+
+function connect() {
+    socket = new WebSocket("ws://localhost:8083/chatting");
+
+    socket.onmessage = (response) => {
+        // JSON 파싱 및 에러 핸들링
+        try {
+            const resp = JSON.parse(response.data); // resp 변수는 여기서 선언 및 초기화
+	        console.log("Message received:", response.data);
+	        console.log("resp 확인: ", JSON.stringify(resp, null, 2)); // 예쁘게 출력
+	        console.log("resp. 메시지 확인: ", resp.msg_content); // 존재 여부 확인
+	        console.log("resp확인: "+resp);
+	        console.log("resp.메시지 확인: "+resp.msg_content);
+	        if(resp.res_code == '200'){
+	            const pageHost = document.getElementById('sender_no').value;
+	            const senderNo = resp.sender_no;
+	
+	            if(pageHost == senderNo){
+	                printMsg(resp.msg_content, 'Y');
+	            } else {
+	                printMsg(resp.msg_content, 'N');
+	            }
+	        } else {
+	            alert(resp.res_msg);
+	        }
+        } catch (error) {
+            console.error("JSON 파싱 오류:", error);
+        }
+    };
+    
+    const printMsg = function(msg, flag) {
+        console.log("프린트 메소드로 받아왔다 : " + msg + " 그리고 " + flag);
+        const li = document.createElement("li");
+        const textNode = document.createTextNode(msg);
+        li.appendChild(textNode);
+        li.className += ' my_chat'; // 공백 추가하여 클래스 추가
+/*         if (flag === 'Y') {
+            li.style.textAlign = 'right'; // 발신자 메시지
+        } else if (flag === 'N') {
+            li.style.textAlign = 'left'; // 수신자 메시지
+        } */
+        
+        // textAlign 설정 부분에서 로그 추가
+   		 li.style.textAlign = flag === 'Y' ? 'right' : 'left'; // 정렬 설정
+        console.log("textAlign 설정됨:", li.style.textAlign); // 설정된 textAlign 값 로그
+
+        // users-conversation 요소에 li를 자식으로 추가
+        const conversationElement = document.getElementById("users-conversation");
+        if (conversationElement) {
+            conversationElement.appendChild(li);
+        } else {
+            console.error("users-conversation 요소를 찾을 수 없습니다.");
+        }
+    };
+
+    socket.onclose = () => {
+        console.log("WebSocket closed. Attempting to reconnect...");
+        setTimeout(connect, reconnectInterval); // 재연결 시도
+    };
+
+    // 서버에 접속했을 때 실행될 함수
+    socket.onopen = () => {
+        console.log("=== 접속 ===");
+        const obj = setMsgObj("open", '');
+        socket.send(JSON.stringify(obj));
+    };
+
+    // 메시지 전송 버튼 클릭 시 이벤트 리스너
+    document.getElementById('send_btn').addEventListener('click', function() {
+        const msg = document.getElementById('chat_input').value;
+        const obj = setMsgObj('msg', msg);
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(obj)); // 메시지 전송
+            document.getElementById('chat_input').value = ""; // 입력 필드 초기화
+        } else {
+            alert("WebSocket이 열려 있지 않습니다.");
+        }
+    });
+}
+
+// 객체 생성자 함수
+let setMsgObj = function(chatType, chatMsg) {
+    const roomNo = document.getElementById('room_no').value;
+    const senderNo = document.getElementById('sender_no').value;
+    const participantNo = document.getElementById('participant_no').value;
+    return {
+        chat_type: chatType,
+        msg_content: chatMsg,
+        room_no: roomNo,
+        sender_no: senderNo,
+        participant_no: participantNo,
+        msg_type: '2'
+    };
+};
+
+</script>
+
 </head>
 
 <body>
@@ -176,13 +229,15 @@
 									</div>
 								</div>
 								
-									<ul class="list-unstyled chat-conversation-list"
-										id="users-conversation" th:each="msg : ${chat.messages}">
- 										<li th:text="${msg.msgContent}" >
+									<ul class="list-unstyled chat-conversation-list" th:each="msg : ${chat.messages}">
+ 										<li class="my_chat" th:text="${msg.msgContent}">
 										</li>
-										<!-- 이부분 동적으로 불러오기 -->
-
 									</ul>
+									<!-- 이부분 동적으로 불러오기 -->
+									<ul id="users-conversation">
+									
+									</ul>
+									
 									<!-- end chat-conversation-list -->
 								</div>
 								<!-- 채팅 대화 화면 끝 -->
@@ -206,10 +261,9 @@
 										</div>
 
 										<div class="col">
-											<div class="chat-input-feedback">작성 후 엔터 또는 버튼을 누르세요.</div>
 											<input type="text"
 												class="form-control chat-input bg-light border-light"
-												id="chat-input" placeholder="전달할 문구를 작성하세요."
+												id="chat_input" placeholder="전달할 문구를 작성하세요."
 												autocomplete="off">
 										</div>
 										<div class="col-auto">
@@ -260,8 +314,8 @@
 		<script src="/assets/libs/fg-emoji-picker/fgEmojiPicker.js"></script>
 
 		<!-- chat init js -->
-		<script src="/assets/js/pages/chat.init.js"></script>
-		
+<!-- 		<script src="/assets/js/pages/chat.init.js"></script>
+ -->		
 	</th:block>
 
 </body>
