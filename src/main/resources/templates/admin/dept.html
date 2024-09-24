@@ -79,6 +79,8 @@
 			<!---------------------------------부서 관리 목록----------------------------------------------->
 			<div class="col-xxl-9">
 				<div class="card">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
 					<!----------목록 이름------------>
 					<div class="card-header border-0">
 						<div class="col-sm">
@@ -105,16 +107,14 @@
 											<form class="was-validated" autocomplete="off" id="addDeptForm">
 												<div class="modal-body">
 													<div class="mb-3">
-														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> 
-														<span class="text-danger">*</span> 
-														<input type="text" class="form-control" id="validationTextarea" name="deptName" required />
+														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> <span class="text-danger">*</span> <input type="text" class="form-control" id="validationTextarea" name="deptName" required />
 														<div class="invalid-feedback">부서명을 입력해주세요.</div>
 													</div>
 												</div>
 
 												<div class="modal-footer">
 													<div class="hstack gap-2 justify-content-end">
-														<button type="submit" class="btn btn-success" id="add-btn">추가</button>
+														<button type="submit" class="btn btn-primary btn-sm" id="sa-basic">추가</button>
 													</div>
 												</div>
 											</form>
@@ -171,9 +171,9 @@
 												<td th:text="${departments.deptName}" style="text-align: center;"></td>
 												<td th:text="${departments.empCount ?: 0} + '명'" style="text-align: center;"></td>
 												<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
-												<td>
-													<ul class="list-inline hstack gap-2 mb-0" style="text-align: center;">
-														<li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit"><a href="#editDept" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn"> <i class="ri-pencil-fill fs-16"></i>
+												<td style="text-align: center;">
+													<ul class="list-inline hstack gap-2 mb-0">
+														<li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit"><a href="#editDept" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-dept-no="${departments.deptNo}" data-dept-name="${departments.deptName}"> <i class="ri-pencil-fill fs-16"></i>
 														</a></li>
 
 														<li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove"><a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteModal"> <i class="ri-delete-bin-5-fill fs-16"></i>
@@ -187,32 +187,33 @@
 
 								<!-- 부서 수정 모달 -->
 								<div id="editDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
-									<div class="modal-dialog modal-dialog-centered">
-										<div class="modal-content">
-											<div class="modal-header bg-light p-3">
-												<h5 class="modal-title">부서명 수정</h5>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
-											</div>
-											<form class="tablelist-form" autocomplete="off">
-												<div class="modal-body">
-													<div class="mb-3">
-														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> <input type="text" class="form-control" required />
-														<div class="invalid-feedback"></div>
-													</div>
-												</div>
-												<div class="modal-footer">
-													<div class="hstack gap-2 justify-content-end">
-														<button type="submit" class="btn btn-success" id="add-btn">수정</button>
-													</div>
-												</div>
-											</form>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">부서명 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+            </div>
+           <form id="editDeptForm" class="tablelist-form" autocomplete="off">
+    <div class="modal-body">
+        <div class="mb-3">
+            <label for="deptName" class="form-label" style="font-size: 15px;">부서명</label>
+            <input type="text" class="form-control" id="deptName" name="deptName" required />
+            
+            <!-- 부서 번호는 숨겨진 필드로 전달 -->
+            <input type="hidden" id="deptNo" name="deptNo" value="부서 번호가 여기에 들어갑니다" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="hstack gap-2 justify-content-end">
+            <button type="submit" class="btn btn-primary btn-sm">수정</button>
+        </div>
+    </div>
+</form>
 
-										</div>
-									</div>
-								</div>
+        </div>
+    </div>
+</div>
 								<!-- 모달 창 끝 -->
-
-
 								<br>
 								<div class="col-lg-6">
 									<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
@@ -259,10 +260,13 @@
 		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
 		<!-- icon -->
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
-		
+
 		<script src="/assets/libs/prismjs/prism.js"></script>
 
 		<script src="/assets/js/pages/form-validation.init.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 		<script>
 		$(document).ready(function () {				
@@ -357,23 +361,78 @@
 			    return response.json();
 			})
 			
-		    .then(data => {
-			    if (data.res_code === "200") {  // 성공 코드 체크
-			        alert('부서가 추가되었습니다.');
-			        location.reload();  // 목록을 새로고침하여 업데이트
-			    } else {
-			        alert(data.res_msg || '부서 추가에 실패했습니다.');
-			    }
-			})
+		      .then(data => {
+	        if (data.res_code === "200") {  // 성공 코드 체크
+	            // SweetAlert2 창 띄우기
+	            Swal.fire({
+	                icon: 'success',
+	                title: '부서 추가 성공',
+	                text: '부서가 성공적으로 추가되었습니다.',
+	                confirmButtonText: '확인'
+	            }).then(() => {
+	                location.reload();  // 목록을 새로고침하여 업데이트
+	            });
+	        } else {
+	            // 실패 시 SweetAlert2 창 띄우기
+	            Swal.fire({
+	                icon: 'error',
+	                title: '부서 추가 실패',
+	                text: data.res_msg || '부서 추가에 실패했습니다.',
+	                confirmButtonText: '확인'
+	            });
+	        }
+	    })
 
 		    .catch(error => {
 		        console.error('에러 발생:', error);
 		        alert('서버와 통신 중 에러가 발생했습니다.');
 		    });
 		});
+		
+		
+		/* 부서명 수정 */
+	document.getElementById('editDeptForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // 기본 폼 제출 방지
+
+    let deptNo = document.getElementById('deptNo').value; // 부서 번호 가져오기
+    const deptName = document.getElementById('deptName').value; // 부서명 가져오기
+
+    // 부서 번호를 Long 타입으로 변환 (숫자로 변환)
+    deptNo = Number(deptNo);
+
+    if (!deptNo || isNaN(deptNo)) {
+        alert('부서 번호가 유효하지 않습니다.');
+        return;
+    }
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/editDepartment', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader(csrfHeader, csrfToken);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            alert('부서명이 성공적으로 수정되었습니다.');
+            location.reload();
+        } else {
+            alert('부서명 수정에 실패했습니다: ' + xhr.responseText);
+        }
+    };
+
+    const data = JSON.stringify({
+        deptNo: deptNo, // 숫자로 변환된 부서 번호
+        deptName: deptName
+    });
+
+    xhr.send(data);
+});
 
 
-		</script>
+</script>
+
 
 	</th:block>
 </body>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -62,7 +63,13 @@ public class DeptViewController {
 
 	// 부서 추가
 	@GetMapping("/addDept")
-	public String joinPage() {
+	public String addDeptPage() {
 		return "admin/dept/addDept";
 	}
+
+	// 부서명 수정
+	 @GetMapping("/dept/edit")
+	    public String editDeptPage() {
+	        return "admin/dept/edit";
+	    }
 }

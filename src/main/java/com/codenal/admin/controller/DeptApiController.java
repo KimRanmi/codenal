@@ -1,20 +1,17 @@
 package com.codenal.admin.controller;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.service.DeptService;
-import com.codenal.employee.domain.EmployeeDto;
 
 @Controller
 public class DeptApiController {
@@ -25,19 +22,7 @@ public class DeptApiController {
 		this.deptService = deptService;
 	}
 
-	/*
-	 * @PostMapping("/api/addDepartments") public ResponseEntity<?>
-	 * addDepartment(@RequestBody DepartmentsDto departmentsDto) { try {
-	 * deptService.addDepartment(departmentsDto); return
-	 * ResponseEntity.ok().body(Collections.singletonMap("success", true)); } catch
-	 * (IllegalArgumentException e) { return
-	 * ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	 * .body(Collections.singletonMap("message", e.getMessage())); } catch
-	 * (Exception e) { e.printStackTrace(); return
-	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	 * .body(Collections.singletonMap("success", false)); } }
-	 */
-
+	// 부서 추가
 	@ResponseBody
 	@PostMapping("/api/addDepartments")
 	public Map<String, String> addDepartment(@RequestBody DepartmentsDto dto) {
@@ -58,5 +43,22 @@ public class DeptApiController {
 
 		return resultMap;
 	}
+	
+	
+	// 부서명 수정
+	@PostMapping("/api/editDepartment")
+	public ResponseEntity<String> editDepartment(@RequestBody DepartmentsDto departmentsDto) {
+	    System.out.println("Received DTO: " + departmentsDto); // 디버깅용
+
+	    try {
+	        // 부서 수정 로직 호출
+	        deptService.editDepartment(departmentsDto);
+	        return ResponseEntity.ok("부서 수정이 완료되었습니다.");
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
+
+
 
 }

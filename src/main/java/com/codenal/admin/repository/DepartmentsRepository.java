@@ -1,6 +1,7 @@
 package com.codenal.admin.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,19 +30,23 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	// 3. 부서별 직원 수
 	// 부서별 직원 수를 포함하여 전체 조회 (empStatus가 'Y'인 직원만 집계)
 	@Query("SELECT d.deptNo AS deptNo, d.deptName AS deptName, d.deptCreateDate AS deptCreateDate, COUNT(e) AS empCount " +
-	       "FROM Departments d LEFT JOIN Employee e ON e.departments = d AND e.empStatus = 'Y' " +
-	       "GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
+			"FROM Departments d LEFT JOIN Employee e ON e.departments = d AND e.empStatus = 'Y' " +
+			"GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
 	Page<DepartmentsCount> findAllWithEmployeeCount(Pageable pageable);
 
 	// 부서명으로 검색하면서 직원 수를 포함하여 조회 (empStatus가 'Y'인 직원만 집계)
 	@Query("SELECT d.deptNo AS deptNo, d.deptName AS deptName, d.deptCreateDate AS deptCreateDate, COUNT(e) AS empCount " +
-	       "FROM Departments d LEFT JOIN Employee e ON e.departments = d AND e.empStatus = 'Y' " +
-	       "WHERE d.deptName LIKE %:deptName% " +
-	       "GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
+			"FROM Departments d LEFT JOIN Employee e ON e.departments = d AND e.empStatus = 'Y' " +
+			"WHERE d.deptName LIKE %:deptName% " +
+			"GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
 	Page<DepartmentsCount> findByDeptNameContainingWithEmployeeCount(@Param("deptName") String deptName, Pageable pageable);
 
-	
-	// 부서 추가
+
+	// 1. 부서 추가
 	boolean existsByDeptName(String deptName);
+
+	// 2. 부서명 수정
+    // 동일한 부서명이 있는지 확인 (부서번호가 다른 경우)
+    boolean existsByDeptNameAndDeptNoNot(String deptName, Long deptNo);
 
 }

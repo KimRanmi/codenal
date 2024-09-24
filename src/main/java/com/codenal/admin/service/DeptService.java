@@ -1,6 +1,7 @@
 package com.codenal.admin.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -69,12 +70,27 @@ public class DeptService {
 
 		} catch (IllegalArgumentException e) {
 			// 중복된 부서명이 있을 때 처리
-			System.out.println("Error: " + e.getMessage());
+		//	System.out.println("Error: " + e.getMessage());
 			return 0;
 		} catch (Exception e) {
 			// 그 외의 일반적인 에러 처리
-			System.out.println("Error: " + e.getMessage());
+			//System.out.println("Error: " + e.getMessage());
 			return 0;
 		}
 	}
+	
+	
+	// 부서명 수정만 처리하는 메서드
+	public void editDepartment(DepartmentsDto departmentsDto) {
+        // 부서 번호로 엔티티를 생성하여 업데이트 작업
+        Departments department = departmentsRepository.findByDeptNo(departmentsDto.getDeptNo());
+
+        if (department == null) {
+            throw new IllegalArgumentException("존재하지 않는 부서입니다.");
+        }
+
+        // 부서명 수정
+        department.setDeptName(departmentsDto.getDeptName());
+        departmentsRepository.save(department); // 변경된 부서 정보 저장
+    }
 }
