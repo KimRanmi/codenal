@@ -234,7 +234,7 @@ public class DocumentService {
 
     // 고정된 총 용량을 반환하는 메서드 (MB 단위)
     public long getTotalStorage() {
-        return 300L * 1024 * 1024 * 1024; // 300GB를 바이트 단위로 변환
+        return 100L * 1024 * 1024 * 1024; // 300GB를 바이트 단위로 변환
     }
 
     // Storage 객체를 반환하는 메서드

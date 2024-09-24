@@ -67,10 +67,10 @@ public class Approval {
     private ApprovalFile approvalFiles;
     
     @OneToMany(mappedBy="approval")
-    private List<Approver> approvers;
+    private List<Approver> approver;
     
     @OneToMany(mappedBy="approval")
-    private List<Referrer> referrers;
+    private List<Referrer> referrer;
     
 }
 

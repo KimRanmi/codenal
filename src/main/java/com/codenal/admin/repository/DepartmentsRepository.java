@@ -1,5 +1,6 @@
 package com.codenal.admin.repository;
 
+
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 
 	// 2. 부서명 검색
 	Page<Departments> findByDeptNameContaining(String deptName, Pageable pageable);
+
 
 	// 3. 부서별 직원 수
 	// 부서별 직원 수를 포함하여 전체 조회 (empStatus가 'Y'인 직원만 집계)

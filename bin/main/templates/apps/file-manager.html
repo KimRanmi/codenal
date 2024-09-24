@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}" data-sidebar="light">
@@ -197,9 +198,9 @@
 								onclick="restoreSelectedFiles()" style="display: none;">복원</button>
 							<!-- 복원 버튼 -->
 							<!-- 다운로드 버튼 수정 -->
-							<button type="button" id="share-setting-btn" style="display: none;"
-								class="btn btn-secondary" onclick="openShareSettingModal()">공유자
-								설정</button>
+							<button type="button" id="share-setting-btn"
+								style="display: none;" class="btn btn-secondary"
+								onclick="openShareSettingModal()">공유자 설정</button>
 							<button id="download-btn" type="button"
 								class="btn btn-primary btn-sm-1"
 								onclick="downloadSelectedFiles()">다운로드</button>
@@ -217,7 +218,8 @@
 
 
 					<!-- 개인 문서 테이블 -->
-					<div id="personal-files-table" class="table-responsive" style="display: none;">
+					<div id="personal-files-table" class="table-responsive"
+						style="display: none;">
 						<table class="table align-middle table-nowrap mb-0">
 							<thead class="table-active">
 								<tr>
@@ -240,7 +242,7 @@
 					</div>
 					<!-- 공유 문서 탭 네비게이션 추가 -->
 					<!-- 공유 문서 탭 네비게이션 추가 -->
-					<div id="shared-docs-tabs"  style="display: none;">
+					<div id="shared-docs-tabs" style="display: none;">
 						<a class="nav-link active" id="shared-by-me-tab" href="#"
 							onclick="showSharedByMeFiles()">공유한 문서함</a> <a class="nav-link"
 							id="shared-with-me-tab" href="#"
@@ -272,7 +274,7 @@
 					</div>
 
 					<!-- 공유받은 문서 테이블 -->
-					<div id="shared-with-me-files-table" class="table-responsive" 
+					<div id="shared-with-me-files-table" class="table-responsive"
 						style="display: none;">
 						<table class="table align-middle table-nowrap mb-0">
 							<thead class="table-active">
