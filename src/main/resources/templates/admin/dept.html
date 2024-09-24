@@ -15,6 +15,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 <!-- jsTree 포함 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 <style>
 .jstree-icon.ri-building-fill { /* 회사 아이콘 */
 	color: #3e4a6e;
@@ -30,6 +33,22 @@
 	color: #9a9ba0;
 	font-size: 16px;
 }
+
+.card-body.pt-0 { /* 몸통 높이 고정(동적X) */
+	height: 592.5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	padding-bottom: 60px;
+}
+
+.pagination { /* 페이징 위치 고정 */
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
 </style>
 </head>
 
@@ -38,6 +57,8 @@
 		<div th:replace="partials/page-title :: page-title('직원 관리','부서 관리')"></div>
 
 		<div class="row">
+
+
 			<!--------------------------------- 조직도 ----------------------------------------------->
 			<div class="col-xxl-3">
 				<div class="card" id="contact-view-detail">
@@ -49,6 +70,7 @@
 					</div>
 					<!-- 조직도 Api -->
 					<div class="card-body border border-dashed border-end-0 border-start-0">
+						<!-- <div class="mb-3"></div> -->
 						<div id="treeMenu"></div>
 					</div>
 				</div>
@@ -56,7 +78,7 @@
 
 			<!---------------------------------부서 관리 목록----------------------------------------------->
 			<div class="col-xxl-9">
-				<div class="card" id="contactList">
+				<div class="card">
 					<!----------목록 이름------------>
 					<div class="card-header border-0">
 						<div class="col-sm">
@@ -66,39 +88,37 @@
 					<!----------목록 상단------------>
 					<div class="card-body border border-dashed border-end-0 border-start-0">
 						<div class="row g-3">
+							<div class="mb-1"></div>
 							<div class="col-md-4">
-								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal" data-bs-target="#zoomInModal" style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
+								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal" data-bs-target="#addDept" style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
 									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
 								</button>
 
-								<!-- 모달 -->
-								<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
+								<!-- 부서 추가 모달 -->
+								<div id="addDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered">
 										<div class="modal-content">
-											<div class="modal-header border border-dashed border-end-0 border-start-0" style="border-bottom: 1px solid #dee2e6;">
-												<h4 class="modal-title" id="zoomInModalLabel">부서 추가</h4>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											<div class="modal-header bg-light p-3">
+												<h5 class="modal-title" id="exampleModalLabel">부서 추가</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
 											</div>
-
-											<div class="modal-body">
-												<form id="passwordResetForm">
-													<div class="row g-3">
-														<div class="mb-3"></div>
-														<div class="col-xxl-12">
-															<div>
-																<label for="adminPasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">부서명 </label> <input type="password" class="form-control" id="adminPasswordInput" placeholder="부서명을 입력하세요." required autocomplete="new-password">
-																<div class="invalid-feedback"></div>
-															</div>
-														</div>
+											<form class="was-validated" autocomplete="off" id="addDeptForm">
+												<div class="modal-body">
+													<div class="mb-3">
+														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> 
+														<span class="text-danger">*</span> 
+														<input type="text" class="form-control" id="validationTextarea" name="deptName" required />
+														<div class="invalid-feedback">부서명을 입력해주세요.</div>
 													</div>
-												</form>
-											</div>
-											<div class="mb-3"></div>
+												</div>
 
-											<div class="modal-footer">
-												<button type="submit" class="btn btn-primary" id="issuePasswordButton" style="font-size: 16px; font-weight: bold;">추가</button>
-												<button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-size: 16px; font-weight: bold;">취소</button>
-											</div>
+												<div class="modal-footer">
+													<div class="hstack gap-2 justify-content-end">
+														<button type="submit" class="btn btn-success" id="add-btn">추가</button>
+													</div>
+												</div>
+											</form>
+
 										</div>
 									</div>
 								</div>
@@ -117,21 +137,23 @@
 									<button type="submit" class="btn btn-primary w-100" style="font-size: 18px; padding: 3px;">검색</button>
 								</div>
 							</div>
+							<div class="mb-2"></div>
 						</div>
+
 					</div>
 
 					<!----------목록 조회------------>
 					<div class="card-body pt-0">
 						<div>
 							<div class="table-responsive table-card mb-3">
-								<table class="table align-middle table-nowrap mb-0" id="customerTable">
+								<table class="table align-middle table-nowrap table-striped mb-0">
 									<thead class="table-light">
 										<tr>
-											<th scope="col" style="text-align: center;">번호</th>
-											<th scope="col" style="text-align: center;">부서명</th>
-											<th scope="col" style="text-align: center;">인원 수</th>
-											<th scope="col" style="text-align: center;">개설일</th>
-											<th scope="col" style="text-align: center;">수정/삭제</th>
+											<th scope="col" style="text-align: center; font-size: 15px;">번호</th>
+											<th scope="col" style="text-align: center; font-size: 15px;">부서명</th>
+											<th scope="col" style="text-align: center; font-size: 15px;">인원 수</th>
+											<th scope="col" style="text-align: center; font-size: 15px;">개설일</th>
+											<th scope="col" style="text-align: center; font-size: 15px;">수정/삭제</th>
 										</tr>
 									</thead>
 
@@ -144,30 +166,55 @@
 										</th:block>
 										<!-- 부서 목록 표시 -->
 										<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-											<tr th:each="department, deptStat : ${resultList.content}">												
+											<tr th:each="departments, deptStat : ${resultList.content}">
 												<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+deptStat.count}" style="text-align: center;"></td>
-												<td th:text="${department.deptName}" style="text-align: center;"></td>
-												<td style="text-align: center;"></td>
-												<td th:text="${#dates.format(department.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
-												<td style="text-align: center;"></td> 
+												<td th:text="${departments.deptName}" style="text-align: center;"></td>
+												<td th:text="${departments.empCount ?: 0} + '명'" style="text-align: center;"></td>
+												<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
+												<td>
+													<ul class="list-inline hstack gap-2 mb-0" style="text-align: center;">
+														<li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit"><a href="#editDept" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn"> <i class="ri-pencil-fill fs-16"></i>
+														</a></li>
+
+														<li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove"><a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteModal"> <i class="ri-delete-bin-5-fill fs-16"></i>
+														</a></li>
+													</ul>
+												</td>
 											</tr>
 										</th:block>
-
 									</tbody>
 								</table>
-								<!-- <div class="noresult" style="display: none">
-									<div class="text-center">
-										<lord-icon src="https://cdn.lordicon.com/msoeawqm.json"
-											trigger="loop" colors="primary:#121331,secondary:#08a88a"
-											style="width:75px;height:75px"> </lord-icon>
-										<h5 class="mt-2">Sorry! No Result Found</h5>
-										<p class="text-muted mb-0">We've searched more than 150+
-											contacts We did not find any contacts for you search.</p>
+
+								<!-- 부서 수정 모달 -->
+								<div id="editDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header bg-light p-3">
+												<h5 class="modal-title">부서명 수정</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+											</div>
+											<form class="tablelist-form" autocomplete="off">
+												<div class="modal-body">
+													<div class="mb-3">
+														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> <input type="text" class="form-control" required />
+														<div class="invalid-feedback"></div>
+													</div>
+												</div>
+												<div class="modal-footer">
+													<div class="hstack gap-2 justify-content-end">
+														<button type="submit" class="btn btn-success" id="add-btn">수정</button>
+													</div>
+												</div>
+											</form>
+
+										</div>
 									</div>
-								</div> -->
-								
+								</div>
+								<!-- 모달 창 끝 -->
+
+
 								<br>
-									<div class="col-lg-6">
+								<div class="col-lg-6">
 									<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
 										<ul class="pagination" th:with="
 									        pageNumber = ${resultList.pageable.pageNumber},
@@ -196,7 +243,7 @@
 							</div>
 						</div>
 					</div>
-					
+
 				</div>
 				<!--end card-->
 			</div>
@@ -212,75 +259,121 @@
 		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
 		<!-- icon -->
 		<script src="/assets/js/pages/remix-icons-listing.js"></script>
+		
+		<script src="/assets/libs/prismjs/prism.js"></script>
+
+		<script src="/assets/js/pages/form-validation.init.js"></script>
 
 		<script>
-						$(document).ready(function () {				
-						    // 트리 메뉴
-						    $.ajax({
-						        url: '/admin/dept/tree-menu',
-						        method: 'GET',
-						        dataType: 'json',
-						        success: function (data) {		
-						        
-						           /*  if (!data || data.length === 0) {
-						                console.error('Received data is empty or undefined.');
-						                return;
-						            } */
-	
-						            // TreeMenuDto
-						            const formatDataForJsTree = (nodes) => {
-						                return nodes.map(node => {
-						                    return {
-						                        id: node.nodeId,
-						                        text: node.nodeName,
-						                        state: {
-						                            opened: false	// 직원은 처음에 접어둠
-						                        },
-						                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
-						                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-						                        		// 부서 아이콘 : 직원 아이콘
-						                    };
-						                });
-						            };
+		$(document).ready(function () {				
+		    // 트리 메뉴
+		    $.ajax({
+		        url: '/admin/dept/tree-menu',
+		        method: 'GET',
+		        dataType: 'json',
+		        success: function (data) {		
+		        
+		           /*  if (!data || data.length === 0) {
+		                console.error('Received data is empty or undefined.');
+		                return;
+		            } */
 
-						            const formattedData = formatDataForJsTree(data);
+		            // TreeMenuDto
+		            const formatDataForJsTree = (nodes) => {
+		                return nodes.map(node => {
+		                    return {
+		                        id: node.nodeId,
+		                        text: node.nodeName,
+		                        state: {
+		                            opened: false	// 직원은 처음에 접어둠
+		                        },
+		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
+		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+		                        		// 부서 아이콘 : 직원 아이콘
+		                    };
+		                });
+		            };
 
-						            // 그룹웨어 회사 이름
-						            const companyNode = {
-						                id: 'companyName',
-						                text: 'withXwork', // 위드워크 회사명
-						                state: {
-						                    opened: true
-						                },
-						                children: formattedData, 
-						                icon: 'ri-building-fill' // 회사 아이콘
-						            };
+		            const formattedData = formatDataForJsTree(data);
 
-						            // jsTree 초기화
-						            $('#treeMenu').jstree({
-						                'core': {
-						                    "animation": 0,
-						                    "check_callback": false,
-						                    'data': [companyNode] 
-						                },
-						                "plugins": ["types"],
-						                "types": {
-						                    "default": {
-						                        "icon": "ri-team-fill"	// 부서 아이콘
-						                    },
-						                    "file": {
-						                        "icon": "ri-user-2-fill"	// 직원 아이콘
-						                    }
-						                }
-						            });
-						        },
-						       /*  error: function (xhr, status, error) {
-						            console.error('Error loading tree menu data:', error);
-						        } */
-						    });
-						});
+		            // 그룹웨어 회사 이름
+		            const companyNode = {
+		                id: 'companyName',
+		                text: 'withXwork', // 위드워크 회사명
+		                state: {
+		                    opened: true
+		                },
+		                children: formattedData, 
+		                icon: 'ri-building-fill' // 회사 아이콘
+		            };
 
-						</script>
+		            // jsTree 초기화
+		            $('#treeMenu').jstree({
+		                'core': {
+		                    "animation": 0,
+		                    "check_callback": false,
+		                    'data': [companyNode] 
+		                },
+		                "plugins": ["types"],
+		                "types": {
+		                    "default": {
+		                        "icon": "ri-team-fill"	// 부서 아이콘
+		                    },
+		                    "file": {
+		                        "icon": "ri-user-2-fill"	// 직원 아이콘
+		                    }
+		                }
+		            });
+		        },
+		       /*  error: function (xhr, status, error) {
+		            console.error('Error loading tree menu data:', error);
+		        } */
+		    });
+		});
+		
+		
+		/* 부서 추가 모달 */
+		document.getElementById('addDeptForm').addEventListener('submit', function(event) {
+		    event.preventDefault(); 
+		    
+		    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+		    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+		
+		    const deptName = document.querySelector('input[name="deptName"]').value;
+		
+		    fetch('/api/addDepartments', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		            [csrfHeader]: csrfToken
+		        },
+		        body: JSON.stringify({deptName}) 
+		    })
+		    .then(response => {
+			    if (!response.ok) {
+			    	console.error('Response status:', response.status);
+			        throw new Error('서버 응답에 문제가 있습니다.');
+			    }
+			    return response.json();
+			})
+			
+		    .then(data => {
+			    if (data.res_code === "200") {  // 성공 코드 체크
+			        alert('부서가 추가되었습니다.');
+			        location.reload();  // 목록을 새로고침하여 업데이트
+			    } else {
+			        alert(data.res_msg || '부서 추가에 실패했습니다.');
+			    }
+			})
+
+		    .catch(error => {
+		        console.error('에러 발생:', error);
+		        alert('서버와 통신 중 에러가 발생했습니다.');
+		    });
+		});
+
+
+		</script>
 
 	</th:block>
 </body>
