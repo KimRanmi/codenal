@@ -43,24 +43,10 @@ public class WebSecurityConfig {
 		// CORS 설정 적용
 		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
-				.requestMatchers("/admin/list").permitAll()
-				.requestMatchers("/admin/join").permitAll()
-				.requestMatchers("/admin/update/**").permitAll()
-				.requestMatchers("/admin/dept").permitAll()
-				.requestMatchers("/announce/createEnd").permitAll()
-				.requestMatchers("/announce/delete/**").permitAll()
-				.requestMatchers("/announce/updateEnd/**").permitAll()
-				.requestMatchers("/approval/leaveUpdate/**").permitAll()
-				.requestMatchers("/approval/detail/**").permitAll()
-				.requestMatchers("/employee/addressBook/**").permitAll()
-				.requestMatchers("/employee/addressBook/**").permitAll()
-				.requestMatchers("/approval/**").authenticated()
-				.requestMatchers("/approval/update/**").authenticated()
-				.requestMatchers("/list").permitAll() 
-				.requestMatchers("/mypage/**").authenticated()
-				.requestMatchers("/documents/**").authenticated() 
-				.anyRequest().authenticated()
+				.requestMatchers("/auth-signin-basic", "/assets/**", "/admin/**", "/announce/**", "/approval/**", "/employee/**", "/list", "/chatList/**", "/chatting").permitAll()
+				 .requestMatchers("/mypage/**").authenticated()
+				 .requestMatchers("/documents/**").authenticated() 
+				 .anyRequest().authenticated()
 				)
 
 				.formLogin(login ->

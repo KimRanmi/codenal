@@ -1,10 +1,9 @@
 package com.codenal.employee.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.codenal.employee.domain.Employee;
@@ -41,5 +40,18 @@ public class EmployeeService {
     public Employee getEmployeeById(Long empId) {
         return employeeRepository.findByEmpId(empId);
     }
-}
+
+    // USER 권한이면서 본인을 제외한 재직중인 직원 모두 조회
+    public List<EmployeeDto> getActiveEmployeeList(String username){
+    	Long empId = Long.parseLong(username);
+    	List<Employee> empList = employeeRepository.findAllActiveEmployees(empId);
+    	List<EmployeeDto> dtoList = new ArrayList<EmployeeDto>();
+    	for(Employee e : empList) {
+    		EmployeeDto dto = new EmployeeDto().fromEntity(e);
+    		dtoList.add(dto);
+    	}
+    	return dtoList;
+    }
    
+
+}

@@ -1,0 +1,304 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}" data-sidebar="light">
+
+<th:block layout:fragment="pagetitle">
+	<!--page title-->
+	<div th:replace="~{partials/title-meta :: title-meta('Chat')}"></div>
+</th:block>
+
+<head>
+
+<script>
+	let socket;
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		socket = new WebSocket("ws://localhost:8083/chatting");
+	
+	    socket.onmessage = (response) => {
+	        // JSON 파싱 및 에러 핸들링
+	        try {
+	            const resp = JSON.parse(response.data);
+		        if(resp.res_code == '200'){
+		            const pageHost = document.getElementById('sender_no').value;
+		            const senderNo = resp.sender_no;
+		
+		            if(pageHost == senderNo){
+		                printMsg(resp.msg_content, 'Y');
+		            } else {
+		                printMsg(resp.msg_content, 'N');
+		            }
+		        } else {
+		            alert(resp.res_msg);
+		        }
+	        } catch (error) {
+	            console.error("JSON 파싱 오류:", error);
+	        }
+	    };
+	    
+	    const printMsg = function(msg, flag) {
+	        console.log("프린트 메소드로 받아왔다 : " + msg + " 그리고 " + flag);
+	        const li = document.createElement("li");
+	        const textNode = document.createTextNode(msg);
+	        li.appendChild(textNode);
+	        li.className += ' my_chat';
+	   		li.style.textAlign = flag === 'Y' ? 'right' : 'left'; // 정렬 설정
+	
+	        // users-conversation 요소에 li를 자식으로 추가
+	        const conversationElement = document.getElementById("users-conversation");
+	        if (conversationElement) {
+	            conversationElement.appendChild(li);
+	        } else {
+	            console.error("users-conversation 요소를 찾을 수 없습니다.");
+	        }
+	    };
+	
+	    socket.onclose = () => {
+	        console.log("WebSocket closed. Attempting to reconnect...");
+	    };
+	
+	    // 서버에 접속했을 때 실행될 함수
+	    socket.onopen = () => {
+	        console.log("=== 접속 ===");
+	        const obj = setMsgObj("open", '');
+	        socket.send(JSON.stringify(obj));
+	    };
+	
+	    // 메시지 전송 버튼 클릭 시 이벤트 리스너
+	    document.getElementById('send_btn').addEventListener('click', function() {
+	        const msg = document.getElementById('chat_input').value;
+	        const obj = setMsgObj('msg', msg);
+	        if (socket.readyState === WebSocket.OPEN) {
+	            socket.send(JSON.stringify(obj)); // 메시지 전송
+	            document.getElementById('chat_input').value = ""; // 입력 필드 초기화
+	        } else {
+	            alert("WebSocket이 열려 있지 않습니다.");
+	        }
+	    });
+	});
+	
+	// 객체 생성자 함수
+	let setMsgObj = function(chatType, chatMsg) {
+	    const roomNo = document.getElementById('room_no').value;
+	    const senderNo = document.getElementById('sender_no').value;
+	    const participantNo = document.getElementById('participant_no').value;
+	    return {
+	        chat_type: chatType,
+	        msg_content: chatMsg,
+	        room_no: roomNo,
+	        sender_no: senderNo,
+	        participant_no: participantNo,
+	        msg_type: '2'
+	    };
+	};
+
+</script>
+
+</head>
+
+<body>
+	<div layout:fragment="content">
+				<div class="chat-content d-lg-flex">
+					<!-- start chat conversation section -->
+					<div class="w-100 overflow-hidden position-relative">
+						<!-- conversation user -->
+						<!-- 헤더 -->
+						<div class="position-relative">
+							<div class="position-relative" id="users-chat">
+								<div class="p-3 user-chat-topbar">
+									<div class="row align-items-center">
+										<div class="col-sm-4 col-8">
+											<div class="d-flex align-items-center">
+												<div class="flex-shrink-0 d-block d-lg-none me-3">
+													<a href="javascript: void(0);"
+														class="user-chat-remove fs-18 p-1"><i
+														class="ri-arrow-left-s-line align-bottom"></i></a>
+												</div>
+												<div class="flex-grow-1 overflow-hidden">
+													<div class="d-flex align-items-center">
+														<div
+															class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
+															<!-- 직원 프로필 이미지 -->
+															<img src="/assets/images/users/avatar-2.jpg"
+																class="rounded-circle avatar-xs" alt="선택 직원이 저장한 프로필 사진">
+														</div>
+														<div class="flex-grow-1 overflow-hidden">
+															<h5 class="text-truncate mb-0 fs-16">
+																<a class="text-reset username"
+																	data-bs-toggle="offcanvas"
+																	href="#chatUserProfileCanvasExample"
+																	aria-controls="userProfileCanvasExample" th:text="${chat.chatName}"></a>
+															</h5>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- 오른쪽 위 메뉴 -->
+										<div class="col-sm-8 col-4">
+											<ul class="list-inline user-chat-nav text-end mb-0">
+												<li class="list-inline-item m-0">
+													<div class="dropdown">
+														<button class="btn btn-ghost-secondary btn-icon"
+															type="button" data-bs-toggle="dropdown"
+															aria-haspopup="true" aria-expanded="false">
+															<i data-feather="more-vertical" class="icon-sm"></i>
+														</button>
+														<!-- 1:1인 경우 -->
+														<div class="dropdown-menu dropdown-menu-end" th:if="${chat.roomType==1}">
+															<a class="dropdown-item d-block d-lg-none user-profile-show"
+																href="#"><i
+																class="ri-user-2-fill align-bottom text-muted me-2"></i>
+																채팅방 메뉴</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-toggle-fill align-bottom text-muted me-2"></i>
+																알림 스위치</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
+																채팅방 나가기</a>
+														</div>
+														<!-- 그룹인 경우 -->
+														<div class="dropdown-menu dropdown-menu-end" th:if="${chat.roomType==2}">
+															<a class="dropdown-item d-block d-lg-none user-profile-show"
+																href="#"><i
+																class="ri-user-2-fill align-bottom text-muted me-2"></i>
+																채팅방 메뉴</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-toggle-fill align-bottom text-muted me-2"></i>
+																알림 스위치</a>  
+																<a class="dropdown-item" href="#"><i
+																class="ri-user-add-line align-bottom text-muted me-2"></i>
+																추가 초대하기</a> 
+																<a class="dropdown-item" href="#"><i
+																class=" ri-edit-2-line align-bottom text-muted me-2"></i>
+																채팅방 이름 변경</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
+																채팅방 나가기</a>
+														</div>
+													</div>
+												</li>
+											</ul>
+										</div>
+									</div>
+
+								</div>
+								<!-- end chat user head -->
+								
+								
+								<!-- 채팅 대화 화면 시작 -->
+								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation"
+									data-simplebar>
+									<!-- <div id="elmLoader">
+										<div class="spinner-border text-primary avatar-sm"
+											role="status">
+											<span class="visually-hidden">로딩중...</span>
+										</div>
+									</div> -->
+									
+								<input type="text" th:value="${chat.roomNo}" id="room_no">
+								<span sec:authentication="principal.employeeDto.empId" id="emp_id"></span>
+								<div th:each="participant : ${chat.participants}">
+									<!-- 나의 참가자 번호 조회 -->
+									<div th:if="${participant.employee.empId == #authentication.principal.employeeDto.empId}">
+										<input type="text" th:value="${participant.participantNo}" id="sender_no">나
+									</div>
+									<!-- 나를 제외한 참가자 번호 조회 -->
+									<div th:if="${participant.employee.empId != #authentication.principal.employeeDto.empId}">
+										<input type="text" th:value="${participant.participantNo}" id="participant_no">상대
+									</div>
+								</div>
+								
+									<ul class="list-unstyled chat-conversation-list" th:each="msg : ${chat.messages}">
+ 										<li class="my_chat" th:text="${msg.msgContent}">
+										</li>
+									</ul>
+									<!-- 이부분 동적으로 불러오기 -->
+									<ul id="users-conversation">
+									
+									</ul>
+									
+									<!-- end chat-conversation-list -->
+								</div>
+								<!-- 채팅 대화 화면 끝 -->
+							</div>
+							
+							<!-- 메시지 작성 시작 부분 -->
+							<div class="chat-input-section p-3 p-lg-4">
+
+								<form id="chatinput-form" enctype="multipart/form-data">
+									<div class="row g-0 align-items-center">
+										<div class="col-auto">
+											<div class="chat-input-links me-2">
+												<div class="links-list-item">
+													<button type="button"
+														class="btn btn-link text-decoration-none emoji-btn"
+														id="emoji-btn">
+														<i class="bx bx-smile align-middle"></i>
+													</button>
+												</div>
+											</div>
+										</div>
+
+										<div class="col">
+											<input type="text"
+												class="form-control chat-input bg-light border-light"
+												id="chat_input" placeholder="전달할 문구를 작성하세요."
+												autocomplete="off">
+										</div>
+										<div class="col-auto">
+											<div class="chat-input-links ms-2">
+												<div class="links-list-item">
+													<button type="submit" id="send_btn"
+														class="btn btn-success chat-send waves-effect waves-light">
+														<i class="ri-send-plane-2-fill align-bottom"></i>
+													</button>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</form>
+							</div>
+							<!-- 메시지 작성 끝 -->
+
+							<div class="replyCard">
+								<div class="card mb-0">
+									<div class="card-body py-3">
+										<div class="replymessage-block mb-0 d-flex align-items-start">
+											<div class="flex-grow-1">
+												<h5 class="conversation-name"></h5>
+												<p class="mb-0"></p>
+											</div>
+											<div class="flex-shrink-0">
+												<button type="button" id="close_toggle"
+													class="btn btn-sm btn-link mt-n2 me-n3 fs-18">
+													<i class="bx bx-x align-middle"></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+	<th:block layout:fragment="pagejs">
+
+		<!-- fgEmojiPicker js -->
+		<script src="/assets/libs/fg-emoji-picker/fgEmojiPicker.js"></script>
+
+		<!-- chat init js -->
+<!-- 		<script src="/assets/js/pages/chat.init.js"></script>
+ -->		
+	</th:block>
+
+</body>
+
+</html>

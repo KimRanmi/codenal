@@ -10,6 +10,7 @@ import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.Referrer;
+import com.codenal.chat.domain.ChatParticipants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -102,8 +103,7 @@ public class Employee {
     
     @OneToMany(mappedBy = "employee")
     private List<Announce> announces;
+    
+    @OneToMany(mappedBy = "employee")
+    private List<ChatParticipants> participants;
 }
-
-
-	
-   
