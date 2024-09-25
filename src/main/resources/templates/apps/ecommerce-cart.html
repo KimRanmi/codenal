@@ -34,6 +34,7 @@
 				</div>
 				<div class="card product" th:if="${!#lists.isEmpty(reserveList)}" th:each="reserveList : ${reserveList}">
 					<div class="card-body">
+					<input type="hidden" id="reserveNo" th:value="${reserveList.meeting_room_reserve_no}">
 						<div class="row gy-3" >
 							<div class="col-sm-auto">
 								<div class="avatar-lg bg-light rounded p-1" th:style=" 'background-image: url('+${reserveList.meeting_room_img}+'); background-repeat: no-repeat; background-size: cover; background-position: center'">
@@ -70,7 +71,7 @@
 							<div class="col-sm">
 								<div class="d-flex flex-wrap my-n1">
 									<div>
-										<a href="#" class="d-block text-body p-1 px-2"><i
+										<a href="#" class="d-block text-body p-1 px-2" onclick="deleteReserve(this)" id="" th:attr="id=${reserveList.meeting_room_reserve_no}"><i
 												class="ri-delete-bin-fill text-muted align-bottom me-1"></i> 예약 취소</a>
 									</div>
 									<div>

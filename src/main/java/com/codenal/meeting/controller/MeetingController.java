@@ -42,6 +42,18 @@ public class MeetingController {
 		this.fileService = fileService;
 	}
 	
+	// 예약 취소
+	@DeleteMapping("/reserveDelete/{reserveNo}")
+	public Map<String, String> ReserveDelete(@PathVariable("reserveNo") Long reserveNo){
+		Map<String, String> result = new HashMap<String, String>();
+		result.put("msg", "삭제 중 문제가 발생했습니다.");
+		if(meetingRoomService.ReserveDelete(reserveNo) > 0) {
+			result.put("msg", "삭제되었습니다.");
+		}
+		System.out.println(result);
+		return result;
+	}
+	
 	// 예약 리스트 조회
 	@ResponseBody
 	@PostMapping("/meetingRoomReserveList/{empId}")

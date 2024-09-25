@@ -33,6 +33,19 @@ public class MeetingRoomService {
 		this.meetingRoomReserveRepository = meetingRoomReserveRepository;
 	}
 	
+	// 예약 취소
+	public int ReserveDelete(Long reserveNo) {
+		int result = 0;
+
+		try {
+			meetingRoomReserveRepository.deleteById(reserveNo);
+			result = 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	// 예약 리스트 조회
 	public List<MeetingRoomReserveDto> MeetingRoomReserveList(Long empId){
 		List<MeetingRoomReserve> reserve = meetingRoomReserveRepository.findByEmpId(empId);
