@@ -458,9 +458,9 @@
                             });
                         }
                     },
-                    error: function(xhr) {
+                    error: function(xhr) { 
                         console.log("AJAX Error Response:", xhr);
-                        if(xhr.status === 400 || xhr.status === 500) {
+                        if(xhr.status === 400 || xhr.status === 500) { 
                             let response = xhr.responseJSON;
                             Swal.fire({
                                 icon: 'error',
