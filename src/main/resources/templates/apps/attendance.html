@@ -1,0 +1,135 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}" data-sidebar="light">
+
+<!-- 페이지 제목 -->
+<th:block layout:fragment="pagetitle">
+	<div th:replace="partials/title-meta :: title-meta('출퇴근 관리')"></div>
+</th:block>
+
+<head>
+
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
+<!-- Sweet Alert css -->
+<link href="/assets/libs/sweetalert2/sweetalert2.min.css"
+	rel="stylesheet" type="text/css" />
+<style>
+.card-body.pt-0 {
+	height: 592.5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	padding-bottom: 60px;
+}
+
+.pagination {
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+</style>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<div th:replace="partials/page-title :: page-title('출퇴근 관리', '-')"></div>
+
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header border-0">
+						<h5 class="card-title mb-0"
+							style="font-size: 18px; font-weight: bold;">출퇴근 관리</h5>
+					</div>
+
+					   <!-- 날짜 검색 폼 -->
+                        <form th:action="@{/attendance}" method="get">
+                            <div class="card-body border border-dashed border-end-0 border-start-0">
+                                <div class="row g-3">
+                                    <div class="col-sm">
+                                        <input type="date" class="form-control" name="startDate" placeholder="시작 날짜 선택"
+                                            th:value="${startDate}" />
+                                    </div>
+                                    <div class="col-sm">
+                                        <input type="date" class="form-control" name="endDate" placeholder="종료 날짜 선택"
+                                            th:value="${endDate}" />
+                                    </div>
+                                    <div class="col-sm">
+                                        <button type="submit" class="btn btn-primary form-control">검색</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+					<!-- 출퇴근 기록 목록 -->
+					 <div class="card-body pt-0">
+                            <div class="table-responsive table-card mb-0">
+                                <table class="table align-middle table-nowrap table-striped table-hover mb-3">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="text-align: center; font-size: 15px;">날짜</th>
+                                            <th style="text-align: center; font-size: 15px;">출근시간</th>
+                                            <th style="text-align: center; font-size: 15px;">퇴근시간</th>
+                                            <th style="text-align: center; font-size: 15px;">근무시간</th>
+                                            <th style="text-align: center; font-size: 15px;">근무상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:if="${#lists.isEmpty(attendances.content)}">
+                                            <td colspan="5" style="text-align: center;">출퇴근 기록이 없습니다.</td>
+                                        </tr>
+
+                                        <tr th:each="attendance : ${attendances.content}">
+                                            <td th:text="${#dates.format(attendance.workDate, 'yyyy-MM-dd')}"
+                                                style="text-align: center;"></td>
+                                            <td th:text="${#dates.format(attendance.attendStartTime, 'HH:mm')}"
+                                                style="text-align: center;"></td>
+                                            <td th:text="${#dates.format(attendance.attendEndTime, 'HH:mm')}"
+                                                style="text-align: center;"></td>
+                                            <td th:text="${attendance.attendWorkingTime}" style="text-align: center;"></td>
+                                            <td th:text="${attendance.attendStatus}" style="text-align: center;"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+						<!-- 페이지네이션 처리 -->
+						<!-- 페이지네이션 처리 -->
+                            <ul class="pagination justify-content-center">
+                                <!-- 이전 페이지 버튼 -->
+                                <li class="page-item" th:classappend="${attendances.first} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/attendance(startDate=${startDate}, endDate=${endDate}, page=${attendances.number - 1}, size=${attendances.size})}"
+                                       aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+
+                                <!-- 페이지 번호 버튼 -->
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, attendances.totalPages - 1)}"
+                                    th:classappend="${i == attendances.number} ? 'active'">
+                                    <a class="page-link" th:href="@{/attendance(startDate=${startDate}, endDate=${endDate}, page=${i}, size=${attendances.size})}"
+                                       th:text="${i + 1}">1</a>
+                                </li>
+
+                                <!-- 다음 페이지 버튼 -->
+                                <li class="page-item" th:classappend="${attendances.last} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/attendance(startDate=${startDate}, endDate=${endDate}, page=${attendances.number + 1}, size=${attendances.size})}"
+                                       aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	</th:block>
+</body>
+</html>
