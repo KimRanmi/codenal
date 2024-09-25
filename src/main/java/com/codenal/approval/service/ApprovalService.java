@@ -210,7 +210,6 @@ public class ApprovalService {
    public Approval createApprovalLeave(Map<String,Object> obj) {
          
          Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
-         System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
          
      ApprovalForm af = approvalFormRepository.findByApprovalFormCode((Integer)obj.get("폼코드"));
      
@@ -263,7 +262,6 @@ public class ApprovalService {
       List<ApprovalForm> ac = approvalFormRepository.findByApprovalBaseFormType_BaseFormCode(at.getBaseFormCode());
       
       List<ApprovalFormDto> list = new ArrayList<ApprovalFormDto>();
-      
       
        for(ApprovalForm a : ac) { 
           ApprovalFormDto dto = ApprovalFormDto.builder()

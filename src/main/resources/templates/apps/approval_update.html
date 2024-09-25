@@ -139,7 +139,7 @@
 								<label class="form-label" for="references">수신참조자</label><br>
 								<input id="references" type="text"
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-									class="selectedName3">
+									class="form-control" readonly data-id="">
 							</div>
 							<br>
 							<div th:text="${dto.approval.approvalContent}"
@@ -263,7 +263,7 @@
 		    const selectArray = []; // 선택된 이름을 저장할 배열
 		    let buttonId = '';
 		    
-		    $('#button_modal1, #button_modal2').click(function() {
+		    $('#button_modal1, #button_modal2,#references').click(function() {
 		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
 		        buttonId = this.id;
 		        console.log(buttonId);
@@ -343,16 +343,22 @@
 		                    });
 		                    modal.show(); // 모달 표시
 		                    
-		                    // 등록 버튼 이벤트
 		                    $(document).on('click', '#successBtn', function() {
-		                        const selectNameElements = buttonId === "button_modal1" 
-		                            ? document.querySelectorAll('.selectedName') 
-		                            : document.querySelectorAll('.selectedName2');
-		
+		                        if (buttonId === "references") {
+		                            const selectedNames = selectArray.map(item => item.text).join(' '); // 선택된 이름을 결합
+		                            const selectNameElement = document.getElementById('references'); 
+
+		                            selectNameElement.value = selectedNames; // 결합된 문자열 설정
+		                            selectNameElement.setAttribute("data-id", selectArray.map(item => item.id).join(' '));  // json 데이터로 보낼 때 쓸 data-id 값도 넣어주기
+
+		                        } else {
+		                            const selectNameElements = buttonId === "button_modal1" 
+		                                ? document.querySelectorAll('.selectedName') 
+		                                : document.querySelectorAll('.selectedName2');
+
 		                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
 
 		                            for (let index = 0; index < length; index++) {
-		                                // selectArray[index]가 정의되어 있는지 확인
 		                                if (selectArray[index]) {
 		                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
 		                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
@@ -361,7 +367,7 @@
 		                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
 		                                }
 		                            }
-		
+		                        }
 		                        modal.hide(); // 모달 닫기
 		                    });
 		
@@ -387,10 +393,6 @@
 		        });
 		    });
 		</script>
-
-
-
-
 
 		<script>
 			// 기존 데이터 불러오면서 토스트 api 설정.
@@ -426,9 +428,9 @@
 				const form = document.getElementById('approvalForm');
 				form.addEventListener('submit',(e) =>{
 				e.preventDefault();
-				const id = document.getElementById('approvalNo').value;
 				const payload = new FormData(form);
 				const csrfToken = document.getElementById('csrf_token').value;
+				const id = document.getElementById('approvalNo').value;
 				const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
 	             .map(td => {
 	             	const value = td.getAttribute('data-name');
@@ -443,6 +445,13 @@
 	            	 return value ? Number(value) : null;
 	             })
 	             .filter(name => name !== null);
+				
+				// 3. 수신참조자 값 가져오기
+	            const dataIdValues = document.querySelectorAll('#references[data-id]');
+				 const references = Array.from(dataIdValues)
+				    .map(element => element.getAttribute('data-id').split(' ')) // data-id 속성 값 가져오기
+				
+				
 	             
 	            /* 토스트 api 안에 값 저장 */
 	            const content = contentEditor.getHTML();
@@ -450,6 +459,7 @@
 	            payload.append("approval_content", content);
 				payload.append("agree", agree);
 				payload.append("approver",approver);
+				payload.append("references", references);
 	            
 				payload.forEach((value, key) => {
 				    console.log(`${key}: ${value}`);

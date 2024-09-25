@@ -195,5 +195,28 @@ public class ApproverService {
 
 		return app;
 	}
+	
+	// 결재자 반려
+		@Transactional
+		public int rejectApprover(Long no, Long loginId,String rejectText) {
+			int approverStatus = 3;
+			int app = 0;
 
+			// 결재 시간
+			LocalDateTime ldt = LocalDateTime.now();
+
+
+			// 결재자 상태 변경
+			app = approverRepository.updateReject(approverStatus, rejectText,ldt, no, loginId);
+			if(app > 0) {
+				approvalRepository.updateStatus(3, no);
+			}
+
+			return app;
+		}
+		
+	// 반려 상태 가져오기
+		public Approver findReject(Long approvalNo){
+			return approverRepository.findByReject(approvalNo);
+		}
 }
