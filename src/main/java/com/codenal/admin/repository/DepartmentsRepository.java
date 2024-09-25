@@ -16,7 +16,8 @@ import com.codenal.admin.domain.DepartmentsCount;
 @Repository
 public interface DepartmentsRepository extends JpaRepository<Departments, Long> {
 
-	//  직원 정보 수정
+	// 1. 직원 정보 수정
+	// 2. 부서 번호로 부서 찾기 메서드
 	Departments findByDeptNo(Long deptNo);
 
 
@@ -41,12 +42,13 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 			"GROUP BY d.deptNo, d.deptName, d.deptCreateDate")
 	Page<DepartmentsCount> findByDeptNameContainingWithEmployeeCount(@Param("deptName") String deptName, Pageable pageable);
 
-
+	// 부서
 	// 1. 부서 추가
 	boolean existsByDeptName(String deptName);
 
 	// 2. 부서명 수정
-    // 동일한 부서명이 있는지 확인 (부서번호가 다른 경우)
-    boolean existsByDeptNameAndDeptNoNot(String deptName, Long deptNo);
+	// 동일한 부서명이 있는지 확인 (부서번호가 다른 경우)
+	boolean existsByDeptNameAndDeptNoNot(String deptName, Long deptNo);
+
 
 }

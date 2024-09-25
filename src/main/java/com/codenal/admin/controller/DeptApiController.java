@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.service.DeptService;
 
@@ -49,6 +49,7 @@ public class DeptApiController {
 		return resultMap;
 	}
 
+
 	// 부서 삭제
 	  @DeleteMapping("/dept/{deptNo}")
 	   public ResponseEntity<Map<String, String>> deleteDepartment(@PathVariable("deptNo") Long deptNo) {
@@ -74,10 +75,30 @@ public class DeptApiController {
 	            response.put("res_msg", "서버 오류가 발생했습니다.");
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
+	  }
+
+	
+	
+	// 부서명 수정
+	@PostMapping("/dept/{dept_no}")
+	public ResponseEntity<Map<String, String>> editDeptName(@PathVariable("dept_no") Long deptNo, DepartmentsDto dto) {
+	    Map<String, String> resultMap = new HashMap<>();
+	    try {
+	        if (deptService.editDepartment(dto) != null) {
+	            resultMap.put("res_msg", "부서명이 성공적으로 수정되었습니다.");
+	            return ResponseEntity.ok(resultMap);
+	        } else {
+	            throw new Exception("부서 수정 중 오류가 발생했습니다.");
+	        }
+	    } catch (IllegalArgumentException e) {
+	        resultMap.put("res_msg", e.getMessage());
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultMap);
+	    } catch (Exception e) {
+	        resultMap.put("res_msg", "부서 수정 중 오류가 발생했습니다.");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultMap);
 	    }
 	
-
-
+	}
 	// 부서명 수정
 	/*
 	 * @PostMapping("/api/editDepartment") public ResponseEntity<String>
@@ -88,6 +109,7 @@ public class DeptApiController {
 	 * ResponseEntity.ok("부서 수정이 완료되었습니다."); } catch (IllegalArgumentException e) {
 	 * return ResponseEntity.badRequest().body(e.getMessage()); } }
 	 */
+
 
 
 }
