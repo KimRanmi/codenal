@@ -1,6 +1,7 @@
 package com.codenal.chat.config;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.codenal.chat.domain.ChatMsg;
 import com.codenal.chat.domain.ChatMsgDto;
+import com.codenal.chat.domain.ChatRoom;
 import com.codenal.chat.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,6 +38,23 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		    System.out.println("New connection established: " + session.getId());
+
+		    int roomNo = Integer.parseInt((String) session.getAttributes().get("room_no"));
+		    Long participantId = Long.valueOf(session.getPrincipal().getName());
+		    ChatRoom room = chatService.selectChatRoomOne(roomNo, participantId);
+		    	    
+		    	    for (ChatMsg msg : room.getMessages()) {
+		    	        Map<String, Object> resultMap = new HashMap<>();
+						resultMap.put("res_code", "200");
+						resultMap.put("res_msg", "채팅 메시지 조회를 완료했습니다.");
+		    	        resultMap.put("send_date", msg.getSendDate());
+		    	        resultMap.put("msg_type", Character.toString(msg.getMsgType()));
+		    	        resultMap.put("msg_content", msg.getMsgContent());
+		    	        resultMap.put("sender_no", msg.getChatParticipant().getParticipantNo());
+		    	        
+		    	        String json = new ObjectMapper().writeValueAsString(resultMap);
+		    	        session.sendMessage(new TextMessage(json)); // 초기 메시지 전송
+		    	    }
 
 		}
 	
@@ -60,11 +80,16 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 				break;
 				case "msg":
 					  // 메시지를 DB에 저장
-					  if(chatService.createChatMsg(msg)>0) {
+					  ChatMsg chat = chatService.createChatMsg(msg);
+					  if(chat != null) {
 						  resultMap.put("res_code", "200");
 						  resultMap.put("res_msg", "채팅 전송을 완료했습니다.");
-						  resultMap.put("msg_content", msg.getMsg_content());
-						  resultMap.put("sender_no", String.valueOf(msg.getSender_no()));
+						  resultMap.put("msg_content", chat.getMsgContent());
+						  resultMap.put("sender_no", String.valueOf(chat.getChatParticipant().getParticipantNo()));
+						  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						  LocalDateTime sendDate = chat.getSendDate();
+						  resultMap.put("send_date", sendDate.format(formatter)); // LocalDateTime을 문자열로 변환하여 Map에 저장
+						  resultMap.put("msg_type", String.valueOf(chat.getMsgType()));
 						  TextMessage resultMsg 
 							= new TextMessage(objectMapper.writeValueAsString(resultMap));
 							

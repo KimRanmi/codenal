@@ -10,97 +10,13 @@
 
 <head>
 
-<script>
-	let socket;
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		socket = new WebSocket("ws://localhost:8083/chatting");
-	
-	    socket.onmessage = (response) => {
-	        // JSON 파싱 및 에러 핸들링
-	        try {
-	            const resp = JSON.parse(response.data);
-		        if(resp.res_code == '200'){
-		            const pageHost = document.getElementById('sender_no').value;
-		            const senderNo = resp.sender_no;
-		
-		            if(pageHost == senderNo){
-		                printMsg(resp.msg_content, 'Y');
-		            } else {
-		                printMsg(resp.msg_content, 'N');
-		            }
-		        } else {
-		            alert(resp.res_msg);
-		        }
-	        } catch (error) {
-	            console.error("JSON 파싱 오류:", error);
-	        }
-	    };
-	    
-	    const printMsg = function(msg, flag) {
-	        console.log("프린트 메소드로 받아왔다 : " + msg + " 그리고 " + flag);
-	        const li = document.createElement("li");
-	        const textNode = document.createTextNode(msg);
-	        li.appendChild(textNode);
-	        li.className += ' my_chat';
-	        li.style.listStyleType = 'none';
-	   		li.style.textAlign = flag === 'Y' ? 'right' : 'left'; // 정렬 설정
-	
-	        // users-conversation 요소에 li를 자식으로 추가
-	        const conversationElement = document.getElementById("users-conversation");
-	        if (conversationElement) {
-	            conversationElement.appendChild(li);
-	        } else {
-	            console.error("users-conversation 요소를 찾을 수 없습니다.");
-	        }
-	    };
-	
-	    socket.onclose = () => {
-	        console.log("WebSocket closed. Attempting to reconnect...");
-	    };
-	
-	    // 서버에 접속했을 때 실행될 함수
-	    socket.onopen = () => {
-	        console.log("=== 접속 ===");
-	        const obj = setMsgObj("open", '');
-	        socket.send(JSON.stringify(obj));
-	    };
-	
-	    // 메시지 전송 버튼 클릭 시 이벤트 리스너
-	    document.getElementById('send_btn').addEventListener('click', function() {
-	    	event.preventDefault();
-	        const msg = document.getElementById('chat_input').value;
-	        const obj = setMsgObj('msg', msg);
-	        if (socket.readyState === WebSocket.OPEN) {
-	            socket.send(JSON.stringify(obj)); // 메시지 전송
-	            document.getElementById('chat_input').value = ""; // 입력 필드 초기화
-	        } else {
-	            alert("WebSocket이 열려 있지 않습니다.");
-	        }
-	    });
-	});
-	
-	// 객체 생성자 함수
-	let setMsgObj = function(chatType, chatMsg) {
-	    const roomNo = document.getElementById('room_no').value;
-	    const senderNo = document.getElementById('sender_no').value;
-	    const participantNo = document.getElementById('participant_no').value;
-	    return {
-	        chat_type: chatType,
-	        msg_content: chatMsg,
-	        room_no: roomNo,
-	        sender_no: senderNo,
-	        participant_no: participantNo,
-	        msg_type: '2'
-	    };
-	};
 
-</script>
 
 </head>
 
 <body>
 	<div layout:fragment="content">
+			<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
 				<div class="chat-content d-lg-flex">
 					<!-- start chat conversation section -->
 					<div class="w-100 overflow-hidden position-relative">
@@ -210,43 +126,6 @@
 										<input type="hidden" th:value="${participant.participantNo}" id="participant_no">
 									</div>
 								</div>
-								<div th:each="msg, iterStat : ${chat.messages}">
-								    <!-- 날짜가 변경되었을 때만 출력 -->
-								    <div th:if="${iterStat.index == 0 || #temporals.format(msg.sendDate, 'yyyy-MM-dd') != #temporals.format(chat.messages[iterStat.index - 1].sendDate, 'yyyy-MM-dd')}"
-								         style="text-align: center; margin: 10px; margin-bottom: 30px; ">
-								        <strong th:text="${#temporals.format(msg.sendDate, 'yyyy-MM-dd')}"></strong> <!-- 날짜 출력 -->
-								    </div>
-								
-								    <ul class="list-unstyled" style="margin: 0; padding: 0;">
-								        <!-- msgType이 1일 때 가운데 정렬 -->
-								        <li class="my_chat" th:if="${#strings.trim(msg.msgType) == '1'}" style="text-align: center; margin-bottom: 40px;">
-								            <div class="user-chat-content" style="display: inline-block;">
-								                <div class="conversation-name" th:text="${msg.msgContent}"></div>
-								            </div>
-								        </li>
-								
-								        <!-- msgType이 2일 때 왼쪽/오른쪽 정렬 -->
-								        <li class="my_chat" th:if="${#strings.trim(msg.msgType) == '2'}" style="display: flex; align-items: center; margin-bottom: 40px;">
-								            <!-- 메시지 보낸 사람이 로그인한 사람과 다를 때 왼쪽 정렬 -->
-								            <div class="chat-avatar" th:if="${msg.chatParticipant.employee.empId != #authentication.principal.employeeDto.empId}" style="flex-shrink: 0;">
-								                <img th:src="${msg.chatParticipant.employee.empProfilePicture != null ? msg.chatParticipant.employee.empProfilePicture : '/assets/images/users/avatar-1.jpg'}" alt="">
-								            </div>
-								
-								            <div class="user-chat-content" th:if="${msg.chatParticipant.employee.empId != #authentication.principal.employeeDto.empId}" style="margin-left: 10px; text-align: left;">
-								                <span class="emp_name" th:text="${msg.chatParticipant.employee.empName}"></span>
-								                <div class="conversation-name" th:text="${msg.msgContent}"></div>
-								                <small class="text-muted time" th:text="${#temporals.format(msg.sendDate, 'yy-MM-dd a hh:mm')}"></small>
-								            </div>
-								
-								            <!-- 메시지 보낸 사람이 로그인한 사람과 같을 때 오른쪽 정렬 -->
-								            <div class="user-chat-content" th:if="${msg.chatParticipant.employee.empId == #authentication.principal.employeeDto.empId}" style="text-align: right; margin-left: auto;">
-								                <div class="conversation-name badge-soft-dark rounded p-2" th:text="${msg.msgContent}"
-								                 style="min-width: 1px; max-width: 300px; min-height: 50px; padding: 0px; word-wrap: break-word; text-align: left;"></div>
-								                <small class="text-muted time" th:text="${#temporals.format(msg.sendDate, 'yy-MM-dd a hh:mm')}"></small>
-								            </div>
-								        </li>
-								    </ul>
-								</div>
 									<!-- 이부분 동적으로 불러오기 -->
 									<ul id="users-conversation">
 									
@@ -330,6 +209,157 @@
 		<!-- chat init js -->
 <!-- 		<script src="/assets/js/pages/chat.init.js"></script>
  -->		
+ 
+ <script>
+	let socket;
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		socket = new WebSocket("ws://localhost:8083/chatting");
+	
+		socket.onmessage = (response) => {
+		    // JSON 파싱 및 에러 핸들링
+		    try {
+		        const resp = JSON.parse(response.data);
+		        if (resp.res_code == '200') {
+		            const pageHost = document.getElementById('sender_no').value;
+		            const senderNo = resp.sender_no;
+		            console.log(senderNo);
+		            // 현재 사용자가 보낸 메시지인지 확인
+		            const isSender = pageHost == senderNo;
+		            printMsg(resp.msg_content, isSender, resp.send_date, resp.msg_type);
+		        } else {
+		            alert(resp.res_msg);
+		        }
+		    } catch (error) {
+		        console.error("JSON 파싱 오류:", error);
+		    }
+		};
+
+		// 메시지 동적으로 추가
+		const printMsg = function(msg, isSender, sendDate, msgType) {
+		    console.log("프린트 메소드로 받아왔다 : " + msg + ", 송신자 여부: " + isSender + ", 메시지 타입: " + msgType + ", 보낸 날짜: " + sendDate);
+
+		    const li = document.createElement("li");
+		    li.className = 'my_chat';
+		    li.style.display = 'flex';
+		    li.style.alignItems = 'center';
+		    li.style.marginBottom = '40px';
+
+		    if (msgType === '1') {
+		        // msgType이 1일 때 가운데 정렬
+		        li.style.textAlign = 'center';
+		        const msgDiv = document.createElement("div");
+		        msgDiv.className = 'user-chat-content';
+		        msgDiv.style.display = 'inline-block';
+
+		        const textDiv = document.createElement("div");
+		        textDiv.className = 'conversation-name';
+		        textDiv.textContent = msg;
+
+		        msgDiv.appendChild(textDiv);
+		        li.appendChild(msgDiv);
+		    } else if (msgType === '2') {
+		        // msgType이 2일 때
+		        const chatContentDiv = document.createElement("div");
+		        chatContentDiv.className = 'user-chat-content';
+		        chatContentDiv.style.maxWidth = '300px';
+		        chatContentDiv.style.wordWrap = 'break-word';
+
+		        const conversationDiv = document.createElement("div");
+		        conversationDiv.className = 'conversation-name badge-soft-dark rounded p-2';
+		        conversationDiv.textContent = msg;
+
+		        if (isSender) {
+		            // 본인이 보낸 메시지일 때
+		            li.style.justifyContent = 'flex-end';
+		            conversationDiv.style.textAlign = 'left';
+		            chatContentDiv.appendChild(conversationDiv);
+		        } else {
+		            // 상대방이 보낸 메시지일 때
+		            li.style.justifyContent = 'flex-start';
+
+		            const imgDiv = document.createElement("div");
+		            imgDiv.className = 'chat-avatar';
+		            imgDiv.style.flexShrink = '0';
+		            const img = document.createElement("img");
+		            img.src = '/assets/images/users/avatar-1.jpg'; // 기본 이미지 경로 설정
+		            imgDiv.appendChild(img);
+		            li.appendChild(imgDiv);
+
+		            conversationDiv.style.textAlign = 'left';
+		            chatContentDiv.style.marginLeft = '10px';
+
+		            chatContentDiv.appendChild(conversationDiv);
+		        }
+
+		        // 시간 추가
+		        const timeSmall = document.createElement("small");
+		        timeSmall.className = 'text-muted time';
+		        timeSmall.textContent = new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+		        chatContentDiv.appendChild(timeSmall);
+		        li.appendChild(chatContentDiv);
+		    }
+
+		    // users-conversation 요소에 li를 자식으로 추가
+		    const conversationElement = document.getElementById("users-conversation");
+		    if (conversationElement) {
+		        conversationElement.appendChild(li);
+		    } else {
+		        console.error("users-conversation 요소를 찾을 수 없습니다.");
+		    }
+		};
+	
+	    socket.onclose = () => {
+	        console.log("WebSocket closed. Attempting to reconnect...");
+	    };
+	
+	    // 서버에 접속했을 때 실행될 함수
+	    socket.onopen = () => {
+	        console.log("=== 접속 ===");
+	        const roomNo = document.getElementById('room_no').value;
+	        const csrfToken = document.getElementById(csrf_token).value;
+	        console.log(roomNo);
+	        const obj = {
+	            chat_type: "open",
+	            room_no: roomNo,
+	            headers: {
+	                'X-CSRF-TOKEN': csrfToken
+	            }
+	        };
+	        socket.send(JSON.stringify(obj)); // 서버로 방 번호 전송
+	    };
+	
+	    // 메시지 전송 버튼 클릭 시 이벤트 리스너
+	    document.getElementById('send_btn').addEventListener('click', function() {
+	    	event.preventDefault();
+	        const msg = document.getElementById('chat_input').value;
+	        const obj = setMsgObj('msg', msg);
+	        if (socket.readyState === WebSocket.OPEN) {
+	            socket.send(JSON.stringify(obj)); // 메시지 전송
+	            document.getElementById('chat_input').value = ""; // 입력 필드 초기화
+	        } else {
+	            alert("WebSocket이 열려 있지 않습니다.");
+	        }
+	    });
+	});
+	
+	// 객체 생성자 함수
+	let setMsgObj = function(chatType, chatMsg) {
+	    const roomNo = document.getElementById('room_no').value;
+	    const senderNo = document.getElementById('sender_no').value;
+	    const participantNo = document.getElementById('participant_no').value;
+	    return {
+	        chat_type: chatType,
+	        msg_content: chatMsg,
+	        room_no: roomNo,
+	        sender_no: senderNo,
+	        participant_no: participantNo,
+	        msg_type: '2'
+	    };
+	};
+
+</script>
 	</th:block>
 
 </body>

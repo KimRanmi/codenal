@@ -137,7 +137,7 @@ public class ChatService {
 		Employee employee = employeeRepository.findByEmpId(empId);
 		// 내 참가자 번호 불러오기
 		ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
-		// 메시지 상태들이 'Y'인 메시지 불러오기  --> 필요없는거 같긴 함
+		// 메시지 상태들이 'Y'인 메시지 불러오기
 //		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
 		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
 		
@@ -147,9 +147,7 @@ public class ChatService {
 	
 	// 메시지 전송시 생성
 	@Transactional
-	public int createChatMsg(ChatMsgDto dto) {
-		int result = -1; 
-		try {
+	public ChatMsg createChatMsg(ChatMsgDto dto) {
 			ChatRoom room = chatRoomRepository.findByRoomNo(dto.getRoom_no());
 			ChatParticipants senderNo = chatParticipantsRepository.findByParticipants(room,dto.getSender_no());
 			ChatMsg target = ChatMsg.builder()					.chatRoom(room)
@@ -161,22 +159,17 @@ public class ChatService {
 
 			ChatMsg savedMsg = chatMsgRepository.save(target); // 채팅 메시지 정보 저장
 			
-			ChatParticipants participantNo = chatParticipantsRepository.findByParticipants(room,dto.getParticipant_no());
-//			List<ChatParticipants> participants = chatParticipantsRepository.findByNotMeChatRoom(room, userNo); // 본인을 제외한 참여자 정보
-//			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
+			List<ChatParticipants> participants = chatParticipantsRepository.findByNotMeChatRoom(room, senderNo.getParticipantNo()); // 본인을 제외한 참여자 정보
+			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
 				ChatRead read = ChatRead.builder()
 						.chatMsg(savedMsg)
-						.chatParticipant(participantNo)
+						.chatParticipant(participant)
 						.isReceiverRead('N')
 						.build();
 				chatReadRepository.save(read);
-				result = 1;
-//			}
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return result;
+			}
+			return savedMsg;
 	}
 
 }

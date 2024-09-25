@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -14,16 +15,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.codenal.chat.domain.ChatMsgDto;
 import com.codenal.chat.domain.ChatParticipants;
 import com.codenal.chat.domain.ChatRoom;
 import com.codenal.chat.domain.ChatRoomDto;
 import com.codenal.chat.service.ChatService;
 import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.service.EmployeeService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ChatController {
@@ -95,7 +98,7 @@ public class ChatController {
 		
 		List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);  // 채팅방 초대버튼 클릭시 조회할 직원목록
 		model.addAttribute("employeeList",employeeList);
-		
+
 		ChatRoom chat = chatService.selectChatRoomOne(roomNo, empId);
 		model.addAttribute("chat",chat);
 		
@@ -105,5 +108,6 @@ public class ChatController {
 		
 		return "apps/chatDetail";
 	}
+	
 	
 }
