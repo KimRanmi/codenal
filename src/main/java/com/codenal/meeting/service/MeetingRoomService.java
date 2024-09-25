@@ -33,6 +33,19 @@ public class MeetingRoomService {
 		this.meetingRoomReserveRepository = meetingRoomReserveRepository;
 	}
 	
+	// 예약 리스트 조회
+	public List<MeetingRoomReserveDto> MeetingRoomReserveList(Long empId){
+		List<MeetingRoomReserve> reserve = meetingRoomReserveRepository.findByEmpId(empId);
+		
+		List<MeetingRoomReserveDto> reserveDto = new ArrayList<MeetingRoomReserveDto>();
+		for(MeetingRoomReserve r : reserve) {
+			MeetingRoomReserveDto toDto = new MeetingRoomReserveDto().toDto(r);
+			reserveDto.add(toDto);
+		}
+		System.out.println(reserveDto);
+		return reserveDto;
+	}
+	
 	// 회의실 삭제
 	public int MeetingRoomDelete(Long roomNo) {
 		int result = 0;
@@ -60,10 +73,17 @@ public class MeetingRoomService {
 	// 회의실 예약
 	public MeetingRoomReserve meetingRoomReserve(MeetingRoomReserveDto dto) {
 		int result = 0;
+		
+		MeetingRoomTime time = meetingRoomTimeRepository.findByMeetingRoomTimeNo(dto.getMeeting_room_reserve_time_no());
+		
+		MeetingRoomTimeDto timeToDto = new MeetingRoomTimeDto().toDto(time);
+		
 		MeetingRoomReserve reserve = MeetingRoomReserve.builder()
-				.meetingRoomNo(dto.getMeeting_room_no())
+				.meetingRoom(MeetingRoom.builder().meetingRoomNo(dto.getMeeting_room_no()).build())
 				.empId(dto.getEmp_id())
 				.meetingRoomReserveDate(dto.getMeeting_room_reserve_date())
+				.meetingRoomStartTime(timeToDto.getMeeting_room_start_time())
+				.meetingRoomEndTime(timeToDto.getMeeting_room_end_time())
 				.meetingRoomReserveTimeNo(dto.getMeeting_room_reserve_time_no())
 				.build();
 		return meetingRoomReserveRepository.save(reserve);

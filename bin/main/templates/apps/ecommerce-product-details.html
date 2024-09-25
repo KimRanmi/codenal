@@ -5,11 +5,10 @@
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	
+	<div th:replace="partials/title-meta :: title-meta('회의실 예약')"></div>
 </th:block>
 
 <head>
-<title>회의실 예약</title>
 <!--Swiper slider css-->
 <link href="assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet"
 	type="text/css" />
@@ -117,7 +116,7 @@
 																<a class='text-primary d-block' th:text="${meetingRoomDetail.meeting_room_place}"> 3층 301호 </a>
 															</div>
 															<div class='vr'></div>
-															<div class='text-muted'>기자재 : <span class='text-body fw-medium' th:text="${meetingRoomDetail.meeting_room_amenity}"> TV, 화이트 보드, 빔 프로젝터 </span>
+															<div class='text-muted'>어매니티 : <span class='text-body fw-medium' th:text="${meetingRoomDetail.meeting_room_amenity}"> TV, 화이트 보드, 빔 프로젝터 </span>
 															</div>
 														</div>
 													</div>
@@ -149,11 +148,19 @@
 																	data-maxDate='30 09,2024' data-inline-date='true'>
 															</div>
 														</div>
-														<div class='col-xl-5  mt-4'>
+														<div class='col-xl-5  '>
 															<h5 class='fs-16 fw-bold'>예약 시간</h5>
-																<div class='mb-3'>
-																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}">
-																		<input type="radio" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
+																<div class='mb-3 mt-3'>
+																	<h5 class="fs-12 fw-bold text-muted">오전</h5>
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전')}">
+																		<input type="checkbox" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
+																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
+																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
+																		style='width: 120px' th:text="${meetingRoomTimeDetail.meeting_room_start_time +' ~ '+meetingRoomTimeDetail.meeting_room_end_time}"> 9 : 00 ~ 9 : 50 </label>
+																	</th:block>
+																	<h5 class="fs-12 fw-bold text-muted">오후</h5>
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오후')}">
+																		<input type="checkbox" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
 																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
 																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
 																		style='width: 120px' th:text="${meetingRoomTimeDetail.meeting_room_start_time +' ~ '+meetingRoomTimeDetail.meeting_room_end_time}"> 9 : 00 ~ 9 : 50 </label>

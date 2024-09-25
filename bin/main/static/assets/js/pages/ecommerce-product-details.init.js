@@ -209,15 +209,25 @@ const reserve=(event)=> {
 	
 	console.log(event.value);
 	
+	let checkTime = [];
+		
+		for(let i=0; i<document.getElementsByClassName("reserve_time").length; i++){
+			if(document.getElementsByClassName("reserve_time")[i].checked == true){
+				checkTime.push(document.getElementsByClassName("reserve_time")[i].value);
+			}
+		}
+	
+	console.log(checkTime);
+	
 	let vali_check = false;
 	let vali_text = "";
 	if (document.getElementById("meeting_room_reserve_date").value == "") {
 		vali_text += '예약 날짜를 선택하세요.';
 		/*formData.meeting_room_reserve_date.focus();*/
-	} else if (document.getElementsByClassName("reserve_time")[0].checked == false) {
+	} else if (checkTime == "") {
 		vali_text += '예약 시간을 선택하세요.';
 		
-		
+		/*예약 시간 첫번째 꺼 선택 안할 시 진행 안되는 거 해결하고 라디오 말고 셀렉트로도 할 수 있게 픽스*/
 		
 		/*formData.meeting_room_reserve_time_no[0].focus();*/
 	} else {
@@ -231,13 +241,7 @@ const reserve=(event)=> {
 		
 		const empId = document.getElementById("empId").value;
 		
-		let checkTime = [];
 		
-		for(let i=0; i<document.getElementsByClassName("reserve_time").length; i++){
-			if(document.getElementsByClassName("reserve_time")[i].checked == true){
-				checkTime.push(document.getElementsByClassName("reserve_time")[i].value);
-			}
-		}
 		
 		console.log(document.getElementById("meeting_room_reserve_date").value.substring(0,2));
 		let dateFormat = new Date();

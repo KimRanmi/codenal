@@ -42,6 +42,20 @@ public class MeetingController {
 		this.fileService = fileService;
 	}
 	
+	// 예약 리스트 조회
+	@ResponseBody
+	@PostMapping("/meetingRoomReserveList/{empId}")
+	public Map<String, Object> MeetingRoomReserveList(@PathVariable("empId") Long empId, Model model){
+		List<MeetingRoomReserveDto> dto = meetingRoomService.MeetingRoomReserveList(empId);
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(dto != null) {
+			model.addAttribute("reserveList", dto);
+			result.put("reserveList", dto);
+		}
+		return result;
+	}
+	
+	// 회의실 삭제
 	@DeleteMapping("/meetingRoomDelete/{meetingRoomNo}")
 	public Map<String, String> MeetingRoomDelete(@PathVariable("meetingRoomNo") Long roomNo){
 		Map<String, String> result = new HashMap<String, String>();
@@ -53,6 +67,7 @@ public class MeetingController {
 		return result;
 	}
 	
+	// 회의실 추가
 	@ResponseBody
 	@PostMapping("/meetingRoomCreate")
 	public Map<String, String> MeetingRoomCreate(MeetingRoomDto dto, @RequestParam("file") MultipartFile file){
@@ -74,6 +89,7 @@ public class MeetingController {
 		return resultMap;
 	}
 	
+	// 회의실 리스트 출력
 	@ResponseBody
 	@PostMapping("/meetingRoom")
 	public Map<String, Object> meetingRoomList(Model model) {
@@ -91,18 +107,24 @@ public class MeetingController {
 		
 	}
 	
+	// 회의실 예약
 	@ResponseBody
 	@PostMapping("/meetingRoomReserve")
 	public void meetingRoomDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		MeetingRoomReserveDto reserveDto = new MeetingRoomReserveDto();
 		reserveDto.setMeeting_room_no(Long.parseLong(request.getParameter("meetingRoomNo")));
 		reserveDto.setMeeting_room_reserve_date(LocalDate.parse(request.getParameter("reserveDate")));
-		reserveDto.setMeeting_room_reserve_time_no(Long.parseLong(request.getParameter("reserveTime")));
+		String time = request.getParameter("reserveTime");
+		String[] times = time.split(",");
 		reserveDto.setEmp_id(Long.parseLong(request.getParameter("reserveEmpId")));
-		if(meetingRoomService.meetingRoomReserve(reserveDto) != null) {
+		for(int i=0; i<times.length; i++) {
+			reserveDto.setMeeting_room_reserve_time_no(Long.parseLong(times[i]));
 			
-			System.out.println("성공");
-		};
+			if(meetingRoomService.meetingRoomReserve(reserveDto) != null) {
+				
+				System.out.println("성공");
+			};
+		}
 	}
 
 }
