@@ -1,76 +1,389 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
+
+<th:block layout:fragment="pagetitle">
+	<!--page title-->
+	<div th:replace="~{partials/title-meta :: title-meta('부서 관리')}"></div>
+</th:block>
+
 <head>
-<meta charset="EUC-KR">
-<title>Insert title here</title>
+<!-- Font Awesome 라이브러리 추가 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- jsTree 테마 CSS 포함 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<!-- jQuery 포함 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<!-- jsTree 포함 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<style>
+.jstree-icon.ri-building-fill { /* 회사 아이콘 */
+	color: #3e4a6e;
+	font-size: 24px;
+}
+
+.jstree-icon.ri-team-fill { /* 부서 아이콘 */
+	color: #3577f1;
+	font-size: 20px;
+}
+
+.jstree-icon.ri-user-2-fill { /* 직원 아이콘 */
+	color: #9a9ba0;
+	font-size: 16px;
+}
+
+.body-list { /* 몸통 높이 고정(동적X) */
+	height: 598.5px; 
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	padding-bottom: 60px;
+}
+
+.pagination { /* 페이징 위치 고정 */
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+</style>
 </head>
+
 <body>
+	<div layout:fragment="content">
+		<div th:replace="~{partials/page-title :: page-title('주소록','조직도')}"></div>
+		<div class="row">
+			<!--------------------------------- 조직도 ----------------------------------------------->
+			<div class="col-xxl-3">
+				<div class="card" id="contact-view-detail">
+					<!-- 조직도 이름 -->
+					<div class="card-header border-0">
+						<div class="col-sm">
+							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: 900;">조직도</h5>
+						</div>
+					</div>
+					<!-- JsTree -->
+					<div class="card-body border border-dashed border-end-0 border-start-0">
+						<div id="treeMenu"></div>
+					</div>
+				</div>
+			</div>
 
-		<div class="col-lg-6">
-									<div class="mt-4 mt-lg-0">
-										
-										<nav aria-label="...">
-											<ul class="pagination">
-												<li class="page-item disabled">
-													<a class="page-link" href="#" tabindex="-1">�� &nbsp; Prev</a>
-												</li>
-												<li class="page-item"><a class="page-link" href="#">1</a></li>
-												<li class="page-item active">
-													<a class="page-link" href="#">2 <span
-															class="sr-only">(current)</span></a>
-												</li>
-												<li class="page-item"><a class="page-link" href="#">3</a></li>
-												<li class="page-item">
-													<a class="page-link" href="#">Next &nbsp; ��</a>
-												</li>
-											</ul>
-										</nav>
+			<!---------------------------------주소록 목록----------------------------------------------->
+			<div class="col-xxl-9">
+				<div class="card" id="contactList">
+					<!----------목록 이름------------>
+					<div class="card-header border-0">
+						<div class="col-sm">
+							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: 900;">부서 목록</h5>
+						</div>
+					</div>
 
-										<nav aria-label="...">
-											<ul class="pagination">
-												<li class="page-item disabled">
-													<span class="page-link"><i class="mdi mdi-chevron-left"></i></span>
-												</li>
-												<li class="page-item"><a class="page-link" href="#">1</a></li>
-												<li class="page-item active">
-													<span class="page-link">
-														2
-														<span class="sr-only">(current)</span>
-													</span>
-												</li>
-												<li class="page-item"><a class="page-link" href="#">3</a></li>
-												<li class="page-item">
-													<a class="page-link" href="#"><i
-															class="mdi mdi-chevron-right"></i></a>
-												</li>
-											</ul>
-										</nav>
+					<!----------목록 상단------------>
+					<div class="card-body border border-dashed border-end-0 border-start-0">
+						<div class="col-md-4">
+								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal" data-bs-target="#addDept" style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
+									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
+								</button>
+
+								<!-- 부서 추가 모달 -->
+								<div id="addDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header bg-light p-3">
+												<h5 class="modal-title" id="exampleModalLabel">부서 추가</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+											</div>
+											<form class="was-validated" autocomplete="off" id="addDeptForm">
+												<div class="modal-body">
+													<div class="mb-3">
+														<label for="deptNameField" class="form-label" style="font-size: 15px;">부서명</label> <span class="text-danger">*</span> <input type="text" class="form-control" id="deptNameField" name="deptName" required />
+														<div class="invalid-feedback" id="deptNameError">부서명을 입력해주세요.</div>
+													</div>
+												</div>
+
+												<div class="modal-footer">
+													<div class="hstack gap-2 justify-content-end">
+														<button type="submit" class="btn btn-primary btn-sm" id="sa-basic">추가</button>
+													</div>
+												</div>
+
+											</form>
+
+
+										</div>
 									</div>
 								</div>
-								
-								
-								<!-- <div class="center" th:if="${!resultList.isEmpty()}">
-									<div class="pagination" th:with="
-										pageNumber = ${resultList.pageable.pageNumber},
-										pageSize = ${resultList.pageable.pageSize},
-										totalPages = ${resultList.totalPages},
-										startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-										tempEndPage = ${startPage + pageSize - 1},
-										endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
-										">
-										<th:block th:if="${!resultList.first}">
-											<a th:href="${resultList.first} ? '#' : @{/admin/list(page=${pageNumber - 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&lt;</a>
-										</th:block>
-										* �÷����� �ݺ��ϴ� ���� �ƴ϶� �ܼ��� ���ڸ� �ݺ��Ҷ� #numbers���
-										<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
-											<a th:text="${page}" th:href="@{/admin/list(page=${page} - 1,search_text=${searchDto.search_text},search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
-										</th:block>
-										<th:block th:if="${!resultList.last}">
-											<a th:href="${resultList.last} ? '#' : @{/admin/list(page=${pageNumber + 1},search_text=${searchDto.search_text},search_type=${searchDto.search_type})}">&gt;</a>
-										</th:block>
+								<!-- 모달 창 끝 -->
+							</div>
+							<div class="col-md-3"></div>
+							<div class="col-md-4">
+								<div class="search-box">
+									<input type="text" class="form-control search" placeholder="부서명을 입력해 주세요."> <i class="ri-search-line search-icon"></i>
+								</div>
+							</div>
+							<!-- 검색 버튼 -->
+							<div class="col-md-1">
+								<div>
+									<button type="submit" id="sa-basic" class="btn btn-primary w-100" style="font-size: 18px; padding: 3px;">검색</button>
+								</div>
+							</div>
+					</div>
+
+					<!----------목록 조회------------>
+					<div class="card-body body-list">
+					<div>
+						<div class="table-responsive table-card mb-3">
+							<table class="table align-middle table-nowrap table-striped mb-0">
+								<thead class="table-light">
+									<tr>
+										<th scope="col" style="text-align: center; font-size: 15px;">번호</th>
+										<th scope="col" style="text-align: center; font-size: 15px;">부서명</th>
+										<th scope="col" style="text-align: center; font-size: 15px;">인원 수</th>
+										<th scope="col" style="text-align: center; font-size: 15px;">개설일</th>
+										<th scope="col" style="text-align: center; font-size: 15px;">수정/삭제</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									<!-- 부서 목록이 비어 있을 때 -->
+									<th:block th:if="${#lists.isEmpty(resultList.content)}">
+										<tr>
+											<td colspan="6" style="text-align: center;">부서 목록이 없습니다.</td>
+										</tr>
+									</th:block>
+									<!-- 부서 목록 표시 -->
+									<th:block th:if="${!#lists.isEmpty(resultList.content)}">
+										<tr th:each="departments, deptStat : ${resultList.content}">
+											<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+deptStat.count}" style="text-align: center;"></td>
+											<td th:text="${departments.deptName}" style="text-align: center;"></td>
+											<td th:text="${departments.empCount ?: 0} + '명'" style="text-align: center;"></td>
+											<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
+											<td>
+												<ul class="list-inline hstack gap-2 mb-0" style="text-align: center;">
+													<li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit"><a href="#editDept" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn"> <i class="ri-pencil-fill fs-16"></i>
+													</a></li>
+
+													<li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove"><a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteModal"> <i class="ri-delete-bin-5-fill fs-16"></i>
+													</a></li>
+												</ul>
+											</td>
+										</tr>
+									</th:block>
+								</tbody>
+							</table>
+
+							<!-- 부서 수정 모달 -->
+							<div id="editDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content">
+										<div class="modal-header bg-light p-3">
+											<h5 class="modal-title">부서명 수정</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+										</div>
+										<form class="tablelist-form" autocomplete="off">
+											<div class="modal-body">
+												<div class="mb-3">
+													<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> <input type="text" class="form-control" required />
+													<div class="invalid-feedback"></div>
+												</div>
+											</div>
+											<div class="modal-footer">
+												<div class="hstack gap-2 justify-content-end">
+													<button type="submit" class="btn btn-success" id="add-btn">수정</button>
+												</div>
+											</div>
+										</form>
+
 									</div>
-								</div> -->
-								
+								</div>
+							</div>
+							<!-- 모달 창 끝 -->
+
+
+							<br>
+							<div class="col-lg-6">
+								<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
+									<ul class="pagination" th:with="
+									        pageNumber = ${resultList.pageable.pageNumber},
+									        pageSize = ${resultList.pageable.pageSize},
+									        totalPages = ${resultList.totalPages},
+									        startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+									        tempEndPage = ${startPage + pageSize - 1},
+									        endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+									        ">
+										<!-- 이전 -->
+										<th:block th:if="${!resultList.first}">
+											<li class="page-item"><a class="page-link" th:href="${resultList.first} ? '#' : @{/admin/dept(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a></li>
+										</th:block>
+										<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용 -->
+										<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+											<li class="page-item"><a class="page-link" th:text="${page}" th:href="@{/admin/dept(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
+										</th:block>
+										<ul class="pagination listjs-pagination mb-0"></ul>
+										<!-- 이후 -->
+										<th:block th:if="${!resultList.last}">
+											<li class="page-item"><a class="page-link" th:href="${resultList.last} ? '#' : @{/admin/dept(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a></li>
+										</th:block>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+		<th:block layout:fragment="pagejs">
+
+		<!-- <script src="/assets/libs/list.js/list.min.js"></script> -->
+		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+		<!-- <script src="/assets/js/pages/crm-contact.init.js"></script> -->
+		<!-- icon -->
+		<script src="/assets/js/pages/remix-icons-listing.js"></script>
+
+		<script src="/assets/libs/prismjs/prism.js"></script>
+
+		<script src="/assets/js/pages/form-validation.init.js"></script>
+
+		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+		<!-- Sweet alert init js-->
+		<script src="/assets/js/pages/sweetalerts.init.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+		<script>
+		$(document).ready(function () {				
+		    // 트리 메뉴
+		    $.ajax({
+		        url: '/admin/dept/tree-menu',
+		        method: 'GET',
+		        dataType: 'json',
+		        success: function (data) {		
+		        
+		           /*  if (!data || data.length === 0) {
+		                console.error('Received data is empty or undefined.');
+		                return;
+		            } */
+
+		            // TreeMenuDto
+		            const formatDataForJsTree = (nodes) => {
+		                return nodes.map(node => {
+		                    return {
+		                        id: node.nodeId,
+		                        text: node.nodeName,
+		                        state: {
+		                            opened: false	// 직원은 처음에 접어둠
+		                        },
+		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
+		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+		                        		// 부서 아이콘 : 직원 아이콘
+		                    };
+		                });
+		            };
+
+		            const formattedData = formatDataForJsTree(data);
+
+		            // 그룹웨어 회사 이름
+		            const companyNode = {
+		                id: 'companyName',
+		                text: 'withXwork', // 위드워크 회사명
+		                state: {
+		                    opened: true
+		                },
+		                children: formattedData, 
+		                icon: 'ri-building-fill' // 회사 아이콘
+		            };
+
+		            // jsTree 초기화
+		            $('#treeMenu').jstree({
+		                'core': {
+		                    "animation": 0,
+		                    "check_callback": false,
+		                    'data': [companyNode] 
+		                },
+		                "plugins": ["types"],
+		                "types": {
+		                    "default": {
+		                        "icon": "ri-team-fill"	// 부서 아이콘
+		                    },
+		                    "file": {
+		                        "icon": "ri-user-2-fill"	// 직원 아이콘
+		                    }
+		                }
+		            });
+		        },
+		       /*  error: function (xhr, status, error) {
+		            console.error('Error loading tree menu data:', error);
+		        } */
+		    });
+		});
+		
+		
+		/* 부서 추가 모달 */
+		document.getElementById('addDeptForm').addEventListener('submit', function(event) {
+		    event.preventDefault(); 
+		    
+		    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+		    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+		
+		    const deptName = document.querySelector('input[name="deptName"]').value;
+		
+		    fetch('/api/addDepartments', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		            [csrfHeader]: csrfToken
+		        },
+		        body: JSON.stringify({deptName}) 
+		    })
+		    .then(response => {
+			    if (!response.ok) {
+			    	// console.error('Response status:', response.status);
+			        throw new Error('서버 응답에 문제가 있습니다.');
+			    }
+			    return response.json();
+			})
+			
+		     .then(data => {
+		        if (data.res_code === "200") {  // 성공 코드 체크
+		            // SweetAlert2 창 띄우기
+		            Swal.fire({
+		                icon: 'success',
+		                title: '부서 추가 성공',
+		                text: '부서가 성공적으로 추가되었습니다.',
+		                confirmButtonText: '확인'
+		            }).then(() => {
+		                location.reload();  // 목록을 새로고침하여 업데이트
+		            });
+		        } else {
+		            // 실패 시 SweetAlert2 창 띄우기
+		            Swal.fire({
+		                icon: 'error',
+		                title: '부서 추가 실패',
+		                text: data.res_msg || '부서 추가에 실패했습니다.',
+		                confirmButtonText: '확인'
+		            });
+		        }
+		    })
+
+		    .catch(error => {
+		        console.error('에러 발생:', error);
+		        alert('서버와 통신 중 에러가 발생했습니다.');
+		    });
+		});
+
+		</script>
+
+	</th:block>
+
+
 
 </body>
+
 </html>
