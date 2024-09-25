@@ -29,20 +29,34 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		
 		// 수신리스트
 		@Query(value = "SELECT a, f, v FROM Approval a "
+				 + "JOIN a.approver v "
+	             + "JOIN v.employee e "
+	             + "JOIN a.approvalCategory c "
+	             + "JOIN c.approvalForm f "
+	             + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2 AND a.approvalStatus != 4",
+	       countQuery = "SELECT count(distinct a) FROM Approval a "
+	    		   	  + "JOIN a.approver v "
+	                  + "JOIN v.employee e "
+	                  + "JOIN a.approvalCategory c "
+	                  + "JOIN c.approvalForm f "
+	                  + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2 AND a.approvalStatus != 4")
+		Page<Object[]> findinboxList(int status, Long empId, Pageable pageable);
+
+
+		// 수신참조 리스트
+		@Query(value = "SELECT a, f, r FROM Approval a "
 	             + "JOIN a.employee e "
 	             + "JOIN a.approvalCategory c "
 	             + "JOIN c.approvalForm f "
-	             + "JOIN a.approver v "
-	             + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2 ",
+	             + "JOIN a.referrer r "
+	             + "WHERE r.employee.empId = ?1",
 	       countQuery = "SELECT count(DISTINCT a) FROM Approval a "
 	                  + "JOIN a.employee e "
 	                  + "JOIN a.approvalCategory c "
 	                  + "JOIN c.approvalForm f "
-	                  + "JOIN a.approver v "
-	                  + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2")
-		Page<Object[]> findinboxList(int status, Long empId, Pageable pageable);
-
-		
+	                  + "JOIN a.referrer r "
+	                  + "WHERE r.employee.empId = ?1")
+		Page<Object[]> findReferrerList(Long empId, Pageable pageable);
 		
 		// usage값이 null일 수도 있어서 left join 처리
 		@Query("SELECT a, e, t, u, f " +
