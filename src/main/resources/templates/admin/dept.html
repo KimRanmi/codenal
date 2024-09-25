@@ -87,12 +87,14 @@
 							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: bold;">부서 목록</h5>
 						</div>
 					</div>
+					
 					<!----------목록 상단------------>
 					<div class="card-body border border-dashed border-end-0 border-start-0">
 						<div class="row g-3">
 							<div class="mb-1"></div>
 							<div class="col-md-4">
-								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal" data-bs-target="#addDept" style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
+								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal" data-bs-target="#addDept" 
+								style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
 									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
 								</button>
 
@@ -107,7 +109,9 @@
 											<form class="was-validated" autocomplete="off" id="addDeptForm">
 												<div class="modal-body">
 													<div class="mb-3">
-														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> <span class="text-danger">*</span> <input type="text" class="form-control" id="validationTextarea" name="deptName" required />
+														<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> 
+														<span class="text-danger">*</span> 
+														<input type="text" class="form-control" id="validationTextarea" name="deptName" required />
 														<div class="invalid-feedback">부서명을 입력해주세요.</div>
 													</div>
 												</div>
@@ -128,7 +132,8 @@
 							<div class="col-md-3"></div>
 							<div class="col-md-4">
 								<div class="search-box">
-									<input type="text" class="form-control search" placeholder="부서명을 입력해 주세요."> <i class="ri-search-line search-icon"></i>
+									<input type="text" class="form-control search" placeholder="부서명을 입력해 주세요."> 
+									<i class="ri-search-line search-icon"></i>
 								</div>
 							</div>
 							<!-- 검색 버튼 -->
@@ -173,8 +178,11 @@
 												<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
 												<td>
 													<ul class="list-inline hstack gap-2 mb-0  d-flex justify-content-center">
-														<li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove"><a class="text-danger d-inline-block remove-item-btn" th:data-dept-no="${departments.deptNo}" th:data-dept-name="${departments.deptName}" data-bs-toggle="modal" href="#deleteModal"> <i class="ri-delete-bin-5-fill fs-16"></i>
-														</a></li>
+														<li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+															<a class="text-danger d-inline-block remove-item-btn" th:data-dept-no="${departments.deptNo}" th:data-dept-name="${departments.deptName}" data-bs-toggle="modal" href="#deleteModal"> 
+																<i class="ri-delete-bin-5-fill fs-16"></i>
+															</a>
+														</li>
 													</ul>
 												</td>
 											</tr>
@@ -410,7 +418,6 @@
         let selectedDeptNo = null;
         let selectedDeptName = '';
 
-        // CSRF 토큰 가져오기 (Spring Security 사용하는 경우)
         const csrfToken = $('meta[name="_csrf"]').attr('content');
         const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
 
@@ -448,8 +455,8 @@
                             }).then(() => {
                                 location.reload();  // 목록을 새로고침하여 업데이트
                             });
+                            
                         } else {
-                            // 삭제 실패 시 오류 메시지 표시
                             Swal.fire({
                                 icon: 'error',
                                 title: '삭제 실패',
@@ -458,6 +465,7 @@
                             });
                         }
                     },
+                    
                     error: function(xhr) { 
                         console.log("AJAX Error Response:", xhr);
                         if(xhr.status === 400 || xhr.status === 500) { 
@@ -468,6 +476,7 @@
                                 text: response.res_msg,  
                                 confirmButtonText: '확인'
                             });
+                            
                         } else {
                             Swal.fire({
                                 icon: 'error',
