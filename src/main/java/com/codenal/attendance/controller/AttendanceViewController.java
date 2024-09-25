@@ -23,7 +23,7 @@ public class AttendanceViewController {
 	 	@Autowired
 	    private AttendanceService attendanceService;
 	
-	 	 @GetMapping("/attendance")
+	 	 @GetMapping("/apps-attendance")
 	    public String showAttendancePage(
 	            @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 	            @PageableDefault(size = 10) Pageable pageable,

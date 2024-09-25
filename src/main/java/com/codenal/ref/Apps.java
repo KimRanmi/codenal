@@ -275,7 +275,7 @@ public class Apps {
 		return "apps/file-manager";
 	}
 	
-	@GetMapping("/apps-attendance")
+	@GetMapping("/appss-attendance")
 	public String apps_attendance() {
 		return "apps/attendance";	
 	}
