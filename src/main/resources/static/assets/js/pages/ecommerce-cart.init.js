@@ -6,6 +6,30 @@ Contact: Themesbrand@gmail.com
 File: Ecommerce cart Js File
 */
 
+const csrfToken = document.getElementById('csrf_token').value;
+const empId = document.getElementById("empId").value;
+
+fetch('/meetingRoom', {
+	method: 'POST',
+	headers: {
+		'X-CSRF-TOKEN': csrfToken
+	}
+})
+.then(response => response.json())
+.then(data => {
+	console.log(data.meetingRoom);
+})
+
+fetch('/meetingRoomReserveList/'+empId, {
+	method: 'POST',
+	headers: {
+		'X-CSRF-TOKEN': csrfToken
+	}
+})
+.then(response => response.json())
+.then(data => {
+	console.log(data.reserveList);
+})
 
 var taxRate = 0.125;
 var shippingRate = 65.00;
@@ -68,3 +92,13 @@ if (removeProduct)
             recalculateCart();
         });
     });
+    
+    
+
+    
+    
+    
+    
+    
+    
+    

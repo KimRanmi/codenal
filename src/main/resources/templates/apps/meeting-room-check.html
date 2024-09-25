@@ -14,7 +14,10 @@
 
 <body>
 	<div layout:fragment="content">
-		<div th:replace="partials/page-title :: page-title('화의실 추가','회의실 예약')"></div>
+		<div th:replace="partials/page-title :: page-title('회의실 추가','회의실 예약')"></div>
+		
+		<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
+		<input type="hidden" id="_csrf_header" value="X-CSRF-Token"/>
 
 		<form id="createproduct-form" autocomplete="off" class="needs-validation" novalidate>
 			<div class="row">
@@ -69,7 +72,7 @@
 													</div>
 												</div>
 											</label>
-											<input class="form-control d-none" value="" id="product-image-input"
+											<input class="form-control d-none" value="" id="product-image-input" name="file"
 												type="file" accept="image/png, image/gif, image/jpeg">
 										</div>
 										<div class="avatar-lg">
@@ -219,7 +222,7 @@
 											<div class="mb-3">
 												<label class="form-label" for="meta-title-input">회의실 이름</label>
 												<input type="text" class="form-control" placeholder="회의실 이름을 입력하세요."
-													id="meta-title-input">
+													id="meeting_room_name" name="meeting_room_name">
 											</div>
 										</div>
 										<!-- end col -->
@@ -227,8 +230,8 @@
 										<div class="col-lg-6">
 											<div class="mb-3">
 												<label class="form-label" for="meta-keywords-input">회의실 장소</label>
-												<input type="text" class="form-control"
-													placeholder="회의실 장소를 입력하세요." id="meta-keywords-input">
+												<input type="text" class="form-control" name="meeting_room_place"
+													placeholder="회의실 장소를 입력하세요." id="place">
 											</div>
 										</div>
 										<!-- end col -->
@@ -238,8 +241,8 @@
 									<div class="row mb-3">
 											<div>
 												<label class="form-label" for="meta-keywords-input">회의실 어매니티</label>
-												<input type="text" class="form-control"
-													placeholder="회의실 어매니티를 입력하세요." id="meta-keywords-input">
+												<input type="text" class="form-control" name="meeting_room_amenity"
+													placeholder="회의실 어매니티를 입력하세요." id="amenity">
 											</div>
 									</div>
 									
@@ -267,9 +270,23 @@
 										<div class="hstack gap-3 align-items-start">
 											<div class="flex-grow-1">
 												<input class="form-control" data-choices
-													data-choices-multiple-remove="true"
-													placeholder="Enter tags" type="text" value="TV" />
+													data-choices-multiple-remove="true" name="reserve_time" id="reserve_time"
+													placeholder="Enter tags" type="text" value="09:00~09:50" />
 											</div>
+											<!-- <div class="flex-grow-1">
+												<div class="choices" data-type="text" aria-haspopup="true" aria-expanded="false">
+													<div class="choices__inner">
+														<input class="form-control choices__input" data-choices="" data-choices-multiple-remove="true" name="reserve-time"  placeholder="Enter tags" type="text" value="09:00~09:50" hidden="" tabindex="-1" data-choice="active">
+														<div class="choices__list choices__list--multiple">
+															<div class="choices__item choices__item--selectable" data-item="" data-id="1" data-value="09:00~09:50" data-custom-properties="[object Object]" aria-selected="true" data-deletable="">09:00~09:50<button type="button" class="choices__button" aria-label="Remove item: '09:00~09:50'" data-button="">Remove item</button></div>
+															<input type="text" id="reserve-time" class="choices__input choices__input--cloned" autocomplete="off" autocapitalize="off" spellcheck="false" role="textbox" aria-autocomplete="list" aria-label="null">
+														</div>
+														<div class="choices__list choices__list--dropdown is-active" aria-expanded="true">
+															<div class="choices__item choices__item--choice">Press Enter to add <b>"d"</b></div>
+														</div>
+													</div>
+												</div>
+											</div> -->
 										</div>
 										<!-- <div class="text-end">
 											<button type="submit" class="btn btn-success w-sm">시간 추가</button>

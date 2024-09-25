@@ -15,10 +15,10 @@ File: Ecommerce product create Js File
     })
     .catch(function (error) {
         console.error(error);
-    });
+    });*/
 
 // Dropzone
-var dropzonePreviewNode = document.querySelector("#dropzone-preview-list");
+/*var dropzonePreviewNode = document.querySelector("#dropzone-preview-list");
 dropzonePreviewNode.itemid = "";
 var previewTemplate = dropzonePreviewNode.parentNode.innerHTML;
 dropzonePreviewNode.parentNode.removeChild(dropzonePreviewNode);
@@ -29,11 +29,67 @@ var dropzone = new Dropzone(".dropzone", {
     previewsContainer: "#dropzone-preview",
 });*/
 
+/*document.getElementById("reserve-time").onfocus=function(event){
+	document.getElementsByClassName("choices")[0].className += " is-focused";
+	console.log(document.getElementsByClassName("choices")[0].className);
+}*/
 
-console.log(document.getElementsByClassName("fff")[0].innerHTML);
+const csrfToken = document.getElementById('csrf_token').value;
+const meetingRoomImg = "";
+const formData = document.getElementById("createproduct-form");
+formData.addEventListener('submit', (e) => {
+	e.preventDefault();
+	
+	let vali_check = false;
+	let vali_text = "";
+	if (formData.meeting_room_name.value == "") {
+		vali_text += '회의실 이름을 입력하세요.';
+		formData.meeting_room_name.focus();
+	} else if (formData.place.value == "") {
+		vali_text += '회의실 장소를 입력하세요.';
+		formData.place.focus();
+	} else if (formData.reserve_time.value == "") {
+		vali_text += '회의실 예약 가능 시간을 추가하세요.';
+		formData.reserve_time.focus();
+	} else {
+		vali_check = true;
+	}
+	if(vali_check == false){
+		alert(vali_text);
+	} else{
+		
+		const payload = new FormData(formData);
+		fetch('/meetingRoomCreate', {
+			method: 'POST',
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			},
+			body: payload
+		})
+			.then(response => response.json())
+			.then(data => {
 
-/*document.getElementsByClassName("choices")[0].innerHTML = "<input type='text' id='start-time' class='form-control'\
-												placeholder='예약 시작 시간을 입력하세요.' data-provider='timepickr' data-time-basic='true'>";*/
+				alert(data.res_msg);
+				location.href="apps-ecommerce-product-details";
+			})
+		
+		/*const xhr = new XMLHttpRequest();
+		xhr.open("post", "/meetingRoomCreate", true);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				alert('성공');
+			}
+		}
+		console.log(formData.meeting_room_img.value);
+		const csrfToken = document.getElementById('csrf_token').value;
+		const header = document.getElementById("_csrf_header").value;
+		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+		xhr.setRequestHeader(header, csrfToken);
+		xhr.send("name="+formData.meeting_room_name.value+"&place="+formData.place.value+"&amenity="+formData.amenity.value+"&img="+formData.meeting_room_img.value);
+	*/
+	}
+
+});
 
 
 
@@ -71,6 +127,10 @@ console.log(document.getElementsByClassName("fff")[0].innerHTML);
         var reader = new FileReader();
         reader.addEventListener("load",function () {
             preview.src = reader.result;
+        },false);
+        reader.addEventListener("loadend",function (event) {
+            file.src = event.target.result;
+            console.log(file.src);
         },false);
         if (file) {
             reader.readAsDataURL(file);
@@ -196,10 +256,6 @@ console.log(document.getElementsByClassName("fff")[0].innerHTML);
 })()//
 
 
-const formData = document.getElementById("createproduct-form");
-formData.addEventListener('submit', (e) => {
-	e.preventDefault();
-	alert('확인');
-});
+
 
 
