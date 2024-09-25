@@ -51,16 +51,21 @@ public class AdminViewController {
 	// 직원 목록 검색 (재직/퇴사 + 직원 정보)
 	@GetMapping("/list")
 	public String searchAll(Model model,
-			@PageableDefault(page = 0, size = 10, sort = "empId", direction = Sort.Direction.DESC) Pageable pageable,
-			@ModelAttribute("searchDto") EmployeeDto searchDto) {
+	        @PageableDefault(page = 0, size = 10, sort = "empId", direction = Sort.Direction.DESC) Pageable pageable,
+	        @ModelAttribute("searchDto") EmployeeDto searchDto) {
 
-		// 셀렉트 박스 통합
-		Page<EmployeeDto> resultList = adminService.searchAll(searchDto, pageable);
+	    // 검색 파라미터 확인
+	    System.out.println("empStatus: " + searchDto.getEmpStatus());
+	    System.out.println("search_type: " + searchDto.getSearch_type());
+	    System.out.println("search_text: " + searchDto.getSearch_text());
 
-		model.addAttribute("resultList", resultList);
-		model.addAttribute("searchDto", searchDto);
+	    // 검색 처리
+	    Page<EmployeeDto> resultList = adminService.searchAll(searchDto, pageable);
 
-		return "admin/list";
+	    model.addAttribute("resultList", resultList);
+	    model.addAttribute("searchDto", searchDto);
+
+	    return "admin/list";
 	}
 
 

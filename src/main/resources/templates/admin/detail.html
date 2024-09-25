@@ -129,7 +129,7 @@
 											<div th:if="${employeeDetail.empStatus == 'Y'}">
 
 												<!-- 임시 비밀번호 발급 버튼 -->
-												<button type="button" class="btn btn-success btn-border w-lg" data-bs-toggle="modal" data-bs-target="#zoomInModal" style="font-size: 16px; font-weight: bold;">임시 비밀번호 발급</button>
+												<button type="button" class="btn btn-success btn-border w-lg me-3" data-bs-toggle="modal" data-bs-target="#zoomInModal" style="font-size: 16px; font-weight: bold;">임시 비밀번호 발급</button>
 
 												<!-- 모달 -->
 												<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
@@ -144,7 +144,7 @@
 																<h5 class="fs-16">
 																	<span th:text="${employeeDetail.empName}"></span>님에게 임시 비밀번호를 발급하시겠습니까?
 																</h5>
-																<form id="passwordResetForm">
+																<form id="passwordResetForm" class="was-validated">
 																	<div class="row g-3">
 																		<div class="mb-3"></div>
 																		<div class="col-xxl-12">
@@ -160,14 +160,14 @@
 															</div>
 															<div class="mb-3"></div>
 															<div class="modal-footer">
-																<button type="submit" class="btn btn-primary" id="issuePasswordButton" style="font-size: 16px; font-weight: bold;">발급</button>
-																<button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-size: 16px; font-weight: bold;">취소</button>
+																<button type="submit" class="btn btn-primary w-sm" id="issuePasswordButton" style="font-size: 16px; font-weight: bold;">발급</button>
 															</div>
 														</div>
 													</div>
 												</div>
 
 												<!-- 수정 버튼 -->
+												
 												<button type="submit" class="btn btn-primary btn-border w-xs" th:onclick="|location.href='@{/admin/update}'|" style="font-size: 16px; font-weight: bold;">수정</button>
 											</div>
 
@@ -219,7 +219,7 @@
 															</div>
 
 															 <div class="col-lg-5">
-																<div>
+																<div class="was-validated">
 																	<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> 
 																	<span class="text-danger">*</span> 
 																	<input type="text" class="form-control" id="detail-emp-end" name="emp_end" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="퇴사일을 선택하세요." required />
