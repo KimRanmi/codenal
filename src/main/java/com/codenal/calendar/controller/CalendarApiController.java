@@ -3,9 +3,6 @@ package com.codenal.calendar.controller;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,24 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.codenal.calendar.domain.Calendar;
 import com.codenal.calendar.domain.CalendarDto;
 import com.codenal.calendar.service.CalendarService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.websocket.server.PathParam;
 
 @Controller
 public class CalendarApiController {
@@ -41,6 +31,20 @@ public class CalendarApiController {
 	@Autowired
 	public CalendarApiController(CalendarService calendarService) {
 		this.calendarService = calendarService;
+	}
+	
+	@ResponseBody
+	@PostMapping("/eventWriter{id}")
+	public Map<String, Object> eventWriter(@PathVariable("id") Long empId){
+		Map<String, Object> result = new HashMap<String, Object>();
+		String[] writer = calendarService.eventWriter(empId);
+		if(writer != null) {
+			result.put("name", writer[0]);	// 이름
+			result.put("dept", writer[1]); // 부서
+			result.put("job", writer[2]);	// 직급
+		}
+		
+		return result;
 	}
 	
 	@ResponseBody
@@ -73,10 +77,10 @@ public class CalendarApiController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/eventList")
-	public Map<String, Object> selectEvent() {
+	@PostMapping("/eventList{id}")
+	public Map<String, Object> selectEvent(@PathVariable("id") Long writer) {
 		Map<String, Object> resultEvent = new HashMap<String, Object>();
-		List<CalendarDto> eventList = calendarService.selectEvent();
+		List<CalendarDto> eventList = calendarService.selectEvent(writer);
 		System.out.println(eventList);
 		JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();

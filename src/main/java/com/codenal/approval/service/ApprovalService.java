@@ -21,11 +21,13 @@ import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
+import com.codenal.approval.domain.Approver;
 import com.codenal.approval.repository.ApprovalBaseFormTypeRepository;
 import com.codenal.approval.repository.ApprovalCategoryRepository;
 import com.codenal.approval.repository.ApprovalFileRepository;
 import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
+import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
@@ -41,6 +43,7 @@ public class ApprovalService {
    private final ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository;
    private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
    private final ApprovalFileRepository approvalFileRepository;
+   private final ApproverRepository approverRepository;
 
    @Autowired
    public ApprovalService(ApprovalRepository approvalRepository, 
@@ -49,7 +52,8 @@ public class ApprovalService {
          ApprovalFormRepository approvalFormRepository,
          ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository,
          AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
-         ApprovalFileRepository approvalFileRepository) {
+         ApprovalFileRepository approvalFileRepository,
+         ApproverRepository approverRepository) {
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -57,6 +61,7 @@ public class ApprovalService {
       this.approvalBaseFormTypeRepository = approvalBaseFormTypeRepository;
       this.annualLeaveUsageRepository = annualLeaveUsageRepositroy;
       this.approvalFileRepository = approvalFileRepository;
+      this.approverRepository = approverRepository;
    }
 
    // 리스트 조회
@@ -78,7 +83,38 @@ public class ApprovalService {
       }
       return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
+   
+   // 수신리스트
+   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,int num2,Long id) {
+		  
+		  Employee emp = employeeRepository.findByEmpId(id);
+		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 
+		  
+	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),pageable);
+	      
+	      System.out.println(approvalList);
+	      
+	      List<Map<String, Object>> responseList = new ArrayList<>();
+	      for (Object[] objects : approvalList.getContent()) {
+	         Approval approval = (Approval) objects[0];
+	         ApprovalForm approvalForm = (ApprovalForm) objects[1];
+	         Approver approver = (Approver) objects[2];
+	         int num = approval.getApprovalStatus();
+	         Map<String, Object> map = new HashMap<>();
+	         map.put("approval", approval);
+	         map.put("employee",approval.getEmployee());
+	         map.put("formType", approvalForm);
+	         map.put("approver",approver);
+	         map.put("num", num);
+	         responseList.add(map);
+	         
+	      }
+	      return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
+	   }
+   
+   
+   
    // 상세조회
    public Map<String, Object> detailApproval(Long approval_no) {
       List<Object[]> object = approvalRepository.selectByapprovalNo(approval_no);
@@ -86,7 +122,6 @@ public class ApprovalService {
       
       ApprovalFile file = approvalFileRepository.findByApprovalApprovalNo(approval_no);
       Object[] obj = object.get(0);
-      
       
       Approval approval = (Approval) obj[0];
       Employee employee = (Employee) obj[1];
@@ -97,8 +132,10 @@ public class ApprovalService {
           annualLeaveUsage = (AnnualLeaveUsage) obj[3];
       }
       
-      
       ApprovalForm af = (ApprovalForm) obj[4];
+      
+      List<Approver> agree = approverRepository.findByApproverNo_Agree(approval_no);
+      List<Approver> approver = approverRepository.findByApproverNo_Approver(approval_no);
       
       result.put("approval", approval);
       result.put("employee", employee);
@@ -106,14 +143,17 @@ public class ApprovalService {
       result.put("annualLeaveUsage", annualLeaveUsage);
       result.put("approvalForm", af);
       result.put("file", file);
+      result.put("agree", agree);
+      result.put("approver",approver);
       return result;
    }
+   
 
-   // 전자결재 저장
+   // 전자결재 저장 (품의서, 요청서)
    public Approval createApproval(Map<String,Object> obj) {
       
       Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
-      System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+      
       
       ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
       System.out.println("카테고리 출력 : "+ac);
@@ -126,6 +166,7 @@ public class ApprovalService {
 
       return approvalRepository.save(approval);
    }
+   
    
    @Transactional
    // 전자결재(휴가신청서) 저장
@@ -207,9 +248,8 @@ public class ApprovalService {
    @Transactional
    public int revoke(Long approvalNo) {
 	  int result = 4;
-	  int status = approvalRepository.updateStatus(result,approvalNo);
 	  
-	  return status;
+	  return approvalRepository.updateStatus(result,approvalNo);
    }
    
    // 게시글 수정
@@ -221,11 +261,14 @@ public class ApprovalService {
 	      
 	   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
 	   
+	   System.out.println("카테고리 : "+ac.getCateCode());
+	   
 	   ApprovalDto dto = ApprovalDto.builder()
 			   				.approval_no(no)
 			   				.approval_title((String)obj.get("제목"))
 			   				.approval_content((String)obj.get("내용"))
 			   				.approval_status(0)
+			   				.approval_reg_date((LocalDate)obj.get("날짜"))
 			   				.employee(emp)
 			   				.approvalCategory(ac)
 			   				.build();
@@ -279,6 +322,7 @@ public class ApprovalService {
 				   				.approval_no(no)
 				   				.approval_title((String)obj.get("제목"))
 				   				.approval_content((String)obj.get("내용"))
+				   				.approval_reg_date((LocalDate)obj.get("날짜"))
 				   				.approval_status(0)
 				   				.employee(emp)
 				   				.approvalCategory(ac)
@@ -291,6 +335,18 @@ public class ApprovalService {
 		   approvalRepository.save(approval);
 		   
 		   return approval;
+	   }
+	   
+	   // 전자결재 삭제
+	   public int deleteApproval(Long no) {
+		   int result = 0;
+			try {
+			    approvalRepository.deleteById(no);	
+				result = 1;
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			return result;
 	   }
 
 }

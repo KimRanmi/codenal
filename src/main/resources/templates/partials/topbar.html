@@ -1,4 +1,5 @@
-<html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <body>
 	<div th:fragment="topbar" th:remove="tag">
@@ -581,10 +582,8 @@
 										class="badge bg-soft-success text-success mt-1 float-end">New</span><i
 										class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
 										class="align-middle">Settings</span></a>
-								<a class="dropdown-item" href="/auth-lockscreen-basic"><i
-										class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span
-										class="align-middle">Lock screen</span></a>
-								<a class="dropdown-item" href="/auth-logout-basic"><i
+								
+								<a class="dropdown-item" href="/auth-signin-basic"><i
 										class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
 										class="align-middle" data-key="t-logout">Logout</span></a>
 							</div>

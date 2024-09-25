@@ -27,24 +27,22 @@ public class MeetingRoomReserve {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long meetingRoomReserveNo;
 	
-	@Id
 	@Column(name = "meeting_room_no")
 	private Long meetingRoomNo;
 	
-	@Id
 	@Column(name = "emp_id")
 	private Long empId;
 	
-	@Id
 	@Column(name = "meeting_room_reserve_date")
 	private LocalDate meetingRoomReserveDate;
 
-	@Id
 	@Column(name = "meeting_room_start_time")
 	private Time meetingRoomStartTime;
 	
-	@Id
 	@Column(name = "meeting_room_end_time")
 	private Time meetingRoomEndTime;
+	
+	@Column(name = "meeting_room_reserve_time_no")
+	private Long meetingRoomReserveTimeNo;
 
 }

@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.codenal.security.service.SecurityService;
 
@@ -27,6 +29,8 @@ import com.codenal.security.service.SecurityService;
 public class WebSecurityConfig {
 
 	private final DataSource dataSource;
+	
+	
 
 	@Autowired
 	public WebSecurityConfig(DataSource dataSource) {
@@ -39,21 +43,10 @@ public class WebSecurityConfig {
 		// CORS 설정 적용
 		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
-				.requestMatchers("/admin/list").permitAll()
-				.requestMatchers("/admin/join").permitAll()
-				.requestMatchers("/admin/update/**").permitAll()
-				.requestMatchers("/admin/dept").permitAll()
-				.requestMatchers("/announce/createEnd").permitAll()
-				.requestMatchers("/announce/delete/**").permitAll()
-				.requestMatchers("/announce/updateEnd/**").permitAll()
-				.requestMatchers("/employee/addressBook/**").permitAll()
-				.requestMatchers("/approval/**").authenticated()
-				.requestMatchers("/approval/update/**").authenticated()
-				.requestMatchers("/list").permitAll() 
-				.requestMatchers("/mypage/**").authenticated()
-				.requestMatchers("/documents/**").authenticated() 
-				.anyRequest().authenticated()
+				.requestMatchers("/auth-signin-basic", "/assets/**", "/admin/**", "/announce/**", "/approval/**", "/employee/**", "/list", "/chatList/**", "/chatting").permitAll()
+				 .requestMatchers("/mypage/**").authenticated()
+				 .requestMatchers("/documents/**").authenticated() 
+				 .anyRequest().authenticated()
 				)
 
 				.formLogin(login ->
@@ -125,4 +118,15 @@ public class WebSecurityConfig {
 				PathRequest.toStaticResources().atCommonLocations()
 				));
 	}
+	
+	@Configuration // 파일경로
+	public class WebConfig implements WebMvcConfigurer {
+	    @Override
+	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	        registry.addResourceHandler("/uploads/**")
+	        .addResourceLocations("/classpath:/uploads/");// 실제 파일 시스템 경로
+	    }
+	}
+	
+	
 }

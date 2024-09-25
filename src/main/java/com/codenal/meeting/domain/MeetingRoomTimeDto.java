@@ -1,6 +1,7 @@
 package com.codenal.meeting.domain;
 
 import java.sql.Time;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class MeetingRoomTimeDto {
 	private Long meeting_room_no;
 	private Time meeting_room_start_time;
 	private Time meeting_room_end_time;
+	private String meeting_room_ampm;
 	
 	public MeetingRoomTime toEntity() {
 		return MeetingRoomTime.builder()
@@ -28,6 +30,7 @@ public class MeetingRoomTimeDto {
 				.meetingRoomNo(meeting_room_no)
 				.meetingRoomStartTime(meeting_room_start_time)
 				.meetingRoomEndTime(meeting_room_end_time)
+				.meetingRoomAmpm(meeting_room_ampm)
 				.build();
 	}
 	
@@ -37,6 +40,7 @@ public class MeetingRoomTimeDto {
 				.meeting_room_no(time.getMeetingRoomNo())
 				.meeting_room_start_time(time.getMeetingRoomStartTime())
 				.meeting_room_end_time(time.getMeetingRoomEndTime())
+				.meeting_room_ampm(time.getMeetingRoomAmpm())
 				.build();
 	}
 
