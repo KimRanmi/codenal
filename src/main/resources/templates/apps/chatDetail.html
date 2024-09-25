@@ -210,10 +210,40 @@
 										<input type="hidden" th:value="${participant.participantNo}" id="participant_no">
 									</div>
 								</div>
-								<div th:each="msg : ${chat.messages}">
-								    <ul class="list-unstyled"
-								        th:style="${#strings.trim(msg.msgType) == '1' ? 'text-align:center;' : (msg.chatParticipant.employee.empId == #authentication.principal.employeeDto.empId ? 'text-align:right;' : 'text-align:left;')}">
-								        <li class="my_chat" th:text="${msg.msgContent}">
+								<div th:each="msg, iterStat : ${chat.messages}">
+								    <!-- 날짜가 변경되었을 때만 출력 -->
+								    <div th:if="${iterStat.index == 0 || #temporals.format(msg.sendDate, 'yyyy-MM-dd') != #temporals.format(chat.messages[iterStat.index - 1].sendDate, 'yyyy-MM-dd')}"
+								         style="text-align: center; margin: 10px; margin-bottom: 30px; ">
+								        <strong th:text="${#temporals.format(msg.sendDate, 'yyyy-MM-dd')}"></strong> <!-- 날짜 출력 -->
+								    </div>
+								
+								    <ul class="list-unstyled" style="margin: 0; padding: 0;">
+								        <!-- msgType이 1일 때 가운데 정렬 -->
+								        <li class="my_chat" th:if="${#strings.trim(msg.msgType) == '1'}" style="text-align: center; margin-bottom: 40px;">
+								            <div class="user-chat-content" style="display: inline-block;">
+								                <div class="conversation-name" th:text="${msg.msgContent}"></div>
+								            </div>
+								        </li>
+								
+								        <!-- msgType이 2일 때 왼쪽/오른쪽 정렬 -->
+								        <li class="my_chat" th:if="${#strings.trim(msg.msgType) == '2'}" style="display: flex; align-items: center; margin-bottom: 40px;">
+								            <!-- 메시지 보낸 사람이 로그인한 사람과 다를 때 왼쪽 정렬 -->
+								            <div class="chat-avatar" th:if="${msg.chatParticipant.employee.empId != #authentication.principal.employeeDto.empId}" style="flex-shrink: 0;">
+								                <img th:src="${msg.chatParticipant.employee.empProfilePicture != null ? msg.chatParticipant.employee.empProfilePicture : '/assets/images/users/avatar-1.jpg'}" alt="">
+								            </div>
+								
+								            <div class="user-chat-content" th:if="${msg.chatParticipant.employee.empId != #authentication.principal.employeeDto.empId}" style="margin-left: 10px; text-align: left;">
+								                <span class="emp_name" th:text="${msg.chatParticipant.employee.empName}"></span>
+								                <div class="conversation-name" th:text="${msg.msgContent}"></div>
+								                <small class="text-muted time" th:text="${#temporals.format(msg.sendDate, 'yy-MM-dd a hh:mm')}"></small>
+								            </div>
+								
+								            <!-- 메시지 보낸 사람이 로그인한 사람과 같을 때 오른쪽 정렬 -->
+								            <div class="user-chat-content" th:if="${msg.chatParticipant.employee.empId == #authentication.principal.employeeDto.empId}" style="text-align: right; margin-left: auto;">
+								                <div class="conversation-name badge-soft-dark rounded p-2" th:text="${msg.msgContent}"
+								                 style="min-width: 1px; max-width: 300px; min-height: 50px; padding: 0px; word-wrap: break-word; text-align: left;"></div>
+								                <small class="text-muted time" th:text="${#temporals.format(msg.sendDate, 'yy-MM-dd a hh:mm')}"></small>
+								            </div>
 								        </li>
 								    </ul>
 								</div>
