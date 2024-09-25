@@ -79,7 +79,7 @@ select, input[type=date] {
 								<label class="form-label" for="references">수신참조자</label><br>
 								<input id="references" type="text"
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-									class="selectedName3">
+									class="form-control" readonly data-id="">
 							</div>
 
 							<!-- 양식 선택 -->
@@ -127,32 +127,29 @@ select, input[type=date] {
 							</div>
 
 							<!-- 모달 생성 -->
-							<div class="modal fade" id="staticBackdrop"
-								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-								role="dialog" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered" role="document">
-									<div class="modal-content">
-										<div class="modal-body text-left">
-											<div class="mt-1">
-												<h4 class="mb-3">직원 등록</h4>
-												<div id="treeMenu"></div>
-												<div id="treeAdd"></div>
-												<div class="hstack gap-9">
-													<a id="successBtn" class="btn btn-success">완료</a> <a
-														href="javascript:void(0);"
-														class="btn btn-link link-success fw-medium"
-														data-bs-dismiss="modal"><i
-														class="ri-close-line me-1 align-middle" id="resetBtn"></i>초기화</a>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
+							<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+							    <div class="modal-dialog modal-dialog-centered" role="document">
+							        <div class="modal-content">
+							            <div class="modal-header">
+							                <h5 class="modal-title" id="myModalLabel">직원 등록</h5>
+							                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							            </div>
+							            <div class="modal-body text-left">
+							                <div id="treeMenu"></div>
+							                <div id="treeAdd"></div>
+							            </div>
+							            <div class="modal-footer">
+							                <button type="button" class="btn btn-light" data-bs-dismiss="modal">초기화</button>
+							                <button type="button" class="btn btn-success" id="successBtn">완료</button>
+							            </div>
+							        </div>
+							    </div>
 							</div>
 
+
 							<!-- 합의자, 결재자 선택  -->
-							<div style="margin-top: -1150px; margin-left: 900px;">
-								<label>합의자</label>
+							<div style="margin-top: -1200px; margin-left: 900px;">
+								<button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;"
 									data-name="">
@@ -161,9 +158,6 @@ select, input[type=date] {
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal1">선택</button>
 
 										</td>
 										<td
@@ -183,7 +177,8 @@ select, input[type=date] {
 											class="selectedName" data-group="agree"></td>
 									</tr>
 								</table>
-								<br> <label>결재자</label>
+								<br> 
+								<button type="button" class="btn btn-light waves-effect" id="button_modal2">결재자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
 									<tr>
@@ -191,9 +186,6 @@ select, input[type=date] {
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal2">선택</button>
 
 										</td>
 										<td
@@ -230,13 +222,12 @@ select, input[type=date] {
 
 		<!-- 모달 관련 js -->
 		<script>
-			
 			// 로그인 한 사람 은 트리구조에서 지우기 
 			const loginId = document.getElementById('emp_id').value;
 		    const selectArray = []; // 선택된 이름을 저장할 배열
 		    let buttonId = '';
 		    
-		    $('#button_modal1, #button_modal2').click(function() {
+		    $('#button_modal1, #button_modal2,#references').click(function() {
 		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
 		        buttonId = this.id;
 		        console.log(buttonId);
@@ -258,7 +249,7 @@ select, input[type=date] {
 		                    .map(node => ({
 		                        id: node.nodeId,
 		                        text: node.nodeName,
-		                        state: { opened: false },
+		                        state: { opened: true },
 		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
 		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
 		                    }));
@@ -286,10 +277,14 @@ select, input[type=date] {
 		                        check_callback: false,
 		                        data: [companyNode]
 		                    },
-		                    plugins: ["types", "selectbox"],
+		                    'plugins': ['checkbox'],
 		                    types: {
 		                        default: { icon: "ri-team-fill" },
 		                        file: { icon: "ri-user-2-fill" }
+		                    },
+		                    selectbox: {
+		                        multiple: true, // 여러 개 선택 가능
+		                        select: true    // 선택 후 자동으로 선택
 		                    }
 		                }).on('select_node.jstree', function(e, data) {
 		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
@@ -312,16 +307,22 @@ select, input[type=date] {
 		                    });
 		                    modal.show(); // 모달 표시
 		                    
-		                    // 등록 버튼 이벤트
 		                    $(document).on('click', '#successBtn', function() {
-		                        const selectNameElements = buttonId === "button_modal1" 
-		                            ? document.querySelectorAll('.selectedName') 
-		                            : document.querySelectorAll('.selectedName2');
-		
+		                        if (buttonId === "references") {
+		                            const selectedNames = selectArray.map(item => item.text).join(' '); // 선택된 이름을 결합
+		                            const selectNameElement = document.getElementById('references'); 
+
+		                            selectNameElement.value = selectedNames; // 결합된 문자열 설정
+		                            selectNameElement.setAttribute("data-id", selectArray.map(item => item.id).join(' '));  // json 데이터로 보낼 때 쓸 data-id 값도 넣어주기
+
+		                        } else {
+		                            const selectNameElements = buttonId === "button_modal1" 
+		                                ? document.querySelectorAll('.selectedName') 
+		                                : document.querySelectorAll('.selectedName2');
+
 		                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
 
 		                            for (let index = 0; index < length; index++) {
-		                                // selectArray[index]가 정의되어 있는지 확인
 		                                if (selectArray[index]) {
 		                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
 		                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
@@ -330,7 +331,7 @@ select, input[type=date] {
 		                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
 		                                }
 		                            }
-		
+		                        }
 		                        modal.hide(); // 모달 닫기
 		                    });
 		
@@ -356,8 +357,6 @@ select, input[type=date] {
 		        });
 		    });
 		</script>
-
-
 
 		<!-- 날짜 생성 스크립트 설정 -->
 		<script>
@@ -393,7 +392,7 @@ select, input[type=date] {
 
 
 		<script> 
-				/* 토스트 api 설정 */
+			/* 토스트 api 설정 */
 		      const contentEditor = new toastui.Editor({
 		      el: document.querySelector('#approval_edit'),
 		      width: '100%',
@@ -420,43 +419,73 @@ select, input[type=date] {
 			    
 			    /* 데이터 저장 */
 			    const form = document.getElementById("approvalForm");
-			    form.addEventListener('submit', (e) => {
-			        e.preventDefault();
-			        const payload = new FormData(form);
-			        const csrfToken = document.getElementById('csrf_token').value;
-			   	
-			        const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
-		             .map(td => {
-		             	const value = td.getAttribute('data-name');
-		             	return value ? Number(value) : null;
-		             })
-		              .filter(Boolean);
-		             
-		             
-		             const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
-		             .map(td => {
-		            	 const value = td.getAttribute('data-name');
-		            	 return value ? Number(value) : null;
-		             })
-		             .filter(Boolean);
-
-		            /* 토스트 api 안에 값 저장 */
-		            const content = contentEditor.getHTML();
-		            
-		            payload.append("approval_content", content);
-					payload.append("agree", agree);
-					payload.append("approver",approver);
-		            
-					payload.forEach((value, key) => {
-					    console.log(`${key}: ${value}`);
-					});
-					
+				form.addEventListener('submit', (e) => {
+			    e.preventDefault();
+			    const payload = new FormData(form);
+			    const csrfToken = document.getElementById('csrf_token').value;
+				
+			    // 1.합의자 값 가져오기
+			    const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
+			        .map(td => {
+			            const value = td.getAttribute('data-name');
+			            return value ? Number(value) : null;
+			        })
+			        .filter(Boolean);
+			    
+				// 2.결재자 값 가져오기
+			    const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
+			        .map(td => {
+			            const value = td.getAttribute('data-name');
+			            return value ? Number(value) : null;
+			        })
+			        .filter(Boolean);
+			    
+			 	// 3. 수신참조자 값 가져오기
+	             const dataIdValues = document.querySelectorAll('#references[data-id]');
+				 const references = Array.from(dataIdValues)
+				    .map(element => element.getAttribute('data-id').split(' ')) // data-id 속성 값 가져오기
+			
+			    // 토스트 API 안에 값 저장
+			    const content = contentEditor.getHTML();
+			    payload.append("approval_content", content);
+			    payload.append("agree", agree);
+			    payload.append("approver", approver);
+			    payload.append("references", references);
+			
+			    payload.forEach((value, key) => {
+			        console.log(`${key}: ${value}`);
+			    });
+			
+			    // 유효성 검사
+			    let vali_check = true; // 기본값을 true로 설정
+			    let vali_text = "";
+			
+			    if (form.approval_title.value === "") {
+			        vali_text += '제목을 입력하세요.\n';
+			        form.approval_title.focus();
+			        vali_check = false; 
+			    } else if (form.form_code.value === "") {
+			        vali_text += "카테고리를 선택하세요.\n";
+			        document.getElementById('category-select').focus();
+			        vali_check = false; 
+			    } else if (approver.length === 0) {
+			        vali_text += '결재자를 선택하세요.\n';
+			        vali_check = false; 
+			    }
+			
+			    if (!vali_check) {
+			        Swal.fire({
+			            icon: 'info',
+			            title: '실패',
+			            text: vali_text
+			        });
+			    } else {
 			        fetch('/approval_leave', {
 			            method: 'POST',
 			            headers: {
 			                'X-CSRF-TOKEN': csrfToken
 			            },
-			            body: payload 
+			            body: payload
 			        })
 			        .then(response => response.json())
 			        .then(data => {
@@ -476,9 +505,9 @@ select, input[type=date] {
 			                    text: data.res_msg
 			                });
 			            }
-			        })
-			    });
-			    
+			        });
+			    }
+			});
     	</script>
 	</div>
 </body>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
+	layout:decorate="~{layout}" data-sidebar="light">
 <head>
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
@@ -52,6 +52,12 @@ select, input[type=date], input[type=text] {
 				<div style="background-color: white; width: 1750px; height: 1250px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
+						<input type="hidden" name="approvalNo" id="approvalNo"
+								th:value="${dto.approval.approvalNo}"> <input
+								type="hidden" id="csrf_token" th:value="${_csrf.token}" /> <input
+								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
+							<input type="hidden" th:value="${emp.empId}" id="login_id">
+						
 							<br>
 							<div class="mb-3" style="width: 600px;">
 								<input type="hidden" name="approvalNo" id="approvalNo"
@@ -87,7 +93,7 @@ select, input[type=date], input[type=text] {
 								<label class="form-label" for="references">수신참조자</label><br>
 								<input id="references" type="text"
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-									class="selectedName3">
+									class="form-control" readonly data-id="">
 							</div>
 
 							<!-- 회수함에 있는 상태 -->
@@ -151,34 +157,28 @@ select, input[type=date], input[type=text] {
 							</div>
 							
 							<!-- 모달 생성 -->
-							<div class="modal fade" id="staticBackdrop"
-								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-								role="dialog" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered" role="document">
-									<div class="modal-content">
-										<div class="modal-body text-left">
-											<div class="mt-1">
-												<h4 class="mb-3">직원 등록</h4>
-												<div id="treeMenu"></div>
-												<div id="treeAdd"></div>
-												<div class="hstack gap-9">
-													<a id="successBtn" class="btn btn-success">완료</a> <a
-														href="javascript:void(0);"
-														class="btn btn-link link-success fw-medium"
-														data-bs-dismiss="modal"><i
-														class="ri-close-line me-1 align-middle" id="resetBtn"></i>초기화</a>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
+							<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+							    <div class="modal-dialog modal-dialog-centered" role="document">
+							        <div class="modal-content">
+							            <div class="modal-header">
+							                <h5 class="modal-title" id="myModalLabel">직원 등록</h5>
+							                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							            </div>
+							            <div class="modal-body text-left">
+							                <div id="treeMenu"></div>
+							                <div id="treeAdd"></div>
+							            </div>
+							            <div class="modal-footer">
+							                <button type="button" class="btn btn-light" data-bs-dismiss="modal">초기화</button>
+							                <button type="button" class="btn btn-success" id="successBtn">완료</button>
+							            </div>
+							        </div>
+							    </div>
 							</div>
-							
-							
 							
 							<!-- 합의자, 결재자 선택  -->
 							<div style="margin-top: -1150px; margin-left: 900px;">
-								<label>합의자</label>
+								<button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;" >
 									<tr>
@@ -186,10 +186,6 @@ select, input[type=date], input[type=text] {
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;" data-name="agree1"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;" data-name="agree2">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal1">선택</button>
-
 										</td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;" data-name="agree3"></td>
@@ -199,16 +195,17 @@ select, input[type=date], input[type=text] {
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" data-group="agree"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" data-group="agree"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName"></td>
+											class="selectedName" data-group="agree"></td>
 									</tr>
 								</table>
-								<br> <label>결재자</label>
+								<br> 
+								<button type="button" class="btn btn-light waves-effect" id="button_modal2">결재자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
 									<tr>
@@ -216,9 +213,6 @@ select, input[type=date], input[type=text] {
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;" data-name="approver1"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;" data-name="approver2">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal2">선택</button>
 
 										</td>
 										<td
@@ -229,13 +223,13 @@ select, input[type=date], input[type=text] {
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2"></td>
+											class="selectedName2" data-group="approver"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2"></td>
+											class="selectedName2" data-group="approver"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2"></td>
+											class="selectedName2" data-group="approver"></td>
 									</tr>
 								</table>
 							</div>
@@ -257,11 +251,11 @@ select, input[type=date], input[type=text] {
 			<script>
 			
 			// 로그인 한 사람 은 트리구조에서 지우기 
-			const loginId = document.getElementById('emp_id').value;
+			const loginId = document.getElementById('login_id').value;
 		    const selectArray = []; // 선택된 이름을 저장할 배열
 		    let buttonId = '';
 		    
-		    $('#button_modal1, #button_modal2').click(function() {
+		    $('#button_modal1, #button_modal2,#references').click(function() {
 		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
 		        buttonId = this.id;
 		        console.log(buttonId);
@@ -283,7 +277,7 @@ select, input[type=date], input[type=text] {
 		                    .map(node => ({
 		                        id: node.nodeId,
 		                        text: node.nodeName,
-		                        state: { opened: false },
+		                        state: { opened: true },
 		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
 		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
 		                    }));
@@ -311,7 +305,7 @@ select, input[type=date], input[type=text] {
 		                        check_callback: false,
 		                        data: [companyNode]
 		                    },
-		                    plugins: ["types", "selectbox"],
+		                    plugins: ["checkbox"],
 		                    types: {
 		                        default: { icon: "ri-team-fill" },
 		                        file: { icon: "ri-user-2-fill" }
@@ -337,16 +331,22 @@ select, input[type=date], input[type=text] {
 		                    });
 		                    modal.show(); // 모달 표시
 		                    
-		                    // 등록 버튼 이벤트
 		                    $(document).on('click', '#successBtn', function() {
-		                        const selectNameElements = buttonId === "button_modal1" 
-		                            ? document.querySelectorAll('.selectedName') 
-		                            : document.querySelectorAll('.selectedName2');
-		
+		                        if (buttonId === "references") {
+		                            const selectedNames = selectArray.map(item => item.text).join(' '); // 선택된 이름을 결합
+		                            const selectNameElement = document.getElementById('references'); 
+
+		                            selectNameElement.value = selectedNames; // 결합된 문자열 설정
+		                            selectNameElement.setAttribute("data-id", selectArray.map(item => item.id).join(' '));  // json 데이터로 보낼 때 쓸 data-id 값도 넣어주기
+
+		                        } else {
+		                            const selectNameElements = buttonId === "button_modal1" 
+		                                ? document.querySelectorAll('.selectedName') 
+		                                : document.querySelectorAll('.selectedName2');
+
 		                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
 
 		                            for (let index = 0; index < length; index++) {
-		                                // selectArray[index]가 정의되어 있는지 확인
 		                                if (selectArray[index]) {
 		                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
 		                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
@@ -355,7 +355,7 @@ select, input[type=date], input[type=text] {
 		                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
 		                                }
 		                            }
-		
+		                        }
 		                        modal.hide(); // 모달 닫기
 		                    });
 		
@@ -381,10 +381,6 @@ select, input[type=date], input[type=text] {
 		        });
 		    });
 		</script>
-
-		
-		
-		
 		
 		<script>
 			// 기존 데이터 불러오면서 토스트 api 설정.
@@ -427,7 +423,7 @@ select, input[type=date], input[type=text] {
             const payload = new FormData(form);
             const csrfToken = document.getElementById('csrf_token').value;
             
-            // 협의자, 결재자 데이터 가져오기(String 상태여서 number 형변환)
+            // 1.합의자 값 가져오기(String 상태여서 number 형변환)
             const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
             .map(td => {
             	const value = td.getAttribute('data-name');
@@ -435,13 +431,18 @@ select, input[type=date], input[type=text] {
             })
              .filter(Boolean);
             
-            
+         // 2.결재자 값 가져오기
             const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
             .map(td => {
            	 const value = td.getAttribute('data-name');
            	 return value ? Number(value) : null;
             })
             .filter(Boolean);
+            
+         	// 3. 수신참조자 값 가져오기
+            const dataIdValues = document.querySelectorAll('#references[data-id]');
+			 const references = Array.from(dataIdValues)
+			    .map(element => element.getAttribute('data-id').split(' ')) // data-id 속성 값 가져오기
 
            /* 토스트 api 안에 값 저장 */
            const content = contentEditor.getHTML();
@@ -449,6 +450,13 @@ select, input[type=date], input[type=text] {
            	payload.append("approval_content", content);
 			payload.append("agree", agree);
 			payload.append("approver",approver);
+			payload.append("references", references);
+			
+			payload.forEach((value, key) => {
+			    console.log(`${key}: ${value}`);
+			});
+			
+			
             fetch('/approval/leaveUpdate/'+id,{
                 method: 'PUT',
                 headers: {
@@ -463,7 +471,7 @@ select, input[type=date], input[type=text] {
                     Swal.fire({
                         icon: 'success',
                         title: '성공',
-                        text: data.reg_msg
+                        text: data.res_msg
                     }).then(() => {
                         location.href = "/approval/list?num=0";
                     });
@@ -471,7 +479,7 @@ select, input[type=date], input[type=text] {
                     Swal.fire({
                         icon: 'error',
                         title: '실패',
-                        text: data.reg_msg
+                        text: data.res_msg
                     });
                 }
             });
@@ -527,7 +535,7 @@ select, input[type=date], input[type=text] {
  						Swal.fire({
  							icon: 'success',
  							title : '성공',
- 							text : data.reg_msg
+ 							text : data.res_msg
  						}).then(() =>{
  							location.href = "/approval/list?num=0";
  						});
@@ -535,7 +543,7 @@ select, input[type=date], input[type=text] {
  						Swal.fire({
  							icon : 'error',
  							title : '실패',
- 							text : data.reg_msg
+ 							text : data.res_msg
  						})
  					}
  				})
