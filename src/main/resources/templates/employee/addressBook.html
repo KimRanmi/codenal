@@ -32,7 +32,7 @@
 }
 
 .body-list { /* 몸통 높이 고정(동적X) */
-	height: 598.5px; 
+	height: 598.5px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -176,39 +176,32 @@
 								</table>
 
 								<br>
-								
+
 								<div class="col-lg-6">
 									<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
 										<ul class="pagination" th:with="
-    pageNumber = ${resultList.pageable.pageNumber},
-    pageSize = ${resultList.pageable.pageSize},
-    totalPages = ${resultList.totalPages},
-    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-    tempEndPage = ${startPage + pageSize - 1},
-    endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
-    ">
-    <!-- 이전 -->
-    <th:block th:if="${!resultList.first}">
-        <li class="page-item">
-            <a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a>
-        </li>
-    </th:block>
+										    pageNumber = ${resultList.pageable.pageNumber},
+										    pageSize = ${resultList.pageable.pageSize},
+										    totalPages = ${resultList.totalPages},
+										    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+										    tempEndPage = ${startPage + pageSize - 1},
+										    endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+										    ">
+											<!-- 이전 -->
+											<th:block th:if="${!resultList.first}">
+												<li class="page-item"><a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a></li>
+											</th:block>
 
-    <!-- 페이지 번호 -->
-    <th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
-        <li class="page-item">
-            <a class="page-link" th:text="${page}" th:href="@{/employee/addressBook(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}"
-               th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
-        </li>
-    </th:block>
+											<!-- 페이지 번호 -->
+											<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+												<li class="page-item"><a class="page-link" th:text="${page}" th:href="@{/employee/addressBook(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
+											</th:block>
 
-    <!-- 다음 -->
-    <th:block th:if="${!resultList.last}">
-        <li class="page-item">
-            <a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a>
-        </li>
-    </th:block>
-</ul>
+											<!-- 다음 -->
+											<th:block th:if="${!resultList.last}">
+												<li class="page-item"><a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a></li>
+											</th:block>
+										</ul>
 
 									</div>
 								</div>

@@ -13,6 +13,8 @@ import com.codenal.admin.domain.DepartmentsCount;
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.repository.DepartmentsRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class DeptService {
 
@@ -70,7 +72,7 @@ public class DeptService {
 
 		} catch (IllegalArgumentException e) {
 			// 중복된 부서명이 있을 때 처리
-		//	System.out.println("Error: " + e.getMessage());
+			//	System.out.println("Error: " + e.getMessage());
 			return 0;
 		} catch (Exception e) {
 			// 그 외의 일반적인 에러 처리
@@ -78,19 +80,34 @@ public class DeptService {
 			return 0;
 		}
 	}
-	
-	
-	// 부서명 수정만 처리하는 메서드
-	public void editDepartment(DepartmentsDto departmentsDto) {
-        // 부서 번호로 엔티티를 생성하여 업데이트 작업
-        Departments department = departmentsRepository.findByDeptNo(departmentsDto.getDeptNo());
 
-        if (department == null) {
-            throw new IllegalArgumentException("존재하지 않는 부서입니다.");
-        }
+	// 부서 삭제
+	@Transactional
+	public int deleteDept(Long deptNo) {
+		
+		Departments department = departmentsRepository.findById(deptNo)
+				.orElseThrow(() -> new IllegalStateException("존재하지 않는 부서입니다."));
 
-        // 부서명 수정
-        department.setDeptName(departmentsDto.getDeptName());
-        departmentsRepository.save(department); // 변경된 부서 정보 저장
-    }
+		if (department.getEmpCount() > 0) {
+			throw new IllegalStateException("부서에 직원이 존재하므로 삭제할 수 없습니다.");
+		}
+
+		departmentsRepository.delete(department);
+		
+		return 1; 
+	}
+
+
+	// 부서명 수정
+	/*
+	 * public void editDepartment(DepartmentsDto departmentsDto) { // 부서 번호로 엔티티를
+	 * 생성하여 업데이트 작업 Departments department =
+	 * departmentsRepository.findByDeptNo(departmentsDto.getDeptNo());
+	 * 
+	 * if (department == null) { throw new
+	 * IllegalArgumentException("존재하지 않는 부서입니다."); }
+	 * 
+	 * // 부서명 수정 department.setDeptName(departmentsDto.getDeptName());
+	 * departmentsRepository.save(department); // 변경된 부서 정보 저장 }
+	 */
 }
