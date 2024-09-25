@@ -44,7 +44,7 @@
 					<!-- card body -->
 					<div class="card-body">
 
-						<div class="live-preview">
+						<div class="live-preview"  data-simplebar style="max-height: 639.4px;">
 							<div class="list-group">
 
 								
@@ -113,47 +113,61 @@
 														<h4 th:text="${meetingRoomDetail.meeting_room_name}">회의실A</h4>
 														<div class='hstack gap-3 flex-wrap mb-4'>
 															<div>
-																<a href='#' class='text-primary d-block' th:text="${meetingRoomDetail.meeting_room_place}"> 3층 301호 </a>
+																<a class='text-primary d-block' th:text="${meetingRoomDetail.meeting_room_place}"> 3층 301호 </a>
 															</div>
 															<div class='vr'></div>
-															<div class='text-muted'>기자재 : <span class='text-body fw-medium' th:text="${meetingRoomDetail.meeting_room_info}"> TV, 화이트 보드, 빔 프로젝터 </span>
+															<div class='text-muted'>어매니티 : <span class='text-body fw-medium' th:text="${meetingRoomDetail.meeting_room_amenity}"> TV, 화이트 보드, 빔 프로젝터 </span>
 															</div>
 														</div>
 													</div>
 													<div class='flex-shrink-0'>
 														<div th:if="${empAuth} == 'ADMIN'">
-															<a href='/apps-ecommerce-add-product'
+															<a href='/meeting-room-modify'
 																class='btn btn-light' data-bs-toggle='tooltip'
-																data-bs-placement='top' title='Edit'>
-																<i class='ri-pencil-fill align-bottom'></i>
+																data-bs-placement='top' title='수정'>
+																<i class='ri-pencil-fill align-bottom' th:value="${meetingRoomDetail.meeting_room_no}"></i>
 															</a>
+															<button id="delete" onclick="deleteMeetingRoom(this)"
+																class='btn btn-light' data-bs-toggle='tooltip'
+																data-bs-placement='top' title='삭제' th:value="${meetingRoomDetail.meeting_room_no}">
+																<i class='bx bxs-trash align-center pt-1'></i>
+															</button>
 														</div>
 													</div>
 												</div>
-												<form id='meetingRoomForm' th:attr="id=meetingRoomForm+${meetingRoomDetail.meeting_room_no}">
+												<form id='meetingRoomForm'>
 													<input type="hidden" id="reserve_meeting_room_no" name="reserve_meeting_room_no" th:value="${meetingRoomDetail.meeting_room_no}">
 													<input type="hidden" id="empId" th:value="${empId}">
+													<input type="hidden" id="empAuth" th:value="${empAuth}">
 													<div class='row'>
 														<div class='col-lg-7 mb-4'>
 															<div class='mt-3 upcoming-scheduled rangeMode animate arrowTop arrowLeft open'>
-																<input type='text' class='form-control' name="meeting_room_reserve_date"
+																<input type='text' class='form-control' name="meeting_room_reserve_date" id="meeting_room_reserve_date"
 																	data-provider='flatpickr' data-date-format='d M, Y'
 																	data-deafult-date='today' data-minDate='05 09,2024'
 																	data-maxDate='30 09,2024' data-inline-date='true'>
 															</div>
 														</div>
-														<div class='col-xl-5  mt-4'>
+														<div class='col-xl-5  '>
 															<h5 class='fs-16 fw-bold'>예약 시간</h5>
-																<div class='mb-3'>
-																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}">
-																		<input type="radio" class='btn-check ' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
+																<div class='mb-3 mt-3'>
+																	<h5 class="fs-12 fw-bold text-muted">오전</h5>
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전')}">
+																		<input type="checkbox" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
+																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
+																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
+																		style='width: 120px' th:text="${meetingRoomTimeDetail.meeting_room_start_time +' ~ '+meetingRoomTimeDetail.meeting_room_end_time}"> 9 : 00 ~ 9 : 50 </label>
+																	</th:block>
+																	<h5 class="fs-12 fw-bold text-muted">오후</h5>
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오후')}">
+																		<input type="checkbox" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
 																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
 																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
 																		style='width: 120px' th:text="${meetingRoomTimeDetail.meeting_room_start_time +' ~ '+meetingRoomTimeDetail.meeting_room_end_time}"> 9 : 00 ~ 9 : 50 </label>
 																	</th:block>
 																</div>
 														</div>
-														<input th:if="${empAuth} == 'ADMIN'" type="submit" class='btn btn-primary' id="reserve_submit" value='회의실 예약'>
+														<button th:if="${empAuth} == 'ADMIN'" type="button" class='btn btn-primary' id="reserve_submit" th:value="${meetingRoomDetail.meeting_room_no}" onclick="reserve(this);">회의실 예약</button>
 													</div>
 												</form>
 											</div>
