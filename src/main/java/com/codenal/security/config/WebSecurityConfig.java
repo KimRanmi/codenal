@@ -41,6 +41,7 @@ public class WebSecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityService securityService) throws Exception {
 		http
 		// CORS 설정 적용
+		
 		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
@@ -60,6 +61,7 @@ public class WebSecurityConfig {
 				.requestMatchers("/list").permitAll() 
 				.requestMatchers("/mypage/**").authenticated()
 				.requestMatchers("/documents/**").authenticated() 
+				.requestMatchers("/api/attendance/**").permitAll()
 				.anyRequest().authenticated()
 				)
 

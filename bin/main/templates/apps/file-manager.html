@@ -943,24 +943,28 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			            const selectedFiles = [];
 			            const activeTableId = getActiveTableId(); // 현재 활성화된 테이블 확인
 			            let className = 'file-checkbox'; // 기본 체크박스 클래스는 개인 문서용
-			
+
 			            if (activeTableId === 'shared-by-me-files-table') {
 			                className = 'shared-checkbox'; // 공유 문서 체크박스
 			            } else if (activeTableId === 'shared-with-me-files-table') {
 			                className = 'shared-checkbox'; // 공유받은 문서 체크박스
+			            } else if (activeTableId === 'favorite-files-table') {
+			                className = 'favorite-checkbox'; // 즐겨찾기 문서 체크박스
+			            } else if (activeTableId === 'trash-files-table') {
+			                className = 'trash-checkbox'; // 휴지통 문서 체크박스 (필요시 추가)
 			            }
-			
+
 			            // 선택된 체크박스들에서 파일 ID 추출
 			            const checkboxes = document.querySelectorAll(`.${className}:checked`);
 			            checkboxes.forEach(checkbox => {
 			                selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
 			            });
-			
+
 			            if (selectedFiles.length === 0) {
 			                alert('다운로드할 파일을 선택하세요.');
 			                return;
 			            }
-			
+
 			            // 파일이 1개일 때는 바로 다운로드
 			            if (selectedFiles.length === 1) {
 			                downloadFile(selectedFiles[0]);
@@ -972,7 +976,7 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			            }
 			            clearSelection();
 			        }
-			
+
 			        function downloadFile(fileId) {
 			            fetch(`/api/documents/download?docId=${fileId}`, {  
 			                method: 'GET',

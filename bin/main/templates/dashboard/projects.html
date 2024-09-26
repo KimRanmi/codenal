@@ -11,6 +11,7 @@
 
 <head>
 
+<meta name="_csrf" th:content="${_csrf.token}">
 </head>
 
 <body>
@@ -477,6 +478,9 @@
 
 		<!-- Dashboard init -->
 		<script src="/assets/js/pages/dashboard-projects.init.js"></script>
+		
+		
+
 	</th:block>
 </body>
 

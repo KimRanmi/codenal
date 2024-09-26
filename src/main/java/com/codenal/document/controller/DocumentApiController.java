@@ -55,7 +55,7 @@ public class DocumentApiController {
         Long empId = Long.parseLong(empIdString);
 
         // 파일 저장 경로 설정 (예: 파일을 로컬에 저장)
-        Path uploadDir = Paths.get("uploads/");
+        Path uploadDir = Paths.get("uploads");
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }

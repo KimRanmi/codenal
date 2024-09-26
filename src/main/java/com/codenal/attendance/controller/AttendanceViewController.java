@@ -23,20 +23,20 @@ public class AttendanceViewController {
 	 	@Autowired
 	    private AttendanceService attendanceService;
 	
-	 	 @GetMapping("/apps-attendance")
+	 	@GetMapping("/apps-attendance")
 	    public String showAttendancePage(
 	            @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 	            @PageableDefault(size = 10) Pageable pageable,
 	            Model model) {
-	        
+
 	        LocalDate targetDate = (date != null) ? date : LocalDate.now();
 	        Page<AttendanceDto> attendances = attendanceService.getAttendancesByDate(targetDate, pageable);
-	        
+
 	        model.addAttribute("attendances", attendances);
 	        model.addAttribute("currentPage", attendances.getNumber());
 	        model.addAttribute("totalPages", attendances.getTotalPages());
 	        model.addAttribute("date", targetDate);
-	        
+
 	        return "apps/attendance";  // Thymeleaf 템플릿 경로
 	    }
 }
