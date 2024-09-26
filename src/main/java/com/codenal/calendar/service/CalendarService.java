@@ -44,9 +44,9 @@ public class CalendarService {
 		Long detpNo = dto.getDeptNo();
 		Departments dept = departmentsRepository.findByDeptNo(detpNo);
 		
-		int jodNo = dto.getJobNo();
+		Long jodNo = dto.getJobNo();
 		Jobs job = jobsRepository.findByJobNo(jodNo);
-		System.out.println(job.getJobName());
+		//System.out.println(job.getJobName());
 		String[] str = {dto.getEmpName(), dept.getDeptName(),job.getJobName()};
 		// jobs, jobsDto 생성 후 부서명, 직급명 각자 레포지토리에서 가져온 후 String 객체 만들어서 거기다 넣어서 리턴 후 js에서 출력하기
 		
@@ -104,13 +104,13 @@ public class CalendarService {
 			Employee empName = employeeRepository.findByEmpId(writer);
 			EmployeeDto empNameDto = EmployeeDto.fromEntity(empName);
 			calendarDto.setCalendar_schedule_writer_name(empNameDto.getEmpName());
-			System.out.println("확인"+writerId);
+			//System.out.println("확인"+writerId);
 			if((calendarDto.getCalendar_schedule_category() != 1) || (calendarDto.getCalendar_schedule_category() == 1 && calendarDto.getCalendar_schedule_writer().equals(writerId))) {
 				eventDtoList.add(calendarDto);
 				
 			}
 		}
-		System.out.println("확인"+eventDtoList);
+		//System.out.println("확인"+eventDtoList);
 		return eventDtoList;
 	}
 	
