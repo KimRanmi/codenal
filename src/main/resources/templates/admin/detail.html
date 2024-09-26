@@ -135,39 +135,37 @@
 												<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
 													<div class="modal-dialog modal-dialog-centered">
 														<div class="modal-content">
-															<div class="modal-header border border-dashed border-end-0 border-start-0" style="border-bottom: 1px solid #dee2e6;">
-																<h4 class="modal-title" id="zoomInModalLabel">임시 비밀번호 발급</h4>
-																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+															<div class="modal-header bg-light p-3">
+																<h5 class="modal-title" id="zoomInModalLabel">임시 비밀번호 발급</h5>
+																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
 															</div>
-															<div class="mb-3"></div>
-															<div class="modal-body">
-																<h5 class="fs-16">
-																	<span th:text="${employeeDetail.empName}"></span>님에게 임시 비밀번호를 발급하시겠습니까?
-																</h5>
-																<form id="passwordResetForm" class="was-validated">
-																	<div class="row g-3">
-																		<div class="mb-3"></div>
-																		<div class="col-xxl-12">
-																			<div>
-																				<label for="adminPasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호 </label> <span class="text-danger">*</span> 
-																				<input type="password" class="form-control" id="adminPasswordInput" placeholder="비밀번호를 입력하세요." required autocomplete="new-password">
-																				<div class="invalid-feedback"></div>
-																			</div>
-																		</div>
-																		<input type="hidden" id="employeeIdHiddenInput" th:value="${employeeDetail.empId}">
+
+															<form class="was-validated" autocomplete="off" id="passwordResetForm">
+																<div class="modal-body">
+																	<div class="mb-4">
+																		<h5 class="fs-16">
+																			<span th:text="${employeeDetail.empName}">직원명</span>님에게 임시 비밀번호를 발급하시겠습니까?
+																		</h5>
 																	</div>
-																</form>
-															</div>
-															<div class="mb-3"></div>
-															<div class="modal-footer">
-																<button type="submit" class="btn btn-primary w-sm" id="issuePasswordButton" style="font-size: 16px; font-weight: bold;">발급</button>
-															</div>
+																	<div class="mb-4">
+																		<label for="adminPasswordInput" class="form-label" style="font-size: 15px;">관리자 비밀번호</label> <span class="text-danger">*</span> <input type="password" class="form-control" id="adminPasswordInput" placeholder="비밀번호를 입력하세요." required autocomplete="new-password" />
+																		<div class="invalid-feedback">관리자 비밀번호를 입력해주세요.</div>
+																	</div>
+																	<input type="hidden" id="employeeIdHiddenInput" th:value="${employeeDetail.empId}">
+																</div>
+																<div class="modal-footer">
+																	<div class="hstack gap-2 justify-content-end">
+																		<button type="submit" class="btn btn-primary btn-md" id="issuePasswordButton">발급</button>
+																	</div>
+																</div>
+															</form>
+
 														</div>
 													</div>
 												</div>
 
 												<!-- 수정 버튼 -->
-												
+
 												<button type="submit" class="btn btn-primary btn-border w-xs" th:onclick="|location.href='@{/admin/update}'|" style="font-size: 16px; font-weight: bold;">수정</button>
 											</div>
 
@@ -206,28 +204,31 @@
 
 												<div class="tab-content">
 													<div class="tab-pane fade show active" id="pills-gen-info" role="tabpanel" aria-labelledby="pills-gen-info-tab">
-														<div>
 
-															<div class="mb-4">
+														<div class="row g-3">
+															<!-- 첫 번째 컬럼: 퇴사 안내 텍스트 -->
+															<div class="col-sm-1"></div>
+															<div class="col-md-6 mb-4">
 																<div>
-																	<h5 class="mb-1">
-																		<span th:text="${employeeDetail.empName}"></span>님을 퇴사하시겠습니까?
-																	</h5>
 																	<div class="mb-4"></div>
-																	<p class="text-muted">퇴사일은 입사일보다 이 전으로 선택할 수 없습니다.</p>
+																	<h4 class="mb-1">
+																		<span th:text="${employeeDetail.empName}"></span>님을 퇴사하시겠습니까?
+																	</h4>
+																	<div class="mb-4"></div>
+																	<h5>퇴사일은 입사일보다 이 전으로 선택할 수 없습니다.</h5>
 																</div>
 															</div>
 
-															 <div class="col-lg-5">
+															<!-- 두 번째 컬럼: 퇴사일 입력 -->
+															<div class="col-lg-4">
 																<div class="was-validated">
-																	<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> 
-																	<span class="text-danger">*</span> 
-																	<input type="text" class="form-control" id="detail-emp-end" name="emp_end" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="퇴사일을 선택하세요." required />
-																	<div class="invalid-feedback">퇴사일을 선택해주세요.</div>
+																	<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> <span class="text-danger">*</span> <input type="text" class="form-control" id="detail-emp-end" name="emp_end" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="퇴사일을 선택하세요." required />
+																	<div class="invalid-feedback"></div>
 																</div>
 															</div>
-
 														</div>
+														<div class="col-sm-1"></div>
+
 
 														<div class="d-flex align-items-start gap-3 mt-4">
 															<button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="pills-info-desc-tab">
@@ -242,12 +243,12 @@
 														<div class="col-lg-5">
 															<div>
 																<label for="newpasswordInput" class="form-label" style="font-size: 16px; font-weight: bold;">관리자 비밀번호</label> <input type="password" class="form-control" id="empEndInput" placeholder="비밀번호를 입력해주세요." required autocomplete="current-password">
-																<div class="invalid-feedback">비밀번호를 입력해주세요.</div>
+																<div class="invalid-feedback"></div>
 															</div>
 														</div>
 
 														<div class="d-flex align-items-start gap-3 mt-4">
-															<button type="button" class="btn btn-link text-decoration-none btn-label previestab" data-previous="pills-gen-info-tab">
+															<button type="button" class="btn btn-link text-decoration-none btn-label left previestab" data-previous="pills-gen-info-tab">
 																<i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> 이전
 															</button>
 															<button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="pills-success-tab" id="empEndButton">
@@ -294,61 +295,106 @@
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 		<script src="/assets/js/pages/form-pickers.init.js"> </script>
 		<script src="/assets/js/pages/form-wizard.init.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 		<script>
 	/* 임시 비밀번호 발급 관리자 비밀번호 */
-	document.addEventListener('DOMContentLoaded', function() {
-	    document.getElementById('issuePasswordButton').addEventListener('click', function (event) {
-	        event.preventDefault();
+   document.addEventListener('DOMContentLoaded', function() {
+	
+       document.getElementById('passwordResetForm').addEventListener('submit', function (event) {
+           event.preventDefault();
 
-	        var adminPw = document.getElementById('adminPasswordInput').value;
-	        var empId = document.getElementById('employeeIdHiddenInput').value;
-	       
-	        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-	        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+           var adminPw = document.getElementById('adminPasswordInput').value.trim();
+           var empId = document.getElementById('employeeIdHiddenInput').value;
 
-	        if (adminPw) {
-	            fetch('/admin/reset-password', {
-	                method: 'POST', 
-	                headers: {
-	                    'Content-Type': 'application/json',
-	                    [csrfHeader]: csrfToken,
-	                },
-	                body: JSON.stringify({
-	                    adminPw: adminPw,
-	                    empId: empId,
-	                }),
-	            })
-	            
-	            .then(response => response.json())
-	            .then(data => {
-	                console.log(data); 
-	                if (data.success) {
-	                    alert('비밀번호가 성공적으로 변경되었습니다.');
-	                    $('#zoomInModal').modal('hide');
-	                } else {
-	                    alert('비밀번호 변경 실패: ' + data.message);
-	                }
-	            })
-	            .catch(error => console.error('Error:', error));
-	        } else {
-	            alert('관리자 비밀번호를 입력해주세요.');
-	        }
-	    });
-	    
-	    // 비밀번호 필드 초기화 
-	    $('#zoomInModal').on('hidden.bs.modal', function () {
-	        document.getElementById('adminPasswordInput').value = '';  
-	    });
-	    
-	    // 엔터 가능
-	    document.getElementById('adminPasswordInput').addEventListener('keydown', function(event) {
-	        if (event.key === 'Enter') {
-	            event.preventDefault(); // 기본 엔터키 폼 제출 방지
-	            document.getElementById('issuePasswordButton').click(); // 발급 버튼 클릭 처리
-	        }
-	    });
-	});	
+         //  console.log('관리자 비밀번호:', adminPw);
+         //  console.log('직원:', empId);
+          
+           var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+           var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+         //  console.log('CSRF Token:', csrfToken);
+          // console.log('CSRF Header:', csrfHeader);
+
+           if (adminPw) {
+               console.log('관리자 비밀번호가 입력됨, fetch 요청 시작');
+               fetch('/admin/reset-password', {
+                   method: 'POST', 
+                   headers: {
+                       'Content-Type': 'application/json',
+                       [csrfHeader]: csrfToken,
+                   },
+                   body: JSON.stringify({
+                       adminPw: adminPw,
+                       empId: empId,
+                   }),
+               })
+               .then(response => {
+                  // console.log('응답', response);
+                   if (!response.ok) {
+                       throw new Error('네트워크 응답에 문제가 있습니다.');
+                   }
+                   return response.json();
+               })
+               .then(data => {
+                 //  console.log('응답', data); 
+                   if (data.success) {
+                       Swal.fire({
+                           icon: 'success',
+                           title: '발급 성공',
+                           text: '비밀번호가 성공적으로 발급되었습니다.',
+                           confirmButtonText: '확인'
+                       }).then(() => {
+                           $('#zoomInModal').modal('hide');
+                           // 폼 리셋
+                           document.getElementById('passwordResetForm').reset();
+                       });
+                   } else {
+                       Swal.fire({
+                           icon: 'error',
+                           title: '발급 실패',
+                           text: data.message,
+                           confirmButtonText: '확인'
+                       });
+                   }
+               })
+               .catch(error => {
+                   console.error('Error:', error);
+                   Swal.fire({
+                       icon: 'error',
+                       title: '에러',
+                       text: '비밀번호 변경 중 오류가 발생했습니다.',
+                       confirmButtonText: '확인'
+                   });
+               });
+           } else {
+               Swal.fire({
+                   icon: 'warning',
+                   title: '경고',
+                   text: '관리자 비밀번호를 입력해주세요.',
+                   confirmButtonText: '확인'
+               });
+           }
+       });
+
+       // 비밀번호 필드 초기화
+       $('#zoomInModal').on('hidden.bs.modal', function () {
+          // console.log('모달 숨김');
+           document.getElementById('adminPasswordInput').value = '';  
+           var form = document.getElementById('passwordResetForm');
+           form.classList.remove('was-validated');
+       });
+       
+       // 엔터 키
+       document.getElementById('adminPasswordInput').addEventListener('keydown', function(event) {
+           if (event.key === 'Enter') {
+               event.preventDefault(); 
+               document.getElementById('issuePasswordButton').click(); 
+             //  console.log('엔터');
+           }
+       });
+   });
+           
 	
 	
  	/* 퇴사일 선택 */
@@ -443,7 +489,12 @@
                     document.getElementById('empEndInput').value = '';
                     
                 } else {
-                    alert(data.message);
+                	Swal.fire({
+                	    icon: 'error',
+                	    title: '퇴사 실패',
+                	    text: data.message,
+                	    confirmButtonText: '확인' 
+                	});
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -486,12 +537,7 @@
 
     
 </script>
-		<!-- <!-- <script src="/assets/libs/prismjs/prism.js"></script>
-		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>  
-		<script src="/assets/js/pages/modal.init.js"></script>-->
-		<!-- jQuery 라이브러리 추가 -->
-		<!--  
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>	 -->
+
 	</th:block>
 
 

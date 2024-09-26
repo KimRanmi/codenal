@@ -35,7 +35,7 @@
 }
 
 .body-list { /* 몸통 높이 고정(동적X) */
-	height: 598.5px; 
+	height: 598.5px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -53,193 +53,38 @@
 </head>
 
 <body>
-	<div layout:fragment="content">
-		<div th:replace="~{partials/page-title :: page-title('주소록','조직도')}"></div>
-		<div class="row">
-			<!--------------------------------- 조직도 ----------------------------------------------->
-			<div class="col-xxl-3">
-				<div class="card" id="contact-view-detail">
-					<!-- 조직도 이름 -->
-					<div class="card-header border-0">
-						<div class="col-sm">
-							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: 900;">조직도</h5>
+	<div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header bg-light p-3">
+					<h5 class="modal-title" id="exampleModalLabel">임시 비밀번호 발급</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+					<div class="mb-3"></div>
+				</div>
+
+				<form class="was-validated" autocomplete="off" id="addDeptForm">
+					<div class="modal-body">
+						<h5 class="fs-16">
+							<span th:text="${employeeDetail.empName}"></span>님에게 임시 비밀번호를 발급하시겠습니까?
+						</h5>
+						<div class="mb-3">
+							<label for="customername-field" class="form-label" style="font-size: 15px;">관리자 비밀번호</label> <span class="text-danger">*</span> <input type="password" class="form-control" id="adminPasswordInput" placeholder="비밀번호를 입력하세요." required autocomplete="new-password" />
+							<div class="invalid-feedback"></div>
 						</div>
 					</div>
-					<!-- JsTree -->
-					<div class="card-body border border-dashed border-end-0 border-start-0">
-						<div id="treeMenu"></div>
-					</div>
-				</div>
-			</div>
-
-			<!---------------------------------주소록 목록----------------------------------------------->
-			<div class="col-xxl-9">
-				<div class="card" id="contactList">
-					<!----------목록 이름------------>
-					<div class="card-header border-0">
-						<div class="col-sm">
-							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: 900;">부서 목록</h5>
+					<input type="hidden" id="employeeIdHiddenInput" th:value="${employeeDetail.empId}">
+					<div class="modal-footer">
+						<div class="hstack gap-2 justify-content-end">
+							<button type="submit" class="btn btn-primary btn-md" id="sa-basic">발급</button>
 						</div>
 					</div>
+				</form>
 
-					<!----------목록 상단------------>
-					<div class="card-body border border-dashed border-end-0 border-start-0">
-						<div class="col-md-4">
-								<button class="btn btn-outline-info waves-effect waves-light material-shadow-none justify-content-center" data-bs-toggle="modal" data-bs-target="#addDept" style="width: 50%; font-size: 18px; padding: 3px; border: 1px solid #299cdb;">
-									<i class="ri-add-fill me-1 align-bottom"></i> 부서 추가
-								</button>
-
-								<!-- 부서 추가 모달 -->
-								<div id="addDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
-									<div class="modal-dialog modal-dialog-centered">
-										<div class="modal-content">
-											<div class="modal-header bg-light p-3">
-												<h5 class="modal-title" id="exampleModalLabel">부서 추가</h5>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
-											</div>
-											<form class="was-validated" autocomplete="off" id="addDeptForm">
-												<div class="modal-body">
-													<div class="mb-3">
-														<label for="deptNameField" class="form-label" style="font-size: 15px;">부서명</label> <span class="text-danger">*</span> <input type="text" class="form-control" id="deptNameField" name="deptName" required />
-														<div class="invalid-feedback" id="deptNameError">부서명을 입력해주세요.</div>
-													</div>
-												</div>
-
-												<div class="modal-footer">
-													<div class="hstack gap-2 justify-content-end">
-														<button type="submit" class="btn btn-primary btn-sm" id="sa-basic">추가</button>
-													</div>
-												</div>
-
-											</form>
-
-
-										</div>
-									</div>
-								</div>
-								<!-- 모달 창 끝 -->
-							</div>
-							<div class="col-md-3"></div>
-							<div class="col-md-4">
-								<div class="search-box">
-									<input type="text" class="form-control search" placeholder="부서명을 입력해 주세요."> <i class="ri-search-line search-icon"></i>
-								</div>
-							</div>
-							<!-- 검색 버튼 -->
-							<div class="col-md-1">
-								<div>
-									<button type="submit" id="sa-basic" class="btn btn-primary w-100" style="font-size: 18px; padding: 3px;">검색</button>
-								</div>
-							</div>
-					</div>
-
-					<!----------목록 조회------------>
-					<div class="card-body body-list">
-					<div>
-						<div class="table-responsive table-card mb-3">
-							<table class="table align-middle table-nowrap table-striped mb-0">
-								<thead class="table-light">
-									<tr>
-										<th scope="col" style="text-align: center; font-size: 15px;">번호</th>
-										<th scope="col" style="text-align: center; font-size: 15px;">부서명</th>
-										<th scope="col" style="text-align: center; font-size: 15px;">인원 수</th>
-										<th scope="col" style="text-align: center; font-size: 15px;">개설일</th>
-										<th scope="col" style="text-align: center; font-size: 15px;">수정/삭제</th>
-									</tr>
-								</thead>
-
-								<tbody>
-									<!-- 부서 목록이 비어 있을 때 -->
-									<th:block th:if="${#lists.isEmpty(resultList.content)}">
-										<tr>
-											<td colspan="6" style="text-align: center;">부서 목록이 없습니다.</td>
-										</tr>
-									</th:block>
-									<!-- 부서 목록 표시 -->
-									<th:block th:if="${!#lists.isEmpty(resultList.content)}">
-										<tr th:each="departments, deptStat : ${resultList.content}">
-											<td th:text="${(resultList.pageable.pageSize)*(resultList.pageable.pageNumber)+deptStat.count}" style="text-align: center;"></td>
-											<td th:text="${departments.deptName}" style="text-align: center;"></td>
-											<td th:text="${departments.empCount ?: 0} + '명'" style="text-align: center;"></td>
-											<td th:text="${#temporals.format(departments.deptCreateDate, 'yyyy-MM-dd')}" style="text-align: center;"></td>
-											<td>
-												<ul class="list-inline hstack gap-2 mb-0" style="text-align: center;">
-													<li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit"><a href="#editDept" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn"> <i class="ri-pencil-fill fs-16"></i>
-													</a></li>
-
-													<li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove"><a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteModal"> <i class="ri-delete-bin-5-fill fs-16"></i>
-													</a></li>
-												</ul>
-											</td>
-										</tr>
-									</th:block>
-								</tbody>
-							</table>
-
-							<!-- 부서 수정 모달 -->
-							<div id="editDept" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered">
-									<div class="modal-content">
-										<div class="modal-header bg-light p-3">
-											<h5 class="modal-title">부서명 수정</h5>
-											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
-										</div>
-										<form class="tablelist-form" autocomplete="off">
-											<div class="modal-body">
-												<div class="mb-3">
-													<label for="customername-field" class="form-label" style="font-size: 15px;">부서명</label> <input type="text" class="form-control" required />
-													<div class="invalid-feedback"></div>
-												</div>
-											</div>
-											<div class="modal-footer">
-												<div class="hstack gap-2 justify-content-end">
-													<button type="submit" class="btn btn-success" id="add-btn">수정</button>
-												</div>
-											</div>
-										</form>
-
-									</div>
-								</div>
-							</div>
-							<!-- 모달 창 끝 -->
-
-
-							<br>
-							<div class="col-lg-6">
-								<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
-									<ul class="pagination" th:with="
-									        pageNumber = ${resultList.pageable.pageNumber},
-									        pageSize = ${resultList.pageable.pageSize},
-									        totalPages = ${resultList.totalPages},
-									        startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-									        tempEndPage = ${startPage + pageSize - 1},
-									        endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
-									        ">
-										<!-- 이전 -->
-										<th:block th:if="${!resultList.first}">
-											<li class="page-item"><a class="page-link" th:href="${resultList.first} ? '#' : @{/admin/dept(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a></li>
-										</th:block>
-										<!-- * 컬렉션을 반복하는 것이 아니라 단순히 숫자만 반복할때 #numbers사용 -->
-										<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
-											<li class="page-item"><a class="page-link" th:text="${page}" th:href="@{/admin/dept(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
-										</th:block>
-										<ul class="pagination listjs-pagination mb-0"></ul>
-										<!-- 이후 -->
-										<th:block th:if="${!resultList.last}">
-											<li class="page-item"><a class="page-link" th:href="${resultList.last} ? '#' : @{/admin/dept(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a></li>
-										</th:block>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				</div>
 			</div>
 		</div>
 	</div>
 
-		<th:block layout:fragment="pagejs">
+	<th:block layout:fragment="pagejs">
 
 		<!-- <script src="/assets/libs/list.js/list.min.js"></script> -->
 		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>

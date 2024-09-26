@@ -116,7 +116,7 @@ public class AdminViewController {
 		// 관리자 비밀번호 확인 
 		if (!adminPw.equals("work1234")) {
 			response.put("success", false);
-			response.put("message", "관리자 비밀번호가 일치하지 않습니다.");
+			response.put("message", "비밀번호가 일치하지 않습니다.");
 			return response;
 		}
 
