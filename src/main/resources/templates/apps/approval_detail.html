@@ -42,6 +42,7 @@
 								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
 							<input type="hidden" th:value="${emp.empId}" id="login_id">
 							<br>
+							<div>
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-title-input">제목</label> <input
 									type="text" class="form-control" id="project-title-input"
@@ -96,62 +97,8 @@
 							<div th:text="${dto.approval.approvalContent}"
 								style="display: none" id="contentDiv"></div>
 							
-							<!-- 토스트 api -->
-							<div class="col-lg-11" style="margin-left: -15px;">
-								<label>내용</label>
-								<div id="approval_edit"></div>
-							</div>
-								<!-- <div id="reject_text" th:if="${dto.approval.approvalStatus == 3}">
-								    	<input type="text" th:value="${dto.reject.rejectComment}" >
-								</div> -->
-							<br>
-							<div style="margin-left: 1300px; margin-top: 60px;">
-							
-								<!-- 상태가 상신자일 경우 -->
-								<div
-									th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
-									<button type="button" class="btn btn-secondary w-sm"
-										id="revoke">회수</button>
-								</div>
-								
-								<!-- 상태가 합의자일 경우  -->
-								<div th:each="agree, iterStat : ${dto.agree}"
-									th:if="${agree.approvalStatus == 1 and emp.empId == agree.employee.empId}">
-									<button type="button" class="btn btn-secondary w-sm"
-										id="consent">승인</button>
-									<button type="button" class="btn btn-danger w-sm" id="reject">반려</button>
-								</div>
-								
-								<!-- 상태가 결재자일 경우  -->
-								<div th:each="approver, iterStat : ${dto.approver}"
-									th:if="${approver.approvalStatus == 1 and emp.empId == approver.employee.empId}">
-									<button type="button" class="btn btn-secondary w-sm"
-										id="consent">승인</button>
-									<button type="button" class="btn btn-danger w-sm" id="reject">반려</button>
-								</div>
-							</div>
-							
-							<!-- 반려 모달 -->
-							<div id="myModal" class="modal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-							    <div class="modal-dialog">
-							        <div class="modal-content" style="display: flex !important;">
-							            <div class="modal-header">
-							                <h5 class="modal-title" id="myModalLabel">반려사유</h5>
-							                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
-							            </div>
-							            <div class="modal-body">
-							                <textarea class=form-control id="textReject" style="width:400px; height:200px; resize: none;"></textarea>
-							            </div>
-							            <div class="modal-footer">
-							                <button type="submit" class="btn btn-primary" id="success">완료</button>
-							            </div>
-							        </div>
-							    </div>
-							</div>		
-							
-								
 							<!-- 합의자 결재자 -->
-							<div style="margin-top: -1050px; margin-left: 900px;">
+							<div style="position: absolute;  right:400px;  top: 0;">
 								<label>합의자</label>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
@@ -179,7 +126,7 @@
 										</td>
 									</tr>
 								</table>
-								<table style="border-collapse: collapse; border-spacing: 0;">
+								<table >
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
@@ -197,7 +144,7 @@
 								</table>
 								<br> <label>결재자</label>
 								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+									style=" border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
@@ -222,7 +169,7 @@
 										</td>
 									</tr>
 								</table>
-								<table style="border-collapse: collapse; border-spacing: 0;">
+								<table >
 									<tr>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
@@ -239,6 +186,68 @@
 									</tr>
 								</table>
 							</div>
+							</div>
+							
+							<!-- 토스트 api -->
+							<div class="col-lg-11" style="padding:100px;">
+								<label>내용</label>
+								<div id="approval_edit"></div>
+							</div>
+								<br>
+							
+								<div style="display: flex; justify-content: flex-end; align-items: center;">
+							
+								<!-- 상태가 상신자일 경우 -->
+								<div
+									th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
+									<button type="button" class="btn btn-secondary w-sm"
+										id="revoke">회수</button>
+								</div>
+								
+								<!-- 상태가 합의자일 경우  -->
+								<div th:each="agree, iterStat : ${dto.agree}"
+									th:if="${agree.approvalStatus == 1 and emp.empId == agree.employee.empId}">
+									<button type="button" class="btn btn-secondary w-sm"
+										id="consent">승인</button>
+									<button type="button" class="btn btn-danger w-sm" id="reject">반려</button>
+								</div>
+								
+								<!-- 상태가 결재자일 경우  -->
+								<div th:each="approver, iterStat : ${dto.approver}"
+									th:if="${approver.approvalStatus == 1 and emp.empId == approver.employee.empId}">
+									<button type="button" class="btn btn-secondary w-sm"
+										id="consent">승인</button>
+									<button type="button" class="btn btn-danger w-sm" id="reject">반려</button>
+								</div>
+							</div>
+							<div th:if="${dto.approval.approvalStatus == 3}" id="rejectInfo" style="display:none">
+								<h3>반려</h3>
+								<p>팀 : <span th:text="${reject.employee.departments.deptName}" ></span></p>
+								<p>직급 : <span th:text="${reject.employee.jobs.jobName}" ></span></p>
+								<p>이름 :<span th:text="${reject.employee.empName}" ></span></p>
+								<p>반려 이유 : <span th:text="${reject.rejectComment}" ></span></p>
+							</div>
+							
+							<!-- 반려 모달 -->
+							<div id="myModal" class="modal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+							    <div class="modal-dialog">
+							        <div class="modal-content" style="display: flex !important;">
+							            <div class="modal-header">
+							                <h5 class="modal-title" id="myModalLabel">반려사유</h5>
+							                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+							            </div>
+							            <div class="modal-body">
+							                <textarea class=form-control id="textReject" style="width:400px; height:200px; resize: none;"></textarea>
+							            </div>
+							            <div class="modal-footer">
+							                <button type="submit" class="btn btn-primary" id="success">완료</button>
+							            </div>
+							        </div>
+							    </div>
+							</div>		
+							
+								
+							
 						</form>
 					</div>
 				</div>
@@ -264,12 +273,21 @@
 		
 		<!-- 토스트 api 설정 -->
 		<script>
+			const reject= document.getElementById('rejectInfo');
 			const content = document.getElementById('contentDiv');
+			console.log(reject);
+			// 결과 값 초기 설정
+			let initialContent = content.textContent.trim();
+			
+			 if (reject != null) {
+		            initialContent += reject.innerHTML
+		        }
+			
 			const contentEditor = new toastui.Editor({
                 el: document.querySelector('#approval_edit'),
                 width: '1300px',
                 height: '500px',
-                initialValue: content.textContent,
+                initialValue: initialContent,
                 initialEditType: 'wysiwyg',
                 previewStyle: 'vertical',
                 hideModeSwitch: true

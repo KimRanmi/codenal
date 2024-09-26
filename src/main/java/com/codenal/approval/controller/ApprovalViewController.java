@@ -171,6 +171,7 @@ public class ApprovalViewController {
 		// 반려 상태 가져오기
 		Approver reject = approverService.findReject(approval_no);
 		
+		
 		model.addAttribute("dto", resultList);
 		model.addAttribute("type", typeInt);
 		model.addAttribute("cateList", cateList);

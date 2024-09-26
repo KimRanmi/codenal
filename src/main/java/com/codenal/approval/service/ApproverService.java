@@ -6,6 +6,10 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.annual.domain.AnnualLeaveUsage;
+import com.codenal.annual.repository.AnnualLeaveManageRepository;
+import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.Approver;
 import com.codenal.approval.domain.Referrer;
@@ -24,13 +28,19 @@ public class ApproverService {
 	private final ApprovalRepository approvalRepository;
 	private final EmployeeRepository employeeRepository;
 	private final ReferrerRepository referrerRepository;
+	private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
+	private final AnnualLeaveManageRepository annualLeaveManageRepository;
 
 	public ApproverService(ApproverRepository approverRepository, ApprovalRepository approvalRepository,
-			EmployeeRepository employeeRepository, ReferrerRepository referrerRepository) {
+			EmployeeRepository employeeRepository, ReferrerRepository referrerRepository,
+			AnnualLeaveUsageRepository annualLeaveUsageRepository,
+			AnnualLeaveManageRepository annualLeaveManageRepository) {
 		this.approverRepository = approverRepository;
 		this.approvalRepository = approvalRepository;
 		this.employeeRepository = employeeRepository;
 		this.referrerRepository = referrerRepository;
+		this.annualLeaveUsageRepository = annualLeaveUsageRepository;
+		this.annualLeaveManageRepository = annualLeaveManageRepository;
 	}
 
 	// 결재자, 합의자 등록 (상태 수정)
@@ -166,7 +176,7 @@ public class ApproverService {
 		int status = 1;
 		int approverStatus = 2;
 		int app = 0;
-
+		
 		// 결재 시간
 		LocalDateTime ldt = LocalDateTime.now();
 
@@ -183,13 +193,18 @@ public class ApproverService {
 
 		// 결재자 상태 변경
 		app = approverRepository.updateStatus(approverStatus, ldt, no, loginId);
-		System.out.println("출력 : " + app);
 
 		// 다음 결재자 상태 변경
 		approverRepository.updateNextEmpIdStatus(no, currentPriority + 1);
 
 		// 마지막 결재자인 경우 전자결재 완료 처리
 		if (currentPriority == approverCount) {
+			AnnualLeaveUsage alu = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
+			System.out.println("출력 : "+alu.getTotalDay()+alu.getEmployee().getEmpId());
+			if(alu != null) {
+				int result = annualLeaveManageRepository.updateDay(alu.getEmployee().getEmpId(),alu.getTotalDay());
+				System.out.println("결과 : "+result);
+			}
 			approvalRepository.updateStatus(2, no);
 		}
 
@@ -208,7 +223,10 @@ public class ApproverService {
 
 			// 결재자 상태 변경
 			app = approverRepository.updateReject(approverStatus, rejectText,ldt, no, loginId);
+			
+			
 			if(app > 0) {
+				
 				approvalRepository.updateStatus(3, no);
 			}
 

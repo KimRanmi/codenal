@@ -25,25 +25,24 @@
 </head>
 
 <body>
-    <div>
         <div layout:fragment="content">
             <div th:replace="partials/page-title :: page-title('상신함','전자결재')"></div>
             <div>
                 <div class="row">
-                    <div class="col-xxl-9">
+                    <div class="col-lg-12">
                         <div class="card" id="companyList">
-                            <div class="card-header" style="height: 800px; width: 1840px;">
-                                <div class="row g-2">
-                                    <div>
-                                        <div>
+                            <div class="card-header border-0" >
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="d-flex flex-wrap gap-2">
                                             <select style="height: 37.67px; width: 100px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
                                                 <option>전체기간</option>
                                                 <option>한달</option>
                                                 <option>6개월</option>
                                                 <option>일년</option>
                                             </select>
-                                            <input type="text" value="제목" disabled style="margin-left: 5px; height: 37.67px; width: 70px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
-                                            <div class="search-box" style="width: 300px; margin-left: 190px; margin-top: -38px; height: 37.67px;">
+                                            <input type="text" value="제목" disabled style="margin-left: 5px; width: 70px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
+                                            <div class="search-box">
                                                 <input type="text" class="form-control search"> 
                                                 <i class="ri-search-line search-icon"></i>
                                             </div>
@@ -120,15 +119,10 @@
                                                 <td>결재자</td>
                                                 <td>처리날짜</td>
                                             </tr>
+                                            
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-                        </div>
-                        <!--end card-->
-                    </div>
-                    <!--end col-->
-                    <div class="col">
+                                    <div class="col">
 				    <div class="pagination-wrapper">
 				        <div class="pagination" style="margin-top:700px;"
 				             th:with="pageNumber=${resultList.pageable.pageNumber}, 
@@ -158,22 +152,29 @@
 				        </div>
 				    </div>
 				</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <!--end col-->
 
                 </div>
                 <!--end col-->
             </div>
             <!--end row-->
-        </div>
-
         <th:block layout:fragment="modal"></th:block>
-
         <th:block layout:fragment="pagejs">
             <script src="/assets/libs/list.js/list.min.js"></script>
             <script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
             <script src="/assets/js/pages/crm-companies.init.js"></script>
             <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
         </th:block>
-    </div>
+
+        </div>
+
+    
 </body>
 
 </html>

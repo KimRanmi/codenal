@@ -59,7 +59,7 @@ public class Approval {
     @JoinColumn(name="cate_code")
     private ApprovalCategory approvalCategory;
     
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="annual_usage_no")
     private AnnualLeaveUsage annualLeaveUsage;
     

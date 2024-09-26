@@ -50,7 +50,7 @@
 								type="hidden" id="csrf_token" th:value="${_csrf.token}" /> <input
 								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
 							<input type="hidden" th:value="${emp.empId}" id="login_id">
-
+							<div>
 							<!-- 제목 출력 status가 4일 때는 회수함일 때 이때는 disabled 처리 X -->
 							<div class="mb-3" style="width: 600px;">
 								<input type="hidden" name="approvalNo" id="approvalNo"
@@ -135,55 +135,8 @@
 									</select>
 								</div>
 							</div>
-							<div class="mb-3">
-								<label class="form-label" for="references">수신참조자</label><br>
-								<input id="references" type="text"
-									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-									class="form-control" readonly data-id="">
-							</div>
-							<br>
-							<div th:text="${dto.approval.approvalContent}"
-								style="display: none" id="contentDiv"></div>
-							<!-- 토스트 api -->
-							<div class="col-lg-11" style="margin-left: -15px;">
-								<label>내용</label>
-								<div id="approval_edit"></div>
-							</div>
-							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로 -> 이건 나중에 수정해야함  -->
-							<br>
-							<div style="margin-left: 1300px; margin-top: 60px;">
-								<div>
-									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
-									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
-								</div>
-							</div>
-
-							<!-- 모달 생성 -->
-							<div class="modal fade" id="staticBackdrop"
-								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-								role="dialog" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered" role="document">
-									<div class="modal-content">
-										<div class="modal-header">
-											<h5 class="modal-title" id="myModalLabel">직원 등록</h5>
-											<button type="button" class="btn-close"
-												data-bs-dismiss="modal" aria-label="Close"></button>
-										</div>
-										<div class="modal-body text-left">
-											<div id="treeMenu"></div>
-											<div id="treeAdd"></div>
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-light"
-												data-bs-dismiss="modal">초기화</button>
-											<button type="button" class="btn btn-success" id="successBtn">완료</button>
-										</div>
-									</div>
-								</div>
-							</div>
-
 							<!-- 합의자, 결재자 선택( 수정 할 때는 다시 선택)  -->
-							<div style="margin-top: -1080px; margin-left: 900px;">
+							<div style=" position: absolute;  right:400px;  top: 0;">
 								<button type="button" class="btn btn-light waves-effect"
 									id="button_modal1">합의자</button>
 								<table
@@ -241,6 +194,52 @@
 											class="selectedName2" data-group="approver"></td>
 									</tr>
 								</table>
+							</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label" for="references">수신참조자</label><br>
+								<input id="references" type="text"
+									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
+									class="form-control" readonly data-id="">
+							</div>
+							<div th:text="${dto.approval.approvalContent}"
+								style="display: none" id="contentDiv"></div>
+							<!-- 토스트 api -->
+							<div class="col-lg-11" style="margin-left: -15px;">
+								<label>내용</label>
+								<div id="approval_edit"></div>
+							</div>
+							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로 -> 이건 나중에 수정해야함  -->
+							<br>
+							<div style="margin-left: 1350px; margin-top: 30px;">
+								<div>
+									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
+									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
+								</div>
+							</div>
+
+							<!-- 모달 생성 -->
+							<div class="modal fade" id="staticBackdrop"
+								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+								role="dialog" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="myModalLabel">직원 등록</h5>
+											<button type="button" class="btn-close"
+												data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div class="modal-body text-left">
+											<div id="treeMenu"></div>
+											<div id="treeAdd"></div>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-light"
+												data-bs-dismiss="modal">초기화</button>
+											<button type="button" class="btn btn-success" id="successBtn">완료</button>
+										</div>
+									</div>
+								</div>
 							</div>
 
 						</form>
