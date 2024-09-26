@@ -18,7 +18,7 @@ public class MeetingRoomDto {
 	private long meeting_room_no;
 	private String meeting_room_name;
 	private String meeting_room_place;
-	private String meeting_room_info;
+	private String meeting_room_amenity;
 	private String meeting_room_img;
 	
 	public MeetingRoom toEntity() {
@@ -26,7 +26,7 @@ public class MeetingRoomDto {
 				.meetingRoomNo(meeting_room_no)
 				.meetingRoomName(meeting_room_name)
 				.meetingRoomPlace(meeting_room_place)
-				.meetingRoomInfo(meeting_room_info)
+				.meetingRoomAmenity(meeting_room_amenity)
 				.meetingRoomImg(meeting_room_img)
 				.build();
 	}
@@ -36,7 +36,7 @@ public class MeetingRoomDto {
 				.meeting_room_no(mr.getMeetingRoomNo())
 				.meeting_room_name(mr.getMeetingRoomName())
 				.meeting_room_place(mr.getMeetingRoomPlace())
-				.meeting_room_info(mr.getMeetingRoomInfo())
+				.meeting_room_amenity(mr.getMeetingRoomAmenity())
 				.meeting_room_img(mr.getMeetingRoomImg())
 				.build();
 	}

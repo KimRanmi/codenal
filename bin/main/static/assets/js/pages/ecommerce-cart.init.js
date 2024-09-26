@@ -6,6 +6,52 @@ Contact: Themesbrand@gmail.com
 File: Ecommerce cart Js File
 */
 
+const csrfToken = document.getElementById('csrf_token').value;
+const empId = document.getElementById("empId").value;
+
+fetch('/meetingRoom', {
+	method: 'POST',
+	headers: {
+		'X-CSRF-TOKEN': csrfToken
+	}
+})
+.then(response => response.json())
+.then(data => {
+	console.log(data.meetingRoom);
+})
+
+fetch('/meetingRoomReserveList/'+empId, {
+	method: 'POST',
+	headers: {
+		'X-CSRF-TOKEN': csrfToken
+	}
+})
+.then(response => response.json())
+.then(data => {
+	console.log(data.reserveList);
+})
+
+const deleteReserve=(event) => {
+	
+	let reserveNo = event.id;
+	console.log(reserveNo);
+	if(confirm("예약을 취소하시겠습니까?")){
+		fetch('/reserveDelete/'+reserveNo,{
+			method:'delete',
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			}
+		})
+		.then(response => response.json())
+		.then(data=>{
+			if(data != null){
+				location.reload();
+				alert('취소되었습니다.');
+			}
+		})
+		
+	}
+}
 
 var taxRate = 0.125;
 var shippingRate = 65.00;
@@ -63,8 +109,19 @@ var removeProduct = document.getElementById('removeItemModal')
 if (removeProduct)
     removeProduct.addEventListener('show.bs.modal', function (e) {
         document.getElementById('remove-product').addEventListener('click', function (event) {
+			console.log(event);
             e.relatedTarget.closest('.product').remove();
             document.getElementById("close-modal").click();
             recalculateCart();
         });
     });
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
