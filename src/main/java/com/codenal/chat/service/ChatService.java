@@ -3,6 +3,7 @@ package com.codenal.chat.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -140,7 +141,9 @@ public class ChatService {
 		// 메시지 상태들이 'Y'인 메시지 불러오기
 //		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
 		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
-		
+	    
+		Hibernate.initialize(chatRoom.getMessages());
+
 		return chatRoom;
 	}
 	

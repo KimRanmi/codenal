@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -38,23 +40,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		    System.out.println("New connection established: " + session.getId());
+		    // 연결 알림을 JSON 형식으로 보냄
+			/*
+			 * JSONObject json = new JSONObject(); json.put("message", "연결되었습니다.");
+			 * session.sendMessage(new TextMessage(json.toString())); // JSON 형식으로 보냄
+			 */		   
+		            
+		            
 
-		    int roomNo = Integer.parseInt((String) session.getAttributes().get("room_no"));
-		    Long participantId = Long.valueOf(session.getPrincipal().getName());
-		    ChatRoom room = chatService.selectChatRoomOne(roomNo, participantId);
-		    	    
-		    	    for (ChatMsg msg : room.getMessages()) {
-		    	        Map<String, Object> resultMap = new HashMap<>();
-						resultMap.put("res_code", "200");
-						resultMap.put("res_msg", "채팅 메시지 조회를 완료했습니다.");
-		    	        resultMap.put("send_date", msg.getSendDate());
-		    	        resultMap.put("msg_type", Character.toString(msg.getMsgType()));
-		    	        resultMap.put("msg_content", msg.getMsgContent());
-		    	        resultMap.put("sender_no", msg.getChatParticipant().getParticipantNo());
-		    	        
-		    	        String json = new ObjectMapper().writeValueAsString(resultMap);
-		    	        session.sendMessage(new TextMessage(json)); // 초기 메시지 전송
-		    	    }
 
 		}
 	
@@ -74,9 +67,49 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 			
 			switch(msg.getChat_type()){
 				case "open":
-					clients.put(msg.getSender_no(), session); // 클라이언트 등록
+					// JSON 파싱
+					JSONObject json = new JSONObject(message.getPayload());
+					String chatType = json.getString("chat_type");
+					String roomNo = json.getString("room_no");
+					int userNo = json.getInt("participant_no");
+					clients.put(userNo, session); // 클라이언트 등록
 					System.out.println("=== 등록 확인 ===");
 					System.out.println("현재 접속중인 클라이언트: " + clients);
+
+		            // 방 번호와 채팅 타입을 세션에 저장
+		            session.getAttributes().put("chat_type", chatType);
+		            session.getAttributes().put("room_no", roomNo);
+
+		            System.out.println("채팅 타입 저장: " + chatType);
+		            System.out.println("방 번호 저장: " + roomNo);
+
+				    int roomno = Integer.parseInt((String) session.getAttributes().get("room_no"));
+				    Long participantId = Long.valueOf(session.getPrincipal().getName());
+				    ChatRoom room = chatService.selectChatRoomOne(roomno, participantId);
+				    	    
+				    	    for (ChatMsg chat : room.getMessages()) {
+				    	        Map<String, Object> result = new HashMap<>();
+				    	        result.put("res_code", "200");
+				    	        result.put("res_msg", "채팅 메시지 조회를 완료했습니다.");
+				    	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+								LocalDateTime sendDate = chat.getSendDate();
+								result.put("send_date", sendDate.format(formatter)); // LocalDateTime을 문자열로 변환하여 Map에 저장
+				    	        result.put("msg_type", Character.toString(chat.getMsgType()));
+				    	        result.put("msg_content", chat.getMsgContent());
+				    	        result.put("sender_no", chat.getChatParticipant().getParticipantNo());
+				    	        
+				    	        
+				    	        TextMessage resultMsg 
+								= new TextMessage(objectMapper.writeValueAsString(result));
+				    	        for (WebSocketSession client : clients.values()) {
+							        if (client.isOpen()) {  // 세션이 열려있는지 확인
+							            System.out.println("Sending message to client: " + client);
+							            client.sendMessage(resultMsg);
+							        } else {
+							            System.out.println("Client " + " is not connected.");
+							        }
+							    }
+				    	    }
 				break;
 				case "msg":
 					  // 메시지를 DB에 저장

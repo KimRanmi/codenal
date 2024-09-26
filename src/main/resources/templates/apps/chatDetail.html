@@ -119,11 +119,15 @@
 								<div th:each="participant : ${chat.participants}">
 									<!-- 나의 참가자 번호 조회 -->
 									<div th:if="${participant.employee.empId == #authentication.principal.employeeDto.empId}">
-										<input type="hidden" th:value="${participant.participantNo}" id="sender_no">
+										<input type="text" th:value="${participant.participantNo}" id="sender_no">
+										<input type="text" th:value="${participant.employee.empName}" id="sender_name">
+										
 									</div>
 									<!-- 나를 제외한 참가자 번호 조회 -->
 									<div th:if="${participant.employee.empId != #authentication.principal.employeeDto.empId}">
-										<input type="hidden" th:value="${participant.participantNo}" id="participant_no">
+									    <input type="text" th:value="${participant.participantNo}" id="participant_no" class="participant_no">
+									    <input type="text" th:value="${participant.employee.empName}" id="participant_name" class="participant_name">
+									    <input type="text" th:value="${participant.employee.empProfilePicture}" id="participant_profile" class="participant_profile">
 									</div>
 								</div>
 									<!-- 이부분 동적으로 불러오기 -->
@@ -214,99 +218,144 @@
 	let socket;
 	
 	document.addEventListener('DOMContentLoaded', function() {
+    	event.preventDefault();
+	    console.log(document.getElementById('room_no').value);
+	    console.log(document.getElementById('csrf_token').value);
+	    console.log(document.getElementById('sender_no').value);
+	    const roomNo = document.getElementById('room_no').value;
+	    const userNo = document.getElementById('sender_no').value;
+	    console.log(roomNo);
+
 		socket = new WebSocket("ws://localhost:8083/chatting");
 	
+	    // 서버에 접속했을 때 실행될 함수
+	    socket.onopen = () => {
+	        console.log("=== 접속 ===");
+	        console.log(roomNo);
+	        const obj = {
+	            chat_type: "open",
+	            room_no: roomNo,
+	            participant_no: userNo
+	        };
+	        socket.send(JSON.stringify(obj)); // 서버로 방 번호 전송
+	    };
+	
+	    
 		socket.onmessage = (response) => {
 		    // JSON 파싱 및 에러 핸들링
 		    try {
 		        const resp = JSON.parse(response.data);
-		        if (resp.res_code == '200') {
+		        
 		            const pageHost = document.getElementById('sender_no').value;
 		            const senderNo = resp.sender_no;
 		            console.log(senderNo);
 		            // 현재 사용자가 보낸 메시지인지 확인
 		            const isSender = pageHost == senderNo;
-		            printMsg(resp.msg_content, isSender, resp.send_date, resp.msg_type);
-		        } else {
-		            alert(resp.res_msg);
-		        }
+		            printMsg(resp.msg_content, senderNo, isSender, resp.send_date, resp.msg_type);
+
 		    } catch (error) {
 		        console.error("JSON 파싱 오류:", error);
 		    }
 		};
 
-		// 메시지 동적으로 추가
-		const printMsg = function(msg, isSender, sendDate, msgType) {
-		    console.log("프린트 메소드로 받아왔다 : " + msg + ", 송신자 여부: " + isSender + ", 메시지 타입: " + msgType + ", 보낸 날짜: " + sendDate);
+		const printMsg = function(msg, senderNo, isSender, sendDate, msgType) {
+		    console.log("프린트 메소드로 받아왔다 : " + msg + ", 보낸사람 : " + senderNo + ", 송신자 여부: " + isSender + ", 메시지 타입: " + msgType + ", 보낸 날짜: " + sendDate);
 
+		    // 메시지 리스트 아이템 생성
 		    const li = document.createElement("li");
 		    li.className = 'my_chat';
 		    li.style.display = 'flex';
 		    li.style.alignItems = 'center';
 		    li.style.marginBottom = '40px';
 
+		    // participants 정보 가져오기
+		    const participantNos = document.querySelectorAll('.participant_no');
+		    const participantNames = document.querySelectorAll('.participant_name');
+		    const participantProfiles = document.querySelectorAll('.participant_profile');
+
 		    if (msgType === '1') {
-		        // msgType이 1일 때 가운데 정렬
-		        li.style.textAlign = 'center';
+		        // 메시지 타입 1일 때 처리
 		        const msgDiv = document.createElement("div");
 		        msgDiv.className = 'user-chat-content';
-		        msgDiv.style.display = 'inline-block';
+		        msgDiv.style.maxWidth = '300px';
+		        msgDiv.style.wordWrap = 'break-word';
+		        msgDiv.style.textAlign = 'center';
 
 		        const textDiv = document.createElement("div");
-		        textDiv.className = 'conversation-name';
+		        textDiv.className = 'conversation-name badge-soft-dark rounded p-2';
 		        textDiv.textContent = msg;
 
 		        msgDiv.appendChild(textDiv);
 		        li.appendChild(msgDiv);
-		    } else if (msgType === '2') {
+		    } 
+		    else if (msgType === '2') {
 		        // msgType이 2일 때
-		        const chatContentDiv = document.createElement("div");
-		        chatContentDiv.className = 'user-chat-content';
-		        chatContentDiv.style.maxWidth = '300px';
-		        chatContentDiv.style.wordWrap = 'break-word';
+		        let participantName = "알수없음"; // 기본값 설정
+		        let participantProfile = '/assets/images/users/avatar-1.jpg'; // 기본 프로필 이미지 설정
 
-		        const conversationDiv = document.createElement("div");
-		        conversationDiv.className = 'conversation-name badge-soft-dark rounded p-2';
-		        conversationDiv.textContent = msg;
+		        let participantFound = false; // 참가자 발견 여부
 
-		        if (isSender) {
-		            // 본인이 보낸 메시지일 때
-		            li.style.justifyContent = 'flex-end';
-		            conversationDiv.style.textAlign = 'left';
-		            chatContentDiv.appendChild(conversationDiv);
-		        } else {
-		            // 상대방이 보낸 메시지일 때
-		            li.style.justifyContent = 'flex-start';
+		        participantNos.forEach((participantNo, index) => {
+		            console.log("번호 비교할 대상 : " + participantNo.value);
+		            console.log("메시지 보낸이 : " + senderNo);
 
-		            const imgDiv = document.createElement("div");
-		            imgDiv.className = 'chat-avatar';
-		            imgDiv.style.flexShrink = '0';
-		            const img = document.createElement("img");
-		            img.src = '/assets/images/users/avatar-1.jpg'; // 기본 이미지 경로 설정
-		            imgDiv.appendChild(img);
-		            li.appendChild(imgDiv);
+		            // 보낸 사람의 이름과 프로필을 찾기 위한 조건 수정
+		            if (!isSender && participantNo.value !== senderNo) {
+		                participantName = participantNames[index]?.value || "Unknown";
+		                participantProfile = participantProfiles[index]?.value || '/assets/images/users/avatar-1.jpg';
+		                participantFound = true; // 참가자를 찾았음을 기록
+		            }
+		        });
 
-		            conversationDiv.style.textAlign = 'left';
-		            chatContentDiv.style.marginLeft = '10px';
 
-		            chatContentDiv.appendChild(conversationDiv);
+		     // 추가적인 처리: participantFound가 true일 경우에만 해당 정보 사용
+		        if (participantFound) {
+		            // 프로필 이미지 생성
+		            const profileImg = document.createElement("img");
+		            profileImg.src = participantProfile;
+		            profileImg.style.width = '40px';
+		            profileImg.style.height = '40px';
+		            profileImg.style.borderRadius = '50%';
+
+		            // 메시지 내용 추가
+		            const chatContentDiv = document.createElement("div");
+		            chatContentDiv.className = 'user-chat-content';
+		            chatContentDiv.style.maxWidth = '300px';
+		            chatContentDiv.style.wordWrap = 'break-word';
+
+		            const conversationDiv = document.createElement("div");
+		            conversationDiv.className = 'conversation-name badge-soft-dark rounded p-2';
+		            conversationDiv.textContent = msg; // 메시지 내용 추가
+
+		            // 시간 추가
+		            const timeSmall = document.createElement("small");
+		            timeSmall.className = 'text-muted time';
+		            timeSmall.textContent = new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+		            // DOM에 추가
+		            if (!isSender) {
+		                li.style.justifyContent = 'flex-start';
+		                li.appendChild(profileImg); // 프로필 이미지 추가
+		                chatContentDiv.textContent = participantName; // 참가자 이름 추가
+		                chatContentDiv.appendChild(conversationDiv);
+		                chatContentDiv.appendChild(timeSmall);
+		                li.appendChild(chatContentDiv);
+		            } else {
+		                // 본인이 보낸 경우
+		                li.style.justifyContent = 'flex-end';
+		                conversationDiv.style.textAlign = 'left';
+		                chatContentDiv.appendChild(conversationDiv);
+		                chatContentDiv.appendChild(timeSmall);
+		                li.appendChild(chatContentDiv);
+		            }
 		        }
-
-		        // 시간 추가
-		        const timeSmall = document.createElement("small");
-		        timeSmall.className = 'text-muted time';
-		        timeSmall.textContent = new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-		        chatContentDiv.appendChild(timeSmall);
-		        li.appendChild(chatContentDiv);
-		    }
-
-		    // users-conversation 요소에 li를 자식으로 추가
-		    const conversationElement = document.getElementById("users-conversation");
-		    if (conversationElement) {
-		        conversationElement.appendChild(li);
-		    } else {
-		        console.error("users-conversation 요소를 찾을 수 없습니다.");
+		        // 메시지를 users-conversation에 추가
+		        const conversationElement = document.getElementById("users-conversation");
+		        if (conversationElement) {
+		            conversationElement.appendChild(li);
+		        } else {
+		            console.error("users-conversation 요소를 찾을 수 없습니다.");
+		        }
 		    }
 		};
 	
@@ -314,21 +363,7 @@
 	        console.log("WebSocket closed. Attempting to reconnect...");
 	    };
 	
-	    // 서버에 접속했을 때 실행될 함수
-	    socket.onopen = () => {
-	        console.log("=== 접속 ===");
-	        const roomNo = document.getElementById('room_no').value;
-	        const csrfToken = document.getElementById(csrf_token).value;
-	        console.log(roomNo);
-	        const obj = {
-	            chat_type: "open",
-	            room_no: roomNo,
-	            headers: {
-	                'X-CSRF-TOKEN': csrfToken
-	            }
-	        };
-	        socket.send(JSON.stringify(obj)); // 서버로 방 번호 전송
-	    };
+
 	
 	    // 메시지 전송 버튼 클릭 시 이벤트 리스너
 	    document.getElementById('send_btn').addEventListener('click', function() {
@@ -358,6 +393,7 @@
 	        msg_type: '2'
 	    };
 	};
+
 
 </script>
 	</th:block>
