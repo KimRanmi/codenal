@@ -119,15 +119,15 @@
 								<div th:each="participant : ${chat.participants}">
 									<!-- 나의 참가자 번호 조회 -->
 									<div th:if="${participant.employee.empId == #authentication.principal.employeeDto.empId}">
-										<input type="text" th:value="${participant.participantNo}" id="sender_no">
-										<input type="text" th:value="${participant.employee.empName}" id="sender_name">
+										<input type="hidden" th:value="${participant.participantNo}" id="sender_no">
+										<input type="hidden" th:value="${participant.employee.empName}" id="sender_name">
 										
 									</div>
 									<!-- 나를 제외한 참가자 번호 조회 -->
 									<div th:if="${participant.employee.empId != #authentication.principal.employeeDto.empId}">
-									    <input type="text" th:value="${participant.participantNo}" id="participant_no" class="participant_no">
-									    <input type="text" th:value="${participant.employee.empName}" id="participant_name" class="participant_name">
-									    <input type="text" th:value="${participant.employee.empProfilePicture}" id="participant_profile" class="participant_profile">
+									    <input type="hidden" th:value="${participant.participantNo}" id="participant_no" class="participant_no">
+									    <input type="hidden" th:value="${participant.employee.empName}" id="participant_name" class="participant_name">
+									    <input type="hidden" th:value="${participant.employee.empProfilePicture}" id="participant_profile" class="participant_profile">
 									</div>
 								</div>
 									<!-- 이부분 동적으로 불러오기 -->
@@ -300,7 +300,7 @@
 		            console.log("메시지 보낸이 : " + senderNo);
 
 		            // 보낸 사람의 이름과 프로필을 찾기 위한 조건 수정
-		            if (!isSender && participantNo.value !== senderNo) {
+		            if (participantNo.value !== senderNo) {
 		                participantName = participantNames[index]?.value || "Unknown";
 		                participantProfile = participantProfiles[index]?.value || '/assets/images/users/avatar-1.jpg';
 		                participantFound = true; // 참가자를 찾았음을 기록
