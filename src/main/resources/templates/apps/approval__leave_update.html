@@ -59,7 +59,8 @@ select, input[type=date], input[type=text], #totalDay {
 							<input type="hidden" th:value="${emp.empId}" id="login_id">
 						
 							<br>
-							<div>
+							<div style="display: flex; justify-content: space-between;">
+							<div class="w-50">
 							<div class="mb-3" style="width: 600px;">
 								<input type="hidden" name="approvalNo" id="approvalNo"
 									th:value="${dto.approval.approvalNo}"> 
@@ -138,10 +139,11 @@ select, input[type=date], input[type=text], #totalDay {
 												<input type="number" th:value="${dto.annualLeaveUsage.totalDay}" id="totalDay" style="width:50px;">
 										</div>
 									</div>
+								</div>	
 								</div>
 							</div>
 							<!-- 합의자, 결재자 선택  -->
-							<div style=" position: absolute;  right:400px;  top: 0;">
+							<div style="flex-direction: column; margin-top: 0px;" class="w-50">
 								<button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;" >
@@ -198,23 +200,22 @@ select, input[type=date], input[type=text], #totalDay {
 								</table>
 							</div>
 							
-							
 							</div>
+							
 							<div th:text="${dto.approval.approvalContent}"
 								style="display: none" id="contentDiv"></div>
 							<!-- 토스트 API -->
-							<div class="col-lg-11" style="margin-left: 35px;">
+							<div class="col-lg-11 p-0.5">
 								<label>내용</label>
 								<div id="approval_edit"></div>
-							</div>
-
-							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로  -->
+								<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로  -->
 							<br>
-							<div style="margin-left: 1300px; margin-top: 30px;">
+							<div style="float:right;">
 								<div>
 									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
 									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
 								</div>
+							</div>
 							</div>
 							
 							<!-- 모달 생성 -->
@@ -233,15 +234,14 @@ select, input[type=date], input[type=text], #totalDay {
 							                <button type="button" class="btn btn-light" data-bs-dismiss="modal">초기화</button>
 							                <button type="button" class="btn btn-success" id="successBtn">완료</button>
 							            </div>
-							        </div>
 							    </div>
 							</div>
-						</form>
 					</div>
+						</form>
 				</div>
 			</div>
 		</div>
-		
+		</div>
 		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 		<script
 			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

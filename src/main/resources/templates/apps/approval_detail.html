@@ -42,8 +42,9 @@
 								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
 							<input type="hidden" th:value="${emp.empId}" id="login_id">
 							<br>
-							<div>
-							<div class="mb-3" style="width: 600px;">
+							<div style="display: flex; justify-content: space-between;">
+								<div class="w-50">
+							<div class="mb-3" >
 								<label class="form-label" for="project-title-input">제목</label> <input
 									type="text" class="form-control" id="project-title-input"
 									th:value="${dto.approval.approvalTitle}" name="approval_title"
@@ -96,9 +97,10 @@
 							<br>
 							<div th:text="${dto.approval.approvalContent}"
 								style="display: none" id="contentDiv"></div>
-							
+							</div>
 							<!-- 합의자 결재자 -->
-							<div style="position: absolute;  right:400px;  top: 0;">
+							<div style="flex-direction: column; margin-top: 0px;"
+									class="w-50">
 								<label>합의자</label>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
@@ -187,15 +189,12 @@
 								</table>
 							</div>
 							</div>
-							
 							<!-- 토스트 api -->
-							<div class="col-lg-11" style="padding:100px;">
+							<div class="col-lg-11" style="margin-left: -15px;">
 								<label>내용</label>
 								<div id="approval_edit"></div>
-							</div>
 								<br>
-							
-								<div style="display: flex; justify-content: flex-end; align-items: center;">
+								<div style="float:right;">
 							
 								<!-- 상태가 상신자일 경우 -->
 								<div
@@ -220,6 +219,9 @@
 									<button type="button" class="btn btn-danger w-sm" id="reject">반려</button>
 								</div>
 							</div>
+							</div>
+								
+							
 							<div th:if="${dto.approval.approvalStatus == 3}" id="rejectInfo" style="display:none">
 								<h3>반려</h3>
 								<p>팀 : <span th:text="${reject.employee.departments.deptName}" ></span></p>

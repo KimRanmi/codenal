@@ -88,7 +88,8 @@ select, input[type=date], input[type=text], #totalDay {
 				<div style="background-color: white; width: 1750px; height: 1250px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<br>
-						<div>
+						<div style="display: flex; justify-content: space-between;">
+							<div class="w-50">
 						<div class="mb-3" style="width: 600px;">
 							<input type="hidden" th:value="${emp.empSignImage}" id="sign_img">
 							<input type="hidden" th:value="${emp.empId}" id="login_id">
@@ -161,20 +162,9 @@ select, input[type=date], input[type=text], #totalDay {
 							</div>
 						</div>
 					</div>
-					<br>
-					<div th:text="${dto.approval.approvalContent}"
-						style="display: none" id="contentDiv">
-					</div>
-					<div th:if="${dto.approval.approvalStatus == 3}" id="rejectInfo" style="display:none">
-							<h3>반려</h3>
-							<p>팀 : <span th:text="${reject.employee.departments.deptName}" ></span></p>
-							<p>직급 : <span th:text="${reject.employee.jobs.jobName}" ></span></p>
-							<p>이름 :<span th:text="${reject.employee.empName}" ></span></p>
-							<p>반려 이유 : <span th:text="${reject.rejectComment}" ></span></p>
-					</div>		
-					
+					<br>	
 					<!-- 합의자 결재자 확인 -->
-					<div style=" position: absolute;  right:400px;  top: 0;">
+					<div style="flex-direction: column; margin-top: 0px;" class="w-50">
 						<label>합의자</label>
 						<table
 							style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
@@ -264,14 +254,23 @@ select, input[type=date], input[type=text], #totalDay {
 							</tr>
 						</table>
 					</div>
-						
+						</div>
 					</div>
+					
+					<div th:text="${dto.approval.approvalContent}" style="display: none" id="contentDiv"></div>
+		    		<div th:if="${dto.approval.approvalStatus == 3}" id="rejectInfo" style="display:none">
+				        <h3>반려</h3>
+				        <p>팀 : <span th:text="${reject.employee.departments.deptName}"></span></p>
+				        <p>직급 : <span th:text="${reject.employee.jobs.jobName}"></span></p>
+				        <p>이름 : <span th:text="${reject.employee.empName}"></span></p>
+				        <p>반려 이유 : <span th:text="${reject.rejectComment}"></span></p>
+				    </div>
+					
 					<!-- 토스트 api -->
-					<div class="col-lg-11">
-						<label>내용</label>
-						<div id="approval_edit"></div>
-						<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 수신자에게는 승인 반려로 -> 승인 반려 처리 완료되면 버튼 x  -->
-					<br>
+					<div class="col-lg-11 p-0.5" style="margin-left: 2.3rem;">
+		    			<label>내용</label><br>
+		    		<div id="approval_edit"></div>
+		    		<br>	
 					<div style="float:right;">
 						<div
 							th:if="${dto.employee.empId == emp.empId and dto.approval.approvalStatus == 0}">
@@ -288,12 +287,6 @@ select, input[type=date], input[type=text], #totalDay {
 							<button type="button" class="btn btn-danger w-sm" id="reject">반려</button>
 						</div>
 					</div>
-						
-						
-						
-					</div>
-					<div id="reject_text" th:if="${dto.approval.approvalStatus == 3}" style="display:none">
-							<input type="text" th:value="${reject.rejectComment}" id="rejectId">
 					</div>
 					
 					<!-- 반려 모달 -->

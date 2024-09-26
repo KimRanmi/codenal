@@ -122,36 +122,49 @@
                                             
                                         </tbody>
                                     </table>
-                                    <div class="col">
-				    <div class="pagination-wrapper">
-				        <div class="pagination" style="margin-top:700px;"
-				             th:with="pageNumber=${resultList.pageable.pageNumber}, 
-				                      pageSize=${resultList.pageable.pageSize}, 
-				                      totalPages=${resultList.totalPages}, 
-				                      startPage=${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-				                      tempEndPage=${startPage + pageSize - 1},
-				                      endPage=${tempEndPage < totalPages ? tempEndPage : totalPages}">
-				            
-				            <th:block th:if="${resultList.totalElements > 0}">
-				                <!-- 이전 페이지 링크 -->
-				                <th:block th:if="${resultList.hasPrevious()}">
-				                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber - 1})}" class="page-link">&lt;</a>
-				                </th:block>
-				
-				                <!-- 페이지 숫자 링크 -->
-				                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
-				                    <a th:text="${page}" th:href="@{/approval/list(num=${num}, page=${page - 1})}"
-				                       th:classappend="${page == pageNumber + 1} ? 'active' : ''" class="page-link"></a>
-				                </th:block>
-				
-				                <!-- 다음 페이지 링크 -->
-				                <th:block th:if="${resultList.hasNext()}">
-				                    <a th:href="@{/approval/list(num=${num}, page=${pageNumber + 1})}" class="page-link">&gt;</a>
-				                </th:block>
-				            </th:block>
-				        </div>
-				    </div>
-				</div>
+                     <th:block layout:fragment="pagejs">
+    <div>
+        <ul class="pagination" style="margin-top: 700px;"
+            th:with="pageNumber=${resultList.pageable.pageNumber}, 
+                     pageSize=${resultList.pageable.pageSize}, 
+                     totalPages=${resultList.totalPages}, 
+                     startPage=${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+                     tempEndPage=${startPage + pageSize - 1},
+                     endPage=${tempEndPage < totalPages ? tempEndPage : totalPages}">
+            
+            <!-- 이전 페이지 링크 -->
+            <li class="page-item" th:classappend="${!resultList.hasPrevious()} ? 'disabled' : ''">
+                <th:block th:if="${resultList.hasPrevious()}">
+                    <a class="page-link" th:href="@{/approval/list(num=${num}, page=${pageNumber - 1})}">&lt;</a>
+                </th:block>
+                <th:block th:if="${!resultList.hasPrevious()}">
+                    <span class="page-link">&lt;</span>
+                </th:block>
+            </li>
+
+            <th:block th:if="${resultList.totalElements > 0}">
+                <!-- 페이지 숫자 링크 -->
+                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+                    <li class="page-item" th:classappend="${page == pageNumber + 1} ? 'active' : ''">
+                        <a th:text="${page}" 
+                           th:href="@{/approval/list(num=${num}, page=${page - 1})}" 
+                           class="page-link"></a>
+                    </li>
+                </th:block>
+
+                <!-- 다음 페이지 링크 -->
+                <li class="page-item" th:classappend="${!resultList.hasNext()} ? 'disabled' : ''">
+                    <th:block th:if="${resultList.hasNext()}">
+                        <a class="page-link" th:href="@{/approval/list(num=${num}, page=${pageNumber + 1})}">&gt;</a>
+                    </th:block>
+                    <th:block th:if="${!resultList.hasNext()}">
+                        <span class="page-link">&gt;</span>
+                    </th:block>
+                </li>
+            </th:block>
+        </ul>
+    </div>
+</th:block>
                                 </div>
                             </div>
                         </div>
@@ -165,12 +178,12 @@
             </div>
             <!--end row-->
         <th:block layout:fragment="modal"></th:block>
-        <th:block layout:fragment="pagejs">
+       
             <script src="/assets/libs/list.js/list.min.js"></script>
             <script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
             <script src="/assets/js/pages/crm-companies.init.js"></script>
             <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
-        </th:block>
+        
 
         </div>
 

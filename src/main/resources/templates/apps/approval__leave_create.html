@@ -51,7 +51,8 @@ select, input[type=date], #totalDay {
 						<form id="approvalForm">
 							<input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
 							<br>
-							<div>
+							<div style="display: flex; justify-content: space-between;">
+							<div class="w-50">
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-title-input">제목</label> <input
 									type="text" class="form-control" id="project-title-input"
@@ -112,10 +113,11 @@ select, input[type=date], #totalDay {
 										</select>
 									</div>
 								</div>
+								</div>
 							</div>
 							<br>
 							<!-- 합의자, 결재자 선택  -->
-							<div style=" position: absolute;  right:400px;  top: 0; flex-wrap: wrap;" >
+							<div style="flex-direction: column; margin-top: 0px;" class="w-50" >
 								<button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;"
@@ -173,19 +175,18 @@ select, input[type=date], #totalDay {
 									</tr>
 								</table>
 							</div>
-							
 							</div>
 							<!-- 토스트 api -->
-							<div class="col-lg-11" style="margin-left: -15px;">
+							<div class="col-lg-11 p-0.5" >
 								<label>내용</label>
 								<div id="approval_edit"></div>
-							</div>
-							<!-- 버튼 -->
+								<!-- 버튼 -->
 							<br>
-							<div style="margin-left: 1350px; margin-top: 30px;">
-								<button type="submit" class="btn btn-secondary w-sm">올리기</button>
+							<div style="float:right;">
+								<button type="submit" class="btn btn-secondary w-sm">상신</button>
 								<button type="submit" class="btn btn-danger w-sm"
 									onclick="history.back()">취소</button>
+							</div>
 							</div>
 
 							<!-- 모달 생성 -->
