@@ -43,7 +43,7 @@
 							<!-- ------------------------직원 정보----------------------------- -->
 							<div class="tab-pane active" id="personalUpdate" role="tabpanel">
 								<form
-									th:action="@{/admin/update/{empId}(empId=${employeeUpdate.empId})}"
+									th:action="@{|/admin/update/${employeeUpdate.empId}|}"
 									th:object="${employeeUpdate}" method="post">
 									<input type="hidden" th:name="${_csrf.parameterName}"
 										th:value="${_csrf.token}" />

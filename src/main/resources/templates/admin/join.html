@@ -70,7 +70,7 @@
 										<label for="admin-new-address" class="form-label" style="font-size: 16px; font-weight: bold;">주소</label>
 										<div class="input-group"> 
 											<input type="text" class="form-control" id="admin-new-address" th:field="*{empAddress}" placeholder="주소를 검색하세요." />
-											<button type="button" class="btn btn-success btn-sm" onclick="openDaumPostcode()">주소 찾기</button>
+											<button type="button" class="btn btn-success btn-md" onclick="openDaumPostcode()">주소 찾기</button>
 										</div>
 									</div>
 								</div>															
@@ -111,17 +111,18 @@
 									</div>
 								</div>
 
-
 								<!-- 입사일 + 퇴사일 -->
 								<div class="col-lg-6">
 									<div class="was-validated">
 										<label for="admin-new-hire" class="form-label" style="font-size: 16px; font-weight: bold;"> 입사일 
-										<span class="text-danger">*</span>
-										</label> <input type="text" class="form-control" id="admin-new-hire" th:field="*{empHire}" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="입사일을 선택하세요." required />
+										<span class="text-danger">*</span></label>
+											<div class="input-group">
+												<input type="text" class="form-control" id="admin-new-hire" th:field="*{empHire}" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="입사일을 선택하세요." required />
+												<span class="input-group-text"><i class="ri-calendar-event-line"></i></span>
 										<div class="invalid-feedback">필수 정보</div>
+											</div>
 									</div>
 								</div>
-
 
 								<div class="col-lg-6">
 									<div>
@@ -147,6 +148,7 @@
 
 	<th:block layout:fragment="pagejs">
 	<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script src="/assets/libs/fullcalendar/main.min.js"></script>
 
 		<script>
 	    /* 개인 번호 (010-0000-0000) */
