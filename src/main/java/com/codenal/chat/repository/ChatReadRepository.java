@@ -19,4 +19,7 @@ public interface ChatReadRepository extends JpaRepository<ChatRead, Integer>{
 	@Query(value="UPDATE ChatRead r SET r.isReceiverRead = 'Y' WHERE r.chatParticipant.participantNo = ?1")
 	void updateByRead(int participantNo);
 
+	
+    Long countByChatParticipant_ParticipantNoAndIsReceiverRead(Integer participantNo, Character readStatus);
+
 }

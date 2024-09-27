@@ -72,7 +72,7 @@
 																<a class="dropdown-item" href="#"><i
 																class="ri-toggle-fill align-bottom text-muted me-2"></i>
 																알림 스위치</a> 
-																<a class="dropdown-item" href="#"><i
+																<a class="dropdown-item" th:href="@{/chatList/leaveChatRoom/{roomNo}(roomNo=${chat.roomNo})}"><i
 																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
 																채팅방 나가기</a>
 														</div>
@@ -91,7 +91,7 @@
 																<a class="dropdown-item" href="#"><i
 																class=" ri-edit-2-line align-bottom text-muted me-2"></i>
 																채팅방 이름 변경</a> 
-																<a class="dropdown-item" href="#"><i
+																<a class="dropdown-item" th:href="@{/chatList/leaveChatRoom/{roomNo}(roomNo=${chat.roomNo})}"><i
 																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
 																채팅방 나가기</a>
 														</div>
@@ -404,7 +404,7 @@
 
 	
 	    // 메시지 전송 버튼 클릭시 이벤트 리스너
-	    document.getElementById('send_btn').addEventListener('click', function() {
+	    document.getElementById('send_btn').addEventListener('click', function(event) {
 	    	event.preventDefault();
 	        const msg = document.getElementById('chat_input').value;
 	        const obj = setMsgObj('msg', msg);

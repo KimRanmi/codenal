@@ -9,7 +9,8 @@ import com.codenal.chat.domain.ChatMsg;
 
 public interface ChatMsgRepository extends JpaRepository<ChatMsg, Integer>{
 
-	@Query(value="SELECT m FROM ChatMsg m WHERE m.chatRoom = ?1 AND m.msgStatus = 'Y' ")
-	List<ChatMsg> findAllById(int roomNo);
+	@Query(value="SELECT m FROM ChatMsg m WHERE m.chatRoom = ?1 AND m.msgStatus = 'Y' AND m.sendDate >=(SELECT p.participateDate FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participantNo = ?2) ")
+	List<ChatMsg> findAllById(int roomNo, int userNo);
+
 
 }

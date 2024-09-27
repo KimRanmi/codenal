@@ -3,6 +3,7 @@ package com.codenal.chat.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.chat.domain.ChatParticipants;
@@ -30,5 +31,9 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
 	// 내가 선택한 채팅방의 참가번호
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.employee = ?2 ")
 	ChatParticipants findByEmpId(ChatRoom roomNo, Employee empId);
+
+	@Modifying
+	@Query(value="UPDATE ChatParticipants c SET c.participateStatus = 'N' WHERE c.chatRoom = ?1 AND c.employee = ?2 ")
+	int updateByParticipateStatus(ChatRoom roomNo, Employee empId);
 
 }

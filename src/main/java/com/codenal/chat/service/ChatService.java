@@ -1,7 +1,9 @@
 package com.codenal.chat.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +130,21 @@ public class ChatService {
 	}
 
 	
+	public Map<Integer, Long> countUnreadMessagesForParticipants(String username) {
+		List<ChatParticipants> participants = participantListSelect(username);
+        Map<Integer, Long> unreadCounts = new HashMap<>();
+
+        for (ChatParticipants participant : participants) {
+            int participantNo = participant.getParticipantNo(); // 참가자 No
+            // 각 참가자에 대한 안 읽은 메시지 수 계산
+            Long unreadCount = chatReadRepository.countByChatParticipant_ParticipantNoAndIsReceiverRead(participantNo, 'N');
+            unreadCounts.put(participantNo, unreadCount);
+            System.out.println("ParticipantNo: " + participantNo + ", UnreadCount: " + unreadCount);
+        }
+
+        return unreadCounts;
+    }
+	
 	
 	// chat detail 부분
 	@Transactional
@@ -138,8 +155,10 @@ public class ChatService {
 		Employee employee = employeeRepository.findByEmpId(empId);
 		// 내 참가자 번호 불러오기
 		ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
-		// 메시지 상태들이 'Y'인 메시지 불러오기
-//		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
+		
+		// 추가 초대한 경우 메시지 불러오는거 수정해야함
+		// 메시지 상태들이 'Y'이면서 내가 채팅방에 참여한 날짜 이후부터의 메시지만 불러오기
+//		List<ChatMsg> msgs = chatMsgRepository.findAllById(roomNo, chatParticipant.getParticipantNo());
 		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
 	    
 		Hibernate.initialize(chatRoom.getMessages());
@@ -147,6 +166,18 @@ public class ChatService {
 		return chatRoom;
 	}
 	
+	// 추가 초대한 경우 메시지 불러오는거 수정 함께 해야함
+	@Transactional
+	public List<ChatMsg> selectChatMsgList(int roomNo, Long empId) {
+		ChatRoom chatRoom = chatRoomRepository.findByRoomNo(roomNo);
+		Employee employee = employeeRepository.findByEmpId(empId);
+		// 내 참가자 번호 불러오기
+		ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
+	    // 메시지 상태들이 'Y'이면서 내가 채팅방에 참여한 날짜 이후부터의 메시지만 불러오기
+		List<ChatMsg> msgs = chatMsgRepository.findAllById(roomNo, chatParticipant.getParticipantNo());
+		return msgs;
+	
+	}
 	
 	// 메시지 전송시 생성
 	@Transactional
@@ -173,6 +204,18 @@ public class ChatService {
 			
 			}
 			return savedMsg;
+	}
+
+
+
+	public int removeUserFromRoom(int roomNo, Long empId) {
+		int result = -1;
+		
+		if(chatParticipantsRepository.updateByParticipateStatus(roomNo, empId) > 0) {
+			result = 1;
+		}
+		
+		return result;
 	}
 
 }
