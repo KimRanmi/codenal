@@ -15,7 +15,7 @@
 		<div th:replace="partials/page-title :: page-title('회의실 예약 확인','회의실 예약')"></div>
 		<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
 		<input type="hidden" id="empId" th:value="${empId}">
-		<div class="row mb-3">
+		<div class="row mb-3" id="reset">
 			<div class="col-xl-12">
 				<div class="row align-items-center gy-3 mb-3">
 					<div class="col-sm">
@@ -23,10 +23,10 @@
 							<h5 class="fs-14 mb-0">회의실 예약 내역(총 <span th:text="${#lists.size(reserveList)}">03</span>개)</h5>
 						</div>
 					</div>
-					<div class="col-sm-auto">
+					<!-- <div class="col-sm-auto">
 						<a href="/apps-ecommerce-product-details" class="link-primary text-decoration-underline">
 						회의실 예약하기</a>
-					</div>
+					</div> -->
 				</div>
 
 				<div class="row text-muted fw-bold fs-18 justify-content-center align-items-center" th:if="${#lists.isEmpty(reserveList)}" style="height: 500px">
@@ -34,14 +34,15 @@
 				</div>
 				<div class="card product" th:if="${!#lists.isEmpty(reserveList)}" th:each="reserveList : ${reserveList}">
 					<div class="card-body">
+					<input type="hidden" id="reserveNo" th:value="${reserveList.meeting_room_reserve_no}">
 						<div class="row gy-3" >
 							<div class="col-sm-auto">
-								<div class="avatar-lg bg-light rounded p-1" th:style=" 'background-image: url('+${reserveList.meeting_room_img}+'); background-repeat: no-repeat; background-size: cover; background-position: center'">
+								<div class="avatar-lg bg-light rounded p-1" th:style=" 'background-image: url(/meetingRoomImg/'+${reserveList.meeting_room_img}+'); background-repeat: no-repeat; background-size: cover; background-position: center'">
 									<!-- <img th:src="${meetingRoomDetail.meeting_room_img}" alt="" class="img-fluid d-block"> -->
 								</div>
 							</div>
 							<div class="col-sm">
-								<h5 class="fs-16 text-truncate fw-medium"><a href="/apps-ecommerce-product-details"
+								<h5 class="fs-16 text-truncate fw-medium"><a href="/apps-meeting-room"
 										class="text-dark" th:text="${reserveList.meeting_room_name}">회의실 명</a></h5>
 								
 								<div class='hstack gap-3 flex-wrap mb-4'>
@@ -70,11 +71,13 @@
 							<div class="col-sm">
 								<div class="d-flex flex-wrap my-n1">
 									<div>
-										<a href="#" class="d-block text-body p-1 px-2"><i
+										<!-- <a href="#" class="d-block text-body p-1 px-2" data-bs-toggle="modal" data-bs-target="#removeItemModal" th:attr="id=${reserveList.meeting_room_reserve_no}"><i
+												class="ri-delete-bin-fill text-muted align-bottom me-1"></i> 예약 취소</a> -->
+											<a href="#" class="d-block text-body p-1 px-2" onclick="deleteReserve(this)" th:attr="id=${reserveList.meeting_room_reserve_no}"><i
 												class="ri-delete-bin-fill text-muted align-bottom me-1"></i> 예약 취소</a>
 									</div>
 									<div>
-										<a href="#" class="d-block text-body p-1 px-2"><i
+										<a th:href="@{/reserveModify/{no}(no=${reserveList.meeting_room_reserve_no})}" class="d-block text-body p-1 px-2"><i
 												class="ri-star-fill text-muted align-bottom me-1"></i> 예약 변경</a>
 									</div>
 								</div>
@@ -90,7 +93,7 @@
 
 
 				<div class="text-end mb-4">
-					<a href="/apps-ecommerce-product-details" class="btn btn-success btn-label right ms-auto"><i
+					<a href="/apps-meeting-room" class="btn btn-success btn-label right ms-auto"><i
 							class="ri-arrow-right-line label-icon align-bottom fs-16 ms-2"></i> 회의실 예약하기</a>
 				</div>
 			</div>
@@ -171,12 +174,12 @@
                     <div class="mt-2 text-center">
                         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                             <h4 class="fw-bold">예약을 취소하시겠습니까?</h4>
-                            <p class="text-muted mx-4 mb-0">예약을 취소할 경우 되돌리기가 불가능합니다.</p>
+                            <p class="text-muted mx-4 mb-0">예약을 취소할 경우 되돌릴 수 없습니다.</p>
                         </div>
                     </div>
                     <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">닫기</button>
-                        <button type="button" class="btn w-sm btn-danger" id="remove-product">예약 취소</button>
+                        <button type="button" class="btn w-sm btn-danger" id="remove-product" onclick="deleteReserve(this)">예약 취소</button>
                     </div>
                 </div>
 
@@ -189,7 +192,7 @@
     <script src="/assets/js/pages/form-input-spin.init.js"></script>
 
     <!-- ecommerce cart js -->
-    <script src="/assets/js/pages/ecommerce-cart.init.js"></script>
+    <script src="/assets/js/pages/meeting-room-reserve-list.init.js"></script>
 	</th:block>
 </body>
 

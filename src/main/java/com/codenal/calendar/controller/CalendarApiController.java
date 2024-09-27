@@ -33,6 +33,9 @@ public class CalendarApiController {
 		this.calendarService = calendarService;
 	}
 	
+	// 
+	
+	// 일정 작성자 정보 출력
 	@ResponseBody
 	@PostMapping("/eventWriter{id}")
 	public Map<String, Object> eventWriter(@PathVariable("id") Long empId){
@@ -47,6 +50,7 @@ public class CalendarApiController {
 		return result;
 	}
 	
+	// 일정 수정
 	@ResponseBody
 	@PostMapping("/modify/event")
 	public void modifyEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -67,6 +71,7 @@ public class CalendarApiController {
 		calendarService.modifyEvent(dto);
 	}
 	
+	// 일정 삭제
 	@ResponseBody
 	@DeleteMapping("/delete/event{id}")
 	public Map<String, String> deleteEvent(@PathVariable("id") Long eventNo){
@@ -76,6 +81,7 @@ public class CalendarApiController {
 		return result;
 	}
 	
+	// 일정 목록 조회
 	@ResponseBody
 	@PostMapping("/eventList{id}")
 	public Map<String, Object> selectEvent(@PathVariable("id") Long writer) {
@@ -107,6 +113,7 @@ public class CalendarApiController {
 		return resultEvent;
 	}
 	
+	// 일정 생성
 	@ResponseBody
 	@PostMapping("/create/event")
 	public void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

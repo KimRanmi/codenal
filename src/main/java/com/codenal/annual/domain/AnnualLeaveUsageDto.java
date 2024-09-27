@@ -42,6 +42,7 @@ public class AnnualLeaveUsageDto {
             .annual_usage_no(alu.getAnnualUsageNo())
             .annual_usage_start_date(alu.getAnnualUsageStartDate())
             .annual_usage_end_date(alu.getAnnualUsageEndDate())
+            .emp_id(alu.getEmployee().getEmpId()) // 내가 멋대로 추가한 거 허락 받을 것
             .annual_type(alu.getAnnualType())
             .time_period(alu.getTimePeriod())
             .total_day(alu.getTotalDay())
