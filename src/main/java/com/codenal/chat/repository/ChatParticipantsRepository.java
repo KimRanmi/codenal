@@ -16,9 +16,13 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.employee = ?1 AND p.participateStatus = 'Y' ")
 	List<ChatParticipants> findByChatRoom(Employee empId);
 
-	// 본인을 제외한 참여자 정보 조회
-	@Query(value="SELECT p FROM ChatParticipants p WHERE p.participateStatus = 'Y' AND p.employee != ?1 AND p.chatRoom IN (SELECT e.chatRoom FROM ChatParticipants e WHERE e.employee = ?1 AND e.participateStatus = 'Y' ) ")
+	// 본인을 제외한 참여자 정보 조회 (나가기 했을때 오류나서......)
+	@Query(value="SELECT p FROM ChatParticipants p WHERE p.employee != ?1 AND p.chatRoom IN (SELECT e.chatRoom FROM ChatParticipants e WHERE e.employee = ?1 AND e.participateStatus = 'Y' ) ")
 	List<ChatParticipants> findByNotMeChatRoom(Employee empId);
+
+//	// 본인을 제외한 참여자 정보 조회
+//	@Query(value="SELECT p FROM ChatParticipants p WHERE p.participateStatus = 'Y' AND p.employee != ?1 AND p.chatRoom IN (SELECT e.chatRoom FROM ChatParticipants e WHERE e.employee = ?1 AND e.participateStatus = 'Y' ) ")
+//	List<ChatParticipants> findByNotMeChatRoom(Employee empId);
 	
 	// 본인을 제외한 참여자 정보 조회
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.participantNo != ?2 ")
@@ -33,7 +37,13 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
 	ChatParticipants findByEmpId(ChatRoom roomNo, Employee empId);
 
 	@Modifying
-	@Query(value="UPDATE ChatParticipants c SET c.participateStatus = 'N' WHERE c.chatRoom = ?1 AND c.employee = ?2 ")
+	@Query(value="UPDATE ChatParticipants c SET c.participateStatus = 'N', c.exitDate=CURRENT_TIMESTAMP WHERE c.chatRoom = ?1 AND c.employee = ?2 ")
 	int updateByParticipateStatus(ChatRoom roomNo, Employee empId);
+	
+	@Query("SELECT COUNT(c) FROM ChatParticipants c WHERE c.chatRoom = ?1 AND c.participateStatus = 'Y'")
+	long countParticipantsWithStatusY(ChatRoom roomNo);
+
+	void deleteByChatRoom(ChatRoom chatRoom);
+
 
 }

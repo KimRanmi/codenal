@@ -114,18 +114,24 @@ public class ChatService {
 		return chatLists;
 	}
 	
-	// 내가 속하면서 나를 제외한 채팅방 참가자 정보 조회
+	// 내가 속하면서 나를 제외한 채팅방 참가자 정보 조회  -->>>> 나가는 로직에서....한명만 남으면 오류
 	public List<ChatParticipants> notMeParticipant(String username){
 		Long empId = Long.parseLong(username);
 		Employee emp = employeeRepository.findByEmpId(empId);
 		List<ChatParticipants> chatLists = chatParticipantsRepository.findByNotMeChatRoom(emp);
-		List<ChatParticipantsDto> chatListDto = new ArrayList<ChatParticipantsDto>();
-		for(ChatParticipants chatList :chatLists) {
-			ChatParticipantsDto dto = new ChatParticipantsDto().toDto(chatList);
-			dto.setRoom_no(chatList.getChatRoom().getRoomNo());
-			dto.setEmp_id(chatList.getEmployee().getEmpId());
-			chatListDto.add(dto);
+		if (chatLists != null) {
+			List<ChatParticipantsDto> chatListDto = new ArrayList<ChatParticipantsDto>();
+			for(ChatParticipants chatList :chatLists) {
+				ChatParticipantsDto dto = new ChatParticipantsDto().toDto(chatList);
+				dto.setRoom_no(chatList.getChatRoom().getRoomNo());
+				dto.setEmp_id(chatList.getEmployee().getEmpId());
+				chatListDto.add(dto);
+			}
+		} else {
+		    // chatParticipant가 null일 때의 처리 로직
+		    System.out.println("ChatParticipant 객체가 null입니다.");
 		}
+		
 		return chatLists;
 	}
 
@@ -135,7 +141,7 @@ public class ChatService {
         Map<Integer, Long> unreadCounts = new HashMap<>();
 
         for (ChatParticipants participant : participants) {
-            int participantNo = participant.getParticipantNo(); // 참가자 No
+            int participantNo = participant.getParticipantNo(); // 내 참가자 No 조회
             // 각 참가자에 대한 안 읽은 메시지 수 계산
             Long unreadCount = chatReadRepository.countByChatParticipant_ParticipantNoAndIsReceiverRead(participantNo, 'N');
             unreadCounts.put(participantNo, unreadCount);
@@ -207,15 +213,45 @@ public class ChatService {
 	}
 
 
-
+	@Transactional
 	public int removeUserFromRoom(int roomNo, Long empId) {
-		int result = -1;
-		
-		if(chatParticipantsRepository.updateByParticipateStatus(roomNo, empId) > 0) {
-			result = 1;
-		}
-		
-		return result;
+	    int result = -1;
+
+	    ChatRoom chatRoom = chatRoomRepository.findByRoomNo(roomNo);
+	    Employee employee = employeeRepository.findByEmpId(empId);
+	    ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
+	    
+	    if (chatParticipantsRepository.updateByParticipateStatus(chatRoom, employee) > 0) {
+	        ChatMsg target = ChatMsg.builder()
+	                .msgContent(employee.getEmpName() + "님이 채팅방에서 퇴장했습니다.")
+	                .chatRoom(chatRoom)
+	                .chatParticipant(chatParticipant)
+	                .msgStatus('Y')
+	                .msgType('1')
+	                .build();
+
+	        chatMsgRepository.save(target);
+
+	        boolean exists = chatParticipantsRepository.countParticipantsWithStatusY(chatRoom) > 0;
+
+	        if (!exists) {
+	            // 1) 읽음 테이블에서 해당 채팅방의 모든 데이터를 삭제 (ChatMsg 경유)
+	            chatReadRepository.deleteByChatRoom(chatRoom);
+
+	            // 2) 해당 채팅방의 메시지를 삭제
+	            chatMsgRepository.deleteByChatRoom(chatRoom);
+
+	            // 3) 해당 채팅방의 모든 참여자를 삭제
+	            chatParticipantsRepository.deleteByChatRoom(chatRoom);
+
+	            // 4) 마지막으로 채팅방 자체를 삭제
+	            chatRoomRepository.deleteById(roomNo);
+	        }
+
+	        result = 1;
+	    }
+
+	    return result;
 	}
 
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.codenal.chat.domain.ChatMsg;
 import com.codenal.chat.domain.ChatParticipants;
 import com.codenal.chat.domain.ChatRead;
+import com.codenal.chat.domain.ChatRoom;
 
 public interface ChatReadRepository extends JpaRepository<ChatRead, Integer>{
 
@@ -22,4 +23,8 @@ public interface ChatReadRepository extends JpaRepository<ChatRead, Integer>{
 	
     Long countByChatParticipant_ParticipantNoAndIsReceiverRead(Integer participantNo, Character readStatus);
 
+    
+    @Modifying
+    @Query("DELETE FROM ChatRead cr WHERE cr.chatMsg IN (SELECT cm FROM ChatMsg cm WHERE cm.chatRoom = ?1)")
+    void deleteByChatRoom(ChatRoom chatRoom);
 }
