@@ -258,6 +258,9 @@
 		    }
 		};
 
+		// 마지막으로 출력된 메시지의 날짜를 저장할 변수
+		let lastDisplayedDate = null;
+
 		const printMsg = function(msg, senderNo, isSender, sendDate, msgType) {
 		    console.log("프린트 메소드로 받아왔다 : " + msg + ", 보낸사람 : " + senderNo + ", 송신자 여부: " + isSender + ", 메시지 타입: " + msgType + ", 보낸 날짜: " + sendDate);
 
@@ -266,30 +269,55 @@
 		    li.className = 'my_chat';
 		    li.style.display = 'flex';
 		    li.style.alignItems = 'center';
-		    li.style.marginBottom = '40px';
+		    li.style.marginTop = '20px';
+		    li.style.marginBottom = '20px';
 
 		    // participants 정보 가져오기
 		    const participantNos = document.querySelectorAll('.participant_no');
 		    const participantNames = document.querySelectorAll('.participant_name');
 		    const participantProfiles = document.querySelectorAll('.participant_profile');
 
+		    // 날짜 형식을 yyyy-mm-dd로 변환 (비교를 위해)
+		    const currentMsgDate = new Date(sendDate).toISOString().split('T')[0];
+
+		    // 날짜가 변경되었을 때만 상단에 날짜 출력
+		    if (lastDisplayedDate !== currentMsgDate) {
+		        const dateDiv = document.createElement("div");
+		        dateDiv.className = 'chat-date badge-soft-primary rounded p-2';
+		        dateDiv.textContent = new Date(sendDate).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' });
+		        dateDiv.style.textAlign = 'center';  // 날짜는 중앙 정렬
+		        dateDiv.style.marginBottom = '10px';  // 날짜와 메시지 사이에 간격 추가
+
+		        // `users-conversation`에 날짜를 추가
+		        const conversationElement = document.getElementById("users-conversation");
+		        if (conversationElement) {
+		            conversationElement.appendChild(dateDiv);
+		        }
+		        // 마지막으로 출력된 날짜 업데이트
+		        lastDisplayedDate = currentMsgDate;
+		    }
+
+		    // 메시지 내용 처리 (msgType에 따른 처리)
 		    if (msgType === '1') {
-		        // 메시지 타입 1일 때 처리
+		        console.log('msgType 1 - 메시지를 추가합니다.');
 		        const msgDiv = document.createElement("div");
 		        msgDiv.className = 'user-chat-content';
 		        msgDiv.style.maxWidth = '300px';
 		        msgDiv.style.wordWrap = 'break-word';
-		        msgDiv.style.textAlign = 'center';
 
 		        const textDiv = document.createElement("div");
-		        textDiv.className = 'conversation-name badge-soft-dark rounded p-2';
+		        textDiv.className = 'conversation-name badge-soft-info rounded p-2';
 		        textDiv.textContent = msg;
+
+		        console.log('메시지 내용:', msg);
 
 		        msgDiv.appendChild(textDiv);
 		        li.appendChild(msgDiv);
-		    } 
+		        li.style.textAlign = 'center';
+		        li.style.justifyContent = 'center';
+		        console.log('li 요소:', li);
+		    }
 		    else if (msgType === '2') {
-		        // msgType이 2일 때
 		        let participantName = "알수없음"; // 기본값 설정
 		        let participantProfile = '/assets/images/users/avatar-1.jpg'; // 기본 프로필 이미지 설정
 
@@ -299,25 +327,27 @@
 		            console.log("번호 비교할 대상 : " + participantNo.value);
 		            console.log("메시지 보낸이 : " + senderNo);
 
-		            // 보낸 사람의 이름과 프로필을 찾기 위한 조건 수정
 		            if (participantNo.value !== senderNo) {
-		                participantName = participantNames[index]?.value || "Unknown";
+		                participantName = participantNames[index]?.value || "알수없음";
 		                participantProfile = participantProfiles[index]?.value || '/assets/images/users/avatar-1.jpg';
 		                participantFound = true; // 참가자를 찾았음을 기록
 		            }
 		        });
 
-
-		     // 추가적인 처리: participantFound가 true일 경우에만 해당 정보 사용
 		        if (participantFound) {
-		            // 프로필 이미지 생성
 		            const profileImg = document.createElement("img");
 		            profileImg.src = participantProfile;
 		            profileImg.style.width = '40px';
 		            profileImg.style.height = '40px';
+		            profileImg.style.marginRight = '10px';
 		            profileImg.style.borderRadius = '50%';
 
-		            // 메시지 내용 추가
+		            const nameDiv = document.createElement("div");
+		            nameDiv.className = 'user-chat-content';
+		            nameDiv.textContent = participantName; // 참가자 이름 추가
+		            nameDiv.style.maxWidth = '300px';
+		            nameDiv.style.wordWrap = 'break-word';
+
 		            const chatContentDiv = document.createElement("div");
 		            chatContentDiv.className = 'user-chat-content';
 		            chatContentDiv.style.maxWidth = '300px';
@@ -327,45 +357,53 @@
 		            conversationDiv.className = 'conversation-name badge-soft-dark rounded p-2';
 		            conversationDiv.textContent = msg; // 메시지 내용 추가
 
-		            // 시간 추가
+		            const timeDiv = document.createElement("div");
 		            const timeSmall = document.createElement("small");
 		            timeSmall.className = 'text-muted time';
 		            timeSmall.textContent = new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+		            timeDiv.appendChild(timeSmall);
 
-		            // DOM에 추가
 		            if (!isSender) {
+		                li.style.display = 'flex';
 		                li.style.justifyContent = 'flex-start';
 		                li.appendChild(profileImg); // 프로필 이미지 추가
-		                chatContentDiv.textContent = participantName; // 참가자 이름 추가
+		                chatContentDiv.appendChild(nameDiv); // 참가자 이름 추가
 		                chatContentDiv.appendChild(conversationDiv);
-		                chatContentDiv.appendChild(timeSmall);
+		                timeDiv.style.textAlign = 'right'; // 시간 위치
+		                chatContentDiv.appendChild(timeDiv);
 		                li.appendChild(chatContentDiv);
 		            } else {
-		                // 본인이 보낸 경우
+		                li.style.display = 'flex';
 		                li.style.justifyContent = 'flex-end';
-		                conversationDiv.style.textAlign = 'left';
+		                chatContentDiv.style.display = 'flex';
+		                chatContentDiv.style.flexDirection = 'column';
+		                chatContentDiv.style.alignItems = 'flex-end';
 		                chatContentDiv.appendChild(conversationDiv);
-		                chatContentDiv.appendChild(timeSmall);
+		                timeDiv.style.textAlign = 'left';
+		                chatContentDiv.appendChild(timeDiv);
 		                li.appendChild(chatContentDiv);
 		            }
 		        }
-		        // 메시지를 users-conversation에 추가
-		        const conversationElement = document.getElementById("users-conversation");
-		        if (conversationElement) {
-		            conversationElement.appendChild(li);
-		        } else {
-		            console.error("users-conversation 요소를 찾을 수 없습니다.");
-		        }
+		    }
+
+		    const conversationElement = document.getElementById("users-conversation");
+		    if (!conversationElement) {
+		        console.error("users-conversation 요소를 찾을 수 없습니다.");
+		    } else {
+		        console.log('users-conversation 요소:', conversationElement);
+		        conversationElement.appendChild(li); // li 추가
 		    }
 		};
 	
+
+		
 	    socket.onclose = () => {
-	        console.log("WebSocket closed. Attempting to reconnect...");
+	        console.log("웹소켓 연결 종료");
 	    };
 	
 
 	
-	    // 메시지 전송 버튼 클릭 시 이벤트 리스너
+	    // 메시지 전송 버튼 클릭시 이벤트 리스너
 	    document.getElementById('send_btn').addEventListener('click', function() {
 	    	event.preventDefault();
 	        const msg = document.getElementById('chat_input').value;
@@ -374,7 +412,7 @@
 	            socket.send(JSON.stringify(obj)); // 메시지 전송
 	            document.getElementById('chat_input').value = ""; // 입력 필드 초기화
 	        } else {
-	            alert("WebSocket이 열려 있지 않습니다.");
+	            alert("웹소켓 연결돼있지 않음...");
 	        }
 	    });
 	});
