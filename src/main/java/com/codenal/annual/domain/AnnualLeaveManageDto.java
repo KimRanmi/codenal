@@ -19,9 +19,9 @@ import lombok.ToString;
 public class AnnualLeaveManageDto {
 	
 	private Long annual_manage_no;
-	private int annual_total_day;
-	private int annual_used_day;
-	private int annual_remain_day;
+	private float annual_total_day;
+	private float annual_used_day;
+	private float annual_remain_day;
 	private Employee employee;
 	
 	public AnnualLeaveManage toEntity() {

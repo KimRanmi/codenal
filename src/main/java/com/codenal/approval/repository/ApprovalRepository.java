@@ -72,7 +72,9 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		
 		Approval findByApprovalNo(Long approvalNo);
 		
+		// 상태 수정
 		@Modifying
 		@Query(value="update Approval a set a.approvalStatus = ?1 where a.approvalNo = ?2")
 		int updateStatus(int status,Long approvalNo);
+		
 }

@@ -45,7 +45,7 @@ fetch('/meetingRoom', {
 									aria-controls='meetingRoomDetail"+data.meetingRoom[i].meeting_room_no+"'>\
 									<div class='d-flex align-items-center'>\
 										<div class='flex-shrink-0'>\
-											<div class='rounded' style='width: 150px; height: 100px; background-image: url("+data.meetingRoom[i].meeting_room_img+"); background-repeat: no-repeat; background-size: cover; background-position: center'>\
+											<div class='rounded' style='width: 150px; height: 100px; background-image: url(/meetingRoomImg/"+data.meetingRoom[i].meeting_room_img+"); background-repeat: no-repeat; background-size: cover; background-position: center'>\
 											</div>\
 										</div>\
 										<div class='flex-grow-1 ms-3 mb-5'>\
@@ -209,22 +209,22 @@ const reserve=(event)=> {
 	
 	console.log(event.value);
 	
-	let checkTime = [];
+	let listTime = [];
 		
 		for(let i=0; i<document.getElementsByClassName("reserve_time").length; i++){
 			if(document.getElementsByClassName("reserve_time")[i].checked == true){
-				checkTime.push(document.getElementsByClassName("reserve_time")[i].value);
+				listTime.push(document.getElementsByClassName("reserve_time")[i].value);
 			}
 		}
 	
-	console.log(checkTime);
+	console.log(listTime);
 	
 	let vali_check = false;
 	let vali_text = "";
-	if (document.getElementById("meeting_room_reserve_date").value == "") {
+	/*if (document.getElementById("meeting_room_reserve_date").value == "") {
 		vali_text += '예약 날짜를 선택하세요.';
-		/*formData.meeting_room_reserve_date.focus();*/
-	} else if (checkTime == "") {
+		formData.meeting_room_reserve_date.focus();
+	} else */if (listTime == "") {
 		vali_text += '예약 시간을 선택하세요.';
 		
 		/*예약 시간 첫번째 꺼 선택 안할 시 진행 안되는 거 해결하고 라디오 말고 셀렉트로도 할 수 있게 픽스*/
@@ -243,7 +243,7 @@ const reserve=(event)=> {
 		
 		
 		
-		console.log(document.getElementById("meeting_room_reserve_date").value.substring(0,2));
+		
 		let dateFormat = new Date();
 		dateFormat.setDate(document.getElementById("meeting_room_reserve_date").value.substring(0,2))
 		let reserveDate = dateFormat.getFullYear()+"-"+(dateFormat.getMonth()+1).toString().padStart(2, '0')+"-"+dateFormat.getDate().toString().padStart(2, '0');
@@ -264,17 +264,19 @@ const reserve=(event)=> {
 		})*/
 		
 		const xhr = new XMLHttpRequest();
-		xhr.open("post", "/meetingRoomReserve", true);
+		xhr.open("post", "/meetingRoomReserveModify", true);
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
-				alert('예약 되었습니다.');
-				/*location.reload="";*/
+				alert('변경 되었습니다.');
+				location.href="/apps-meeting-room-reserve-list";
 			}
 		}
+		var reserveNo = document.getElementById("reserveNo").value;
+		console.log("reserveNo:"+reserveNo+"meetingRoomNo:"+meetingRoomNo+"reserveDate:"+reserveDate+"listTime:"+listTime+"empId:"+empId);
 		const header = document.getElementById("_csrf_header").value;
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 		xhr.setRequestHeader(header, csrfToken);
-		xhr.send("meetingRoomNo="+meetingRoomNo+"&reserveDate="+reserveDate+"&reserveTime="+checkTime+"&reserveEmpId="+empId);
+		xhr.send("reserveNo="+reserveNo+"&meetingRoomNo="+meetingRoomNo+"&reserveDate="+reserveDate+"&reserveTime="+listTime+"&reserveEmpId="+empId);
 	}
 
 }
@@ -294,8 +296,8 @@ const deleteMeetingRoom=(event) => {
 		.then(response => response.json())
 		.then(data=>{
 			if(data != null){
+				alert(data.msg);
 				location.reload();
-				alert('삭제되었습니다.');
 			}
 		})
 		
