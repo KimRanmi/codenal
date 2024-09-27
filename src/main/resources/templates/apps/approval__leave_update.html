@@ -42,6 +42,25 @@ select, input[type=date], input[type=text], #totalDay {
 	border-radius: 4px;
 	height: 35px;
 }
+.ProseMirror.toastui-editor-contents {
+    text-align: center;
+    margin : auto;
+    font-family: black;
+    border-collapse: collapse;
+}
+
+.toastui-editor-contents table {
+    border-collapse: collapse; /* 테두리 간격 없애기 */
+    text-align : center;
+    margin : 0 auto;
+}
+
+.ProseMirror.toastui-editor-contents tr:first-child th,
+.ProseMirror.toastui-editor-contents tr:first-child td {
+    width: 600px !important; /* 첫 번째 tr 및 td 너비 설정 */
+    color: lightgrey;
+    height:50px;
+}
 </style>
 </head>
 <body>
@@ -105,17 +124,14 @@ select, input[type=date], input[type=text], #totalDay {
 								<select class="form-control" id="category-select"
 									style="width: 200px;" name="form_code"
 									onchange="updateEditorContent()">
-									<option value="">-- 선택하세요 --</option>
+									<option value="">양식을 선택하세요</option>
 									<option th:each="cate : ${cateList}"
 										th:value="${cate.form_code}" th:text="${cate.form_name}"
-										th:data-content="${cate.form_content}"
+										th:data-content="${cate.form_content}" th:attr="data-content=${cate.form_content}"
 										th:selected="${dto.approvalForm.formCode == cate.form_code}">
 									</option>
 								</select>
 								<div>
-									<div
-										style="margin-top: -30px; margin-left: 230px; color: #b9b9b9">
-										내 잔여연차 :</div>
 									<div style="margin-top: 30px; margin-bottom: 10px;">날짜</div>
 									<div id="dateContent" style="width: 1000px;">
 										<div th:if="${dto.approvalForm.formName.equals('반차')}">
@@ -204,12 +220,14 @@ select, input[type=date], input[type=text], #totalDay {
 							
 							<div th:text="${dto.approval.approvalContent}"
 								style="display: none" id="contentDiv"></div>
+							
 							<!-- 토스트 API -->
-							<div class="col-lg-11 p-0.5">
+							<div class="col-lg-11">
 								<label>내용</label>
 								<div id="approval_edit"></div>
-								<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로  -->
 							<br>
+							
+							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로  -->
 							<div style="float:right;">
 								<div>
 									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
@@ -385,6 +403,7 @@ select, input[type=date], input[type=text], #totalDay {
 <script>
     // 기존 데이터 불러오면서 토스트 api 설정.
     const contentDiv = document.getElementById('contentDiv');
+    console.log(contentDiv.textContent);
     const contentEditor = new toastui.Editor({
         el: document.querySelector('#approval_edit'),
         width: '1300px',
@@ -396,6 +415,7 @@ select, input[type=date], input[type=text], #totalDay {
     });
     
     document.addEventListener('DOMContentLoaded', () => {
+    	contentEditor();
         updateEditorContent();
     });
 
@@ -403,7 +423,15 @@ select, input[type=date], input[type=text], #totalDay {
     function updateEditorContent() {
         const selectElement = document.getElementById('category-select');
         const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const formContent = selectedOption.getAttribute('data-content');
+        let formContent = selectedOption.getAttribute('data-content');
+        
+        console.log(selectElement.value);
+
+        // 공백을 찾아서 띄어쓰기로 변환
+        formContent = formContent.replace(/ /g, (match) => '&nbsp;'.repeat(match.length));
+
+        // 줄바꿈을 <br>로 변환
+        formContent = formContent.replace(/\n/g, '<br>');
 
         // 토스트 에디터 내용 저장한 값 불러옴
         contentEditor.setHTML(formContent);

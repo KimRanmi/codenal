@@ -38,6 +38,25 @@
 	color: #9a9ba0;
 	font-size: 16px;
 }
+.ProseMirror.toastui-editor-contents {
+    text-align: center;
+    margin : auto;
+    font-family: black;
+}
+
+.toastui-editor-contents table {
+    border-collapse: collapse; /* 테두리 간격 없애기 */
+    text-align : center;
+    margin : 0 auto;
+}
+
+.ProseMirror.toastui-editor-contents tr:first-child th,
+.ProseMirror.toastui-editor-contents tr:first-child td {
+    width: 600px !important; /* 첫 번째 tr 및 td 너비 설정 */
+    color: lightgrey;
+    height:50px;
+}
+
 </style>
 
 </head>
@@ -177,10 +196,10 @@
 								<div id="approval_edit" name="approval_content"></div>
 								<br>
 								<div style="float:right;">
-								<button type="submit" class="btn btn-secondary w-sm">상신</button>
-								<button type="button" class="btn btn-danger w-sm"
-									onclick="history.back()">취소</button>
-							</div>
+									<button type="submit" class="btn btn-secondary w-sm">상신</button>
+									<button type="button" class="btn btn-danger w-sm"
+										onclick="history.back()">취소</button>
+								</div>
 							</div>
 
 							<!-- 모달 생성 -->
@@ -370,13 +389,19 @@
             initialEditType: 'wysiwyg',
             previewStyle: 'vertical',
             hideModeSwitch: true
+            
         });
         
         function updateEditorContent() {
             const selectElement = document.getElementById('category-select');
             const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const formContent = selectedOption.getAttribute('data-content');
+            let formContent = selectedOption.getAttribute('data-content');          
+            
+            // 공백을 찾아서 띄어쓰기로 변환
+             formContent = formContent.replace(/ /g, (match) => '&nbsp;'.repeat(match.length));
 
+            console.log(formContent);
+            
             // 토스트 에디터 내용 저장한 값 불러옴
             contentEditor.setHTML(formContent);
         }

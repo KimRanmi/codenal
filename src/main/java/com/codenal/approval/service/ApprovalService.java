@@ -86,6 +86,8 @@ public class ApprovalService {
          map.put("num", num);
          responseList.add(map);
       }
+      
+      System.out.println(approvalList.getTotalElements());
       return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
    

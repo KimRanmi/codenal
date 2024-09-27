@@ -39,6 +39,24 @@ select, input[type=date], #totalDay {
 	border-radius: 4px;
 	height: 35px;
 }
+.toastui-editor-contents table {
+    border-collapse: collapse; /* 테두리 간격 없애기 */
+    text-align : center;
+    margin : 0 auto;
+    background-color : white;
+}
+.ProseMirror.toastui-editor-contents {
+    text-align: center;
+    margin : auto;
+    font-family: black;
+    border-collapse: collapse;
+}
+.ProseMirror.toastui-editor-contents tr:first-child th,
+.ProseMirror.toastui-editor-contents tr:first-child td {
+    width: 600px !important; /* 첫 번째 tr 및 td 너비 설정 */
+    color: lightgrey;
+    height:50px;
+}
 </style>
 </head>
 <body>
@@ -83,7 +101,7 @@ select, input[type=date], #totalDay {
 									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
 									class="form-control" readonly data-id="">
 							</div>
-
+							<div th:value="${remainDay}" id="remainDay" style="display:none;"></div>
 							<!-- 양식 선택 -->
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-thumbnail-img">양식</label><br>
@@ -98,11 +116,6 @@ select, input[type=date], #totalDay {
 											th:value="${cate.form_code}"
 											th:data-content="${cate.form_content}"></option>
 									</select>
-									<div
-										style="margin-top: -30px; margin-left: 230px; color: #b9b9b9">
-										내 잔여연차 : <span th:text="${remainDay}" id="remainDay"></span>
-									</div>
-
 									<div style="margin-top: 30px; margin-bottom: 10px;">날짜</div>
 									<div id="dateContent" style="width: 1000px;">
 										<input type="date" style="width: 200px;" id="startDate">
@@ -177,16 +190,15 @@ select, input[type=date], #totalDay {
 							</div>
 							</div>
 							<!-- 토스트 api -->
-							<div class="col-lg-11 p-0.5" >
+							<div class="col-lg-11" style="margin-left: -15px;">
 								<label>내용</label>
-								<div id="approval_edit"></div>
-								<!-- 버튼 -->
-							<br>
-							<div style="float:right;">
-								<button type="submit" class="btn btn-secondary w-sm">상신</button>
-								<button type="submit" class="btn btn-danger w-sm"
-									onclick="history.back()">취소</button>
-							</div>
+								<div id="approval_edit" name="approval_content"></div>
+								<br>
+								<div style="float:right;">
+									<button type="submit" class="btn btn-secondary w-sm">상신</button>
+									<button type="button" class="btn btn-danger w-sm"
+										onclick="history.back()">취소</button>
+								</div>
 							</div>
 
 							<!-- 모달 생성 -->
@@ -470,8 +482,14 @@ select, input[type=date], #totalDay {
 		      function updateEditorContent() {
 			        const selectElement = document.getElementById('category-select');
 			        const selectedOption = selectElement.options[selectElement.selectedIndex];
-			        const formContent = selectedOption.getAttribute('data-content');
-
+			        let formContent = selectedOption.getAttribute('data-content');          
+		            
+		            // 공백을 찾아서 띄어쓰기로 변환
+		             formContent = formContent.replace(/ /g, (match) => '&nbsp;'.repeat(match.length));
+		            
+		          // 줄바꿈을 <br>로 변환
+		             formContent = formContent.replace(/\n/g, '<br>');
+			        
 			        // 토스트 에디터 내용 저장한 값 불러옴
 			        contentEditor.setHTML(formContent);
 			    }
@@ -489,7 +507,7 @@ select, input[type=date], #totalDay {
 			    const payload = new FormData(form);
 			    const csrfToken = document.getElementById('csrf_token').value;
 				
-			    const remainDay = parseFloat(document.getElementById('remainDay').innerText);
+			    const remainDay = parseFloat(document.getElementById('remainDay').value);
 			    const totalDay = parseFloat(document.getElementById('totalDay').value);
 			    
 			    // 1.합의자 값 가져오기

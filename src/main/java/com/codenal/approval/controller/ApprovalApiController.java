@@ -58,7 +58,10 @@ public class ApprovalApiController {
 		System.out.println("시작");
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 등록 중 오류가 발생했습니다.");
-
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
+		
 		// 타입 형변환
 		Long emp_id = Long.parseLong(empId);
 		Integer form_code = Integer.parseInt(formCode);
@@ -119,7 +122,11 @@ public class ApprovalApiController {
 		System.out.println("시작");
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 등록 중 오류가 발생했습니다.");
-
+		
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
+		
 		// 타입 형변환
 		Long emp_id = Long.parseLong(empId);
 		Integer form_code = Integer.parseInt(formCode);
@@ -202,7 +209,9 @@ public class ApprovalApiController {
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 수정 중 오류가 발생했습니다.");
-
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
 		// 날짜 최신 날짜로 수정
 		LocalDate ldt = LocalDate.now();
 
@@ -286,7 +295,9 @@ public class ApprovalApiController {
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 수정 중 오류가 발생했습니다.");
-
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
 		// 날짜 최신 날짜로 수정
 		LocalDate ldt = LocalDate.now();
 
