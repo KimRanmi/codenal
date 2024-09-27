@@ -30,7 +30,6 @@
 </head>
 
 <body>
-	<div>
 		<div layout:fragment="content">
 			<div th:replace="partials/page-title :: page-title('수신함','전자결재')"></div>
 			<div>
@@ -47,13 +46,14 @@
 												<option>한달</option>
 												<option>6개월</option>
 												<option>일년</option>
-											</select> <input type="text" value="제목" disabled
+											</select> 
+											<input type="text" value="제목" disabled
 												style="margin-left: 5px; height: 37.67px; width: 70px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
 											<div class="search-box"
 												style="width: 300px; height: 37.67px;">
 												<input type="text" class="form-control search"
-													style="height: 38px;"> <i
-													class="ri-search-line search-icon"></i>
+													style="height: 38px;"> 
+													<i class="ri-search-line search-icon"></i>
 											</div>
 										</div>
 									</div>
@@ -79,8 +79,7 @@
 											</tr>
 										</thead>
 										
-										<tbody class="list form-check-all" style="text-align: center;">
-										
+										<tbody class="table align-middle table-nowrap mb-0" style="text-align: center;">
 										<th:block th:if="${#lists.isEmpty(resultList.content)}">
 												<tr>
 													<td colspan="6">전자결재가 없습니다.</td>
