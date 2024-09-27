@@ -15,6 +15,7 @@
 
 <meta name="_csrf" th:content="${_csrf.token}" />
 <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
 </head>
 
 <body>
@@ -23,8 +24,7 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card">
-					<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
-					<form id="employeeAddFrm" th:action="@{/admin/api/join}" th:object="${employeeDto}" method="POST">
+					<form id="employeeAddFrm" class="needs-validation" th:action="@{/admin/api/join}" th:object="${employeeDto}" method="POST" novalidate>
 						<div class="card-header">
 							<h5 class="card-title mb-0" style="font-size: 18px; font-weight: bold;">신규 직원 등록</h5>
 						</div>
@@ -72,44 +72,60 @@
 								<!-- 부서 + 직급 -->
 								<div class="col-md-6">
 									<div class="was-validated">
-										<label for="admin-new-dept" class="form-label" style="font-size: 16px; font-weight: bold;">부서 <span class="text-danger">*</span></label> 
-										<select class="form-select" id="admin-new-dept" th:field="*{deptNo}" aria-label="select example">
-											<option value="" disabled selected>부서를 선택하세요</option>
+										<label for="admin-new-dept" class="form-label" style="font-size: 16px; font-weight: bold;"> 부서 <span class="text-danger">*</span>
+										</label> <select class="form-select" id="admin-new-dept" th:field="*{deptNo}" aria-label="select example" required>
+											<option value="" selected style="color: gray;">부서를 선택하세요</option>
 											<th:block th:each="dept : ${departments}">
 												<option th:value="${dept.deptNo}" th:text="${dept.deptName}"></option>
 											</th:block>
 										</select>
-										<div class="invalid-feedback">필수 정보</div>
+										<div class="invalid-feedback" id="dept-error">필수 정보</div>
 									</div>
 								</div>
+
 
 								<div class="col-md-6">
 									<div class="was-validated">
 										<label for="admin-new-job" class="form-label" style="font-size: 16px; font-weight: bold;">직급 <span class="text-danger">*</span></label> 
 										<select class="form-select" id="admin-new-job" th:field="*{jobNo}" aria-label="select example" required>
-											<option th:value="" disabled selected>직무를 선택하세요</option>
-											<!-- 기본 옵션 수정 -->
+											<option value="" selected style="color: gray;">직급을 선택하세요</option>
 											<th:block th:each="job : ${jobs}">
 												<option th:value="${job.jobNo}" th:text="${job.jobName}"></option>
 											</th:block>
 										</select>
-										<div class="invalid-feedback">필수 정보</div>
-
+										<div class="invalid-feedback" id="job-error">필수 정보</div>
 									</div>
 								</div>
+
 
 								<!-- 입사일 + 퇴사일 -->
 								<div class="col-lg-6">
-									<div class="was-validated">
-										<label for="admin-new-hire" class="form-label" style="font-size: 16px; font-weight: bold;">입사일 <span class="text-danger">*</span></label> <input type="text" class="form-control" id="admin-new-hire" th:field="*{empHire}" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="입사일을 선택하세요." required />
-										<div class="invalid-feedback">필수 정보</div>
-									</div>
-								</div>
+    <div class="mb-3">
+        <label for="admin-new-hire" class="form-label" style="font-size: 16px; font-weight: bold;">
+            입사일 <span class="text-danger">*</span>
+        </label> 
+        <input 
+            type="text" 
+            class="form-control" 
+            id="admin-new-hire" 
+            th:field="*{empHire}" 
+            data-provider="flatpickr" 
+            data-date-format="Y-m-d" 
+            placeholder="입사일을 선택하세요." 
+            required 
+        />
+        <div class="invalid-feedback">필수 정보</div>
+    </div>
+</div>
+
+								
 								<div class="col-lg-6">
 									<div>
-										<label for="admin-new-end" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> <input type="text" class="form-control" id="admin-new-end" th:field="*{empEnd}" disabled />
+										<label for="admin-new-end" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> 
+										<input type="text" class="form-control" id="admin-new-end" th:field="*{empEnd}" disabled />
 									</div>
 								</div>
+								
 								<!-- 완료 + 취소 -->
 								<div class="col-lg-12">
 									<div class="hstack gap-2 justify-content-end">
@@ -125,10 +141,10 @@
 	</div>
 
 	<th:block layout:fragment="pagejs">
-	
+
 
 		<script>
-		 /*  개인 번호 (010-0000-0000) */
+	    /* 개인 번호 (010-0000-0000) */
         if (document.querySelector("#admin-new-phone")) {
             var cleaveBlocks = new Cleave('#admin-new-phone', {
                 delimiters: ['-', '-'],
@@ -143,143 +159,220 @@
                 blocks: [6, 7]
             });
         }
-        
-        /* 필수 정보 경고 */
-        (function () {
-            'use strict';
-            window.addEventListener('load', function () {
-                var forms = document.getElementsByClassName('was-validated');
-                if (forms)
-                    var validation = Array.prototype.filter.call(forms, function (form) {
-                        form.addEventListener('submit', function (event) {
-                            if (form.checkValidity() === false) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                            }
-                            form.classList.add('was-validated');
-                        }, false);
-                    });
-            }, false);
-        })(); 
-        
+  
         /* 입사일 선택 */
         flatpickr("#admin-new-hire", {
             dateFormat: "Y-m-d",  
             allowInput: true
         });
 
-        /* 폼 제출 시 데이터 전송 */
-        const form = document.getElementById("employeeAddFrm");
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            let vali_check = true;  // 이 값을 기본으로 true로 설정하여 검증 통과 전부 확인
-            let vali_text = "";
-
-            const emp_name = document.getElementById("admin-new-name").value;
-            const emp_phone = document.getElementById("admin-new-phone").value;
-            const emp_ssn = document.getElementById("admin-new-ssn").value;
-            const dept_no = document.getElementById("admin-new-dept").value;
-            const job_no = document.getElementById("admin-new-job").value;
-            const emp_hire = document.getElementById("admin-new-hire").value;
-            const emp_address = document.getElementById("admin-new-address").value;
-            const emp_address_detail = document.getElementById("admin-new-address-detail").value;
-
-            // 유효성 검사 후 콘솔 로그 추가
-            console.log("입력값 확인:", { emp_name, emp_phone, emp_ssn, dept_no, job_no, emp_hire, emp_address, emp_address_detail });
-
-            if (emp_name === '') {
-                vali_check = false;
-            } else if (emp_phone === '') {
-                vali_check = false;
-            } else if (emp_ssn === '') {
-                vali_check = false;
-            } else if (dept_no === '' || dept_no === null) {
-                vali_check = false;
-            } else if (job_no === '' || job_no === null) { 
-                vali_check = false;
-            } else if (emp_hire === '') {
-                vali_check = false;
-            }
-
-            if (!vali_check) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '실패',
-                    text: vali_text,
-                    confirmButtonText: "닫기"
-                });
+        /* 폼 제출 시 데이터 전송 및 유효성 검사 */
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("employeeAddFrm");
+            const deptSelect = document.getElementById("admin-new-dept");
+            const deptError = document.getElementById("dept-error");
+            const jobSelect = document.getElementById("admin-new-job");
+            const jobError = document.getElementById("job-error");
+            
+            if (!form || !deptSelect || !deptError || !jobSelect || !jobError) {
+                console.warn('필요한 요소 중 하나 이상을 찾을 수 없습니다.');
                 return;
             }
 
-            // 서버로 전송할 데이터 객체
-            const emp_auth = 'USER';  
-            const emp_status = 'Y';
-            const obj = {
-                empName: emp_name,
-                empPhone: emp_phone,
-                empSsn: emp_ssn,
-                empAddress: emp_address,
-                empAddressDetail: emp_address_detail,
-                deptNo: dept_no === '' ? null : parseInt(dept_no),
-                jobNo: job_no === '' ? null : parseInt(job_no), 
-                empHire: emp_hire,
-                empStatus : emp_status,
-                empAuth: emp_auth
-            };
+            // 폼 제출 시 유효성 검사 및 데이터 전송
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-            console.log("전송할 데이터:", obj); // 전송 전 데이터 로그 출력
-
-            const jsonData = JSON.stringify(obj);
-            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-            fetch('/admin/api/join', { // URL을 컨트롤러 매핑과 일치시키기
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json;charset=utf-8",
-                    "Accept": "application/json",
-                    [csrfHeader]: csrfToken
-                },     
-                body: jsonData
-            })
-            
-            .then(response => {
-                console.log("서버 응답 상태:", response.status); // 응답 상태 로그
-                return response.json();
-            })
-            
-            .then(data => {
-                console.log("서버 응답 데이터:", data); // 서버 응답 데이터 확인
-                if (data.res_code === '200') {
+                // Bootstrap의 유효성 검사 적용
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
                     Swal.fire({
-                        icon: 'success',
-                        title: '등록 성공',
-                        text: data.res_msg,
+                        icon: 'error',
+                        title: '실패',
+                        text: "필수 항목을 모두 입력해주세요.",
                         confirmButtonText: "닫기"
-                    }).then(() => {
-                        location.href = "/admin/list";
                     });
+                    return;
+                }
+
+                // 추가적인 커스텀 유효성 검사
+                let vali_check = true;  // 기본값
+                let vali_text = "필수 항목을 모두 입력해주세요.";
+
+                const emp_name = document.getElementById("admin-new-name").value.trim();
+                const emp_phone = document.getElementById("admin-new-phone").value.trim();
+                const emp_ssn = document.getElementById("admin-new-ssn").value.trim();
+                const dept_no = deptSelect.value;
+                const job_no = jobSelect.value;
+                const emp_hire = document.getElementById("admin-new-hire").value.trim();
+                const emp_address = document.getElementById("admin-new-address").value.trim();
+                const emp_address_detail = document.getElementById("admin-new-address-detail").value.trim();
+
+                // 입사일 유효성 검사
+                if (emp_hire === '') {
+                    vali_check = false;
+                    const hireInput = document.getElementById("admin-new-hire");
+                    hireInput.classList.add("is-invalid");
+                    hireInput.classList.remove("is-valid");
                 } else {
+                    const hireInput = document.getElementById("admin-new-hire");
+                    hireInput.classList.add("is-valid");
+                    hireInput.classList.remove("is-invalid");
+                }
+                
+                // 이름 유효성 검사
+                if (emp_name === '') {
+                    vali_check = false;
+                    document.getElementById("admin-new-name").classList.add("is-invalid");
+                } else {
+                    document.getElementById("admin-new-name").classList.remove("is-invalid");
+                    document.getElementById("admin-new-name").classList.add("is-valid");
+                }
+
+                // 전화번호 유효성 검사
+                if (emp_phone === '') {
+                    vali_check = false;
+                    document.getElementById("admin-new-phone").classList.add("is-invalid");
+                } else {
+                    document.getElementById("admin-new-phone").classList.remove("is-invalid");
+                    document.getElementById("admin-new-phone").classList.add("is-valid");
+                }
+
+                // 주민번호 유효성 검사
+                if (emp_ssn === '') {
+                    vali_check = false;
+                    document.getElementById("admin-new-ssn").classList.add("is-invalid");
+                } else {
+                    document.getElementById("admin-new-ssn").classList.remove("is-invalid");
+                    document.getElementById("admin-new-ssn").classList.add("is-valid");
+                }
+
+                // 부서 선택 유효성 검사
+                if (!dept_no) { // dept_no가 null, undefined, "" 모두 체크
+                    vali_check = false;
+                    deptError.style.display = "block"; // 경고 표시
+                    deptSelect.classList.add("is-invalid");
+                } else {
+                    deptError.style.display = "none";
+                    deptSelect.classList.remove("is-invalid");
+                    deptSelect.classList.add("is-valid");
+                }
+
+                // 직급 선택 유효성 검사
+                if (job_no === "default") { // 'default' 선택 시 유효성 실패
+                    vali_check = false;
+                    jobError.style.display = "block";
+                    jobSelect.classList.add("is-invalid");
+                } else {
+                    jobError.style.display = "none";
+                    jobSelect.classList.remove("is-invalid");
+                    jobSelect.classList.add("is-valid");
+                }
+
+                if (!vali_check) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '실패',
+                        text: vali_text,
+                        confirmButtonText: "닫기"
+                    });
+                    return;
+                }
+
+                // 서버로 전송할 데이터 객체
+                const emp_auth = 'USER';  
+                const emp_status = 'Y';
+                const obj = {
+                    empName: emp_name,
+                    empPhone: emp_phone,
+                    empSsn: emp_ssn,
+                    empAddress: emp_address,
+                    empAddressDetail: emp_address_detail,
+                    deptNo: dept_no === '' ? null : parseInt(dept_no),
+                    jobNo: job_no === '' || job_no === "default" ? null : parseInt(job_no), 
+                    empHire: emp_hire,
+                    empStatus: emp_status,
+                    empAuth: emp_auth
+                };
+
+                console.log("전송할 데이터:", obj); // 전송 전 데이터 로그 출력
+
+                const jsonData = JSON.stringify(obj);
+                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                fetch('/admin/api/join', { // URL을 컨트롤러 매핑과 일치시키기
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json;charset=utf-8",
+                        "Accept": "application/json",
+                        [csrfHeader]: csrfToken
+                    },     
+                    body: jsonData
+                })
+                .then(response => {
+                    console.log("서버 응답 상태:", response.status); // 응답 상태 로그
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("서버 응답 데이터:", data); // 서버 응답 데이터 확인
+                    if (data.res_code === '200') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '등록 성공',
+                            text: data.res_msg,
+                            confirmButtonText: "닫기"
+                        }).then(() => {
+                            location.href = "/admin/list";
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '등록 실패',
+                            text: data.res_msg,
+                            confirmButtonText: "닫기"
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("에러 발생:", error); 
                     Swal.fire({
                         icon: 'error',
                         title: '등록 실패',
-                        text: data.res_msg,
+                        text: "서버와 통신 중 오류가 발생했습니다.",
                         confirmButtonText: "닫기"
                     });
-                }
-            })
-            
-            .catch(error => {
-                console.error("에러 발생:", error); // fetch 요청 중 에러가 발생하면 출력
-                Swal.fire({
-                    icon: 'error',
-                    title: '등록 실패',
-                    text: "서버와 통신 중 오류가 발생했습니다.",
-                    confirmButtonText: "닫기"
                 });
             });
+
+            // 부서 선택이 변경될 때 실시간 유효성 검사
+            deptSelect.addEventListener("change", function () {
+                if (deptSelect.value === "") {
+                    deptSelect.classList.add("is-invalid");
+                    deptSelect.classList.remove("is-valid");
+                    deptError.style.display = "block";
+                } else {
+                    deptSelect.classList.remove("is-invalid");
+                    deptSelect.classList.add("is-valid");
+                    deptError.style.display = "none";
+                }
+            });
+
+            // 직급 선택이 변경될 때 실시간 유효성 검사
+            jobSelect.addEventListener("change", function () {
+                if (jobSelect.value === "" || jobSelect.value === "default") {
+                    jobSelect.classList.add("is-invalid");
+                    jobSelect.classList.remove("is-valid");
+                    jobError.style.display = "block";
+                } else {
+                    jobSelect.classList.remove("is-invalid");
+                    jobSelect.classList.add("is-valid");
+                    jobError.style.display = "none";
+                }
+            });
         });
+
 
         </script>
 	</th:block>
