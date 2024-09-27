@@ -53,6 +53,8 @@ const deleteReserve=(event) => {
 	}
 }
 
+
+
 var taxRate = 0.125;
 var shippingRate = 65.00;
 var discountRate = 0.15;

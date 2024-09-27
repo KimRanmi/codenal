@@ -2,6 +2,7 @@ package com.codenal.meeting.domain;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +23,8 @@ public class MeetingRoomReserveDto {
 	private Long meeting_room_no;
 	private Long emp_id;
 	private LocalDate meeting_room_reserve_date;
-	private Time meeting_room_start_time;
-	private Time meeting_room_end_time;
+	private LocalTime meeting_room_start_time;
+	private LocalTime meeting_room_end_time;
 	private Long meeting_room_reserve_time_no;
 	
 	private String meeting_room_name;

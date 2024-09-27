@@ -1,5 +1,6 @@
 package com.codenal.calendar.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,9 @@ import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.Jobs;
 import com.codenal.admin.repository.DepartmentsRepository;
 import com.codenal.admin.repository.JobsRepository;
+import com.codenal.annual.domain.AnnualLeaveUsage;
+import com.codenal.annual.domain.AnnualLeaveUsageDto;
+import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.calendar.domain.Calendar;
 import com.codenal.calendar.domain.CalendarDto;
 import com.codenal.calendar.repository.CalendarRepository;
@@ -28,13 +32,15 @@ public class CalendarService {
 	private final EmployeeRepository employeeRepository;
 	private final DepartmentsRepository departmentsRepository;
 	private final JobsRepository jobsRepository;
+	private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
 	
 	@Autowired
-	public CalendarService(CalendarRepository calendarRepository, EmployeeRepository employeeRepository, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository) {
+	public CalendarService(CalendarRepository calendarRepository, EmployeeRepository employeeRepository, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository, AnnualLeaveUsageRepository annualLeaveUsageRepository) {
 		this.calendarRepository = calendarRepository;
 		this.employeeRepository = employeeRepository;
 		this.departmentsRepository = departmentsRepository;
 		this.jobsRepository = jobsRepository;
+		this.annualLeaveUsageRepository = annualLeaveUsageRepository;
 	}
 	
 	public String[] eventWriter(Long empId) {
@@ -95,22 +101,48 @@ public class CalendarService {
 		return result;
 	}
 	
+	// 일정 목록 조회
 	public List<CalendarDto> selectEvent(Long writerId){
 		List<Calendar> eventList = calendarRepository.findAll();
 		List<CalendarDto> eventDtoList = new ArrayList<CalendarDto>();
+		List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository.findAll();
 		for(Calendar c : eventList) {
 			CalendarDto calendarDto = new CalendarDto().toDto(c);
 			Long writer = c.getCalendarScheduleWriter();
 			Employee empName = employeeRepository.findByEmpId(writer);
 			EmployeeDto empNameDto = EmployeeDto.fromEntity(empName);
 			calendarDto.setCalendar_schedule_writer_name(empNameDto.getEmpName());
-			System.out.println("확인"+writerId);
-			if((calendarDto.getCalendar_schedule_category() != 1) || (calendarDto.getCalendar_schedule_category() == 1 && calendarDto.getCalendar_schedule_writer().equals(writerId))) {
+			Employee nowEmp = employeeRepository.findByEmpId(writerId);
+			EmployeeDto nowEmpDto = EmployeeDto.fromEntity(nowEmp);
+			Long nowDept = nowEmpDto.getDeptNo(); // 현재 로그인한 사원의 부서
+			Long writerDept = empNameDto.getDeptNo(); // 일정 작성자의 부서
+			if((calendarDto.getCalendar_schedule_category() == 5) || (calendarDto.getCalendar_schedule_category() == 4) || (calendarDto.getCalendar_schedule_category() == 3) || (calendarDto.getCalendar_schedule_category() == 2 && writerDept == nowDept) || (calendarDto.getCalendar_schedule_category() == 1 && calendarDto.getCalendar_schedule_writer().equals(writerId))) {
 				eventDtoList.add(calendarDto);
 				
 			}
 		}
-		System.out.println("확인"+eventDtoList);
+		for(AnnualLeaveUsage a : annualLeaveList) {
+			AnnualLeaveUsageDto annualLeaveDto = new AnnualLeaveUsageDto().toDto(a);
+			CalendarDto annualLeaveAdd = new CalendarDto();
+			annualLeaveAdd.setCalendar_schedule_category((long) 4);
+			Employee emp = employeeRepository.findByEmpId(annualLeaveDto.getEmp_id());
+			EmployeeDto empDto = EmployeeDto.fromEntity(emp);
+			String title = "연차";
+			switch(annualLeaveDto.getAnnual_type()) {
+				case 1: title="[반차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+				case 2: title="[연차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+				case 3: title="[경조휴가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+				case 4: title="[병가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+			}
+			annualLeaveAdd.setCalendar_schedule_no(annualLeaveDto.getAnnual_usage_no());
+			annualLeaveAdd.setCalendar_schedule_title(title);
+			annualLeaveAdd.setCalendar_schedule_start_date(LocalDateTime.of(annualLeaveDto.getAnnual_usage_start_date().getYear(), annualLeaveDto.getAnnual_usage_start_date().getMonth(), annualLeaveDto.getAnnual_usage_start_date().getDayOfMonth(), 0, 0));
+			if(annualLeaveDto.getAnnual_usage_end_date() != null) {
+				annualLeaveAdd.setCalendar_schedule_end_date(LocalDateTime.of(annualLeaveDto.getAnnual_usage_end_date().getYear(), annualLeaveDto.getAnnual_usage_end_date().getMonth(), annualLeaveDto.getAnnual_usage_end_date().getDayOfMonth(), 0, 0));
+			}
+			annualLeaveAdd.setCalendar_schedule_writer(annualLeaveDto.getEmp_id());
+			eventDtoList.add(annualLeaveAdd);
+		}
 		return eventDtoList;
 	}
 	

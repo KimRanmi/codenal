@@ -3,6 +3,7 @@ package com.codenal.meeting.service;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,70 @@ public class MeetingRoomService {
 		this.meetingRoomRepository = meetingRoomRepository;
 		this.meetingRoomTimeRepository = meetingRoomTimeRepository;
 		this.meetingRoomReserveRepository = meetingRoomReserveRepository;
+	}
+	
+	// 예약 변경
+	public MeetingRoomReserve meetingRoomReserveModify(MeetingRoomReserveDto dto) {
+		
+		MeetingRoomTime time = meetingRoomTimeRepository.findByMeetingRoomTimeNo(dto.getMeeting_room_reserve_time_no());
+		
+		MeetingRoomTimeDto timeToDto = new MeetingRoomTimeDto().toDto(time);
+		
+		MeetingRoomReserve reserve = meetingRoomReserveRepository.findByMeetingRoomReserveNo(dto.getMeeting_room_reserve_no());
+		MeetingRoomReserveDto reserveDto = MeetingRoomReserveDto.builder()
+				.meeting_room_reserve_no(reserve.getMeetingRoomReserveNo())
+				.meeting_room_no(reserve.getMeetingRoom().getMeetingRoomNo())
+				.emp_id(reserve.getEmpId())
+				.meeting_room_reserve_date(reserve.getMeetingRoomReserveDate())
+				.meeting_room_start_time(reserve.getMeetingRoomStartTime())
+				.meeting_room_end_time(reserve.getMeetingRoomEndTime())
+				.meeting_room_reserve_time_no(reserve.getMeetingRoomReserveTimeNo())
+				.build();
+		reserveDto.setMeeting_room_no(dto.getMeeting_room_no());
+		reserveDto.setMeeting_room_reserve_date(dto.getMeeting_room_reserve_date());
+		reserveDto.setMeeting_room_start_time(timeToDto.getMeeting_room_start_time());
+		reserveDto.setMeeting_room_end_time(timeToDto.getMeeting_room_end_time());
+		reserveDto.setMeeting_room_reserve_time_no(dto.getMeeting_room_reserve_time_no());
+		
+		MeetingRoomReserve modify = reserveDto.toEntity();
+		MeetingRoomReserve result = meetingRoomReserveRepository.save(modify);
+		return result;
+	}
+	
+	// 회의실 업데이트
+	public MeetingRoom modifyMeetingRoom(MeetingRoomDto dto) {
+		MeetingRoom room = meetingRoomRepository.findByMeetingRoomNo(dto.getMeeting_room_no());
+		MeetingRoomDto roomdto = MeetingRoomDto.builder()
+				.meeting_room_no(room.getMeetingRoomNo())
+				.meeting_room_name(room.getMeetingRoomName())
+				.meeting_room_place(room.getMeetingRoomPlace())
+				.meeting_room_amenity(room.getMeetingRoomAmenity())
+				.meeting_room_img(room.getMeetingRoomImg())
+				.build();
+		roomdto.setMeeting_room_name(dto.getMeeting_room_name());
+		roomdto.setMeeting_room_place(dto.getMeeting_room_place());
+		roomdto.setMeeting_room_amenity(dto.getMeeting_room_amenity());
+		if(dto.getMeeting_room_img() != "") {
+			roomdto.setMeeting_room_img(dto.getMeeting_room_img());
+		} else {
+			roomdto.setMeeting_room_img(room.getMeetingRoomImg());
+		}
+		MeetingRoom modify = roomdto.toEntity();
+		MeetingRoom result = meetingRoomRepository.save(modify);
+		return result;
+	}
+	
+	// 회의실 하나 출력
+	public MeetingRoomDto selectMeetingRoom(Long no) {
+		MeetingRoom room = meetingRoomRepository.findByMeetingRoomNo(no);
+		MeetingRoomDto dto = MeetingRoomDto.builder()
+				.meeting_room_no(room.getMeetingRoomNo())
+				.meeting_room_name(room.getMeetingRoomName())
+				.meeting_room_place(room.getMeetingRoomPlace())
+				.meeting_room_amenity(room.getMeetingRoomAmenity())
+				.meeting_room_img(room.getMeetingRoomImg())
+				.build();
+		return dto;
 	}
 	
 	// 예약 취소
@@ -62,7 +127,6 @@ public class MeetingRoomService {
 	// 회의실 삭제
 	public int MeetingRoomDelete(Long roomNo) {
 		int result = 0;
-		
 		try {
 			meetingRoomRepository.deleteById(roomNo);
 			result = 1;
@@ -81,6 +145,35 @@ public class MeetingRoomService {
 				.meetingRoomImg(dto.getMeeting_room_img())
 				.build();
 		return meetingRoomRepository.save(create);
+	}
+	
+	// 예약 가능 시간 추가
+	public void MeetingRoomTimeCreate(LocalTime[][] time) {
+		
+		MeetingRoom meetingRoom = meetingRoomRepository.findBy();
+		MeetingRoomDto meetingRoomDto = new MeetingRoomDto().toDto(meetingRoom);
+		System.out.println(meetingRoomDto.getMeeting_room_no());
+		String[] ampm = new String[time.length];
+		LocalTime standard = LocalTime.of(12, 00);
+		for(int i=0; i<time.length; i++) {
+			int compare = time[i][1].compareTo(standard);
+			if(compare <= (-1) ) {
+				ampm[i] = "오전";
+			} else {
+				ampm[i] = "오후";
+			}
+		}
+		for(int i=0; i<time.length; i++) {
+			MeetingRoomTime times = MeetingRoomTime.builder()
+					.meetingRoomNo(meetingRoomDto.getMeeting_room_no())
+					.meetingRoomStartTime(time[i][0])
+					.meetingRoomEndTime(time[i][1])
+					.meetingRoomAmpm(ampm[i])
+					.build();
+			meetingRoomTimeRepository.save(times);
+		}
+		
+				
 	}
 	
 	// 회의실 예약
@@ -121,9 +214,9 @@ public class MeetingRoomService {
 		List<MeetingRoomTimeDto> timeDto = new ArrayList<MeetingRoomTimeDto>();
 		for(MeetingRoomTime t : time) {
 			MeetingRoomTimeDto timeToDto = new MeetingRoomTimeDto().toDto(t);
-			SimpleDateFormat format = new SimpleDateFormat("hh:mm");
-			String hh = format.format(timeToDto.getMeeting_room_start_time());
-			System.out.println(hh);
+//			SimpleDateFormat format = new SimpleDateFormat("hh:mm");
+//			String hh = format.format(timeToDto.getMeeting_room_start_time());
+//			System.out.println(timeToDto.getMeeting_room_start_time());
 			timeDto.add(timeToDto);
 		}
 		System.out.println(timeDto);
