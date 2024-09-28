@@ -14,4 +14,6 @@ public interface MeetingRoomReserveRepository extends JpaRepository<MeetingRoomR
 	@Query(value = "select r from MeetingRoomReserve r where r.empId = ?1")
 	List<MeetingRoomReserve> findByEmpId(Long empId);
 
+	MeetingRoomReserve findByMeetingRoomReserveNo(Long meeting_room_no);
+
 }

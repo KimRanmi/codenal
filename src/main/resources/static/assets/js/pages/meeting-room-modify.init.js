@@ -65,9 +65,8 @@ formData.addEventListener('submit', (e) => {
 		}
 	
 		console.log(listTime);
-		
 		const payload = new FormData(formData);
-		fetch('/meetingRoomCreate', {
+		fetch('/meetingRoomModify', {
 			method: 'POST',
 			headers: {
 				'X-CSRF-TOKEN': csrfToken
@@ -76,9 +75,11 @@ formData.addEventListener('submit', (e) => {
 		})
 			.then(response => response.json())
 			.then(data => {
+				
+				alert(data.res_msg);
 
-				const xhr = new XMLHttpRequest();
-				xhr.open("post", "/meetingRoomTimeCreate", true);
+				/*const xhr = new XMLHttpRequest();
+				xhr.open("post", "/meetingRoomTimeModify", true);
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == 4 && xhr.status == 200) {
 						alert(data.res_msg);
@@ -88,7 +89,7 @@ formData.addEventListener('submit', (e) => {
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 				xhr.setRequestHeader(header, csrfToken);
 				xhr.send("time="+listTime);
-				location.href="apps-meeting-room";
+				location.href="apps-meeting-room";*/
 			})
 		
 	

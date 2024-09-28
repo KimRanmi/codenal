@@ -1,7 +1,6 @@
 package com.codenal.annual.domain;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import com.codenal.approval.domain.Approval;
 import com.codenal.employee.domain.Employee;
@@ -13,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -41,6 +40,9 @@ public class AnnualLeaveUsage {
    @Column(name="annual_usage_end_date")
    private LocalDate annualUsageEndDate;
    
+   @Column(name="total_day")
+   private float totalDay;
+   
    @ManyToOne
     @JoinColumn(name="emp_id")
     private Employee employee;
@@ -53,6 +55,6 @@ public class AnnualLeaveUsage {
    @Column(name="time_period")
    private String timePeriod;
    
-   @OneToMany(mappedBy="annualLeaveUsage")
-   private List<Approval> approvals;
+   @OneToOne(mappedBy="annualLeaveUsage")
+   private Approval approval;
 }

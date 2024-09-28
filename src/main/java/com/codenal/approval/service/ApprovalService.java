@@ -86,6 +86,8 @@ public class ApprovalService {
          map.put("num", num);
          responseList.add(map);
       }
+      
+      System.out.println(approvalList.getTotalElements());
       return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
    
@@ -235,6 +237,7 @@ public class ApprovalService {
                           .annualUsageStartDate((LocalDate)obj.get("시작일자"))
                           .annualUsageEndDate((LocalDate)obj.get("종료일자"))
                           .timePeriod((String)obj.get("반차시간대"))
+                          .totalDay((float)obj.get("사용일수"))
                           .build();
                               
          
@@ -342,12 +345,17 @@ public class ApprovalService {
 		            break; 
 		     }
 		     
+		     
+		     AnnualLeaveUsage annualNo = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
+		     
 		     AnnualLeaveUsage annual = AnnualLeaveUsage.builder()
 		                          .annualType(type)
 		                          .employee(emp)
 		                          .annualUsageStartDate((LocalDate)obj.get("시작일자"))
 		                          .annualUsageEndDate((LocalDate)obj.get("종료일자"))
 		                          .timePeriod((String)obj.get("반차시간대"))
+		                          .totalDay((float)obj.get("사용일수"))
+		                          .annualUsageNo(annualNo.getAnnualUsageNo())
 		                          .build();
 		                              
 		         

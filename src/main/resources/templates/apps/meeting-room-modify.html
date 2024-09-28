@@ -4,7 +4,7 @@
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('회의실 추가')"></div>
+	<div th:replace="partials/title-meta :: title-meta('회의실 수정')"></div>
 </th:block>
 
 <head>
@@ -14,7 +14,7 @@
 
 <body>
 	<div layout:fragment="content">
-		<div th:replace="partials/page-title :: page-title('회의실 추가','회의실 예약')"></div>
+		<div th:replace="partials/page-title :: page-title('회의실 수정','회의실 예약')"></div>
 		
 		<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
 		<input type="hidden" id="_csrf_header" value="X-CSRF-Token"/>
@@ -72,12 +72,12 @@
 													</div>
 												</div>
 											</label>
-											<input class="form-control d-none" value="" id="product-image-input" name="file"
+											<input class="form-control d-none" th:value="${meetingRoom.meeting_room_img}" id="product-image-input" name="file"
 												type="file" accept="image/png, image/gif, image/jpeg">
 										</div>
 										<div class="avatar-lg">
 											<div class="avatar-title bg-light rounded">
-												<img src="" id="product-img" class="avatar-md h-auto" />
+												<img th:src="@{/meetingRoomImg/} + ${meetingRoom.meeting_room_img}" id="product-img" class="avatar-md h-auto" />
 											</div>
 										</div>
 									</div>
@@ -147,6 +147,7 @@
 						</div>
 						<!-- end card header -->
 						<div class="card-body">
+						
 							<div>
 								<!-- <div class="tab-pane active" id="addproduct-general-info" role="tabpanel">
 									<div class="row">
@@ -220,8 +221,9 @@
 									<div class="row">
 										<div class="col-lg-6">
 											<div class="mb-3">
+											<input type="hidden" th:value="${meetingRoom.meeting_room_no}" name="meeting_room_no">
 												<label class="form-label" for="meta-title-input">회의실 이름</label>
-												<input type="text" class="form-control" placeholder="회의실 이름을 입력하세요."
+												<input type="text" class="form-control" placeholder="회의실 이름을 입력하세요." th:field="${meetingRoom.meeting_room_name}"
 													id="meeting_room_name" name="meeting_room_name">
 											</div>
 										</div>
@@ -231,7 +233,7 @@
 											<div class="mb-3">
 												<label class="form-label" for="meta-keywords-input">회의실 장소</label>
 												<input type="text" class="form-control" name="meeting_room_place"
-													placeholder="회의실 장소를 입력하세요." id="place">
+													placeholder="회의실 장소를 입력하세요." id="place" th:field="${meetingRoom.meeting_room_place}">
 											</div>
 										</div>
 										<!-- end col -->
@@ -325,7 +327,7 @@
 											<div>
 												<label class="form-label" for="meta-keywords-input">회의실 어매니티</label>
 												<input type="text" class="form-control" name="meeting_room_amenity"
-													placeholder="회의실 어매니티를 입력하세요." id="amenity">
+													placeholder="회의실 어매니티를 입력하세요." id="amenity" th:field="${meetingRoom.meeting_room_amenity}">
 											</div>
 									</div>
 									
@@ -338,7 +340,7 @@
 					</div>
 					<!-- end card -->
 					<div class="text-end mb-3">
-						<button type="submit" class="btn btn-success w-sm">회의실 추가</button>
+						<button type="submit" class="btn btn-success w-sm">회의실 수정</button>
 					</div>
 				</div>
 				<!-- end col -->
@@ -456,7 +458,7 @@
     <!-- dropzone js -->
     <script src="/assets/libs/dropzone/dropzone-min.js"></script>
 
-    <script src="/assets/js/pages/meeting-room-check.init.js"></script>
+    <script src="/assets/js/pages/meeting-room-modify.init.js"></script>
 	</th:block>
 </body>
 

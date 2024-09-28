@@ -5,7 +5,7 @@
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('Dashboards')"></div>
+	<div th:replace="partials/title-meta :: title-meta('메인화면')"></div>
 </th:block>
 
 
@@ -27,14 +27,15 @@
 							<div class="card-body">
 								<div class="card-body text-center">
 									<div class="avatar-md mb-3 mx-auto">
-										<img src="/assets/images/users/avatar-1.jpg" alt=""
+										<div class='img-thumbnail rounded-circle shadow-none' id="candidate-img" th:style=" 'width: 100%; height: 100%; background-image: url(${session.profileImage}); background-repeat: no-repeat; background-size: cover; background-position: center'"></div>
+										<!-- <img th:src="@{${empDto.empSignImage}}" alt=""
 											id="candidate-img"
-											class="img-thumbnail rounded-circle shadow-none">
+											class="img-thumbnail rounded-circle shadow-none"> -->
 									</div>
 									<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
-									<h5 id="candidate-name" class="mb-1" style="font-weight: bold;"><span>하츄핑</span> <span>대리</span></h5>
-									<h5 id="candidate-position" class="mb-1" style="font-size: 13px;"><span>웹 개발팀</span></h5>
-									<h5 id="candidate-position" class="text-muted mb-4" style="font-size: 13px"><span>2024.07.18</span> 입사</h5>
+									<h5 id="candidate-name" class="mb-1" style="font-weight: bold;"><span th:text="${empDto.empName}">하츄핑</span> <span th:text="${empDto.jobName}">대리</span></h5>
+									<h5 id="candidate-position" class="mb-1" style="font-size: 13px;"><span th:text="${empDto.deptName}">웹 개발팀</span></h5>
+									<h5 id="candidate-position" class="text-muted mb-4" style="font-size: 13px"><span th:text="${empDto.empHire}">2024.07.18</span> 입사</h5>
 									<div class="d-flex gap-2 justify-content-center">
 										<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="width: 100%">
 											<input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked=""> 
@@ -422,7 +423,7 @@
 								<h4 class="card-title mb-0">캘린더</h4>
 							</div>
 							<!-- end cardheader -->
-							<div class="card-body pt-0">
+							<div class="card-body pt-0" style="height: 732px">
 								<div class="upcoming-scheduled">
 									<input type="text" class="form-control"
 										data-provider="flatpickr" data-date-format="d M, Y"
@@ -430,23 +431,26 @@
 								</div>
 
 								<h6 class="text-uppercase fw-semibold mt-4 mb-3 text-muted">일정:</h6>
-								<div id="eventList">
-									<!-- <div class="mini-stats-wid d-flex align-items-center mt-3">
-										<div class="flex-shrink-0 avatar-sm">
-											<span
-												class="mini-stat-icon avatar-title rounded-circle text-success bg-soft-success fs-4">
-												09 </span>
-										</div>
-										<div class="flex-grow-1 ms-3">
-											<h6 class="mb-1">Development planning</h6>
-											<p class="text-muted mb-0">iTest Factory</p>
-										</div>
-										<div class="flex-shrink-0">
-											<p class="text-muted mb-0">
-												9:20 <span class="text-uppercase">am</span>
-											</p>
-										</div>
-									</div> -->
+								<div class="ml-0" data-simplebar style="max-height: 350px" >
+									<div id="eventList">
+								
+										<!-- <ul class="mini-stats-wid d-flex align-items-center mt-3">
+											<div class="flex-shrink-0 avatar-sm">
+												<span
+													class="mini-stat-icon avatar-title rounded-circle text-success bg-soft-success fs-4">
+													09 </span>
+											</div>
+											<div class="flex-grow-1 ms-3">
+												<h6 class="mb-1">Development planning</h6>
+												<p class="text-muted mb-0">iTest Factory</p>
+											</div>
+											<div class="flex-shrink-0">
+												<p class="text-muted mb-0">
+													9:20 <span class="text-uppercase">am</span>
+												</p>
+											</div>
+										</ul> -->
+									</div>
 								</div>
 								<!-- end -->
 								

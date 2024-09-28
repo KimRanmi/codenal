@@ -311,12 +311,11 @@ const fetchEventList = () => {
 	}
 	
 fetchEventList().then(function(data) {
-	console.log(data);
 
 	/*let nowDate = new Date();
 	nowDate = nowDate.getFullYear() + '-' + (nowDate.getMonth() + 1) + '-1';*/
 	let toDay = new Date();
-	toDay.setDate(1);
+	/*toDay.setDate(1);*/
 	let lastDate = new Date();
 	let lastDay = new Date(lastDate.getFullYear(), (lastDate.getMonth() + 1), 0);
 	/*lastDay.setDate(lastDay.getDate()+7);*/
@@ -324,7 +323,7 @@ fetchEventList().then(function(data) {
 		let startDate = new Date(data[i].start);
 		let endDate = new Date(data[i].end);
 		
-		if (startDate >= toDay && startDate <= lastDay) {
+		if (startDate >= toDay) {
 			
 			let startAmpm = '';
 			let endAmpm = '';
@@ -341,7 +340,7 @@ fetchEventList().then(function(data) {
 			if(data[i].className == "bg-soft-danger"){
 				
 				document.getElementById("eventList").innerHTML +=
-					'<div class="mini-stats-wid d-flex align-items-center mt-3 mr-3">\
+					'<ul class=" d-flex align-items-center mt-3 p-0">\
 						<div class="flex-shrink-0 avatar-sm">\
 							<span class="avatar-title rounded-circle text-danger bg-soft-danger fs-4">'+startDate.getDate()+'</span>\
 						</div>\
@@ -352,10 +351,10 @@ fetchEventList().then(function(data) {
 						<div class="flex-shrink-0">\
 							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
 						</div>\
-					</div>';
+					</ul>';
 			}else if(data[i].className == "bg-soft-success"){
 				document.getElementById("eventList").innerHTML +=
-					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+					'<ul class="mini-stats-wid d-flex align-items-center mt-3 p-0">\
 						<div class="flex-shrink-0 avatar-sm">\
 							<span class="avatar-title rounded-circle text-success bg-soft-success fs-4">'+startDate.getDate()+'</span>\
 						</div>\
@@ -366,10 +365,10 @@ fetchEventList().then(function(data) {
 						<div class="flex-shrink-0 ms-3">\
 							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
 						</div>\
-					</div>';
+					</ul>';
 			}else if(data[i].className == "bg-soft-info"){
 				document.getElementById("eventList").innerHTML +=
-					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+					'<ul class="mini-stats-wid d-flex align-items-center mt-3 p-0">\
 						<div class="flex-shrink-0 avatar-sm">\
 							<span class="avatar-title rounded-circle text-info bg-soft-info fs-4">'+startDate.getDate()+'</span>\
 						</div>\
@@ -380,10 +379,10 @@ fetchEventList().then(function(data) {
 						<div class="flex-shrink-0">\
 							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
 						</div>\
-					</div>';
+					</ul>';
 			}else if(data[i].className == "bg-soft-warning"){
 				document.getElementById("eventList").innerHTML +=
-					'<div class="mini-stats-wid d-flex align-items-center mt-3">\
+					'<ul class="mini-stats-wid d-flex align-items-center mt-3 p-0">\
 						<div class="flex-shrink-0 avatar-sm">\
 							<span class="avatar-title rounded-circle text-warning bg-soft-warning fs-4">'+startDate.getDate()+'</span>\
 						</div>\
@@ -394,7 +393,7 @@ fetchEventList().then(function(data) {
 						<div class="flex-shrink-0">\
 							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
 						</div>\
-					</div>';
+					</ul>';
 			}
 		}
 		
