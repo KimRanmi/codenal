@@ -50,7 +50,7 @@ public class AdminService {
 
 	// ------------------ 신규 직원 등록
 	public int createEmployee(EmployeeDto dto) {
-	
+
 		int result = -1;
 		try {
 
@@ -78,16 +78,16 @@ public class AdminService {
 			Long empId = Long.parseLong(hireDateString + randomDigits);
 
 			dto.setEmpId(empId);
-			
-			Employee employee = dto.toEntity();
-			
-			 // 부서 셀렉트박스
-            Departments department = Departments.builder().deptNo(dto.getDeptNo()).build();
-            employee.setDepartments(department);
 
-            // 직무 셀렉트 박스
-            Jobs job = Jobs.builder().jobNo(dto.getJobNo()).build();
-            employee.setJobs(job);
+			Employee employee = dto.toEntity();
+
+			// 부서 셀렉트박스
+			Departments department = Departments.builder().deptNo(dto.getDeptNo()).build();
+			employee.setDepartments(department);
+
+			// 직무 셀렉트 박스
+			Jobs job = Jobs.builder().jobNo(dto.getJobNo()).build();
+			employee.setJobs(job);
 
 			adminRepository.save(employee); // DB 저장
 
@@ -260,28 +260,20 @@ public class AdminService {
 	}
 
 
-	// 직원 정보 상세 조회
-	//	public EmployeeDto selectEmployeeListDetail(Long employeeId) {
-	//	Employee announce = employeeListRepository.findByEmployeeId(employeeId);
-	//	EmployeeDto dto = new EmployeeDto().toDto(announce);
-	//     return dto;
-	//    }
-
-
 	// 직원 정보 수정
-	//@Transactional
-	//	public Employee selectEmployeeListUpdate(EmployeeDto dto) { 
-	//	EmployeeDto temp = selectEmployeeOne(dto.get());
-	//	temp.setBoard_title(dto.getBoard_title());
-	//	temp.setBoard_content(dto.getBoard_content());
-	//	if(dto.getOri_thumbnail() != null && "".equals(dto.getOri_thumbnail()) == false) {
-	//		temp.setOri_thumbnail(dto.getOri_thumbnail());
-	//		temp.setNew_thumbnail(dto.getNew_thumbnail());
-	//	}
+	 @Transactional
+	    public Employee updateEmployee(Long empId, EmployeeDto dto) { 
+	        Employee e = adminRepository.findByEmpId(empId);
 
-	//	Board board = temp.toEntity();
-	//	Board result = boardRepository.save(board);
-	//	return result;
-	//}
+	        e.setEmpName(dto.getEmpName());
+
+	        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+	        e.setDepartments(department);
+
+	        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+	        e.setJobs(job);
+
+	        return adminRepository.save(e);
+	    }
 
 }
