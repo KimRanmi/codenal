@@ -117,8 +117,6 @@ public class ApprovalViewController {
 		String username = authentication.getName();
 		Long id = Long.parseLong(username);
 		
-		System.out.println("지금 상태 : "+num);
-		
 		Page<Map<String, Object>> resultList = approvalService.selectApprovalinBoxList(pageable, num, id);
 		
 		if(num == 4) {
@@ -217,23 +215,30 @@ public class ApprovalViewController {
 
 		List<ApprovalFormDto> cateList = new ArrayList<ApprovalFormDto>();
 		cateList = approvalService.selectApprovalCateList(typeInt);
+		
+		AnnualLeaveManage alm = annualLeaveManageService.getAnnualLeaveManageById(emp.getEmpId());
+
 
 		model.addAttribute("dto", resultList);
 		model.addAttribute("type", typeInt);
 		model.addAttribute("cateList", cateList);
 		model.addAttribute("emp", emp);
+		model.addAttribute("remainDay", alm.getAnnualRemainDay());
 		return "apps/" + returnResult;
 	}
-
 	
 	// 모달 데이터 보내기
-	
 	@GetMapping("/approval/modal")
 	@ResponseBody
 	public List<TreeMenuDto> getTreeMenu(Model model) {
 	    return addressBookService.getTreeMenu();
 	}
 	
+	// admin 전자결재 리스트 
+	@GetMapping("/admin_approval_list")
+	public String adminList(){
+		return "admin_approval_list";
+	}
 
 	
 }
