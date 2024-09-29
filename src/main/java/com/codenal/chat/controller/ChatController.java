@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.codenal.chat.domain.ChatMsg;
+import com.codenal.chat.domain.ChatMsgDto;
 import com.codenal.chat.domain.ChatParticipants;
 import com.codenal.chat.domain.ChatRoom;
 import com.codenal.chat.domain.ChatRoomDto;
@@ -58,6 +59,9 @@ public class ChatController {
         
 		List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);  // 채팅방 초대버튼 클릭시 조회할 직원목록
 		model.addAttribute("employeeList",employeeList);
+		
+//		List<ChatMsgDto> lastMsg = chatService.latestMessages(participantList);
+//		model.addAttribute("lastMsg",lastMsg);
 		
 		return "apps/chat";
 	}
@@ -100,14 +104,21 @@ public class ChatController {
 		List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);  // 채팅방 초대버튼 클릭시 조회할 직원목록
 		model.addAttribute("employeeList",employeeList);
 
+		Map<Integer, Long> unreadCounts = chatService.countUnreadMessagesForParticipants(username);  // 각 방에서의 안 읽은 메시지 수 계산
+		model.addAttribute("unreadCounts", unreadCounts); // 각 방의 안 읽은 메시지 수를 모델에 추가
+		
+		List<ChatParticipants> notMeParticipantList = chatService.notMeParticipant(username);  // 같이 속한 채팅방 참가자의 정보 조회
+		model.addAttribute("notMeParticipantList",notMeParticipantList);
+		
 		ChatRoom chat = chatService.selectChatRoomOne(roomNo, empId);
 		model.addAttribute("chat",chat);
+		
 		
 		// 추가 초대한 경우 메시지 불러오는거 수정 함께 해야함
 //		List<ChatMsg> msgList = chatService.selectChatMsgList(roomNo, empId);
 //		model.addAttribute("msgList", msgList);
 		
-		return "apps/chatDetail";
+		return "apps/chat";
 	}
 	
 	

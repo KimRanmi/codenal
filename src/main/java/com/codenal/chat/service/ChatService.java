@@ -1,5 +1,6 @@
 package com.codenal.chat.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -253,5 +254,38 @@ public class ChatService {
 
 	    return result;
 	}
+
+
+
+	@Transactional
+	public void updateMessageReadStatus(Long empId) {
+		chatReadRepository.updateByRead(empId);
+		
+	}
+
+
+
+//	public List<ChatMsgDto> latestMessages(List<ChatParticipants> participantList) {
+//	    List<ChatMsgDto> dtos = new ArrayList<>();
+//
+//	    for (ChatParticipants participant : participantList) {
+//	        ChatMsg latestMessage = chatMsgRepository.findTopByChatRoomOrderBySendDateDesc(participant.getChatRoom());
+//
+//	        if (latestMessage == null) {
+//	            continue;
+//	        }
+//
+//	        // 최신 메시지를 DTO로 변환
+//	        ChatMsgDto dto = ChatMsgDto.builder()
+//	            .participant_no(latestMessage.getChatParticipant().getParticipantNo())
+//	            .msg_content(latestMessage.getMsgContent())
+//	            .send_date(latestMessage.getSendDate())
+//	            .build();
+//
+//	        dtos.add(dto);
+//	    }
+//
+//	    return dtos;
+//	}
 
 }

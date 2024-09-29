@@ -1,4 +1,4 @@
-package com.codenal.chat.config;
+package com.codenal.websocket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -8,12 +8,12 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-public class ChatWebSocketConfig implements WebSocketConfigurer{
+public class WebSocketConfig implements WebSocketConfigurer{
 
 	private final ChatWebSocketHandler chatWebSocketHandler;
 	
 	@Autowired
-	public ChatWebSocketConfig (ChatWebSocketHandler chatWebSocketHandler) {
+	public WebSocketConfig (ChatWebSocketHandler chatWebSocketHandler) {
 		this.chatWebSocketHandler = chatWebSocketHandler;
 	}
 	

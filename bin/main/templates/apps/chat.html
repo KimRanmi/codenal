@@ -74,7 +74,7 @@
 								<!-- 참여중인 채팅 목록 -->
 								<ul class="list-unstyled chat-list chat-user-list" id="userList">
 								    <!-- 1:1 채팅방 불러오기 -->
-								    <li id="contact-id" data-name="direct-message" class="" th:each="chat : ${notMeParticipantList}">
+								     <li id="contact-id" data-name="direct-message" class="" th:each="chat : ${notMeParticipantList}">
 								        <div th:if="${chat.chatRoom.roomType == 1}">
 								            <a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="unread-msg-user">
 								                <div class="d-flex align-items-center" th:if="${chat.employee.empId != session.empId}">
@@ -82,13 +82,12 @@
 								                        <img th:src="${chat.employee.empProfilePicture != null ? chat.employee.empProfilePicture : '/assets/images/users/avatar-1.jpg'}"
 								                             class="rounded-circle avatar-xs img-fluid userprofile" alt="선택 직원이 저장한 프로필 사진">
 								                    </div>
-								                    <div class="flex-grow-1 overflow-hidden">    
+								                    <div class="flex-grow-1 overflow-hidden">
 								                        <p class="text-truncate mb-0" th:text="${chat.employee.empName}"></p>
 								                        <input type="hidden" th:value="${chat.employee.empId}" class="oneChatEmpId">
 								                        <input type="hidden" th:value="${chat.chatRoom.roomNo}" class="oneChatRoomNo">
 								                    </div>
 								                    <!-- 안 읽은 메시지 수 표시 -->
-								                    <!-- chat과 participant가 일치하는지 확인하는 조건 추가 -->
 													<div th:each="participant : ${chatList}" 
 													     th:if="${participant != null and participant.chatRoom != null and chat.chatRoom.roomNo == participant.chatRoom.roomNo}">
 													    <span class="badge badge-soft-danger rounded p-1" 
@@ -148,14 +147,7 @@
 							<!-- End chat-message-list -->
 						</div>
 					</div>
-					<!-- <div class="tab-pane" id="contacts" role="tabpanel">
-						<div class="chat-room-list pt-3" data-simplebar>
-							<div class="sort-contact">
-							</div>
-						</div>
-					</div> -->
 				</div>
-				<!-- end tab contact -->
 			</div>
 			<!-- end chat leftsidebar -->
 			<!-- Start User chat -->
@@ -165,6 +157,7 @@
 			</div>
 			<div class="user-chat w-100 overflow-hidden" th:if="${chat!=null}">
 
+				<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
 				<div class="chat-content d-lg-flex">
 					<!-- start chat conversation section -->
 					<div class="w-100 overflow-hidden position-relative">
@@ -181,27 +174,41 @@
 														class="user-chat-remove fs-18 p-1"><i
 														class="ri-arrow-left-s-line align-bottom"></i></a>
 												</div>
-												<div class="flex-grow-1 overflow-hidden">
+												<!-- 1:1 채팅인 경우 -->
+												<div class="d-flex overflow-hidden flex-row" th:if="${chat.roomType==1}">
+												  <div class="d-flex align-items-center" th:each="c : ${chat.participants}" th:if="${#strings.toString(c.employee.empId) != username}">
+												    <div class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
+												      <img th:src="${c.employee.empProfilePicture != null ? c.employee.empProfilePicture : '/assets/images/users/avatar-1.jpg'}" 
+												      class="rounded-circle avatar-xs" alt="선택 직원이 저장한 프로필 사진">
+												    </div>
+												    <div class="flex-grow-1 overflow-hidden">
+												      <h5 class="text-truncate mb-0 fs-16">
+												        <a class="text-reset username"
+												           data-bs-toggle="offcanvas"
+												           href="#chatUserProfileCanvasExample"
+												           aria-controls="userProfileCanvasExample"
+												           th:text="${c.employee.empName}"></a>
+												      </h5>
+												    </div>
+												  </div>
+												</div>
+												<!-- 그룹 채팅인 경우 -->
+												<div class="flex-grow-1 overflow-hidden"  th:if="${chat.roomType==2}">
 													<div class="d-flex align-items-center">
-														<div
-															class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
-															<!-- 직원 프로필 이미지 -->
-															<img src="/assets/images/users/avatar-2.jpg"
-																class="rounded-circle avatar-xs" alt="선택 직원이 저장한 프로필 사진">
+														<div class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
+															<div class="avatar-xs">
+															<div class="avatar-title bg-light rounded-circle text-body">#</div>
+														</div>
 														</div>
 														<div class="flex-grow-1 overflow-hidden">
-															<h5 class="text-truncate mb-0 fs-16">
-																<a class="text-reset username"
-																	data-bs-toggle="offcanvas"
-																	href="#chatUserProfileCanvasExample"
-																	aria-controls="userProfileCanvasExample" th:text="${chat.chatName}"></a>
-															</h5>
+															<h5 class="text-truncate mb-0 fs-16"></h5>
+															<div th:text="${chat.chatName}"></div>
 														</div>
 													</div>
 												</div>
 											</div>
 										</div>
-										<!-- 오른쪽 위 메뉴 -->
+										<!-- 오른쪽 맨 위 메뉴 -->
 										<div class="col-sm-8 col-4">
 											<ul class="list-inline user-chat-nav text-end mb-0">
 												<li class="list-inline-item m-0">
@@ -220,7 +227,7 @@
 																<a class="dropdown-item" href="#"><i
 																class="ri-toggle-fill align-bottom text-muted me-2"></i>
 																알림 스위치</a> 
-																<a class="dropdown-item" href="#"><i
+																<a class="dropdown-item" th:href="@{/chatList/leaveChatRoom/{roomNo}(roomNo=${chat.roomNo})}"><i
 																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
 																채팅방 나가기</a>
 														</div>
@@ -239,7 +246,7 @@
 																<a class="dropdown-item" href="#"><i
 																class=" ri-edit-2-line align-bottom text-muted me-2"></i>
 																채팅방 이름 변경</a> 
-																<a class="dropdown-item" href="#"><i
+																<a class="dropdown-item" th:href="@{/chatList/leaveChatRoom/{roomNo}(roomNo=${chat.roomNo})}"><i
 																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
 																채팅방 나가기</a>
 														</div>
@@ -252,22 +259,25 @@
 								</div>
 								<!-- end chat user head -->
 								
+								<input type="hidden" th:value="${chat.roomNo}" id="room_no">
+								<div th:each="participant : ${chat.participants}">
+									<!-- 나의 참가자 번호 조회 -->
+									<div th:if="${participant.employee.empId == #authentication.principal.employeeDto.empId}">
+										<input type="hidden" th:value="${participant.participantNo}" id="sender_no">
+										<input type="hidden" th:value="${participant.employee.empName}" id="sender_name">
+									</div>
+									<!-- 전체 참가자 번호 조회 -->
+									<input type="hidden" th:value="${participant.participantNo}" id="participant_no" class="participant_no">
+									<input type="hidden" th:value="${participant.employee.empName}" id="participant_name" class="participant_name">
+									<input type="hidden" th:value="${participant.employee.empProfilePicture}" id="participant_profile" class="participant_profile">
+								</div>
+								
 								<!-- 채팅 대화 화면 시작 -->
-								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation"
-									data-simplebar>
-									<!-- <div id="elmLoader">
-										<div class="spinner-border text-primary avatar-sm"
-											role="status">
-											<span class="visually-hidden">로딩중...</span>
-										</div>
-									</div> -->
-									<ul class="list-unstyled chat-conversation-list"
-										id="users-conversation">
-<!-- 										<li th:text="${chat.}">
-										</li> -->
-
-									</ul>
-									<!-- end chat-conversation-list -->
+								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation" data-simplebar>
+									<!-- 채팅 메시지 동적으로 불러오기 -->
+									<div id="users-conversation">
+										
+									</div>
 								</div>
 								<!-- 채팅 대화 화면 끝 -->
 							</div>
@@ -290,16 +300,15 @@
 										</div>
 
 										<div class="col">
-											<div class="chat-input-feedback">작성 후 엔터 또는 버튼을 누르세요.</div>
 											<input type="text"
 												class="form-control chat-input bg-light border-light"
-												id="chat-input" placeholder="전달할 문구를 작성하세요."
+												id="chat_input" placeholder="전달할 문구를 작성하세요."
 												autocomplete="off">
 										</div>
 										<div class="col-auto">
 											<div class="chat-input-links ms-2">
 												<div class="links-list-item">
-													<button type="submit"
+													<button type="submit" id="send_btn"
 														class="btn btn-success chat-send waves-effect waves-light">
 														<i class="ri-send-plane-2-fill align-bottom"></i>
 													</button>
@@ -332,6 +341,7 @@
 							</div>
 						</div>
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>
@@ -448,35 +458,39 @@
 						document.getElementById("inviteBtn").addEventListener('click', function(e) {
 						    e.preventDefault(); // 기본 폼 제출 동작 방지
 						    
-						    const hiddenInput = document.querySelector(`input[name='emp_id[]']`);
+						    const form = document.getElementById("selectEmployeeForm");  // 폼을 가져옵니다.
+						    const formData = new FormData(form);  // 폼 데이터 가져오기
+						    const selectedEmpIds = formData.getAll('emp_id[]');  // 선택된 직원 ID 목록을 배열로 가져옵니다.
+						    
 						    const oneChatNos = document.querySelectorAll(`input[class='oneChatEmpId']`); // 모든 1:1 채팅방의 empId
 						    const oneChatRooms = document.querySelectorAll(`input[class='oneChatRoomNo']`); // 모든 1:1 채팅방의 방 번호
 
-						    if (hiddenInput === null || hiddenInput.value === '') {
+						    if (selectedEmpIds.length === 0) {
 						        alert('초대 대상은 최소 1명 이상 선택해야합니다.');
+						        return;
 						    } else {
-						        const selectedEmpIds = hiddenInput.value.split(','); // 선택된 ID 배열로 분리
-
-						        // 기존 채팅방 ID와 방 번호를 배열로 수집
+						        // 기존 1:1 채팅방 유저 ID와 방 번호 수집
 						        const existingChatEmpIds = [];
 						        const existingChatRoomNos = [];
 						        
 						        oneChatNos.forEach(input => existingChatEmpIds.push(input.value));
 						        oneChatRooms.forEach(input => existingChatRoomNos.push(input.value));
-						        
-						        // 선택된 ID 중 이미 존재하는 채팅방과 비교
-						        selectedEmpIds.forEach(selectedEmpId => {
-						            const index = existingChatEmpIds.indexOf(selectedEmpId);
-						            if (index !== -1) {
-						                alert('존재하는 1:1 채팅방입니다.');
-						                
-						                window.location.href = `/chatList/${existingChatRoomNos[index]}`;
-						            } else{
-						            	// 여기에 초대 프로세스 추가
-								        const form = document.getElementById("selectEmployeeForm");
 
-								        // FormData 객체를 생성하여 폼 데이터를 가져옴
-								        const formData = new FormData(form);
+						        console.log("선택된 Emp ID들 (배열):", selectedEmpIds);  // 선택된 대상 확인
+						        
+						        // 선택된 대상이 1명일 때만 1:1 채팅방과 비교
+						        if (selectedEmpIds.length === 1) {
+						            selectedEmpIds.forEach(selectedEmpId => {
+						                const index = existingChatEmpIds.indexOf(selectedEmpId);
+						                if (index !== -1) {
+						                    alert('존재하는 1:1 채팅방입니다.');
+						                    // 이미 존재하는 1:1 채팅방으로 리다이렉트
+						                    window.location.href = `/chatList/${existingChatRoomNos[index]}`;
+						                }
+						       	})
+						       	}
+						       	else{
+						        // 선택된 ID 중 이미 존재하는 채팅방과 비교
 								        
 								        for (let [key, value] of formData.entries()) {
 								            console.log(key, value); // 폼 데이터 출력
@@ -495,16 +509,14 @@
 								        .then(data => {
 								            if (data.res_code === '200') {
 								                alert(data.res_msg);
-								                location.href = `/chatList`;
 								                location.href = `/chatList/${data.roomNo}`; // 서버에서 받은 `roomNo`로 URL을 설정
 								            } else {
 								                alert('실패: ' + data.res_msg);
 								            }
 								        });
-						            }
-						        });
+						            
 
-						        
+						       	}
 						    }
 						});
 					</script>
@@ -525,6 +537,232 @@
 		<script src="/assets/js/pages/chat.init.js"></script>
 		
 		<script src="/assets/js/pages/project-overview.init.js"></script>
+	
+	 <script>
+	let socket;
+	
+	document.addEventListener('DOMContentLoaded', function() {
+    	event.preventDefault();
+	    console.log(document.getElementById('room_no').value);
+	    console.log(document.getElementById('csrf_token').value);
+	    console.log(document.getElementById('sender_no').value);
+	    const roomNo = document.getElementById('room_no').value;
+	    const userNo = document.getElementById('sender_no').value;
+	    console.log(roomNo);
+
+		socket = new WebSocket("ws://localhost:8083/chatting");
+	
+	    // 서버에 접속했을 때 실행될 함수
+	    socket.onopen = () => {
+	        console.log("=== 접속 ===");
+	        console.log(roomNo);
+	        const obj = {
+	            chat_type: "open",
+	            room_no: roomNo,
+	            participant_no: userNo
+	        };
+	        socket.send(JSON.stringify(obj)); // 서버로 방 번호 전송
+	    };
+	
+	    
+		socket.onmessage = (response) => {
+		    // JSON 파싱 및 에러 핸들링
+		    try {
+		        const resp = JSON.parse(response.data);
+		        
+		            const pageHost = document.getElementById('sender_no').value;
+		            const senderNo = resp.sender_no;
+		            console.log(senderNo);
+		            // 현재 사용자가 보낸 메시지인지 확인
+		            const isSender = pageHost == senderNo;
+		            printMsg(resp.msg_content, senderNo, isSender, resp.send_date, resp.msg_type);
+		           
+		    } catch (error) {
+		        console.error("JSON 파싱 오류:", error);
+		    }
+		};
+
+		// 마지막으로 출력된 메시지의 날짜를 저장할 변수
+		let lastDisplayedDate = null;
+
+		const printMsg = function(msg, senderNo, isSender, sendDate, msgType) {
+		    console.log("프린트 메소드로 받아왔다 : " + msg + ", 보낸사람 : " + senderNo + ", 송신자 여부: " + isSender + ", 메시지 타입: " + msgType + ", 보낸 날짜: " + sendDate);
+
+		    // 메시지 리스트 아이템 생성
+		    const mainDiv = document.createElement("div");
+		    mainDiv.className = 'my_chat';
+		    mainDiv.style.display = 'flex';
+		    mainDiv.style.alignItems = 'center';
+		    mainDiv.style.marginTop = '20px';
+		    mainDiv.style.marginBottom = '20px';
+
+		    // participants 정보 가져오기
+		    const participantNos = document.querySelectorAll('.participant_no');
+		    const participantNames = document.querySelectorAll('.participant_name');
+		    const participantProfiles = document.querySelectorAll('.participant_profile');
+
+		    // 날짜 형식을 yyyy-mm-dd로 변환 (비교를 위해)
+		    const currentMsgDate = new Date(sendDate).toISOString().split('T')[0];
+
+		    // 날짜가 변경되었을 때만 상단에 날짜 출력
+		    if (lastDisplayedDate !== currentMsgDate) {
+		        const dateDiv = document.createElement("div");
+		        dateDiv.className = 'chat-date badge-soft-primary rounded p-2';
+		        dateDiv.textContent = new Date(sendDate).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' });
+		        dateDiv.style.textAlign = 'center';  // 날짜는 중앙 정렬
+		        dateDiv.style.marginBottom = '10px';  // 날짜와 메시지 사이에 간격 추가
+
+		        // `users-conversation`에 날짜를 추가
+		        const conversationElement = document.getElementById("users-conversation");
+		        if (conversationElement) {
+		            conversationElement.appendChild(dateDiv);
+		        }
+		        // 마지막으로 출력된 날짜 업데이트
+		        lastDisplayedDate = currentMsgDate;
+		    }
+
+		    // 메시지 내용 처리 (msgType에 따른 처리)
+		    if (msgType === '1') {
+		        console.log('msgType 1 - 메시지를 추가합니다.');
+		        const msgDiv = document.createElement("div");
+		        msgDiv.className = 'user-chat-content';
+		        msgDiv.style.maxWidth = '300px';
+		        msgDiv.style.wordWrap = 'break-word';
+
+		        const textDiv = document.createElement("div");
+		        textDiv.className = 'conversation-name badge-soft-info rounded p-2';
+		        textDiv.textContent = msg;
+
+		        console.log('메시지 내용:', msg);
+
+		        msgDiv.appendChild(textDiv);
+		        mainDiv.appendChild(msgDiv);
+		        mainDiv.style.textAlign = 'center';
+		        mainDiv.style.justifyContent = 'center';
+		        console.log('li 요소:', mainDiv);
+		    }
+		    else if (msgType === '2') {
+		        let participantName = "알수없음"; // 기본값 설정
+		        let participantProfile = '/assets/images/users/avatar-1.jpg'; // 기본 프로필 이미지 설정
+
+		        let participantFound = false; // 참가자 발견 여부
+
+		        participantNos.forEach((participantNo, index) => {
+		            console.log("번호 비교할 대상 : " + participantNo.value);
+		            console.log("메시지 보낸이 : " + senderNo);
+
+		            if (participantNo.value == senderNo) { // senderNo와 일치하는지 확인
+		                participantName = participantNames[index]?.value || "알수없음"; // textContent로 변경
+		                console.log(participantName);
+		                participantProfile = participantProfiles[index]?.value || '/assets/images/users/avatar-1.jpg'; 
+		                participantFound = true; // 참가자를 찾았음을 기록
+		            }
+		        });
+
+		        if (participantFound) {
+		            const profileImg = document.createElement("img");
+		            profileImg.src = participantProfile;
+		            profileImg.style.width = '40px';
+		            profileImg.style.height = '40px';
+		            profileImg.style.marginRight = '10px';
+		            profileImg.style.borderRadius = '50%';
+
+		            const nameDiv = document.createElement("div");
+		            nameDiv.className = 'user-chat-content';
+		            nameDiv.textContent = participantName; // 참가자 이름 추가
+		            nameDiv.style.maxWidth = '300px';
+		            nameDiv.style.wordWrap = 'break-word';
+
+		            const chatContentDiv = document.createElement("div");
+		            chatContentDiv.className = 'user-chat-content';
+		            chatContentDiv.style.maxWidth = '300px';
+		            chatContentDiv.style.wordWrap = 'break-word';
+
+		            const conversationDiv = document.createElement("div");
+		            conversationDiv.className = 'conversation-name badge-soft-dark rounded p-2';
+		            conversationDiv.textContent = msg; // 메시지 내용 추가
+
+		            const timeDiv = document.createElement("div");
+		            const timeSmall = document.createElement("small");
+		            timeSmall.className = 'text-muted time';
+		            timeSmall.textContent = new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+		            timeDiv.appendChild(timeSmall);
+
+		            if (!isSender) {
+		            	mainDiv.style.display = 'flex';
+		            	mainDiv.style.justifyContent = 'flex-start';
+		            	mainDiv.appendChild(profileImg); // 프로필 이미지 추가
+		                chatContentDiv.appendChild(nameDiv); // 참가자 이름 추가
+		                chatContentDiv.appendChild(conversationDiv);
+		                timeDiv.style.textAlign = 'right'; // 시간 위치
+		                chatContentDiv.appendChild(timeDiv);
+		                mainDiv.appendChild(chatContentDiv);
+		            } else {
+		            	mainDiv.style.display = 'flex';
+		            	mainDiv.style.justifyContent = 'flex-end';
+		                chatContentDiv.style.display = 'flex';
+		                chatContentDiv.style.flexDirection = 'column';
+		                chatContentDiv.style.alignItems = 'flex-end';
+		                chatContentDiv.appendChild(conversationDiv);
+		                timeDiv.style.textAlign = 'left';
+		                chatContentDiv.appendChild(timeDiv);
+		                mainDiv.appendChild(chatContentDiv);
+		            }
+		        }
+		    }
+
+		    const conversationElement = document.getElementById("users-conversation");
+		    if (!conversationElement) {
+		        console.error("users-conversation 요소를 찾을 수 없습니다.");
+		    } else {
+		        console.log('users-conversation 요소:', conversationElement);
+		        conversationElement.appendChild(mainDiv); // mainDiv 추가
+		        
+		        // li 요소를 마지막에 위치하게 하면서 스크롤 이동
+		        mainDiv.scrollIntoView({ behavior: "smooth" }); // 스크롤을 부드럽게 이동
+		    }
+		};
+	
+
+		
+	    socket.onclose = () => {
+	        console.log("웹소켓 연결 종료");
+	    };
+	
+
+	
+	    // 메시지 전송 버튼 클릭시 이벤트 리스너
+	    document.getElementById('send_btn').addEventListener('click', function(event) {
+	    	event.preventDefault();
+	        const msg = document.getElementById('chat_input').value;
+	        const obj = setMsgObj('msg', msg);
+	        if (socket.readyState === WebSocket.OPEN) {
+	            socket.send(JSON.stringify(obj)); // 메시지 전송
+	            document.getElementById('chat_input').value = ""; // 입력 필드 초기화
+	        } else {
+	            alert("웹소켓 연결돼있지 않음...");
+	        }
+	    });
+	});
+	
+	// 객체 생성자 함수
+	let setMsgObj = function(chatType, chatMsg) {
+	    const roomNo = document.getElementById('room_no').value;
+	    const senderNo = document.getElementById('sender_no').value;
+	    const participantNo = document.getElementById('participant_no').value;
+	    return {
+	        chat_type: chatType,
+	        msg_content: chatMsg,
+	        room_no: roomNo,
+	        sender_no: senderNo,
+	        participant_no: participantNo,
+	        msg_type: '2'
+	    };
+	};
+
+
+</script>
+
 	</th:block>
 	
 	<!-- 캔버스? -->

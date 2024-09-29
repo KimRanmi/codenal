@@ -15,5 +15,9 @@ public interface ChatMsgRepository extends JpaRepository<ChatMsg, Integer>{
 
 	void deleteByChatRoom(ChatRoom chatRoom);
 
+	@Query(value = "SELECT m FROM ChatMsg m WHERE m.chatRoom = ?1 ORDER BY m.sendDate DESC")
+	ChatMsg findTopByChatRoomOrderBySendDateDesc(ChatRoom chatRoom);
+
+
 
 }
