@@ -9,7 +9,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
-import com.codenal.approval.domain.ApprovalDto;
+import com.codenal.approval.domain.ApprovalCategoryDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
@@ -317,17 +316,18 @@ public class ApprovalService {
 	   
 	   System.out.println("카테고리 : "+ac.getCateCode());
 	   
-	   ApprovalDto dto = ApprovalDto.builder()
-			   				.approval_no(no)
-			   				.approval_title((String)obj.get("제목"))
-			   				.approval_content((String)obj.get("내용"))
-			   				.approval_status(0)
-			   				.approval_reg_date((LocalDate)obj.get("날짜"))
-			   				.employee(emp)
+	   Approval approval = Approval.builder()
+			   				.approvalNo(no)
 			   				.approvalCategory(ac)
+			   				.approvalContent((String)obj.get("내용"))
+			   				.approvalTitle((String)obj.get("제목"))
+			   				.employee(emp)
+			   				.approvalStatus(0)
+			   				.approvalRegDate((LocalDate)obj.get("날짜"))
 			   				.build();
-			   				
-	   Approval approval = dto.toEntity();
+	   
+	   
+	   System.out.println("출력 : "+approval.getApprovalCategory().getCateCode());
 	   
 	   // 데이터베이스에 저장
 	   approvalRepository.save(approval);
@@ -343,6 +343,8 @@ public class ApprovalService {
 		   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
 		      
 		   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+		   
+		   System.out.println("카테이름 : "+ac.getCateCode());
 		   ApprovalForm af = approvalFormRepository.findByFormCode((Integer)obj.get("폼코드"));
 		     
 		     int type = 0;
@@ -377,18 +379,16 @@ public class ApprovalService {
 		         
 		   AnnualLeaveUsage au = annualLeaveUsageRepository.save(annual);
 		   
-		   ApprovalDto dto = ApprovalDto.builder()
-				   				.approval_no(no)
-				   				.approval_title((String)obj.get("제목"))
-				   				.approval_content((String)obj.get("내용"))
-				   				.approval_reg_date((LocalDate)obj.get("날짜"))
-				   				.approval_status(0)
-				   				.employee(emp)
-				   				.approvalCategory(ac)
-				   				.annualLeaveUsage(au)
-				   				.build();
-				   				
-		   Approval approval = dto.toEntity();
+		   Approval approval = Approval.builder()
+	   				.approvalNo(no)
+	   				.approvalCategory(ac)
+	   				.approvalContent((String)obj.get("내용"))
+	   				.approvalTitle((String)obj.get("제목"))
+	   				.employee(emp)
+	   				.approvalStatus(0)
+	   				.approvalRegDate((LocalDate)obj.get("날짜"))
+	   				.annualLeaveUsage(au)
+	   				.build();
 		   
 		   // 데이터베이스에 저장
 		   approvalRepository.save(approval);
@@ -407,5 +407,50 @@ public class ApprovalService {
 			}
 			return result;
 	   }
-
+	   
+	   
+	   // admin 전자결재 리스트 
+	   public Page<ApprovalForm> adminApprovalList(Pageable pageable){		      
+		      return approvalFormRepository.findAll(pageable);
+		   }
+	   
+	   
+	   // 상태 전환
+	   @Transactional
+	   public int updateVisibility(int id, boolean checked) {
+		   char result;
+		   if(checked == true) {
+			   result = 'Y';
+		   }else{
+			   result = 'N';
+		   }
+		   return approvalFormRepository.updateVisibility(id,result);
+	   }
+	   
+	   // 폼 이름 찾기
+	   public ApprovalForm formFind(String title) {
+		   return approvalFormRepository.findByFormName(title);
+	   }
+	   
+	   // 폼 생성
+	   public ApprovalCategory formCreate(String title, String code, String content) {
+		   ApprovalBaseFormType abf = approvalBaseFormTypeRepository.findByBaseFormName(code);
+		   
+		   System.out.println("폼 네임"+abf.getBaseFormCode());
+		   
+		   ApprovalForm af = ApprovalForm.builder()
+				   					.approvalBaseFormType(abf)
+				   					.formName(title)
+				   					.formContent(content)
+				   					.formVisibility('Y')
+				   					.build();
+		   ApprovalForm approvalForm = approvalFormRepository.save(af);
+		   
+		   ApprovalCategory ac = ApprovalCategory.builder()
+				   					.approvalForm(approvalForm)
+				   					.build();
+		   
+		   
+		   return approvalCategoryRepository.save(ac) ;
+	   }
 }

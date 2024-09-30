@@ -21,11 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalFileDto;
-import com.codenal.approval.domain.Approver;
+import com.codenal.approval.domain.ApprovalForm;
+import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.service.ApprovalFileService;
 import com.codenal.approval.service.ApprovalService;
 import com.codenal.approval.service.ApproverService;
-import com.codenal.employee.domain.Employee;
 import com.codenal.employee.service.EmployeeService;
 
 @Controller
@@ -199,7 +199,7 @@ public class ApprovalApiController {
 	@ResponseBody
 	@PutMapping("/approval/update/{approvalNo}")
 	public Map<String, String> updateApproval(@RequestParam("approval_content") String approvalContent,
-			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
+			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") Long empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("form_code") String formCode,
 			@PathVariable("approvalNo") Long no, @RequestPart(name = "file", required = false) MultipartFile file,
 			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
@@ -216,13 +216,12 @@ public class ApprovalApiController {
 		LocalDate ldt = LocalDate.now();
 
 		// 타입 형변환
-		Employee e = (Employee) employeeService.selectEmpId(empId);
 		Integer form_code = Integer.parseInt(formCode);
 
 		Map<String, Object> list = new HashMap<String, Object>();
 		list.put("제목", approvalTitle);
 		list.put("내용", approvalContent);
-		list.put("이름", e.getEmpId());
+		list.put("이름", empId);
 		list.put("폼코드", form_code);
 		list.put("날짜", ldt);
 
@@ -281,7 +280,7 @@ public class ApprovalApiController {
 	@ResponseBody
 	@PutMapping("/approval/leaveUpdate/{approvalNo}")
 	public Map<String, String> updateLeaveApproval(@RequestParam("approval_content") String approvalContent,
-			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
+			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") Long empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("start_date") LocalDate startDate,
 			@RequestParam(value = "end_date", required = false) LocalDate endDate,
 			@RequestParam("form_code") String formCode,
@@ -300,15 +299,17 @@ public class ApprovalApiController {
 		
 		// 날짜 최신 날짜로 수정
 		LocalDate ldt = LocalDate.now();
+		
 
 		// 타입 형변환
-		Employee e = (Employee) employeeService.selectEmpId(empId);
 		Integer form_code = Integer.parseInt(formCode);
 
+		System.out.println(empId);
+		
 		Map<String, Object> list = new HashMap<String, Object>();
 		list.put("제목", approvalTitle);
 		list.put("내용", approvalContent);
-		list.put("이름", e.getEmpId());
+		list.put("이름", empId);
 		list.put("폼코드", form_code);
 		list.put("시작일자", startDate);
 		list.put("종료일자", endDate);
@@ -426,5 +427,52 @@ public class ApprovalApiController {
 		return resultMap;
 	}
 	
+	// 전자결재 비공개 설정
+	@ResponseBody
+	@PostMapping("/admin/updateVisibiliy")
+	public void updateVisibility(@RequestBody Map<String,Object> request ) {
+		System.out.println(1); 
+		
+		int id = Integer.parseInt((String) request.get("id")); // String -> int 변환
+		boolean checked = (boolean) request.get("checked");
+
+		int result = approvalService.updateVisibility(id,checked);
+	}
 	
+	// 이름 조회
+	@ResponseBody
+	@PostMapping("/form_find")
+	public Map<String,String> formFind(@RequestParam("title") String title){
+		Map<String,String> result = new HashMap<String,String>();
+		result.put("res_msg", "존재하는 이름입니다.");
+		result.put("res_code", "404");
+		
+		ApprovalForm form = approvalService.formFind(title);
+		
+		if(form == null) {
+			result.put("res_code","200");
+			
+		}
+		
+		return result;
+		
+	}
+	
+	// 폼 생성
+	@ResponseBody
+	@PostMapping("/form_create")
+	public Map<String,String> formCreate(@RequestParam("title") String title, @RequestParam("base_form_code") String code,
+										@RequestParam("content") String content){
+		Map<String,String> result = new HashMap<String,String>();
+		result.put("res_msg", "등록 실패하였습니다.");
+		result.put("res_code", "404");
+		
+		
+		if(approvalService.formCreate(title,code,content) != null) {
+			result.put("res_code","200");
+			result.put("res_msg", "등록되었습니다.");
+		}
+		
+		return result;
+	}
 }

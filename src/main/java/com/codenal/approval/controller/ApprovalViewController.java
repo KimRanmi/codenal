@@ -2,6 +2,7 @@ package com.codenal.approval.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.service.AnnualLeaveManageService;
 import com.codenal.approval.domain.ApprovalBaseFormType;
+import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.domain.Approver;
 import com.codenal.approval.service.ApprovalService;
@@ -234,11 +236,22 @@ public class ApprovalViewController {
 	    return addressBookService.getTreeMenu();
 	}
 	
+	// admin 전자결재 추가
+	@GetMapping("/adminApprovalCreate")
+	public String adminCreate() {
+		return "apps/adminApprovalCreate";
+	}
+	
 	// admin 전자결재 리스트 
 	@GetMapping("/admin_approval_list")
-	public String adminList(){
-		return "admin_approval_list";
+	public String adminList(Model model,
+			@PageableDefault(page = 0, size = 10, sort = "formCode", direction = Sort.Direction.DESC) Pageable pageable){
+		Page<ApprovalForm> resultList = approvalService.adminApprovalList(pageable);
+		
+		model.addAttribute("resultList",resultList);
+		
+		return "apps/admin_approval_list";
 	}
-
+	
 	
 }
