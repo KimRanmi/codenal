@@ -46,7 +46,7 @@ public class AlarmsService {
     public List<AlarmsDto> getAlarmsByEmpId(Long empId) {
         List<Alarms> alarmsList = alarmsRepository.findByEmployeeEmpId(empId);
         List<AlarmsDto> alarmsDtoList = new ArrayList<>();
-
+ 
         for (Alarms alarm : alarmsList) {
             String roomName = null;
             String roomLocation = null;

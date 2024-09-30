@@ -54,7 +54,7 @@ public class AlarmsController {
 
         List<AlarmsDto> alarmsDto = alarms.stream()
                 .map(AlarmsDto::fromEntity)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); 
 
         return new ResponseEntity<>(alarmsDto, HttpStatus.OK);
     }
