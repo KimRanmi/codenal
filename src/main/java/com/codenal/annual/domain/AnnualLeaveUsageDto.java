@@ -23,6 +23,7 @@ public class AnnualLeaveUsageDto {
    private LocalDate annual_usage_end_date;
    private Long emp_id;
    private int annual_type;
+   private float total_day;
    private String time_period;
    
    public AnnualLeaveUsage toEntity() {
@@ -32,6 +33,7 @@ public class AnnualLeaveUsageDto {
             .annualUsageEndDate(annual_usage_end_date)
             .annualType(annual_type)
             .timePeriod(time_period)
+            .totalDay(total_day)
             .build();
    }
    
@@ -40,8 +42,10 @@ public class AnnualLeaveUsageDto {
             .annual_usage_no(alu.getAnnualUsageNo())
             .annual_usage_start_date(alu.getAnnualUsageStartDate())
             .annual_usage_end_date(alu.getAnnualUsageEndDate())
+            .emp_id(alu.getEmployee().getEmpId()) // 내가 멋대로 추가한 거 허락 받을 것
             .annual_type(alu.getAnnualType())
             .time_period(alu.getTimePeriod())
+            .total_day(alu.getTotalDay())
             .build();
    }
    

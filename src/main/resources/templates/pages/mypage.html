@@ -218,7 +218,7 @@
 										<div id="flipModal" class="modal fade flip" tabindex="-1"
 											aria-labelledby="flipModalLabel" aria-hidden="true">
 											<div class="modal-dialog modal-dialog-centered">
-												<div class="modal-content">
+												<div class="modal-content"> 
 													<div class="modal-header">
 														<h5 class="modal-title" id="flipModalLabel">서명 등록/수정</h5>
 														<button type="button" class="btn-close"
@@ -434,15 +434,18 @@
     })
     .then(response => response.json())
     .then(data => {
-    	 if (data.success) {
-             if (dataURL === '') {
-                 document.getElementById('signImageInput').value = '서명이미지 없음';  // UI 업데이트
-             } else {
-                 document.getElementById('signImageInput').value = data.filePath;  // 서버로부터 새로운 서명 이미지 경로 받기
-             }
-         } else {
-             alert('서명 저장에 실패했습니다: ' + data.error);
-         }
+        if (data.success) {
+            if (dataURL === '') {
+                document.getElementById('signatureImage').value = '서명이미지 없음';
+                // 캔버스를 지운 상태로 업데이트
+                clearCanvas();
+            } else {
+                document.getElementById('signatureImage').value = data.filePath;
+            }
+            alert('서명이 성공적으로 저장되었습니다.');
+        } else {
+            alert('서명 저장에 실패했습니다: ' + data.error);
+        }
     })
     .catch(error => {
         console.error('Error:', error);

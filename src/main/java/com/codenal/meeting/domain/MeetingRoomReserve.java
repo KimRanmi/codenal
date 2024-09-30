@@ -2,6 +2,7 @@ package com.codenal.meeting.domain;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,10 +40,10 @@ public class MeetingRoomReserve {
 	private LocalDate meetingRoomReserveDate;
 
 	@Column(name = "meeting_room_start_time")
-	private Time meetingRoomStartTime;
+	private LocalTime meetingRoomStartTime;
 	
 	@Column(name = "meeting_room_end_time")
-	private Time meetingRoomEndTime;
+	private LocalTime meetingRoomEndTime;
 	
 	@Column(name = "meeting_room_reserve_time_no")
 	private Long meetingRoomReserveTimeNo;

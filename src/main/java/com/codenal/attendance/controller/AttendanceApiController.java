@@ -1,6 +1,8 @@
 package com.codenal.attendance.controller;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +64,11 @@ public class AttendanceApiController {
 
     @GetMapping("/all")
     public ResponseEntity<Page<AttendanceDto>> getAllAttendances(
-            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable) { // 정렬 추가
-        Page<AttendanceDto> attendances = attendanceService.getAllAttendances(pageable);
+            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable) { 
+        Long empId = getCurrentUserId();
+        Page<AttendanceDto> attendances = attendanceService.getAllAttendances(empId, pageable);
         return ResponseEntity.ok(attendances);
     }
-    
  // 출근하기
     @PostMapping("/check-in")
     public ResponseEntity<String> checkIn() {
@@ -109,5 +111,18 @@ public class AttendanceApiController {
         }
     }
 
-   
+
+ // 출근, 지각, 연차, 결근 상태를 조회하는 API
+    @GetMapping("/summary")
+    public ResponseEntity<Map<String, Long>> getAttendanceSummary() {
+        Long empId = getCurrentUserId();
+        Map<String, Long> summary = new HashMap<>();
+        summary.put("normal", attendanceService.getNormalAttendanceCount(empId));
+        summary.put("late", attendanceService.getLateAttendanceCount(empId));
+        summary.put("annualLeave", attendanceService.getAnnualLeaveCount(empId));
+       
+        return ResponseEntity.ok(summary);	
+    }
+    
+    
 }

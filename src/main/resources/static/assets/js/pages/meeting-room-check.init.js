@@ -58,6 +58,14 @@ formData.addEventListener('submit', (e) => {
 		alert(vali_text);
 	} else{
 		
+		let listTime = [];
+		
+		for(let i=0; i<formData.reserve_time.length; i++){
+			listTime.push(formData.reserve_time[i].value);
+		}
+	
+		console.log(listTime);
+		
 		const payload = new FormData(formData);
 		fetch('/meetingRoomCreate', {
 			method: 'POST',
@@ -69,24 +77,21 @@ formData.addEventListener('submit', (e) => {
 			.then(response => response.json())
 			.then(data => {
 
-				alert(data.res_msg);
-				location.href="apps-ecommerce-product-details";
+				const xhr = new XMLHttpRequest();
+				xhr.open("post", "/meetingRoomTimeCreate", true);
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						alert(data.res_msg);
+					}
+				}
+				const header = document.getElementById("_csrf_header").value;
+				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+				xhr.setRequestHeader(header, csrfToken);
+				xhr.send("time="+listTime);
+				location.href="apps-meeting-room";
 			})
 		
-		/*const xhr = new XMLHttpRequest();
-		xhr.open("post", "/meetingRoomCreate", true);
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				alert('성공');
-			}
-		}
-		console.log(formData.meeting_room_img.value);
-		const csrfToken = document.getElementById('csrf_token').value;
-		const header = document.getElementById("_csrf_header").value;
-		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-		xhr.setRequestHeader(header, csrfToken);
-		xhr.send("name="+formData.meeting_room_name.value+"&place="+formData.place.value+"&amenity="+formData.amenity.value+"&img="+formData.meeting_room_img.value);
-	*/
+	
 	}
 
 });

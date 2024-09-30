@@ -26,7 +26,9 @@ import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.service.AnnualLeaveManageService;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalFormDto;
+import com.codenal.approval.domain.Approver;
 import com.codenal.approval.service.ApprovalService;
+import com.codenal.approval.service.ApproverService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.service.EmployeeService;
 import com.codenal.security.service.SecurityService;
@@ -38,15 +40,17 @@ public class ApprovalViewController {
 	private final EmployeeService employeeService;
 	private final AnnualLeaveManageService annualLeaveManageService;
 	private final AddressBookService addressBookService;
+	private final ApproverService approverService;
 
 	@Autowired
 	public ApprovalViewController(ApprovalService approvalService, SecurityService securityService,
 			EmployeeService employeeService, AnnualLeaveManageService annualLeaveManageService,
-			AddressBookService addressBookService) {
+			AddressBookService addressBookService, ApproverService approverService) {
 		this.approvalService = approvalService;
 		this.annualLeaveManageService = annualLeaveManageService;
 		this.employeeService = employeeService;
 		this.addressBookService = addressBookService;
+		this.approverService = approverService;
 	}
 	
 	// 품의서 , 요청서 이동
@@ -89,6 +93,7 @@ public class ApprovalViewController {
 	@GetMapping("/approval/list")
 	public String listApproval(Model model, @RequestParam(value = "num", defaultValue = "0") int num,
 			@PageableDefault(page = 0, size = 10, sort = "approvalNo", direction = Sort.Direction.DESC) Pageable pageable) {
+		
 		// 현재 인증된 사용자 정보 가져오기
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
@@ -104,22 +109,27 @@ public class ApprovalViewController {
 	
 	// 수신 리스트
 	@GetMapping("/approval/inboxList")
-	public String inboxListApproval(Model model, @RequestParam(value="num", defaultValue="0") int num,
+	public String inboxListApproval(Model model, @RequestParam(value="num", defaultValue="1") int num,
 			@PageableDefault(page = 0, size = 10, sort = "approvalNo", direction = Sort.Direction.DESC) Pageable pageable) {
 		
 		// 현재 인증된 사용자 정보 가져오기
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
 		Long id = Long.parseLong(username);
-
+		
+		System.out.println("지금 상태 : "+num);
+		
 		Page<Map<String, Object>> resultList = approvalService.selectApprovalinBoxList(pageable, num, id);
+		
+		if(num == 4) {
+			System.out.println("지금 상태 : "+num);
+			resultList = approvalService.selectReferrerList(pageable, id);
+		}
 		
 		model.addAttribute("resultList", resultList);
 		
-		System.out.println("리스트 출력 : "+resultList);
-		
 		model.addAttribute("num", num);
-
+		
 		return "apps/approval_list_inbox";
 	}
 
@@ -127,8 +137,6 @@ public class ApprovalViewController {
 	@GetMapping("/approval/{approval_no}")
 	public String selectApprovalOne(Model model, @PathVariable("approval_no") Long approval_no) {
 		String returnResult = null;
-
-		System.out.println("상세조회 시작");
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
@@ -158,19 +166,22 @@ public class ApprovalViewController {
 
 		List<ApprovalFormDto> cateList = new ArrayList<ApprovalFormDto>();
 		cateList = approvalService.selectApprovalCateList(typeInt);
-
+		
+		// 반려 상태 가져오기
+		Approver reject = approverService.findReject(approval_no);
+		
+		
 		model.addAttribute("dto", resultList);
 		model.addAttribute("type", typeInt);
 		model.addAttribute("cateList", cateList);
 		model.addAttribute("emp", emp);
-		
-		System.out.println("상세조회 출력 : "+resultList.get("approver"));
+		model.addAttribute("reject", reject);
 		
 		return "apps/" + returnResult;
 	}
 	
 
-	// 회수함에서 상세조회
+	// 회수함에서 상세조회(update로 감)
 	@GetMapping("/approval/detail/{approval_no}")
 	public String selectApproval(Model model, @PathVariable("approval_no") Long approval_no) {
 		String returnResult = null;

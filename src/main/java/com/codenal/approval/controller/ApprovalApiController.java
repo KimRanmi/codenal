@@ -52,12 +52,16 @@ public class ApprovalApiController {
 			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("form_code") String formCode,
 			@RequestPart(value = "file", required = false) MultipartFile file,
-			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
+			@RequestParam(value = "references", required = false) List<Long> references) {
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 등록 중 오류가 발생했습니다.");
-
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
+		
 		// 타입 형변환
 		Long emp_id = Long.parseLong(empId);
 		Integer form_code = Integer.parseInt(formCode);
@@ -67,8 +71,6 @@ public class ApprovalApiController {
 		list.put("내용", approvalContent);
 		list.put("이름", emp_id);
 		list.put("폼코드", form_code);
-			
-		System.out.println("합의자 : "+agree);
 
 		Approval createdApproval = approvalService.createApproval(list);
 
@@ -79,10 +81,11 @@ public class ApprovalApiController {
 			approverList.put("합의자", agree);
 			approverList.put("결재자", approver);
 			
-			Map<String, Long> no = new HashMap<String,Long>();
-			no.put("결재번호", createdApproval.getApprovalNo());
-			
+			// 결재자 정보 등록
 			approverService.createApprover(approverList,createdApproval);
+			
+			// 수신참조자 정보 등록
+			approverService.createReferences(references,createdApproval);
 			
 			
 			//파일 데이터
@@ -111,13 +114,19 @@ public class ApprovalApiController {
 			@RequestParam("form_code") String formCode,
 			@RequestParam(value = "time_period", required = false) String timePeriod,
 			@RequestPart(value = "file", required = false) MultipartFile file,
-			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
+			@RequestParam(value = "references", required = false) List<Long> references,
+			@RequestParam(value="totalDay") float totalDay) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 등록 중 오류가 발생했습니다.");
-
+		
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
+		
 		// 타입 형변환
 		Long emp_id = Long.parseLong(empId);
 		Integer form_code = Integer.parseInt(formCode);
@@ -129,6 +138,7 @@ public class ApprovalApiController {
 		list.put("폼코드", form_code);
 		list.put("시작일자", startDate);
 		list.put("종료일자", endDate);
+		list.put("사용일수", totalDay);
 		list.put("반차시간대", timePeriod);
 		Approval createdApproval = approvalService.createApprovalLeave(list);
 
@@ -142,7 +152,10 @@ public class ApprovalApiController {
 			Map<String, Long> no = new HashMap<String,Long>();
 			no.put("결재번호", createdApproval.getApprovalNo());
 						
-			approverService.createApprover(approverList,createdApproval);			
+			approverService.createApprover(approverList,createdApproval);	
+			
+			// 수신참조자 정보 등록
+			approverService.createReferences(references,createdApproval);
 
 			if (file != null) {
 				if (approvalFileService.upload(file, createdApproval) != null) {
@@ -189,12 +202,16 @@ public class ApprovalApiController {
 			@RequestParam("approval_title") String approvalTitle, @RequestParam("emp_id") String empId,
 			@RequestParam("approval_reg_date") String approvalRegDate, @RequestParam("form_code") String formCode,
 			@PathVariable("approvalNo") Long no, @RequestPart(name = "file", required = false) MultipartFile file,
-			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver) {
-
+			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
+			@RequestParam(value = "references", required = false) List<Long> references) {
+		
+		
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 수정 중 오류가 발생했습니다.");
-
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
 		// 날짜 최신 날짜로 수정
 		LocalDate ldt = LocalDate.now();
 
@@ -219,17 +236,18 @@ public class ApprovalApiController {
 			Map<String, List<Long>> approverList = new HashMap<String,List<Long>>();
 			approverList.put("합의자", agree);
 			approverList.put("결재자", approver);
-						
-			Map<String, Long> apn = new HashMap<String,Long>();
-			apn.put("결재번호", updateApproval.getApprovalNo());
-						
+			
+			System.out.println("Updated Approval: " + updateApproval);
+			System.out.println("Approver List: " + approverList);
+			
+			// 결재 수정
 			approverService.updateApprover(approverList,updateApproval);
 			
-			
-			
+			// 수신 참조자 수정
+			approverService.updateReferrer(references,updateApproval);
 			
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "전자결재 정상적으로 수정되었습니다.");
+			resultMap.put("res_msg", "대기함으로 이동합니다.");
 			ApprovalFileDto alf = new ApprovalFileDto();
 			alf.setApproval(updateApproval);
 
@@ -241,8 +259,8 @@ public class ApprovalApiController {
 
 					String savedFileName = approvalFileService.upload(file, updateApproval);
 					if (savedFileName == null) {
-						resultMap.put("res_code", "404");
-						resultMap.put("res_msg", "파일 업로드에 실패했습니다.");
+						resultMap.put("res_code", "200");
+						resultMap.put("res_msg", "전자결재 상신대기함으로 이동합니다.");
 						return resultMap;
 					}
 				}
@@ -268,13 +286,18 @@ public class ApprovalApiController {
 			@RequestParam(value = "end_date", required = false) LocalDate endDate,
 			@RequestParam("form_code") String formCode,
 			@RequestParam(value = "time_period", required = false) String timePeriod,
-			@RequestParam(value = "file", required = false) MultipartFile file, @PathVariable("approvalNo") Long no) {
+			@RequestParam(value = "file", required = false) MultipartFile file, @PathVariable("approvalNo") Long no,
+			@RequestParam(value = "agree", required = false) List<Long> agree,
+			@RequestParam("approver") List<Long> approver,
+			@RequestParam(value = "references", required = false) List<Long> references,
+			@RequestParam(value="totalDay") float totalDay) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
 		resultMap.put("res_msg", "전자결재 수정 중 오류가 발생했습니다.");
-
-		System.out.println("컨트롤러 넘어가는건가...");
+		
+		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
+		
 		// 날짜 최신 날짜로 수정
 		LocalDate ldt = LocalDate.now();
 
@@ -290,15 +313,32 @@ public class ApprovalApiController {
 		list.put("시작일자", startDate);
 		list.put("종료일자", endDate);
 		list.put("반차시간대", timePeriod);
+		list.put("사용일수", totalDay);
 		list.put("날짜", ldt);
-
+		
+		// 전자결재 수정
 		Approval updateApproval = approvalService.updateApprovalLeave(list, no);
 
 		System.out.println("파일 수정 : " + file.getName());
 
 		if (updateApproval != null) {
+			
+			// 결재자 테이블 수정하기
+			Map<String, List<Long>> approverList = new HashMap<String, List<Long>>();
+			approverList.put("합의자", agree);
+			approverList.put("결재자", approver);
+
+			System.out.println("Updated Approval: " + updateApproval);
+			System.out.println("Approver List: " + approverList);
+
+			// 결재자 수정
+			approverService.updateApprover(approverList, updateApproval);
+
+			// 수신 참조자 수정
+			approverService.updateReferrer(references, updateApproval);
+
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "전자결재 정상적으로 수정되었습니다.");
+			resultMap.put("res_msg", "전자결재 상신대기함으로 이동합니다.");
 			ApprovalFileDto alf = new ApprovalFileDto();
 			alf.setApproval(updateApproval);
 
@@ -348,7 +388,7 @@ public class ApprovalApiController {
 		
 	}
 	
-	// 전자결재 승인 (우선순위가 1일 경우)
+	// 전자결재 승인 (우선순위 순서대로)
 	@ResponseBody
 	@PostMapping("/approver/consent")
 	public Map<String,String> consentApprover(@RequestBody Map<String, String> request){
@@ -364,4 +404,25 @@ public class ApprovalApiController {
 		
 		return resultMap;
 	}
+	
+	// 전자결재 반려
+	@ResponseBody
+	@PostMapping("/approver/reject")
+	public Map<String,String> rejectApprover(@RequestBody Map<String,String> request){
+		Map<String,String> resultMap = new HashMap<String,String>();
+		resultMap.put("res_code", "404");
+		resultMap.put("res_msg", "반려 중 오류가 발생하였습니다.");
+		Long no = Long.valueOf(request.get("approvalNo"));
+		Long loginId= Long.valueOf(request.get("loginId"));
+		String rejectText = request.get("reject");
+		
+		if(approverService.rejectApprover(no,loginId,rejectText)>0) {
+			resultMap.put("res_code","200");
+			resultMap.put("res_msg", "반려처리되었습니다.");
+		}
+		
+		return resultMap;
+	}
+	
+	
 }

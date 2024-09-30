@@ -592,7 +592,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				xhr.open("post","/create/event",true);
 				xhr.onreadystatechange = function() {
 					if(xhr.readyState == 4 && xhr.status == 200){ // 200: 정상적으로 작동한다는 뜻
-						alert('성공');
+						/*alert('일정이 추가되었습니다.');*/
 					}
 				}
 				const header = document.getElementById("_csrf_header").value;
@@ -615,7 +615,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				xhr.open("post","/modify/event",true);
 				xhr.onreadystatechange = function() {
 					if(xhr.readyState == 4 && xhr.status == 200){ // 200: 정상적으로 작동한다는 뜻
-						alert('성공');
+						
 					}
 				}
 				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");

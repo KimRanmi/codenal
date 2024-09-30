@@ -32,7 +32,7 @@
 }
 
 .body-list { /* 몸통 높이 고정(동적X) */
-	height: 598.5px; 
+	height: 598.5px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -176,39 +176,32 @@
 								</table>
 
 								<br>
-								
+
 								<div class="col-lg-6">
 									<div class="d-flex justify-content-end mt-2 pagination" th:if="${!resultList.isEmpty()}">
 										<ul class="pagination" th:with="
-    pageNumber = ${resultList.pageable.pageNumber},
-    pageSize = ${resultList.pageable.pageSize},
-    totalPages = ${resultList.totalPages},
-    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-    tempEndPage = ${startPage + pageSize - 1},
-    endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
-    ">
-    <!-- 이전 -->
-    <th:block th:if="${!resultList.first}">
-        <li class="page-item">
-            <a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a>
-        </li>
-    </th:block>
+										    pageNumber = ${resultList.pageable.pageNumber},
+										    pageSize = ${resultList.pageable.pageSize},
+										    totalPages = ${resultList.totalPages},
+										    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+										    tempEndPage = ${startPage + pageSize - 1},
+										    endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})
+										    ">
+											<!-- 이전 -->
+											<th:block th:if="${!resultList.first}">
+												<li class="page-item"><a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber - 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&lt;</a></li>
+											</th:block>
 
-    <!-- 페이지 번호 -->
-    <th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
-        <li class="page-item">
-            <a class="page-link" th:text="${page}" th:href="@{/employee/addressBook(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}"
-               th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
-        </li>
-    </th:block>
+											<!-- 페이지 번호 -->
+											<th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
+												<li class="page-item"><a class="page-link" th:text="${page}" th:href="@{/employee/addressBook(page=${page} - 1, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}" th:classappend="${page == pageNumber + 1} ? 'active'">1</a></li>
+											</th:block>
 
-    <!-- 다음 -->
-    <th:block th:if="${!resultList.last}">
-        <li class="page-item">
-            <a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a>
-        </li>
-    </th:block>
-</ul>
+											<!-- 다음 -->
+											<th:block th:if="${!resultList.last}">
+												<li class="page-item"><a class="page-link" th:href="@{/employee/addressBook(page=${pageNumber + 1}, search_text=${searchDto.search_text}, search_type=${searchDto.search_type})}">&gt;</a></li>
+											</th:block>
+										</ul>
 
 									</div>
 								</div>
@@ -296,6 +289,68 @@
 		        } */
 		    });
 		});
+		
+		// 부서명 수정
+		document.addEventListener("DOMContentLoaded", function () {
+    // 부서명 수정 폼 제출 이벤트 처리
+    const editDeptForm = document.getElementById("editDeptForm");
+
+    editDeptForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // 기본 폼 제출 동작을 막음
+
+        // 입력된 부서명과 부서번호 가져오기
+        const deptName = document.getElementById("deptName").value;
+        const deptNo = document.getElementById("deptNo").value;
+
+        // 부서명 입력이 비어 있는지 확인
+        if (!deptName) {
+            alert("부서명을 입력하세요.");
+            return;
+        }
+
+        // 서버로 요청할 데이터 객체 생성
+        const departmentData = {
+            deptNo: deptNo,      // 숨겨진 필드에서 부서번호 가져오기
+            deptName: deptName   // 입력 필드에서 부서명 가져오기
+        };
+
+        // AJAX 요청으로 부서명 수정
+        fetch("/api/editDepartments", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(departmentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 서버 응답에 따른 처리
+            if (data.res_code === "200") {
+                alert(data.res_msg);
+                // 부서명 수정 성공 시 모달 닫기
+                document.getElementById("close-modal").click();
+                // 필요 시 목록이나 UI 업데이트 로직 추가
+            } else {
+                // 수정 실패 시 알림
+                alert(data.res_msg);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("서버 오류가 발생했습니다.");
+        });
+    });
+
+    // 부서명 수정 모달을 열 때 호출되는 함수
+    // 이 함수는 수정할 부서의 부서번호와 부서명을 세팅하는 데 사용됨
+    window.openEditDeptModal = function (deptNo, deptName) {
+        document.getElementById("deptNo").value = deptNo; // 부서번호 설정
+        document.getElementById("deptName").value = deptName; // 부서명 설정
+        const editDeptModal = new bootstrap.Modal(document.getElementById("editDept"));
+        editDeptModal.show(); // 모달 열기
+    };
+});
+
 		</script>
 
 	</th:block>

@@ -5,21 +5,15 @@
 <head>
 <!-- Meta and Bootstrap CSS -->
 <meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <title>전자결재 수정,삭제</title>
 <!-- Bootstrap CSS -->
 <th:block layout:fragment="pagetitle" />
-<link
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-	rel="stylesheet">
-<!-- Dropzone CSS -->
-<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet"
-	type="text/css" />
-<!-- 토슽 api -->
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-<script
-	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
 .jstree-icon.ri-building-fill {
 	color: #3e4a6e;
@@ -35,111 +29,161 @@
 	color: #9a9ba0;
 	font-size: 16px;
 }
-.project-thumbnail-img{
-			border:1px solid #d3d3d3; border-radius:4px; height: 35px;
-		}
 
+.project-thumbnail-img {
+	border: 1px solid #d3d3d3;
+	border-radius: 4px;
+	height: 35px;
+}
+#approval_edit {
+    text-align: center;
+    margin : auto;
+    font-family: black;
+    border-collapse: collapse;
+}
+
+#approval_edit table {
+    text-align : center;
+    margin : 0 auto;
+}
+
+#approval_edit tr:first-child th,
+#approval_edit tr:first-child td {
+    width: 600px !important; /* 첫 번째 tr 및 td 너비 설정 */
+    height:50px;
+    border : 1px solid black;
+}
 </style>
 </head>
 <body>
 	<div layout:fragment="content">
 		<div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
-		<div class="row" style="margin-left: 30px;" >
+		<div class="row" >
 			<div class="col-lg-12">
 				<div style="background-color: white; width: 1750px; height: 1150px;">
 					<div style="margin-left: 50px; margin-top: -20px;">
 						<form id="approvalForm">
-							<br>
-							<input type="hidden" name="approvalNo" id="approvalNo"
+							<br> <input type="hidden" name="approvalNo" id="approvalNo"
 								th:value="${dto.approval.approvalNo}"> <input
 								type="hidden" id="csrf_token" th:value="${_csrf.token}" /> <input
 								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
 							<input type="hidden" th:value="${emp.empId}" id="login_id">
-							
-							<!-- 제목 출력 status가 4일 때는 회수함일 때 이때는 disabled 처리 X -->
-							<div class="mb-3" style="width: 600px;">
-								<input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}" >
-								<input type="hidden" id="csrf_token" th:value="${_csrf.token}"/>
-								<label class="form-label" for="project-title-input">제목</label> 
-								<input type="text" class="form-control" id="project-title-input"
-									th:value="${dto.approval.approvalTitle}" name="approval_title"
-									th:disabled="${dto.approval.approvalStatus != 4}" style="width: 500px;">
-							</div>
-							<div class="mb-3" style="width: 600px;">
-								<label class="form-label" for="project-author-input">기안자</label>
-								<input type="text" class="form-control" th:value="${dto.employee.empName}"
-									id="project-author-input" readonly style="width: 500px;" name="emp_id">
-							</div>
-							<div class="mb-3" style="width: 600px;">
-								<label class="form-label" for="project-date-input">기안일</label> <input
-									type="text" class="form-control" id="project-date-input"
-									readonly style="width: 500px;" name="approval_reg_date"
-									th:value=${dto.approval.approvalRegDate}>
-							</div>		
-							<div class="mb-3" style="width: 600px;">
-							
-								<!-- status가 4가 아닐 때 -->
-							    <div th:if="${dto.approval.approvalStatus != 4}">
-								    <div th:if="${dto.file == null}">
-								        <label class="form-label" for="file-upload">파일첨부</label>
-								        <input class="form-control" id="file-upload"
-								               type="file" accept="image/png, image/gif, image/jpeg"
-								               style="width: 500px;" >
-								    </div>
-	
-								    <div th:if="${dto.file != null}">
-								        <label class="form-label" for="file-link">첨부파일</label>
-								        <a id="file-link" class="form-control"
-								           th:text="${dto.file.fileOriName}"
-								           th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}" 
-								           name="file" style="width: 500px;"></a>
-								    </div>
-							    </div>
-							    <!-- status가 4일 때 -->
-							    <div th:if="${dto.approval.approvalStatus == 4}">
-								        <label class="form-label" for="file-upload">파일첨부</label>
-								        <input class="form-control" id="file-upload"
-								               type="file" accept="image/png, image/gif, image/jpeg"
-								               style="width: 500px;" name="file">
-							    	
-								</div>
-							</div>
-							<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus==4 && type == 2}" >
-								<label class="form-label" for="project-thumbnail-img">양식</label><br>
-								<!-- 요청서 -->
-								<div>
-									<select class="form-control" id="category-select"
-										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
-										<option>-- 선택하세요 --</option>
-										<option th:each="cate : ${cateList}" th:value="${cate.form_code}"
-                							th:text="${cate.form_name}" id="cateList"  th:data-content="${cate.form_content}"
-                							th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
-        								</option>
-									</select>
-								</div>
-							</div>
-							<div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus==4 && type == 3}">
-								<!-- 품의서 -->
-								<div>
-									<select class="form-control" id="category-select"
-										style="width: 500px;" name="form_code" onchange="updateEditorContent()">
-										<option>-- 선택하세요 --</option>
-										<option th:each="cate : ${cateList}" th:value="${cate.form_code}"
-                							th:text="${cate.form_name}" id="cateList" th:data-content="${cate.form_content}"
-                							th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
-        								</option>
-									</select>
-								</div>
-							</div>
-							<div class="mb-3">
-								<label class="form-label" for="references">수신참조자</label><br>
-								<input id="references" type="text"
-									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-									class="selectedName3">
-							</div>
+							<div style="display: flex; justify-content: space-between;">
+    <div class="w-50">
+        <input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}">
+        <input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
+        
+        <div class="mb-3">
+            <label class="form-label" for="project-title-input">제목</label>
+            <input type="text" class="form-control" id="project-title-input"
+                th:value="${dto.approval.approvalTitle}" name="approval_title"
+                th:disabled="${dto.approval.approvalStatus != 4}" style="width: 500px;">
+        </div>
+        
+        <div class="mb-3" style="width: 600px;">
+            <label class="form-label" for="project-author-input">기안자</label>
+            <input type="text" class="form-control"
+                th:value="${dto.employee.empName}" id="project-author-input"
+                readonly style="width: 500px;" name="emp_id">
+        </div>
+        
+        <div class="mb-3" style="width: 600px;">
+            <label class="form-label" for="project-date-input">기안일</label>
+            <input type="text" class="form-control" id="project-date-input"
+                readonly style="width: 500px;" name="approval_reg_date"
+                th:value="${dto.approval.approvalRegDate}">
+        </div>
+        
+        <div class="mb-3" style="width: 600px;">
+            <!-- status가 4가 아닐 때 -->
+            <div th:if="${dto.approval.approvalStatus != 4}">
+                <div th:if="${dto.file == null}">
+                    <label class="form-label" for="file-upload">파일첨부</label>
+                    <input class="form-control" id="file-upload" type="file"
+                        accept="image/png, image/gif, image/jpeg" style="width: 500px;">
+                </div>
+                <div th:if="${dto.file != null}">
+                    <label class="form-label" for="file-link">첨부파일</label>
+                    <a id="file-link" class="form-control"
+                        th:text="${dto.file.fileOriName}"
+                        th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}"
+                        style="width: 500px;"></a>
+                </div>
+            </div>
+            <!-- status가 4일 때 -->
+            <div th:if="${dto.approval.approvalStatus == 4}">
+                <label class="form-label" for="file-upload">파일첨부</label>
+                <input class="form-control" id="file-upload" type="file"
+                    accept="image/png, image/gif, image/jpeg" style="width: 500px;" name="file">
+            </div>
+            <br>
+            <div class="mb-3">
+                <label class="form-label" for="references">수신참조자</label>
+                <input id="references" type="text"
+                    style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
+                    class="form-control" readonly data-id="">
+            </div>
+        </div>
+        
+        <div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus == 4 && type == 2}">
+            <label class="form-label" for="project-thumbnail-img">양식</label>
+            <select class="form-control" id="category-select" style="width: 500px;" name="form_code" onchange="updateEditorContent()">
+                <option>-- 선택하세요 --</option>
+                <option th:each="cate : ${cateList}" th:value="${cate.form_code}" th:text="${cate.form_name}" th:attr="data-content=${cate.form_content}"
+                    th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
+                </option>
+            </select>
+        </div>
+        
+        <div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus == 4 && type == 3}">
+            <label class="form-label" for="project-thumbnail-img">양식</label>
+            <select class="form-control" id="category-select" style="width: 500px;" name="form_code" onchange="updateEditorContent()">
+                <option>-- 선택하세요 --</option>
+                <option th:each="cate : ${cateList}" th:value="${cate.form_code}" th:text="${cate.form_name}"  th:attr="data-content=${cate.form_content}" 
+                    th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div style="flex-direction: column; margin-top: 0px;" class="w-50">
+        <button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
+        <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+            <tr>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+            </tr>
+        </table>
+        <table style="border-collapse: collapse; border-spacing: 0;">
+            <tr>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName" data-group="agree"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName" data-group="agree"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName" data-group="agree"></td>
+            </tr>
+        </table>
+        <br>
+        <button type="button" class="btn btn-light waves-effect" id="button_modal2">결재자</button>
+        <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+            <tr>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+            </tr>
+        </table>
+        <table style="border-collapse: collapse; border-spacing: 0;">
+            <tr>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2" data-group="approver"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2" data-group="approver"></td>
+                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2" data-group="approver"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
 							<br>
 							<div th:text="${dto.approval.approvalContent}"
-							style="display: none" id="contentDiv"></div>
+								style="display: none" id="contentDiv"></div>
 							<!-- 토스트 api -->
 							<div class="col-lg-11" style="margin-left: -15px;">
 								<label>내용</label>
@@ -147,125 +191,58 @@
 							</div>
 							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로 -> 이건 나중에 수정해야함  -->
 							<br>
-							<div style="margin-left:1300px; margin-top:60px;">
+							<div style="margin-left: 1350px; margin-top: 30px;">
 								<div>
 									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
 									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
 								</div>
 							</div>
-							
+
 							<!-- 모달 생성 -->
 							<div class="modal fade" id="staticBackdrop"
 								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
 								role="dialog" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered" role="document">
 									<div class="modal-content">
-										<div class="modal-body text-left">
-											<div class="mt-1">
-												<h4 class="mb-3">직원 등록</h4>
-												<div id="treeMenu"></div>
-												<div id="treeAdd"></div>
-												<div class="hstack gap-9">
-													<a id="successBtn" class="btn btn-success">완료</a> <a
-														href="javascript:void(0);"
-														class="btn btn-link link-success fw-medium"
-														data-bs-dismiss="modal"><i
-														class="ri-close-line me-1 align-middle" id="resetBtn"></i>초기화</a>
-												</div>
-											</div>
+										<div class="modal-header">
+											<h5 class="modal-title" id="myModalLabel">직원 등록</h5>
+											<button type="button" class="btn-close"
+												data-bs-dismiss="modal" aria-label="Close"></button>
 										</div>
+										<div class="modal-body text-left">
+											<div id="treeMenu"></div>
+											<div id="treeAdd"></div>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-light"
+												data-bs-dismiss="modal">초기화</button>
+											<button type="button" class="btn btn-success" id="successBtn">완료</button>
+											</div>
 									</div>
 								</div>
 							</div>
-							
-							<!-- 합의자, 결재자 선택  -->
-							<div style="margin-top: -1080px; margin-left: 900px;">
-								<label>합의자</label>
-								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;" data-name="">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal1">선택</button>
-
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-									</tr>
-								</table>
-								<table style="border-collapse: collapse; border-spacing: 0;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" data-group="agree"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" data-group="agree"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName" data-group="agree"></td>
-									</tr>
-								</table>
-								<br> <label>결재자</label>
-								<table
-									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;">
-											<button type="button" class="btn btn-primary"
-												style="background-color: white; color: black; border: 1px solid white;"
-												id="button_modal2">선택</button>
-
-										</td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-									</tr>
-								</table>
-								<table style="border-collapse: collapse; border-spacing: 0;">
-									<tr>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2" data-group="approver"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2" data-group="approver"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											class="selectedName2" data-group="approver"></td>
-									</tr>
-								</table>
-							</div>
-
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
+
+
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+			<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+			<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 		
-		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-		<script
-			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-		<script
-			src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-		<script
-			src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
-		
-		
+
+
 		<!-- 모달 관련 js -->
-			<script>
-			
-			// 로그인 한 사람 은 트리구조에서 지우기 
+		<script>
+		// 로그인 한 사람 은 트리구조에서 지우기 
 			const loginId = document.getElementById('login_id').value;
 		    const selectArray = []; // 선택된 이름을 저장할 배열
 		    let buttonId = '';
 		    
-		    $('#button_modal1, #button_modal2').click(function() {
+		    $('#button_modal1, #button_modal2,#references').click(function() {
 		        console.log('모달이 열렸습니다.'); // 모달 열림 로그
 		        buttonId = this.id;
 		        console.log(buttonId);
@@ -287,7 +264,7 @@
 		                    .map(node => ({
 		                        id: node.nodeId,
 		                        text: node.nodeName,
-		                        state: { opened: false },
+		                        state: { opened: true },
 		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
 		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
 		                    }));
@@ -315,10 +292,14 @@
 		                        check_callback: false,
 		                        data: [companyNode]
 		                    },
-		                    plugins: ["types", "selectbox"],
+		                    'plugins': ['checkbox'],
 		                    types: {
 		                        default: { icon: "ri-team-fill" },
 		                        file: { icon: "ri-user-2-fill" }
+		                    },
+		                    selectbox: {
+		                        multiple: true, // 여러 개 선택 가능
+		                        select: true    // 선택 후 자동으로 선택
 		                    }
 		                }).on('select_node.jstree', function(e, data) {
 		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
@@ -341,16 +322,22 @@
 		                    });
 		                    modal.show(); // 모달 표시
 		                    
-		                    // 등록 버튼 이벤트
 		                    $(document).on('click', '#successBtn', function() {
-		                        const selectNameElements = buttonId === "button_modal1" 
-		                            ? document.querySelectorAll('.selectedName') 
-		                            : document.querySelectorAll('.selectedName2');
-		
+		                        if (buttonId === "references") {
+		                            const selectedNames = selectArray.map(item => item.text).join(' '); // 선택된 이름을 결합
+		                            const selectNameElement = document.getElementById('references'); 
+
+		                            selectNameElement.value = selectedNames; // 결합된 문자열 설정
+		                            selectNameElement.setAttribute("data-id", selectArray.map(item => item.id).join(' '));  // json 데이터로 보낼 때 쓸 data-id 값도 넣어주기
+
+		                        } else {
+		                            const selectNameElements = buttonId === "button_modal1" 
+		                                ? document.querySelectorAll('.selectedName') 
+		                                : document.querySelectorAll('.selectedName2');
+
 		                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
 
 		                            for (let index = 0; index < length; index++) {
-		                                // selectArray[index]가 정의되어 있는지 확인
 		                                if (selectArray[index]) {
 		                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
 		                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
@@ -359,7 +346,7 @@
 		                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
 		                                }
 		                            }
-		
+		                        }
 		                        modal.hide(); // 모달 닫기
 		                    });
 		
@@ -386,10 +373,6 @@
 		    });
 		</script>
 
-		
-		
-		
-		
 		<script>
 			// 기존 데이터 불러오면서 토스트 api 설정.
 			const content = document.getElementById('contentDiv');
@@ -403,36 +386,43 @@
                 hideModeSwitch: true
             });
 		    
-			document.addEventListener('DOMContentLoaded', () => {
-			    contentEditor();
-			    updateEditorContent();
-			});
+			 document.addEventListener('DOMContentLoaded', () => {
+			        const selectElement = document.getElementById('category-select');
+			        selectElement.addEventListener('change', updateEditorContent);
+			    });
 
-			// 카테고리 선택하면서 카테고리 선택했을 때의 스크립트 코드
-			 function updateEditorContent() {
-		        const selectElement = document.getElementById('category-select');
-		        const selectedOption = selectElement.options[selectElement.selectedIndex];
-		        const formContent = selectedOption.getAttribute('data-content');
+			    // 카테고리 선택하면서 카테고리 선택했을 때의 스크립트 코드
+			    function updateEditorContent() {
+			        const selectElement = document.getElementById('category-select');
+			        const selectedOption = selectElement.options[selectElement.selectedIndex];
+			        const formContent = selectedOption.getAttribute('data-content');
+			        
+			        console.log(selectElement.value);
 
-		        // 토스트 에디터 내용 저장한 값 불러옴
-		        contentEditor.setHTML(formContent);
-		    }
+			        // 공백을 찾아서 띄어쓰기로 변환
+			        const processedContent = formContent
+			        .replace(/ /g, (match) => '&nbsp;'.repeat(match.length))
+			        .replace(/\n/g, '<br>');
+
+			        // 토스트 에디터 내용 저장한 값 불러옴
+			        contentEditor.setHTML(processedContent);
+			    }
 		 </script>
-		 
-		 <!-- 수정  -->
-		 <script>
+
+		<!-- 수정  -->
+		<script>
 				const form = document.getElementById('approvalForm');
 				form.addEventListener('submit',(e) =>{
 				e.preventDefault();
-				const id = document.getElementById('approvalNo').value;
 				const payload = new FormData(form);
 				const csrfToken = document.getElementById('csrf_token').value;
+				const id = document.getElementById('approvalNo').value;
 				const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
 	             .map(td => {
 	             	const value = td.getAttribute('data-name');
 	             	return value ? Number(value) : null;
 	             })
-	              .filter(Boolean);
+	              .filter(name => name !== null)
 	             
 	             
 	             const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
@@ -440,14 +430,22 @@
 	            	 const value = td.getAttribute('data-name');
 	            	 return value ? Number(value) : null;
 	             })
-	             .filter(Boolean);
-
+	             .filter(name => name !== null);
+				
+				// 3. 수신참조자 값 가져오기
+	            const dataIdValues = document.querySelectorAll('#references[data-id]');
+				 const references = Array.from(dataIdValues)
+				    .map(element => element.getAttribute('data-id').split(' ')) // data-id 속성 값 가져오기
+				
+				
+	             
 	            /* 토스트 api 안에 값 저장 */
 	            const content = contentEditor.getHTML();
 	            
 	            payload.append("approval_content", content);
 				payload.append("agree", agree);
 				payload.append("approver",approver);
+				payload.append("references", references);
 	            
 				payload.forEach((value, key) => {
 				    console.log(`${key}: ${value}`);
@@ -480,7 +478,7 @@
 				})
 			});	
 		</script>
-	
+
 		<!-- 삭제 -->
 		<script>
 		document.getElementById("delete").addEventListener('click',function(){
@@ -502,7 +500,7 @@
 						Swal.fire({
 							icon: 'success',
 							title : '성공',
-							text : data.reg_msg
+							text : data.res_msg
 						}).then(() =>{
 							location.href = "/approval/list?num=0";
 						});
@@ -510,7 +508,7 @@
 						Swal.fire({
 							icon : 'error',
 							title : '실패',
-							text : data.reg_msg
+							text : data.res_msg
 						})
 					}
 				})

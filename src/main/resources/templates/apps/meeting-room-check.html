@@ -238,13 +238,7 @@
 									</div>
 									<!-- end row -->
 
-									<div class="row mb-3">
-											<div>
-												<label class="form-label" for="meta-keywords-input">회의실 어매니티</label>
-												<input type="text" class="form-control" name="meeting_room_amenity"
-													placeholder="회의실 어매니티를 입력하세요." id="amenity">
-											</div>
-									</div>
+									
 									
 									<!-- <div class="row">
 										<div class="col-lg-6">
@@ -265,13 +259,47 @@
 									
 									
 									
-									<div class="row fff">
+									<div class="row mb-3">
 										<label class="form-label" for="meta-description-input">회의실 예약 시간 등록</label>
 										<div class="hstack gap-3 align-items-start">
 											<div class="flex-grow-1">
-												<input class="form-control" data-choices
+												<!-- <input class="form-control" data-choices
 													data-choices-multiple-remove="true" name="reserve_time" id="reserve_time"
-													placeholder="Enter tags" type="text" value="09:00~09:50" />
+													placeholder="Enter tags" type="time" value="09:00~09:50" /> -->
+												<select class="form-control" id="reserve_time"
+													name="reserve_time" data-choices
+													data-choices-multiple-groups="true" multiple
+													data-choices-multiple-remove="true">
+													<option value="">예약 시간을 설정해주세요. &nbsp;&nbsp;&nbsp;</option>
+													<optgroup label="오전">
+														<option value="00:00~00:50">00:00 ~ 00:50</option>
+														<option value="01:00~01:50">01:00 ~ 01:50</option>
+														<option value="02:00~02:50">02:00 ~ 02:50</option>
+														<option value="03:00~03:50">03:00 ~ 03:50</option>
+														<option value="04:00~04:50">04:00 ~ 04:50</option>
+														<option value="05:00~05:50">05:00 ~ 05:50</option>
+														<option value="06:00~06:50">06:00 ~ 06:50</option>
+														<option value="07:00~07:50">07:00 ~ 07:50</option>
+														<option value="08:00~08:50">08:00 ~ 08:50</option>
+														<option value="09:00~09:50">09:00 ~ 09:50</option>
+														<option value="10:00~10:50">10:00 ~ 10:50</option>
+														<option value="11:00~11:50">11:00 ~ 11:50</option>
+													</optgroup>
+													<optgroup label="오후">
+														<option value="12:00~12:50">12:00 ~ 12:50</option>
+														<option value="13:00~13:50">13:00 ~ 13:50</option>
+														<option value="14:00~14:50">14:00 ~ 14:50</option>
+														<option value="15:00~15:50">15:00 ~ 15:50</option>
+														<option value="16:00~16:50">16:00 ~ 16:50</option>
+														<option value="17:00~17:50">17:00 ~ 17:50</option>
+														<option value="18:00~18:50">18:00 ~ 18:50</option>
+														<option value="19:00~19:50">19:00 ~ 19:50</option>
+														<option value="20:00~20:50">20:00 ~ 20:50</option>
+														<option value="21:00~21:50">21:00 ~ 21:50</option>
+														<option value="22:00~22:50">22:00 ~ 22:50</option>
+														<option value="23:00~23:50">23:00 ~ 23:50</option>
+													</optgroup>
+												</select>
 											</div>
 											<!-- <div class="flex-grow-1">
 												<div class="choices" data-type="text" aria-haspopup="true" aria-expanded="false">
@@ -292,6 +320,15 @@
 											<button type="submit" class="btn btn-success w-sm">시간 추가</button>
 										</div> -->
 									</div>
+									
+									<div class="row mb-3">
+											<div>
+												<label class="form-label" for="meta-keywords-input">회의실 어매니티</label>
+												<input type="text" class="form-control" name="meeting_room_amenity"
+													placeholder="회의실 어매니티를 입력하세요." id="amenity">
+											</div>
+									</div>
+									
 								</div>
 								<!-- end tab pane -->
 							</div>

@@ -51,5 +51,7 @@ public class Departments {
     @OneToMany(mappedBy = "departments")
     private List<AnnounceReadAuthority> readAuthorities;
 
-
+    public int getEmpCount() {
+        return employee != null ? employee.size() : 0;
+    }
 }

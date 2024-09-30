@@ -24,6 +24,13 @@ import lombok.Setter;
 @Getter	
 @Setter
 public class Attendance {
+	
+	
+	   // 출근 상태 상수 정의
+    public static final String NORMAL_ATTENDANCE = "정상출근";
+    public static final String LATE_ATTENDANCE = "지각";
+    public static final String ABSENT = "결근";
+    public static final String ANNUAL_LEAVE = "연차";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

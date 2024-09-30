@@ -2,8 +2,9 @@ package com.codenal.attendance.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codenal.annual.domain.AnnualLeaveUsage;
+import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.attendance.domain.Attendance;
 import com.codenal.attendance.domain.AttendanceDto;
 import com.codenal.attendance.repository.AttendanceRepository;
@@ -23,14 +26,17 @@ public class AttendanceService {
 
 	private final AttendanceRepository attendanceRepository;
 	
+	private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
+	
 	// 출근 기준 시간과 퇴근 기준 시간 설정
     private final LocalTime standardStartTime = LocalTime.of(9, 0); // 오전 9시
     private final LocalTime standardEndTime = LocalTime.of(18, 0); // 오후 6시
     
 
 	@Autowired
-	public AttendanceService(AttendanceRepository attendanceRepository) {
-		this.attendanceRepository = attendanceRepository;
+	public AttendanceService(AttendanceRepository attendanceRepository, AnnualLeaveUsageRepository annualLeaveUsageRepository) {
+		 this.attendanceRepository = attendanceRepository;
+	        this.annualLeaveUsageRepository = annualLeaveUsageRepository;
 	}
 
 	  // 현재 사용자의 empId를 가져오는 메서드
@@ -40,7 +46,7 @@ public class AttendanceService {
             SecurityUser userDetails = (SecurityUser) authentication.getPrincipal();
             return userDetails.getEmpId(); // empId를 반환
         } else {
-            throw new IllegalStateException("인증된 사용자가 아닙니다.");
+            throw new IllegalStateException("인증된 사용자가 아닙니다.");	
         }
     }
  // 출근하기 메서드
@@ -61,7 +67,7 @@ public class AttendanceService {
                 .empId(empId)
                 .workDate(today) // LocalDate 타입 사용
                 .attendStartTime(now)
-                .attendStatus(determineStatus(now))
+                .attendStatus(determineStatus(empId, today, now))
                 .build();
 
         attendanceRepository.save(attendance);
@@ -93,13 +99,38 @@ public class AttendanceService {
         attendanceRepository.save(attendance);
     }
     
-    // 근무 상태 결정 메서드
-    private String determineStatus(LocalTime checkInTime) {
-        if (checkInTime.isBefore(standardStartTime) || checkInTime.equals(standardStartTime)) {
-            return "정상출근";
-        } else {
-            return "지각";
+    // 연차 여부 확인 및 상태 결정
+    public String determineStatus(Long empId, LocalDate workDate, LocalTime attendStartTime) {
+        // 연차 사용 내역 확인
+        List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository
+                .findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
+                        empId, workDate, workDate);
+
+        if (!annualLeaveList.isEmpty()) {  // 연차 내역이 존재하는지 확인
+            return "연차";  // 연차일 경우 연차로 상태 설정
+        } else if (attendStartTime != null) {
+            if (attendStartTime.isBefore(standardStartTime)) {
+                return "정상출근";
+            } else {
+                return "지각";
+            }
+        } else if (workDate.isBefore(LocalDate.now())) {
+            return "결근";
         }
+        return "미출근";
+    }
+    
+ // 해당 날짜의 출근 기록이 있는지 확인하고 없으면 결근으로 처리
+    public String checkAttendanceStatus(Long empId, LocalDate workDate) {
+        Optional<Attendance> attendanceOpt = attendanceRepository.findByEmpIdAndWorkDate(empId, workDate);
+        if (attendanceOpt.isPresent()) {
+            Attendance attendance = attendanceOpt.get();
+            return determineStatus(empId, workDate, attendance.getAttendStartTime());
+        } else if (workDate.isBefore(LocalDate.now())) {
+            // 해당 날짜의 기록이 없고 날짜가 지났다면 결근 처리
+            return "결근";
+        }
+        return "미출근";
     }
     
     // 근무 시간 계산 메서드
@@ -109,9 +140,7 @@ public class AttendanceService {
         return hours;
     }
     
- // 모든 출퇴근 기록을 조회하는 메서드
-    public Page<AttendanceDto> getAllAttendances(Pageable pageable) {
-        Long empId = getCurrentUserId();
+    public Page<AttendanceDto> getAllAttendances(Long empId, Pageable pageable) {
         Page<Attendance> attendances = attendanceRepository.findByEmpId(empId, pageable);
         return attendances.map(AttendanceDto::fromEntity);
     }
@@ -132,6 +161,47 @@ public class AttendanceService {
         Page<Attendance> attendances = attendanceRepository.findByEmpIdAndWorkDateBetween(empId, startDate, endDate, pageable);
         return attendances.map(AttendanceDto::fromEntity);
     }
-	
+    
+    // 정상 출근 횟수 조회
+    public long getNormalAttendanceCount(Long empId) {
+        return attendanceRepository.countByEmpIdAndAttendStatus(empId, "정상출근");
+    }
+
+    // 지각 횟수 조회
+    public long getLateAttendanceCount(Long empId) {
+        return attendanceRepository.countByEmpIdAndAttendStatus(empId, "지각");
+    }
+
+    // 연차 횟수 조회
+    public long getAnnualLeaveCount(Long empId) {
+        return attendanceRepository.countByEmpIdAndAttendStatus(empId, "연차");
+    }
+//    결근한 횟수 가져오기 (출근 기록이 없거나 결근으로 표시된 경우)
+//    public Long getAbsentCount(Long empId) {
+//        return attendanceRepository.countByEmpIdAndAttendStatus(empId, Attendance.ABSENT);
+//    }
+    // 연차 처리 메서드
+    @Transactional
+    public void applyAnnualLeave(Long empId, LocalDate date) {
+        Attendance attendance = Attendance.builder()
+                .empId(empId)
+                .workDate(date)
+                .attendStatus(Attendance.ANNUAL_LEAVE)
+                .build();
+        
+        attendanceRepository.save(attendance);
+    }
+
+    // 결근 상태 자동 처리 (출근 기록이 없는 경우)
+    public void markAbsent(Long empId, LocalDate date) {
+        if (!attendanceRepository.existsByEmpIdAndWorkDate(empId, date)) {
+            Attendance attendance = Attendance.builder()
+                    .empId(empId)
+                    .workDate(date)
+                    .attendStatus(Attendance.ABSENT)
+                    .build();
+            attendanceRepository.save(attendance);
+        }
+    }
 	
 }
