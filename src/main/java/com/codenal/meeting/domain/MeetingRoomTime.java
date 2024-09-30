@@ -2,6 +2,7 @@ package com.codenal.meeting.domain;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -34,11 +35,11 @@ public class MeetingRoomTime {
 	
 	@JsonFormat(pattern = "hh-mm")
 	@Column(name = "meeting_room_start_time")
-	private Time meetingRoomStartTime;
+	private LocalTime meetingRoomStartTime;
 	
 	@JsonFormat(pattern = "hh-mm")
 	@Column(name = "meeting_room_end_time")
-	private Time meetingRoomEndTime;
+	private LocalTime meetingRoomEndTime;
 	
 	@Column(name = "meeting_room_ampm")
 	private String meetingRoomAmpm;

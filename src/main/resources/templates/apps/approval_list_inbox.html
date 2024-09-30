@@ -30,36 +30,36 @@
 </head>
 
 <body>
-	<div>
 		<div layout:fragment="content">
 			<div th:replace="partials/page-title :: page-title('수신함','전자결재')"></div>
 			<div>
-				<div class="row">
-					<div class="col-xxl-9">
+                <div class="row">
+                    <div class="col-lg-12">
 						<div class="card" id="companyList">
-							<div class="card-header" style="height: 800px; width: 1840px;">
-								<div class="row g-2">
-									<div>
-										<div>
+							<div class="card-header border-0">
+								<div class="d-flex align-items-center">
+									<div class="flex-shrink-0">
+										<div class="d-flex flex-wrap gap-2">
 											<select
 												style="height: 37.67px; width: 100px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
 												<option>전체기간</option>
 												<option>한달</option>
 												<option>6개월</option>
 												<option>일년</option>
-											</select> <input type="text" value="제목" disabled
+											</select> 
+											<input type="text" value="제목" disabled
 												style="margin-left: 5px; height: 37.67px; width: 70px; border: 1px solid #d3d3d3; border-radius: 4px; text-align: center;">
 											<div class="search-box"
-												style="width: 300px; margin-left: 190px; margin-top: -38px; height: 37.67px;">
-												<input type="text" class="form-control search"> <i
-													class="ri-search-line search-icon"></i>
+												style="width: 300px; height: 37.67px;">
+												<input type="text" class="form-control search"
+													style="height: 38px;"> 
+													<i class="ri-search-line search-icon"></i>
 											</div>
 										</div>
 									</div>
 								</div>
-								<div class="table-responsive table-card mb-3">
-									<table class="table align-middle table-nowrap mb-0"
-										id="customerTable" style="margin-top: 50px;">
+								 <div class="table-responsive table-card mb-3">
+                                    <table class="table align-middle table-nowrap mb-0" id="customerTable" style="margin-top: 50px;">
 										<colgroup>
 											<col width=5%>
 											<col width=10%>
@@ -78,11 +78,19 @@
 												<th scope="col">기안날짜</th>
 											</tr>
 										</thead>
-										<tbody class="list form-check-all" style="text-align: center;">
+										
+										<tbody class="table align-middle table-nowrap mb-0" style="text-align: center;">
+										<th:block th:if="${#lists.isEmpty(resultList.content)}">
+												<tr>
+													<td colspan="6">전자결재가 없습니다.</td>
+												</tr>
+										</th:block>
+										
 											<!-- 수신함 상태 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 1 and approval['approver'].approvalStatus == 1}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+												<td
+													th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
@@ -95,7 +103,8 @@
 											<!-- 완료 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 2 and approval['approver'].approvalStatus == 2}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+												<td
+													th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
@@ -108,7 +117,8 @@
 											<!-- 반려 상태 -->
 											<tr th:each="approval : ${resultList.content}"
 												th:if="${num == 3 and approval['approval'].approvalStatus == 3}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+												<td
+													th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
@@ -120,75 +130,88 @@
 											</tr>
 
 											<!-- 수신참조 상태 -->
-											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 4 and approval['approval'].approvalStatus == 4}">
-												<td th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
+											<tr th:each="approval : ${resultList.content}" th:if="${num == 4}">
+												<td
+													th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td
 													th:text="${approval['formType'].approvalBaseFormType.baseFormName}"></td>
 												<td><a
 													th:href="@{/approval/{no}(no=${approval['approval'].approvalNo})}"
 													th:text="${approval['approval'].approvalTitle}"></a></td>
-												<td>반려</td>
-												<td>결재자</td>
+												<td>수신참조</td>
+												<td th:text="${approval['employee'].empName}"></td>
 												<td th:text="${approval['approval'].approvalRegDate}"></td>
 											</tr>
 										</tbody>
 
 									</table>
-								</div>
-							</div>
-						</div>
 
+									 <!-- 페이징 -->
+                                    <div class="col-lg-6">
+									<div class="d-flex justify-content-end mt-2 pagination">
+									<th:block layout:fragment="pagejs">
+									    <div>
+									        <ul class="pagination"
+									            th:with="pageNumber=${resultList.pageable.pageNumber}, 
+									                     pageSize=${resultList.pageable.pageSize}, 
+									                     totalPages=${resultList.totalPages}, 
+									                     startPage=${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+									                     tempEndPage=${startPage + pageSize - 1},
+									                     endPage=${tempEndPage < totalPages ? tempEndPage : totalPages}">
+									            
+									            <!-- 이전 페이지 링크 -->
+									            <li class="page-item">
+									                <th:block th:if="${!resultList.first}">
+									                    <a class="page-link" th:href="${resultList.first} ? '#' : @{/approval/inboxList(num=${num}, page=${pageNumber - 1})}">&lt;</a>
+									                </th:block>
+									            </li>
+									
+									            <th:block th:if="${resultList.totalElements > 0}">
+									                <!-- 페이지 숫자 링크 -->
+									                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+									                    <li class="page-item">
+									                        <a th:text="${page}" 
+									                           th:href="@{/approval/inboxList(num=${num}, page=${page - 1})}" 
+									                           class="page-link" th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
+									                    </li>
+									                </th:block>
+									
+									                <!-- 다음 페이지 링크 -->
+									                <li class="page-item">
+									                    <th:block th:if="${!resultList.last}">
+									                        <a class="page-link" th:href="${resultList.last} ? '#' : @{/approval/inboxList(num=${num}, page=${pageNumber + 1})}">&gt;</a>
+									                    </th:block>
+									                </li>
+									            </th:block>
+									        </ul>
+									    </div>
+									</th:block>
+									</div>
+									</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <!--end col-->
 
-						<!--end card-->
-					</div>
-					<!--end col-->
-								    <div class="col">
-				    <div class="pagination-wrapper">
-				        <div class="pagination" style="margin-top:700px;"
-				             th:with="pageNumber=${resultList.pageable.pageNumber}, 
-				                      pageSize=${resultList.pageable.pageSize}, 
-				                      totalPages=${resultList.totalPages}, 
-				                      startPage=${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-				                      tempEndPage=${startPage + pageSize - 1},
-				                      endPage=${tempEndPage < totalPages ? tempEndPage : totalPages}">
-				            
-				            <th:block th:if="${resultList.totalElements > 0}">
-				                <!-- 이전 페이지 링크 -->
-				                <th:block th:if="${resultList.hasPrevious()}">
-				                    <a th:href="@{/approval/inboxlist(num=${num}, page=${pageNumber - 1})}" class="page-link">&lt;</a>
-				                </th:block>
-				
-				                <!-- 페이지 숫자 링크 -->
-				                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
-				                    <a th:text="${page}" th:href="@{/approval/inboxlist(num=${num}, page=${page - 1})}"
-				                       th:classappend="${page == pageNumber + 1} ? 'active' : ''" class="page-link"></a>
-				                </th:block>
-				
-				                <!-- 다음 페이지 링크 -->
-				                <th:block th:if="${resultList.hasNext()}">
-				                    <a th:href="@{/approval/inboxlist(num=${num}, page=${pageNumber + 1})}" class="page-link">&gt;</a>
-				                </th:block>
-				            </th:block>
-				        </div>
-				    </div>
-				</div>
-								
-				</div>
-				<!--end col-->
-			</div>
-			<!--end row-->
-		</div>
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
 
-		<th:block layout:fragment="modal"></th:block>
+		 <th:block layout:fragment="modal"></th:block>
+       
+            <script src="/assets/libs/list.js/list.min.js"></script>
+            <script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+            <script src="/assets/js/pages/crm-companies.init.js"></script>
+            <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+        
 
-		<th:block layout:fragment="pagejs">
-			<script src="/assets/libs/list.js/list.min.js"></script>
-			<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
-			<script src="/assets/js/pages/crm-companies.init.js"></script>
-			<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
-		</th:block>
-	</div>
+        </div>
+
+    
 </body>
 
 </html>

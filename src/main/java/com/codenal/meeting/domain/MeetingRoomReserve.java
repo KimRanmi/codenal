@@ -2,12 +2,15 @@ package com.codenal.meeting.domain;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +30,8 @@ public class MeetingRoomReserve {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long meetingRoomReserveNo;
 	
-	@Column(name = "meeting_room_no")
-	private Long meetingRoomNo;
+//	@Column(name = "meeting_room_no")
+//	private Long meetingRoomNo;
 	
 	@Column(name = "emp_id")
 	private Long empId;
@@ -37,12 +40,17 @@ public class MeetingRoomReserve {
 	private LocalDate meetingRoomReserveDate;
 
 	@Column(name = "meeting_room_start_time")
-	private Time meetingRoomStartTime;
+	private LocalTime meetingRoomStartTime;
 	
 	@Column(name = "meeting_room_end_time")
-	private Time meetingRoomEndTime;
+	private LocalTime meetingRoomEndTime;
 	
 	@Column(name = "meeting_room_reserve_time_no")
 	private Long meetingRoomReserveTimeNo;
+	
+	
+	@ManyToOne
+    @JoinColumn(name = "meeting_room_no", referencedColumnName = "meeting_room_no")
+	private MeetingRoom meetingRoom;
 
 }

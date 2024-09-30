@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.Approver;
 
 public interface ApproverRepository extends JpaRepository<Approver, Long>{
@@ -33,10 +34,6 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	@Query("select count(a) from Approver a where a.approval.approvalNo =?1")
 	Long countApprover(Long approvalNo);
 	
-	//
-	@Query("select a from Approver a where a.employee.empId =?1")
-	Approver findByEmpId(Long empId);
-	
 	// 결재 처음 등록 시 첫번째 합의자 또는 결재자 상태 업데이트
 	@Modifying
 	@Query("update Approver a set a.approvalStatus = 1 where a.employee.empId =?1 and a.approval.approvalNo = ?2")
@@ -47,4 +44,17 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	@Query("update Approver a set a.approvalStatus = 1 where a.approval.approvalNo =?1 and a.approverPriority = ?2")
 	int updateNextEmpIdStatus(Long approvalNo, int nextCurrentPriority);
 	
+	// approver 조회
+	List<Approver> findByApproval(Approval approval);
+	
+	// 반려 상태 update
+	@Modifying
+	@Query("update Approver a set a.approvalStatus = ?1 , a.rejectComment = ?2, a.approvalDate =?3 where "
+			+ "  a.approval.approvalNo =?4 and a.employee.empId = ?5")
+	int updateReject(int approverStatus, String rejectText, LocalDateTime ldt, Long approvalNo, Long loginId);
+	
+	
+	// 반려 상태 가져오기
+	@Query("select a from Approver a where a.approval.approvalNo =?1 and a.approvalStatus = 3 ")
+	Approver findByReject(Long approvalNo);
 }

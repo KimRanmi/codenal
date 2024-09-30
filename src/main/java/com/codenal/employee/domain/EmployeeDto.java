@@ -86,6 +86,7 @@ public class EmployeeDto {
                 .deptName(employee.getDepartments().getDeptName()) 
                 .jobNo(employee.getJobs().getJobNo())
                 .jobName(employee.getJobs().getJobName())
+                .empAuth(employee.getEmpAuth())
     			.build();
     }
 }
