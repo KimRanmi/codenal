@@ -19,12 +19,7 @@ public class DocumentViewController {
     @Autowired
     private DocumentService documentService;
 
-    // JSON 형식으로 파일 목록을 반환
-//    @GetMapping("/list")
-//    @ResponseBody
-//    public List<DocumentDto> getDocumentList() {
-//        return documentService.getDocumentList();
-//    }
+   
 
     // HTML 페이지를 렌더링
     @GetMapping
