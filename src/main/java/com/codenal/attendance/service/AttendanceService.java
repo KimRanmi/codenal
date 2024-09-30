@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codenal.attendance.domain.Attendance;
 import com.codenal.attendance.domain.AttendanceDto;
 import com.codenal.attendance.repository.AttendanceRepository;
+import com.codenal.security.vo.SecurityUser;
 
 @Service
 public class AttendanceService {
@@ -32,32 +33,35 @@ public class AttendanceService {
 		this.attendanceRepository = attendanceRepository;
 	}
 
-	// 현재 사용자의 empId를 가져오는 메서드
-	private Long getCurrentUserId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String empIdString = authentication.getName();  // 현재 사용자의 empId를 가져옴
-		return Long.parseLong(empIdString);  // empId를 Long 타입으로 변환하여 반환
-	}
-	 // 출근하기 메서드
+	  // 현재 사용자의 empId를 가져오는 메서드
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
+            SecurityUser userDetails = (SecurityUser) authentication.getPrincipal();
+            return userDetails.getEmpId(); // empId를 반환
+        } else {
+            throw new IllegalStateException("인증된 사용자가 아닙니다.");
+        }
+    }
+ // 출근하기 메서드
     @Transactional
     public void checkIn() {
         Long empId = getCurrentUserId();
         LocalDate today = LocalDate.now();
 
         // 이미 출근 기록이 있는지 확인
-        boolean exists = attendanceRepository.existsByEmpIdAndWorkDate(empId, today.atStartOfDay());
+        boolean exists = attendanceRepository.existsByEmpIdAndWorkDate(empId, today);
         if (exists) {
-            // 이미 출근한 경우, 추가로 출근 기록을 생성하지 않음
-            return;
+            throw new IllegalStateException("이미 오늘 출근 처리가 되어 있습니다.");
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalTime now = LocalTime.now();
 
         Attendance attendance = Attendance.builder()
                 .empId(empId)
-                .workDate(today.atStartOfDay())
+                .workDate(today) // LocalDate 타입 사용
                 .attendStartTime(now)
-                .attendStatus(determineStatus(now.toLocalTime()))
+                .attendStatus(determineStatus(now))
                 .build();
 
         attendanceRepository.save(attendance);
@@ -70,15 +74,15 @@ public class AttendanceService {
         LocalDate today = LocalDate.now();
 
         // 오늘 출근 기록이 있는지 확인
-        Attendance attendance = attendanceRepository.findByEmpIdAndWorkDate(empId, today.atStartOfDay())
+        Attendance attendance = attendanceRepository.findByEmpIdAndWorkDate(empId, today)
                 .orElseThrow(() -> new IllegalStateException("출근 기록이 없습니다. 먼저 출근 체크를 해주세요."));
 
-        // 이미 퇴근한 경우, 추가로 퇴근 시간을 업데이트하지 않음
+        // 이미 퇴근한 경우 예외 처리
         if (attendance.getAttendEndTime() != null) {
-            return;
+            throw new IllegalStateException("이미 퇴근 처리가 완료되었습니다.");
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalTime now = LocalTime.now();
 
         attendance.setAttendEndTime(now);
 
@@ -98,40 +102,36 @@ public class AttendanceService {
         }
     }
     
- // 근무 시간 계산 메서드
-    private BigDecimal calculateWorkingHours(LocalDateTime startTime, LocalDateTime endTime) {
+    // 근무 시간 계산 메서드
+    private BigDecimal calculateWorkingHours(LocalTime startTime, LocalTime endTime) {
         long seconds = java.time.Duration.between(startTime, endTime).getSeconds();
         BigDecimal hours = BigDecimal.valueOf(seconds).divide(BigDecimal.valueOf(3600), 2, BigDecimal.ROUND_HALF_UP);
         return hours;
     }
     
-	// 모든 출퇴근 기록을 조회하는 메서드 (추가된 부분)
-	 public Page<AttendanceDto> getAllAttendances(Pageable pageable) {
-	        Long empId = getCurrentUserId();
-	        Page<Attendance> attendances = attendanceRepository.findByEmpId(empId, pageable);
-	        return attendances.map(AttendanceDto::fromEntity);
-	    }
-
-	// 특정 날짜의 출퇴근 기록을 조회하는 메서드
-	 public Page<AttendanceDto> getAttendancesByDate(LocalDate date, Pageable pageable) {
-		    Long empId = getCurrentUserId();
-
-		    LocalDateTime startOfDay = date.atStartOfDay();
-		    LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-
-		    Page<Attendance> attendances = attendanceRepository.findByEmpIdAndWorkDateBetween(empId, startOfDay, endOfDay, pageable);
-		    return attendances.map(AttendanceDto::fromEntity);
-		}
-
-	// 특정 날짜 범위의 출퇴근 기록을 조회하는 메서드
-	public Page<AttendanceDto> getAttendancesByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+ // 모든 출퇴근 기록을 조회하는 메서드
+    public Page<AttendanceDto> getAllAttendances(Pageable pageable) {
         Long empId = getCurrentUserId();
-        LocalDateTime startOfDay = startDate.atStartOfDay();
-        LocalDateTime endOfDay = endDate.atTime(LocalTime.MAX);
-        Page<Attendance> attendances = attendanceRepository.findByEmpIdAndWorkDateBetween(empId, startOfDay, endOfDay, pageable);
+        Page<Attendance> attendances = attendanceRepository.findByEmpId(empId, pageable);
         return attendances.map(AttendanceDto::fromEntity);
     }
-	
+
+    // 특정 날짜의 출퇴근 기록을 조회하는 메서드
+    public Page<AttendanceDto> getAttendancesByDate(LocalDate date, Pageable pageable) {
+        Long empId = getCurrentUserId();
+
+        // 날짜 기준으로 조회
+        Page<Attendance> attendances = attendanceRepository.findByEmpIdAndWorkDate(empId, date, pageable);
+        return attendances.map(AttendanceDto::fromEntity);
+    }
+
+    // 특정 날짜 범위의 출퇴근 기록을 조회하는 메서드
+    public Page<AttendanceDto> getAttendancesByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Long empId = getCurrentUserId();
+
+        Page<Attendance> attendances = attendanceRepository.findByEmpIdAndWorkDateBetween(empId, startDate, endDate, pageable);
+        return attendances.map(AttendanceDto::fromEntity);
+    }
 	
 	
 }

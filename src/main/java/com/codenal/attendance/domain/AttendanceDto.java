@@ -1,7 +1,8 @@
 package com.codenal.attendance.domain;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +20,9 @@ import lombok.ToString;
 public class AttendanceDto {
 
 	private Long attendNo;
-	private LocalDateTime attendStartTime;
-	private LocalDateTime attendEndTime;
-	private LocalDateTime workDate;
+	private LocalTime attendStartTime;
+	private LocalTime attendEndTime;
+	private LocalDate workDate;
 	private BigDecimal attendWorkingTime;
 	private String attendStatus;
 	private Long empId;

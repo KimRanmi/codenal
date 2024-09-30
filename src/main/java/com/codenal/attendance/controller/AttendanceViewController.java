@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -24,19 +25,30 @@ public class AttendanceViewController {
 	    private AttendanceService attendanceService;
 	
 	 	@GetMapping("/apps-attendance")
-	    public String showAttendancePage(
-	            @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-	            @PageableDefault(size = 10) Pageable pageable,
-	            Model model) {
+	 	public String showAttendancePage(
+	 	        @RequestParam(value = "startDate", required = false)
+	 	        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 
-	        LocalDate targetDate = (date != null) ? date : LocalDate.now();
-	        Page<AttendanceDto> attendances = attendanceService.getAttendancesByDate(targetDate, pageable);
+	 	        @RequestParam(value = "endDate", required = false)
+	 	        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
 
-	        model.addAttribute("attendances", attendances);
-	        model.addAttribute("currentPage", attendances.getNumber());
-	        model.addAttribute("totalPages", attendances.getTotalPages());
-	        model.addAttribute("date", targetDate);
+	 	        @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable, // 정렬 추가
+	 	        Model model) {
 
-	        return "apps/attendance";  // Thymeleaf 템플릿 경로
-	    }
+	 	    Page<AttendanceDto> attendances;
+
+	 	    if (startDate != null && endDate != null) {
+	 	        attendances = attendanceService.getAttendancesByDateRange(startDate, endDate, pageable);
+	 	    } else {
+	 	        attendances = attendanceService.getAllAttendances(pageable);
+	 	    }
+
+	 	    model.addAttribute("attendances", attendances);
+	 	    model.addAttribute("currentPage", attendances.getNumber());
+	 	    model.addAttribute("totalPages", attendances.getTotalPages());
+	 	    model.addAttribute("startDate", startDate);
+	 	    model.addAttribute("endDate", endDate);
+
+	 	    return "apps/attendance";
+	 	}
 }

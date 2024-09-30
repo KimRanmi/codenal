@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import com.codenal.attendance.domain.Attendance;
 import com.codenal.attendance.domain.AttendanceDto;
 import com.codenal.attendance.repository.AttendanceRepository;
 import com.codenal.attendance.service.AttendanceService;
+import com.codenal.security.vo.SecurityUser;
 
 @RestController
 @RequestMapping("/api/attendance")
@@ -31,6 +33,17 @@ public class AttendanceApiController {
     
     @Autowired
     private AttendanceRepository attendanceRepository;
+    
+    
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
+            SecurityUser userDetails = (SecurityUser) authentication.getPrincipal();
+            return userDetails.getEmpId(); // SecurityUser에서 empId를 가져옴
+        } else {
+            throw new IllegalStateException("인증된 사용자가 아닙니다.");
+        }
+    }
 
     /**
      * 특정 날짜 범위의 출퇴근 기록을 조회하는 API
@@ -42,18 +55,14 @@ public class AttendanceApiController {
     public ResponseEntity<Page<AttendanceDto>> getAttendancesByDateRange(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @PageableDefault(size = 10) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable) { // 정렬 추가
         Page<AttendanceDto> attendances = attendanceService.getAttendancesByDateRange(startDate, endDate, pageable);
         return ResponseEntity.ok(attendances);
     }
 
-    /**
-     * 사용자의 전체 출퇴근 기록을 조회하는 API
-     * @return 출퇴근 기록 목록
-     */
     @GetMapping("/all")
     public ResponseEntity<Page<AttendanceDto>> getAllAttendances(
-            @PageableDefault(size = 10) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable) { // 정렬 추가
         Page<AttendanceDto> attendances = attendanceService.getAllAttendances(pageable);
         return ResponseEntity.ok(attendances);
     }
@@ -86,7 +95,7 @@ public class AttendanceApiController {
         Long empId = getCurrentUserId();
         LocalDate today = LocalDate.now();
 
-        Optional<Attendance> attendanceOpt = attendanceRepository.findByEmpIdAndWorkDate(empId, today.atStartOfDay());
+        Optional<Attendance> attendanceOpt = attendanceRepository.findByEmpIdAndWorkDate(empId, today);
 
         if (attendanceOpt.isPresent()) {
             Attendance attendance = attendanceOpt.get();
@@ -100,10 +109,5 @@ public class AttendanceApiController {
         }
     }
 
-    // 현재 사용자 ID를 가져오는 메서드
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String empIdString = authentication.getName(); // 현재 사용자의 empId를 가져옴
-        return Long.parseLong(empIdString); // empId를 Long 타입으로 변환하여 반환
-    }
+   
 }

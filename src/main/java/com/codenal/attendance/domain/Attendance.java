@@ -1,7 +1,8 @@
 package com.codenal.attendance.domain;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,13 +31,13 @@ public class Attendance {
     private Long attendNo;
 
     @Column(name = "attend_start_time")
-    private LocalDateTime attendStartTime;
+    private LocalTime attendStartTime;
 
     @Column(name = "attend_end_time")
-    private LocalDateTime attendEndTime;
+    private LocalTime attendEndTime;
 
     @Column(name = "work_date")
-    private LocalDateTime workDate;
+    private LocalDate workDate;
 
     @Column(name = "attend_working_time")
     private BigDecimal attendWorkingTime;
