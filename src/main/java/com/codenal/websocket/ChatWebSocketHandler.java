@@ -3,11 +3,13 @@ package com.codenal.websocket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -30,7 +32,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 	public ChatWebSocketHandler(ChatService chatService) {
 		this.chatService = chatService;
 	}
-	
+
+	private Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<WebSocketSession>());
 
 	 private Map<String,WebSocketSession> clients = new
 	 HashMap<String,WebSocketSession>();
@@ -40,6 +43,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		    System.out.println("New connection established: " + session.getId());
+		    sessions.add(session);
 		}
 	
 		// 클라이언트가 웹소켓 서버로 메시지를 전송했을 때 설정
@@ -61,13 +65,13 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 			String roomNo = json.getString("room_no");
 			int userNo = json.getInt("participant_no");
 			
+			
 			switch(msg.getChat_type()){
 			case "open":
 			    // JSON 파싱
 
 			    String userNoStr = String.valueOf(userNo); // userNo를 String으로 변환
 			    System.out.println("clients.containsKey(userNo): " + clients.containsKey(userNoStr)); // 중복 여부 확인
-
 			    if (clients.containsKey(userNoStr)) {
 			        System.out.println("이미 등록된 클라이언트: " + clients);
 			        return; // 이미 등록된 경우, 더 이상 open 이벤트 처리하지 않음
@@ -99,6 +103,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 			        result.put("msg_type", Character.toString(chat.getMsgType()));
 			        result.put("msg_content", chat.getMsgContent());
 			        result.put("sender_no", chat.getChatParticipant().getParticipantNo());
+			        result.put("room_no", chat.getChatRoom().getRoomNo());
 
 			        TextMessage resultMsg = new TextMessage(objectMapper.writeValueAsString(result));
 
@@ -126,6 +131,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 
 					                Long empNo = Long.parseLong(client.getPrincipal().getName());  // 수신자의 participantNo 확인
 					                chatService.updateMessageReadStatus(empNo);
+					                
+					                // 알림 핸들러로 메시지를 전달 (모든 사용자에게)
+					                NotificationWebSocketHandler.sendNotificationToAll(payload);
 					            }
 					        }
 						  
@@ -135,6 +143,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 		}
 		
 
+
 	
 		// 클라이언트가 연결을 끊었을 때 설정
 		@Override
@@ -143,9 +152,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 		    // 나머지 사용자들의 세션은 여전히 clients 맵에 남아있으므로, 채팅 가능
 			clients.values().removeAll(Arrays.asList(session));
 			System.out.println("=== 삭제 확인 ===");
-			for(String senderNo : clients.keySet()) {
-				System.out.println(senderNo +" : "+clients.get(senderNo));
-			}		
+			
 		}
 		
 }

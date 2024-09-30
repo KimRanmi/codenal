@@ -11,16 +11,23 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer{
 
 	private final ChatWebSocketHandler chatWebSocketHandler;
+	private final NotificationWebSocketHandler notificationWebSocketHandler ;
 	
 	@Autowired
-	public WebSocketConfig (ChatWebSocketHandler chatWebSocketHandler) {
+	public WebSocketConfig (ChatWebSocketHandler chatWebSocketHandler, 
+			NotificationWebSocketHandler notificationWebSocketHandler) {
 		this.chatWebSocketHandler = chatWebSocketHandler;
+		this.notificationWebSocketHandler = notificationWebSocketHandler;
 	}
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(chatWebSocketHandler, "/chatting")
         .setAllowedOrigins("*"); // CORS 설정
+        
+        registry.addHandler(notificationWebSocketHandler, "/allnotification")
+        .setAllowedOrigins("*"); // CORS 설정
+        
 	}
 
 }

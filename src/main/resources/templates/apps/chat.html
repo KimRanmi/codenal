@@ -487,6 +487,34 @@
 						                    // 이미 존재하는 1:1 채팅방으로 리다이렉트
 						                    window.location.href = `/chatList/${existingChatRoomNos[index]}`;
 						                }
+						                else{
+									         // 새로운 1:1 채팅방 생성
+											        
+											        for (let [key, value] of formData.entries()) {
+											            console.log(key, value); // 폼 데이터 출력
+											        }
+											        
+											        const csrfToken = document.getElementById("csrf_token").value;
+
+											        fetch("/chatList/chatRoom/create", {
+											            method: 'POST',
+											            headers: {
+											                'X-CSRF-TOKEN': csrfToken,
+											            },
+											            body: formData
+											        })
+											        .then(response => response.json())
+											        .then(data => {
+											            if (data.res_code === '200') {
+											                alert(data.res_msg);
+											                location.href = `/chatList/${data.roomNo}`; // 서버에서 받은 `roomNo`로 URL을 설정
+											            } else {
+											                alert('실패: ' + data.res_msg);
+											            }
+											        });
+									            
+
+									       	}
 						       	})
 						       	}
 						       	else{
@@ -534,13 +562,16 @@
 		<script src="/assets/libs/fg-emoji-picker/fgEmojiPicker.js"></script>
 
 		<!-- chat init js -->
-		<script src="/assets/js/pages/chat.init.js"></script>
+<!-- 		<script src="/assets/js/pages/chat.init.js"></script> -->
 		
 		<script src="/assets/js/pages/project-overview.init.js"></script>
 	
-	 <script>
-	let socket;
-	
+ <script>
+ //채팅 페이지에서는 전역 상태 설정
+ window.isChatPage = true;
+ 
+   socketurl = 'ws://localhost:8083/chatting';
+
 	document.addEventListener('DOMContentLoaded', function() {
     	event.preventDefault();
 	    console.log(document.getElementById('room_no').value);
@@ -550,20 +581,38 @@
 	    const userNo = document.getElementById('sender_no').value;
 	    console.log(roomNo);
 
-		socket = new WebSocket("ws://localhost:8083/chatting");
-	
-	    // 서버에 접속했을 때 실행될 함수
-	    socket.onopen = () => {
-	        console.log("=== 접속 ===");
-	        console.log(roomNo);
-	        const obj = {
-	            chat_type: "open",
-	            room_no: roomNo,
-	            participant_no: userNo
+	    // 기존 WebSocket이 열려 있는 경우
+	    if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+	        console.log("기존 WebSocket 연결 닫기...");
+	        // 기존 WebSocket 연결 닫기
+	        window.socket.close();  // 연결을 닫음
+	        window.socket.onclose = function(event) {
+	            console.log("기존 WebSocket 연결이 닫혔습니다. 새로운 소켓 연결 중...");
+	            // WebSocket이 닫힌 후에 새로운 연결 생성
+	            window.socket = new WebSocket(socketurl);
+	            setUpWebSocketHandlers(window.socket);  // 새로운 WebSocket 핸들러 설정
 	        };
-	        socket.send(JSON.stringify(obj)); // 서버로 방 번호 전송
-	    };
-	
+	    } else {
+	        // 기존 WebSocket이 없거나 이미 닫혀 있는 경우
+	        window.socket = new WebSocket(socketurl);
+	        setUpWebSocketHandlers(window.socket);  // WebSocket 핸들러 설정
+	    }
+	    
+	 // WebSocket 핸들러 설정 함수
+	    function setUpWebSocketHandlers(socket) {
+		    // 서버에 접속했을 때 실행될 함수
+		    socket.onopen = () => {
+		        console.log("=== 접속 ===");
+		        console.log(roomNo);
+		        const obj = {
+		            chat_type: "open",
+		            room_no: roomNo,
+		            participant_no: userNo
+		        };
+		        socket.send(JSON.stringify(obj)); // 서버로 방 번호 전송
+		        
+		    };
+	 
 	    
 		socket.onmessage = (response) => {
 		    // JSON 파싱 및 에러 핸들링
@@ -576,7 +625,10 @@
 		            // 현재 사용자가 보낸 메시지인지 확인
 		            const isSender = pageHost == senderNo;
 		            printMsg(resp.msg_content, senderNo, isSender, resp.send_date, resp.msg_type);
-		           
+		            
+		            // 서버에 메시지 보내기
+		            /* window.socket.send(resp.room_No, resp.msg_content, senderNo, resp.send_date);
+		             */
 		    } catch (error) {
 		        console.error("JSON 파싱 오류:", error);
 		    }
@@ -729,7 +781,7 @@
 	        console.log("웹소켓 연결 종료");
 	    };
 	
-
+	 }
 	
 	    // 메시지 전송 버튼 클릭시 이벤트 리스너
 	    document.getElementById('send_btn').addEventListener('click', function(event) {
