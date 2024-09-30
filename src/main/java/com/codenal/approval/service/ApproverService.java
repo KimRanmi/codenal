@@ -236,6 +236,6 @@ public class ApproverService {
 		
 	// 반려 상태 가져오기
 		public Approver findReject(Long approvalNo){
-			return approverRepository.findByReject(approvalNo);
+			return approverRepository.findByApprovalApprovalNoAndApprovalStatus(approvalNo,3);
 		}
 }

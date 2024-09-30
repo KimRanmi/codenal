@@ -11,12 +11,9 @@ import com.codenal.approval.domain.ApprovalFormDto;
 
 public interface ApprovalFormRepository extends JpaRepository<ApprovalForm, Integer>{
    
-   @Query(value="select f from ApprovalForm f "
-         + "where f.approvalBaseFormType.baseFormCode  = ?1")
    List<ApprovalForm> findByApprovalBaseFormType_BaseFormCode(int no);
    
-   @Query(value="select f from ApprovalForm f where f.formCode = ?1")
-   ApprovalForm findByApprovalFormCode(int cateCode);
+   ApprovalForm findByFormCode(int cateCode);
    
    
 }

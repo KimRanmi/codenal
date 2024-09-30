@@ -402,6 +402,8 @@ public class ApprovalApiController {
 			resultMap.put("res_msg", "승인되었습니다.");
 		}
 		
+		System.out.println(resultMap);
+		
 		return resultMap;
 	}
 	

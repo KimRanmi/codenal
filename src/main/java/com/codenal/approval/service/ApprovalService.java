@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -69,25 +70,38 @@ public class ApprovalService {
       this.referrerRepository = referrerRepository;
    }
 
-   // 상신리스트 조회
+   // 상신리스트 => 조회 0-> 대기 , 1-> 진행중,  2->완료 , 3-> 반려 , 4->회수 
    public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id) {
 	  
 	  Employee emp = employeeRepository.findByEmpId(id);
+	  
+	  // 리스트 개수 조회
+	  int approvalCount = approvalRepository.countByEmployee_EmpId(emp.getEmpId());
+	  
+	  System.out.println(approvalCount);
+     
       Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),pageable);
-
+	  
+	  System.out.println(approvalList.getTotalElements());
+      
       List<Map<String, Object>> responseList = new ArrayList<>();
       for (Object[] objects : approvalList.getContent()) {
          Approval approval = (Approval) objects[0];
          ApprovalForm approvalForm = (ApprovalForm) objects[1];
+         Approver approver = (Approver) objects[2];
+         
          int num = approval.getApprovalStatus();
          Map<String, Object> map = new HashMap<>();
          map.put("approval", approval);
          map.put("formType", approvalForm);
+         map.put("approver",approver);
          map.put("num", num);
          responseList.add(map);
+         
+         System.out.println("나와라 : "+approver.getEmployee().getEmpName());
       }
       
-      System.out.println(approvalList.getTotalElements());
+      
       return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
    
@@ -96,10 +110,11 @@ public class ApprovalService {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
-
+		  
+		  System.out.println("num2 : "+num2);
 	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),pageable);
 	      
-	      System.out.println(approvalList);
+	      System.out.println("토탈 : "+approvalList.getTotalElements());
 	      
 	      List<Map<String, Object>> responseList = new ArrayList<>();
 	      for (Object[] objects : approvalList.getContent()) {
@@ -115,6 +130,7 @@ public class ApprovalService {
 	         map.put("num", num);
 	         responseList.add(map);
 	         
+	         System.out.println("수신리스트 : "+approval.getApprovalTitle());
 	      }
 	      return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
 	   }
@@ -166,8 +182,8 @@ public class ApprovalService {
       
       ApprovalForm af = (ApprovalForm) obj[4];
       
-      List<Approver> agree = approverRepository.findByApproverNo_Agree(approval_no);
-      List<Approver> approver = approverRepository.findByApproverNo_Approver(approval_no);
+      List<Approver> agree = approverRepository.findByApprovalApprovalNoAndApproverType(approval_no,"합의자");
+      List<Approver> approver = approverRepository.findByApprovalApprovalNoAndApproverType(approval_no,"결재자");
       List<Referrer> referrer = referrerRepository.findByApproval(approval);
       
       
@@ -213,7 +229,7 @@ public class ApprovalService {
          
          Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
          
-     ApprovalForm af = approvalFormRepository.findByApprovalFormCode((Integer)obj.get("폼코드"));
+     ApprovalForm af = approvalFormRepository.findByFormCode((Integer)obj.get("폼코드"));
      
      int type = 0;
      switch (af.getFormName()) {
@@ -327,7 +343,7 @@ public class ApprovalService {
 		   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
 		      
 		   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
-		   ApprovalForm af = approvalFormRepository.findByApprovalFormCode((Integer)obj.get("폼코드"));
+		   ApprovalForm af = approvalFormRepository.findByFormCode((Integer)obj.get("폼코드"));
 		     
 		     int type = 0;
 		     switch (af.getFormName()) {
