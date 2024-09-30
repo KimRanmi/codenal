@@ -5,7 +5,14 @@ import com.codenal.alarms.domain.AlarmsDto;
 import com.codenal.alarms.service.AlarmsService;
 import com.codenal.alarms.repository.EmpAlarmsRepository;
 import com.codenal.employee.domain.Employee;
+
 import lombok.RequiredArgsConstructor;
+
+
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,5 +68,19 @@ public class AlarmsController {
         AlarmsDto responseDto = AlarmsDto.fromEntity(updatedAlarm);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+    
+    @GetMapping("/alarms")
+    public String getAlarmsPage(Model model, Authentication authentication) {
+        // 현재 로그인한 사용자 정보 가져오기
+        Employee employee = (Employee) authentication.getPrincipal();
+        Long empId = employee.getEmpId();
+
+        // 알림 데이터 조회
+        List<AlarmsDto> alarmsList = alarmsService.getAlarmsByEmpId(empId);
+        model.addAttribute("alarms", alarmsList);
+
+        // 뷰 이름 반환 (HTML 템플릿 파일명)
+        return "alarms"; // alarms.html
     }
 }

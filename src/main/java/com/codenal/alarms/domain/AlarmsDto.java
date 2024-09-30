@@ -27,6 +27,12 @@ public class AlarmsDto {
     private String alarmIsDeleted;  // 알림 삭제 여부
     private String alarmUrl;        // 관련 알림 URL
 
+    // 회의실 정보 추가
+    private String roomName;        // 회의실 이름
+    private String roomLocation;    // 회의실 장소
+    private String alarmTime;       // 예약 시간
+
+   
     public static AlarmsDto fromEntity(Alarms alarms) {
         if (alarms == null) {
             return null;
@@ -34,7 +40,7 @@ public class AlarmsDto {
 
         return AlarmsDto.builder()
                 .alarmNo(alarms.getAlarmNo())
-                .empId(alarms.getEmployee().getEmpId())
+                .empId(alarms.getEmployee() != null ? alarms.getEmployee().getEmpId() : null)
                 .alarmTitle(alarms.getAlarmTitle())
                 .alarmContext(alarms.getAlarmContext())
                 .alarmType(alarms.getAlarmType())
@@ -47,7 +53,15 @@ public class AlarmsDto {
                 .build();
     }
 
- 
+   
+    public static AlarmsDto fromEntity(Alarms alarms, String roomName, String roomLocation, String alarmTime) {
+        AlarmsDto dto = fromEntity(alarms);
+        dto.setRoomName(roomName);
+        dto.setRoomLocation(roomLocation);
+        dto.setAlarmTime(alarmTime);
+        return dto;
+    }
+
     public Alarms toEntity(Employee employee) {
         return Alarms.builder()
                 .alarmNo(this.alarmNo)
@@ -56,10 +70,10 @@ public class AlarmsDto {
                 .alarmContext(this.alarmContext)
                 .alarmType(this.alarmType)
                 .alarmReferenceNo(this.alarmReferenceNo)
-                .alarmCreateTime(this.alarmCreateTime)
+                .alarmCreateTime(this.alarmCreateTime != null ? this.alarmCreateTime : LocalDateTime.now())
                 .alarmReadTime(this.alarmReadTime)
-                .alarmIsRead(this.alarmIsRead)
-                .alarmIsDeleted(this.alarmIsDeleted)
+                .alarmIsRead(this.alarmIsRead != null ? this.alarmIsRead : "N")
+                .alarmIsDeleted(this.alarmIsDeleted != null ? this.alarmIsDeleted : "N")
                 .alarmUrl(this.alarmUrl)
                 .build();
     }

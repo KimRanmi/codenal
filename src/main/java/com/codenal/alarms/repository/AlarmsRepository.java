@@ -12,7 +12,7 @@ public interface AlarmsRepository extends JpaRepository<Alarms, Long> {
     List<Alarms> findByEmployee_EmpIdAndAlarmIsDeleted(Long empId, String alarmIsDeleted);
     
     // 특정 사원의 모든 알림 조회
-    List<Alarms> findByEmployee_EmpId(Long empId);
+    List<Alarms> findByEmployeeEmpId(Long empId);
 
     // 특정 사원의 읽지 않은 알림 조회
     List<Alarms> findByEmployee_EmpIdAndAlarmIsReadFalse(Long empId);

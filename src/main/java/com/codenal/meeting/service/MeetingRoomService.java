@@ -21,6 +21,8 @@ import com.codenal.meeting.repository.MeetingRoomRepository;
 import com.codenal.meeting.repository.MeetingRoomReserveRepository;
 import com.codenal.meeting.repository.MeetingRoomTimeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class MeetingRoomService {
 
@@ -226,8 +228,13 @@ public class MeetingRoomService {
 
 	// 회의실 예약 알림
 	public List<MeetingRoomReserve> meetingAlarms(LocalDate date) {
-		
+
 		return meetingRoomReserveRepository.findByMeetingRoomReserveDate(date);
 	}
+
+	 public MeetingRoomReserve findById(Long reserveNo) {
+	        return meetingRoomReserveRepository.findById(reserveNo)
+	                .orElseThrow(() -> new EntityNotFoundException("예약 정보를 찾을 수 없습니다. 예약 번호: " + reserveNo));
+	    }
 
 }
