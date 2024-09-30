@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -18,8 +19,6 @@ import com.codenal.addressBook.domain.TreeMenuDto;
 import com.codenal.addressBook.service.AddressBookService;
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.service.DeptService;
-import com.codenal.employee.domain.EmployeeDto;
-
 @Controller
 @RequestMapping("/admin/dept")
 public class DeptViewController {
@@ -38,8 +37,9 @@ public class DeptViewController {
 	public String searchAll(Model model,
 			@PageableDefault(page = 0, size = 10, sort = "deptCreateDate", direction = Sort.Direction.DESC) Pageable pageable,
 			@ModelAttribute("searchDto") DepartmentsDto searchDto) {
+		// System.out.println("확인");
 
-		// 셀렉트 박스 통합
+		// 검색
 		Page<DepartmentsDto> resultList = deptService.searchDeptName(searchDto, pageable);
 
 		model.addAttribute("resultList", resultList);
@@ -47,8 +47,8 @@ public class DeptViewController {
 
 		return "admin/dept";
 	}
-	
-	
+
+
 	// TreeMenu(JsTree)
 	@GetMapping("/tree-menu")
 	@ResponseBody
@@ -57,4 +57,19 @@ public class DeptViewController {
 		// System.out.println("Tree Menu Data: " + treeMenu);  
 		return addressBookService.getTreeMenu();
 	}
-} 
+
+
+	// 부서 추가
+	@GetMapping("/addDept")
+	public String addDeptPage() {
+		return "admin/dept/addDept";
+	}
+
+	// 부서명 수정
+	@GetMapping("/dept/edit/{dept_no}")
+	public String editDeptPage(@PathVariable("dept_no")Long dept_no, Model model){
+		DepartmentsDto dto = deptService.editDeptName(dept_no);
+		model.addAttribute("editDept",dto);
+		return "admin/dept";
+	}
+}

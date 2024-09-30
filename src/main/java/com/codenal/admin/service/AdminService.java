@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +21,9 @@ import com.codenal.admin.domain.JobsDto;
 import com.codenal.admin.repository.AdminRepository;
 import com.codenal.admin.repository.DepartmentsRepository;
 import com.codenal.admin.repository.JobsRepository;
+import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.annual.domain.AnnualLeaveManageDto;
+import com.codenal.annual.repository.AnnualLeaveManageRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 
@@ -32,13 +34,16 @@ public class AdminService {
 	// 암호화
 	// Spring Security 설정 클래스에서 PasswordEncoder를 빈으로 등록
 	private final AdminRepository adminRepository;
+	private final AnnualLeaveManageRepository annualLeaveManageRepository;
 	private final DepartmentsRepository departmentsRepository;
 	private final JobsRepository jobsRepository;
 
+
 	@Autowired
 	public AdminService(AdminRepository adminRepository, DepartmentsRepository departmentsRepository, 
-			JobsRepository jobsRepository) {
+			JobsRepository jobsRepository,  AnnualLeaveManageRepository annualLeaveManageRepository) {
 		this.adminRepository = adminRepository;
+		this.annualLeaveManageRepository = annualLeaveManageRepository;
 		this.departmentsRepository = departmentsRepository;
 		this.jobsRepository = jobsRepository;
 	}
@@ -76,7 +81,15 @@ public class AdminService {
 
 			Employee employee = dto.toEntity();
 			adminRepository.save(employee); // DB 저장
-
+			
+			// 연차 초기화
+			AnnualLeaveManageDto almDto = new AnnualLeaveManageDto();
+			
+			almDto.setEmployee(employee);
+			
+			AnnualLeaveManage alm = almDto.toEntity();
+			annualLeaveManageRepository.save(alm);
+			
 			result = 1;
 
 		} catch (Exception e) {
@@ -248,5 +261,28 @@ public class AdminService {
 	}
 
 
+	// 직원 정보 상세 조회
+	//	public EmployeeDto selectEmployeeListDetail(Long employeeId) {
+	//	Employee announce = employeeListRepository.findByEmployeeId(employeeId);
+	//	EmployeeDto dto = new EmployeeDto().toDto(announce);
+	//     return dto;
+	//    }
+
+
+	// 직원 정보 수정
+	//@Transactional
+	//	public Employee selectEmployeeListUpdate(EmployeeDto dto) { 
+	//	EmployeeDto temp = selectEmployeeOne(dto.get());
+	//	temp.setBoard_title(dto.getBoard_title());
+	//	temp.setBoard_content(dto.getBoard_content());
+	//	if(dto.getOri_thumbnail() != null && "".equals(dto.getOri_thumbnail()) == false) {
+	//		temp.setOri_thumbnail(dto.getOri_thumbnail());
+	//		temp.setNew_thumbnail(dto.getNew_thumbnail());
+	//	}
+
+	//	Board board = temp.toEntity();
+	//	Board result = boardRepository.save(board);
+	//	return result;
+	//}
 
 }

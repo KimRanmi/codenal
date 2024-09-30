@@ -1,12 +1,6 @@
 <!doctype html>
-<<<<<<< HEAD
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}" data-sidebar="light">
-=======
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
->>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
@@ -32,8 +26,8 @@
 							<h5 class="mb-4">채팅방</h5>
 						</div>
 						<div class="flex-shrink-0">
-							<div data-bs-toggle="tooltip" data-bs-trigger="hover"
-								data-bs-placement="bottom" title="채팅방 초대">
+							<div data-bs-toggle="modal" data-bs-target="#inviteMembersModal"
+								data-bs-placement="bottom" title="새로운 채팅방 만들기">
 
 								<!-- 채팅방 추가 버튼 -->
 								<button type="button" class="btn btn-soft-success btn-sm">
@@ -65,7 +59,10 @@
 				<div class="tab-content text-muted">
 					<div class="tab-pane active" id="chats" role="tabpanel">
 						<div class="chat-room-list pt-3" data-simplebar>
-							<!-- 만약 참여중인 채팅목록 없는경우, "참여중인 채팅방이 없습니다. 개설하세요." -->
+						<!-- 참여중인 채팅목록 없는경우 -->
+						<div th:if="${chatList==null}">
+							<p>참여중인 채팅방이 없습니다. 상단의 '+' 아이콘을 선택하여 채팅방을 개설하세요.</p>
+						</div>
 							<div class="d-flex align-items-center px-4 mb-2">
 								<div class="flex-grow-1">
 									<h4 class="mb-0 fs-11 text-muted text-uppercase">1:1채팅 참여
@@ -77,98 +74,27 @@
 								<!-- 참여중인 채팅 목록 -->
 								<ul class="list-unstyled chat-list chat-user-list" id="userList">
 									<!-- 1:1 채팅방 불러오기 -->
-									<li id="contact-id" data-name="direct-message" class="">
-										<a href="javascript: void(0);" class="unread-msg-user">
+									<li id="contact-id" data-name="direct-message" class="" th:each="chat : ${chatList}">
+										<div th:if="${chat.chatRoom.roomType==1}">
+										<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="unread-msg-user">
 											<div class="d-flex align-items-center">
 												<div
 													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
 													<div class="avatar-xxs">
 														<img src="assets/images/users/avatar-2.jpg"
-															class="rounded-circle img-fluid userprofile" alt="">
+															class="rounded-circle img-fluid userprofile">
 													</div>
 												</div>
 												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">이름1</p>
+													<p class="text-truncate mb-0" th:text="${chat.chatRoom.chatName}"></p>
 												</div>
 												<div class="ms-auto">
 													<span class="badge badge-soft-dark rounded p-1">99+</span>
 												</div>
 											</div>
 									</a>
+									</div>
 									</li>
-									<li id="contact-id" data-name="direct-message" class=""><a
-										href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<img src="assets/images/users/avatar-2.jpg"
-															class="rounded-circle img-fluid userprofile" alt="">
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">이름2</p>
-												</div>
-												<div class="ms-auto">
-													<span class="badge badge-soft-dark rounded p-1">99+</span>
-												</div>
-											</div>
-									</a></li>
-									<li id="contact-id" data-name="direct-message" class=""><a
-										href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<img src="assets/images/users/avatar-2.jpg"
-															class="rounded-circle img-fluid userprofile" alt="">
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">이름3</p>
-												</div>
-												<div class="ms-auto">
-													<span class="badge badge-soft-dark rounded p-1">99+</span>
-												</div>
-											</div>
-									</a></li>
-									<li id="contact-id" data-name="direct-message" class=""><a
-										href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<img src="assets/images/users/avatar-2.jpg"
-															class="rounded-circle img-fluid userprofile" alt="">
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">이름4</p>
-												</div>
-												<div class="ms-auto">
-													<span class="badge badge-soft-dark rounded p-1">99+</span>
-												</div>
-											</div>
-									</a></li>
-									<li id="contact-id" data-name="direct-message" class=""><a
-										href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<img src="assets/images/users/avatar-2.jpg"
-															class="rounded-circle img-fluid userprofile" alt="">
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">이름5</p>
-												</div>
-												<div class="ms-auto">
-													<span class="badge badge-soft-dark rounded p-1">99+</span>
-												</div>
-											</div>
-									</a></li>
-
 								</ul>
 							</div>
 
@@ -182,8 +108,10 @@
 								<!-- 참여중인 그룹 채팅 목록 -->
 								<ul class="list-unstyled chat-list chat-user-list mb-0"
 									id="channelList">
-									<li id="contact-id" data-name="channel">
-										<a href="javascript: void(0);" class="unread-msg-user">
+									<li id="contact-id" data-name="channel" th:each="chat : ${chatList}">
+										<div th:if="${chat.chatRoom.roomType==2}">
+										<!-- 웹소켓 연결부분 -->
+										<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="unread-msg-user">
 											<div class="d-flex align-items-center">
 												<div
 													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
@@ -193,7 +121,7 @@
 													</div>
 												</div>
 												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">그룹채팅방 이름1</p>
+													<p class="text-truncate mb-0" th:text="${chat.chatRoom.chatName}"></p>
 												</div>
 												<div>
 													<div class="flex-shrink-0 ms-2">
@@ -203,96 +131,8 @@
 												</div>
 											</div>
 										</a>
+										</div>
 									</li>
-									<li id="contact-id" data-name="channel">
-										<a href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<div
-															class="avatar-title bg-light rounded-circle text-body">#</div>
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">그룹채팅방 이름2</p>
-												</div>
-												<div>
-													<div class="flex-shrink-0 ms-2">
-														<span class="badge badge-soft-dark rounded p-1">99+
-														</span>
-													</div>
-												</div>
-											</div>
-										</a>
-									</li>
-									<li id="contact-id" data-name="channel">
-										<a href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<div
-															class="avatar-title bg-light rounded-circle text-body">#</div>
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">그룹채팅방 이름3</p>
-												</div>
-												<div>
-													<div class="flex-shrink-0 ms-2">
-														<span class="badge badge-soft-dark rounded p-1">99+
-														</span>
-													</div>
-												</div>
-											</div>
-										</a>
-									</li>
-									<li id="contact-id" data-name="channel">
-										<a href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<div
-															class="avatar-title bg-light rounded-circle text-body">#</div>
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">그룹채팅방 이름4</p>
-												</div>
-												<div>
-													<div class="flex-shrink-0 ms-2">
-														<span class="badge badge-soft-dark rounded p-1">99+
-														</span>
-													</div>
-												</div>
-											</div>
-										</a>
-									</li>
-									<li id="contact-id" data-name="channel">
-										<a href="javascript: void(0);" class="unread-msg-user">
-											<div class="d-flex align-items-center">
-												<div
-													class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
-													<div class="avatar-xxs">
-														<div
-															class="avatar-title bg-light rounded-circle text-body">#</div>
-													</div>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<p class="text-truncate mb-0">그룹채팅방 이름5</p>
-												</div>
-												<div>
-													<div class="flex-shrink-0 ms-2">
-														<span class="badge badge-soft-dark rounded p-1">99+
-														</span>
-													</div>
-												</div>
-											</div>
-										</a>
-									</li>
-
 								</ul>
 							</div>
 							<!-- End chat-message-list -->
@@ -309,15 +149,18 @@
 			</div>
 			<!-- end chat leftsidebar -->
 			<!-- Start User chat -->
-			<div class="user-chat w-100 overflow-hidden">
+			<div th:if="${chat==null}">
+				<p>채팅방을 선택하세요</p>
+				<!-- 바탕화면 이미지 넣는 자리!!!! -->
+			</div>
+			<div class="user-chat w-100 overflow-hidden" th:if="${chat!=null}">
 
 				<div class="chat-content d-lg-flex">
 					<!-- start chat conversation section -->
 					<div class="w-100 overflow-hidden position-relative">
 						<!-- conversation user -->
-						<!-- 1:1 채팅: 헤더부터 -->
+						<!-- 헤더 -->
 						<div class="position-relative">
-
 							<div class="position-relative" id="users-chat">
 								<div class="p-3 user-chat-topbar">
 									<div class="row align-items-center">
@@ -341,7 +184,7 @@
 																<a class="text-reset username"
 																	data-bs-toggle="offcanvas"
 																	href="#chatUserProfileCanvasExample"
-																	aria-controls="userProfileCanvasExample">이름 </a>
+																	aria-controls="userProfileCanvasExample" th:text="${chat.chatName}"></a>
 															</h5>
 														</div>
 													</div>
@@ -351,36 +194,6 @@
 										<!-- 오른쪽 위 메뉴 -->
 										<div class="col-sm-8 col-4">
 											<ul class="list-inline user-chat-nav text-end mb-0">
-												<!--<li class="list-inline-item m-0">
-													<div class="dropdown">
-														<button class="btn btn-ghost-secondary btn-icon" type="button"
-															data-bs-toggle="dropdown" aria-haspopup="true"
-															aria-expanded="false">
-															<i data-feather="search" class="icon-sm"></i>
-														</button>
-														<div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
-															<div class="p-2">
-																<div class="search-box">
-																	<input type="text"
-																		class="form-control bg-light border-light"
-																		placeholder="Search here..."
-																		onkeyup="searchMessages()" id="searchMessage">
-																	<i class="ri-search-2-line search-icon"></i>
-																</div>
-															</div>
-														</div>
-													</div>
-												</li>
-
-												<li class="list-inline-item d-none d-lg-inline-block m-0">
-													<button type="button" class="btn btn-ghost-secondary btn-icon"
-														data-bs-toggle="offcanvas"
-														data-bs-target="#userProfileCanvasExample"
-														aria-controls="userProfileCanvasExample">
-														<i data-feather="info" class="icon-sm"></i>
-													</button>
-												</li> -->
-
 												<li class="list-inline-item m-0">
 													<div class="dropdown">
 														<button class="btn btn-ghost-secondary btn-icon"
@@ -388,15 +201,36 @@
 															aria-haspopup="true" aria-expanded="false">
 															<i data-feather="more-vertical" class="icon-sm"></i>
 														</button>
-														<div class="dropdown-menu dropdown-menu-end">
-															<a
-																class="dropdown-item d-block d-lg-none user-profile-show"
+														<!-- 1:1인 경우 -->
+														<div class="dropdown-menu dropdown-menu-end" th:if="${chat.roomType==1}">
+															<a class="dropdown-item d-block d-lg-none user-profile-show"
 																href="#"><i
 																class="ri-user-2-fill align-bottom text-muted me-2"></i>
-																채팅방 메뉴</a> <a class="dropdown-item" href="#"><i
-																class="ri-delete-bin-5-line align-bottom text-muted me-2"></i>
-																알림 스위치</a> <a class="dropdown-item" href="#"><i
-																class="ri-delete-bin-5-line align-bottom text-muted me-2"></i>
+																채팅방 메뉴</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-toggle-fill align-bottom text-muted me-2"></i>
+																알림 스위치</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
+																채팅방 나가기</a>
+														</div>
+														<!-- 그룹인 경우 -->
+														<div class="dropdown-menu dropdown-menu-end" th:if="${chat.roomType==2}">
+															<a class="dropdown-item d-block d-lg-none user-profile-show"
+																href="#"><i
+																class="ri-user-2-fill align-bottom text-muted me-2"></i>
+																채팅방 메뉴</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-toggle-fill align-bottom text-muted me-2"></i>
+																알림 스위치</a>  
+																<a class="dropdown-item" href="#"><i
+																class="ri-user-add-line align-bottom text-muted me-2"></i>
+																추가 초대하기</a> 
+																<a class="dropdown-item" href="#"><i
+																class=" ri-edit-2-line align-bottom text-muted me-2"></i>
+																채팅방 이름 변경</a> 
+																<a class="dropdown-item" href="#"><i
+																class="ri-logout-box-r-line align-bottom text-muted me-2"></i>
 																채팅방 나가기</a>
 														</div>
 													</div>
@@ -407,173 +241,28 @@
 
 								</div>
 								<!-- end chat user head -->
-								<!-- 채팅 대화 시작 -->
+								
+								<!-- 채팅 대화 화면 시작 -->
 								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation"
 									data-simplebar>
-									<div id="elmLoader">
+									<!-- <div id="elmLoader">
 										<div class="spinner-border text-primary avatar-sm"
 											role="status">
 											<span class="visually-hidden">로딩중...</span>
 										</div>
-									</div>
+									</div> -->
 									<ul class="list-unstyled chat-conversation-list"
 										id="users-conversation">
+<!-- 										<li th:text="${chat.}">
+										</li> -->
 
 									</ul>
 									<!-- end chat-conversation-list -->
 								</div>
-								<!-- 메시지 복사 완료시 alert 띄우기 -->
-								<div
-									class="alert alert-warning alert-dismissible copyclipboard-alert px-4 fade show "
-									id="copyClipBoard" role="alert">Message copied</div>
+								<!-- 채팅 대화 화면 끝 -->
 							</div>
-
-
-
-
-
-
-
-
-							<!-- 그룹 채팅인 경우: 헤더부터 -->
-							<div class="position-relative" id="channel-chat">
-								<div class="p-3 user-chat-topbar">
-									<div class="row align-items-center">
-										<div class="col-sm-4 col-8">
-											<div class="d-flex align-items-center">
-												<div class="flex-shrink-0 d-block d-lg-none me-3">
-													<a href="javascript: void(0);"
-														class="user-chat-remove fs-18 p-1"><i
-														class="ri-arrow-left-s-line align-bottom"></i></a>
-												</div>
-												<div class="flex-grow-1 overflow-hidden">
-													<div class="d-flex align-items-center">
-														<div
-															class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
-															<!-- Avatar Group with Tooltip -->
-															<!-- 참여자 프로필 사진 그룹 툴팁 -->
-															<div class="avatar-group">
-																<a href="javascript: void(0);" class="avatar-group-item"
-																	data-bs-toggle="tooltip" data-bs-placement="top"
-																	title="Christi"> <img
-																	src="assets/images/users/avatar-4.jpg" alt=""
-																	class="rounded-circle avatar-sm">
-																</a> <a href="javascript: void(0);"
-																	class="avatar-group-item" data-bs-toggle="tooltip"
-																	data-bs-placement="top" title="Frank Hook"> <img
-																	src="assets/images/users/avatar-3.jpg" alt=""
-																	class="rounded-circle avatar-sm">
-																</a> <a href="javascript: void(0);"
-																	class="avatar-group-item" data-bs-toggle="tooltip"
-																	data-bs-placement="top" title="Christi">
-																	<div class="avatar-sm">
-																		<div class="avatar-title rounded-circle bg-light text-primary">
-																			C
-																		</div>
-																	</div>
-																</a> <a href="javascript: void(0);"
-																	class="avatar-group-item" data-bs-toggle="tooltip"
-																	data-bs-placement="top" title="more">
-																	<div class="avatar-sm">
-																		<div class="avatar-title rounded-circle">2+</div>
-																	</div>
-																</a>
-															</div>
-														</div>
-														<div class="flex-grow-1 overflow-hidden">
-															<h5 class="text-truncate mb-0 fs-16">
-																<a class="text-reset username"
-																	data-bs-toggle="offcanvas"
-																	href="#chatUserProfileCanvasExample"
-																	aria-controls="userProfileCanvasExample">그룹 채팅방 이름
-																</a>
-															</h5>
-															<p class="text-truncate text-muted fs-14 mb-0 userStatus">
-																<small>현재 5명 참여중</small>
-															</p>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col-sm-8 col-4">
-											<ul class="list-inline user-chat-nav text-end mb-0">
-												<!-- <li class="list-inline-item m-0">
-													<div class="dropdown">
-														<button class="btn btn-ghost-secondary btn-icon" type="button"
-															data-bs-toggle="dropdown" aria-haspopup="true"
-															aria-expanded="false">
-															<i data-feather="search" class="icon-sm"></i>
-														</button>
-														<div
-															class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
-															<div class="p-2">
-																<div class="search-box">
-																	<input type="text"
-																		class="form-control bg-light border-light"
-																		placeholder="검색..."
-																		onkeyup="searchMessages()" id="searchMessage">
-																	<i class="ri-search-2-line search-icon"></i>
-																</div>
-															</div>
-														</div>
-													</div>
-												</li>
-
-												<li class="list-inline-item d-none d-lg-inline-block m-0">
-													<button type="button" class="btn btn-ghost-secondary btn-icon"
-														data-bs-toggle="offcanvas"
-														data-bs-target="#userProfileCanvasExample"
-														aria-controls="userProfileCanvasExample">
-														<i data-feather="info" class="icon-sm"></i>
-													</button>
-												</li> -->
-
-												<li class="list-inline-item m-0">
-													<div class="dropdown">
-														<button class="btn btn-ghost-secondary btn-icon"
-															type="button" data-bs-toggle="dropdown"
-															aria-haspopup="true" aria-expanded="false">
-															<i data-feather="more-vertical" class="icon-sm"></i>
-														</button>
-														<div class="dropdown-menu dropdown-menu-end">
-															<a
-																class="dropdown-item d-block d-lg-none user-profile-show"
-																href="#"><i
-																class="ri-user-2-fill align-bottom text-muted me-2"></i>
-																채팅방 메뉴</a> <a class="dropdown-item" href="#"><i
-																class="ri-inbox-archive-line align-bottom text-muted me-2"></i>
-																알림 스위치</a> <a class="dropdown-item" href="#"><i
-																class="ri-inbox-archive-line align-bottom text-muted me-2"></i>
-																추가 초대하기</a> <a class="dropdown-item" href="#"><i
-																class="ri-mic-off-line align-bottom text-muted me-2"></i>
-																채팅방 이름 변경</a> <a class="dropdown-item" href="#"><i
-																class="ri-delete-bin-5-line align-bottom text-muted me-2"></i>
-																채팅방 나가기</a>
-														</div>
-													</div>
-												</li>
-											</ul>
-										</div>
-									</div>
-
-								</div>
-								<!-- end chat user head -->
-								<div class="chat-conversation p-3 p-lg-4" id="chat-conversation"
-									data-simplebar>
-									<ul class="list-unstyled chat-conversation-list"
-										id="channel-conversation">
-									</ul>
-									<!-- end chat-conversation-list -->
-
-								</div>
-								<div
-									class="alert alert-warning alert-dismissible copyclipboard-alert px-4 fade show "
-									id="copyClipBoardChannel" role="alert">Message copied</div>
-							</div>
-
-							<!-- end chat-conversation -->
-							<!-- 채팅 문구 보내기 시작 부분 -->
+							
+							<!-- 메시지 작성 시작 부분 -->
 							<div class="chat-input-section p-3 p-lg-4">
 
 								<form id="chatinput-form" enctype="multipart/form-data">
@@ -611,6 +300,7 @@
 									</div>
 								</form>
 							</div>
+							<!-- 메시지 작성 끝 -->
 
 							<div class="replyCard">
 								<div class="card mb-0">
@@ -638,17 +328,165 @@
 	</div>
 
 
+	<th:block layout:fragment="modal">
+		<div class="modal fade" id="inviteMembersModal" tabindex="-1" aria-labelledby="inviteMembersModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content border-0">
+					<div class="modal-header p-3 ps-4 bg-soft-success">
+						<h5 class="modal-title" id="inviteMembersModalLabel">채팅 상대 선택</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body p-4">
+						<div class="search-box mb-3">
+							<input type="text" class="form-control bg-light border-light" placeholder="이름 검색">
+							<i class="ri-search-line search-icon"></i>
+						</div>
+					
+
+						<form id="selectEmployeeForm">
+						<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
+						<div class="mb-4 d-flex align-items-center">
+							<div class="me-2">
+								<h5 class="mb-0 fs-13">선택 직원 :</h5>
+							</div>
+							<!-- 선택한 직원 목록이 뜨는 곳 -->
+							<div class="avatar-group justify-content-center" id="selectEmp">
+							</div>
+						</div>
+						</form>
+						<!-- 직원 하나하나 불러오는 자리 -->
+						<!-- empList 꺼내기 -->
+						<div th:each="emp : ${employeeList}">
+						<div class="mx-n4 px-4" data-simplebar style="max-height: 300px;">
+							<div class="vstack gap-3">
+								<div class="d-flex align-items-center">
+									<div class="avatar-xs flex-shrink-0 me-3">
+										<img src="/assets/images/users/avatar-2.jpg" alt=""
+											class="img-fluid rounded-circle">
+									</div>
+									<div class="flex-grow-1">
+										<h5 class="fs-13 mb-0">
+										<div class="empName d-block" th:text="${emp.empName}"></div>
+										</h5>
+									</div>
+									<div class="flex-shrink-0">
+										<button type="button" class="btn btn-light btn-sm" onclick="employeeSelect_btn(this)" 
+                           				 th:attr="data-emp-name=${emp.empName}, data-emp-id=${emp.empId}">선택</button>
+									</div>
+								</div>
+								<!-- end member item -->
+							</div>
+							<!-- end list -->
+						</div> <!-- empList 끝 -->
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-light w-xs" data-bs-dismiss="modal">취소</button>
+						<button type="submit" class="btn btn-success w-xs" id="inviteBtn">초대하기</button>
+					</div>
+					<script>
+					
+						const employeeSelect_btn = function(button) {
+						    const empName = button.getAttribute('data-emp-name');
+						    const empId = button.getAttribute('data-emp-id');
+						    const view_div = document.getElementById('selectEmp');
+						    const form = document.getElementById('selectEmployeeForm');
+	
+						    // 숨겨진 입력 필드와 view_div에서 empId를 삭제하는 함수
+						    const removeEmployee = function(empId) {
+						        // view_div에서 해당 직원 아이템 제거
+						        const avatarGroupItem = view_div.querySelector(`div[data-bs-toggle='tooltip'][title='${empName}']`);
+						        if (avatarGroupItem) {
+						            avatarGroupItem.remove();
+						        }
+	
+						        // 숨겨진 입력 필드에서 해당 empId 제거
+						        const hiddenInputs = form.querySelectorAll(`input[name='emp_id[]'][value='${empId}']`);
+						        hiddenInputs.forEach(input => input.remove());
+						    };
+	
+						    // 이미 선택된 직원인 경우 제거
+						    if (document.querySelector(`input[name='emp_id[]'][value='${empId}']`)) {
+						        removeEmployee(empId);
+						    } else {
+						        // 선택된 버튼의 정보를 view_div에 추가
+						        view_div.innerHTML += "<div class='avatar-group-item' data-bs-toggle='tooltip' data-bs-trigger='hover' data-bs-placement='top' title='" + empName + "'>"
+						                            + "<div class='avatar-xs'>"
+						                            + "<img src='/assets/images/users/avatar-3.jpg' alt='' class='rounded-circle img-fluid'>"
+						                            + "</div>"
+						                            + "</div>";
+	
+						        // 폼에 숨겨진 input 필드로 선택된 직원 정보 추가
+						        const hiddenInput = document.createElement('input');
+						        hiddenInput.type = 'hidden';
+						        hiddenInput.name = 'emp_id[]';  // 배열 형태로 여러 직원 선택
+						        hiddenInput.value = empId;
+						        form.appendChild(hiddenInput);
+						    }
+						};
+						
+						document.getElementById("inviteBtn").addEventListener('click', function(e) {
+						    e.preventDefault(); // 기본 폼 제출 동작 방지
+
+						    const form = document.getElementById("selectEmployeeForm");
+
+						    // FormData 객체를 생성하여 폼 데이터를 가져옴
+						    const formData = new FormData(form);
+						    
+						    for (let [key, value] of formData.entries()) {
+						        console.log(key, value); // 폼 데이터 출력
+						    }
+						    
+						    const csrfToken = document.getElementById("csrf_token").value;
+
+						    fetch("/chatList/chatRoom/create", {
+						        method: 'POST',
+						        headers: {
+						            'X-CSRF-TOKEN': csrfToken,
+						        },
+						        body: formData
+						    })
+						    .then(response => response.json())
+						    .then(data => {
+						        if (data.res_code === '200') {
+						            alert(data.res_msg);
+						            location.href = `/chatList`;
+						            location.href = `/chatList/${data.roomNo}`; // 서버에서 받은 `roomNo`로 URL을 설정
+						        } else {
+						            alert('실패: ' + data.res_msg);
+						        }
+						    })
+						});
+					</script>
+				</div>
+				<!-- end modal-content -->
+			</div>
+			<!-- modal-dialog -->
+		</div>
+		</form>
+	</th:block>
+
+
+
 	<th:block layout:fragment="pagejs">
 
+
 		<!-- glightbox js -->
-		<script src="/assets/libs/glightbox/js/glightbox.min.js"></script>
+ 		<script src="/assets/libs/glightbox/js/glightbox.min.js"></script>
 
 		<!-- fgEmojiPicker js -->
 		<script src="/assets/libs/fg-emoji-picker/fgEmojiPicker.js"></script>
 
 		<!-- chat init js -->
-		<script src="/assets/js/pages/chat.init2.js"></script>
+		<script src="/assets/js/pages/chat.init.js"></script>
+		
+		<script src="/assets/js/pages/project-overview.init.js"></script>
 	</th:block>
+	
+	<!-- 캔버스? -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

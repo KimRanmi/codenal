@@ -1,8 +1,6 @@
 package com.codenal.annual.domain;
 
-import java.time.LocalDateTime;
-
-import com.codenal.approval.domain.ApproverDto;
+import com.codenal.employee.domain.Employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +19,10 @@ import lombok.ToString;
 public class AnnualLeaveManageDto {
 	
 	private Long annual_manage_no;
-	private int annual_total_day;
-	private int annual_used_day;
-	private int annual_remain_day;
-	private Long emp_id;
+	private float annual_total_day;
+	private float annual_used_day;
+	private float annual_remain_day;
+	private Employee employee;
 	
 	public AnnualLeaveManage toEntity() {
 		return AnnualLeaveManage.builder()
@@ -32,6 +30,7 @@ public class AnnualLeaveManageDto {
 				.annualTotalDay(annual_total_day)
 				.annualUsedDay(annual_used_day)
 				.annualRemainDay(annual_remain_day)
+				.employee(employee)
 				.build();
 	}
 	
@@ -41,6 +40,7 @@ public class AnnualLeaveManageDto {
 				.annual_total_day(alm.getAnnualTotalDay())
 				.annual_used_day(alm.getAnnualUsedDay())
 				.annual_remain_day(alm.getAnnualRemainDay())
+				.employee(employee)
 				.build();
 	}
 }

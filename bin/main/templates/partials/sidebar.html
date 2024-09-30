@@ -67,8 +67,32 @@
 							</div>
 						</li> <!-- end Dashboard Menu -->
 						
+						<!--------------------- 수수수영 추가 ------------- -->
+						<li class="nav-item" th:if="${#authentication.name} == '12345678'">
+							<a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button"
+								aria-expanded="false" aria-controls="sidebarLayouts">
+								<i class="ri-layout-3-line"></i> <span>직원 관리</span> 
+							</a>
+							<div class="collapse menu-dropdown" id="sidebarLayouts">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+									</li>
+									<li>
+										<a th:href="@{/admin/list}" class="nav-link"> 직원 정보 관리 </a>
+									</li>
+									<li class="nav-item">
+										<a th:href="@{/admin/dept}" class="nav-link"> 부서 관리 </a>
+									</li>
+								</ul>
+							</div>
+						</li>
 						
-						
+						<li class="nav-item" th:if="${#authentication.name} == '12345678'">
+							<a href="#sidebarAttendanceManager" class="nav-link menu-link"
+								role="button" aria-expanded="false">
+								<i class="bx bx-time-five"></i> <span>근태 관리</span>
+							</a>
+						</li>
 						
 						<!-- 사이드바 커스텀(드롭다운) -->
 						
@@ -106,7 +130,8 @@
 							</a>
 						</li>
 						
-						<li class="nav-item"><a class="nav-link menu-link"
+						<li th:if="${#authentication.name} != '12345678'" class="nav-item">
+						<a class="nav-link menu-link"
 							href="#sidebarApproval" data-bs-toggle="collapse" role="button"
 							aria-expanded="false" aria-controls="sidebarApproval"> <i
 								class="las la-file-alt"></i> <span>전자결재</span>
@@ -151,23 +176,30 @@
 												</li>
 											</ul>
 										</div> 
-										<a href="#sidebarApprovalreceive" class="nav-link"
-										data-bs-toggle="collapse" role="button" aria-expanded="false"
-										aria-controls="sidebarApprovalreceive"> 수신함 </a>
-										<div class="collapse menu-dropdown"
-											id="sidebarApprovalreceive">
-											<ul class="nav nav-sm flex-column">
-												<li class="nav-item"><a href="#" class="nav-link">
-														대기 </a></li>
-												<li class="nav-item"><a href="#" class="nav-link">
-														반려/완료 </a></li>
-												<li class="nav-item"><a href="#" class="nav-link">
-														수신참조 </a></li>
-											</ul>
-										</div>
-									</li>
-								</ul>
-							</div>
+										<li class="nav-item">
+						                <a href="#sidebarApprovalreceive" class="nav-link" data-bs-toggle="collapse"
+						                   role="button" aria-expanded="false" aria-controls="sidebarApprovalreceive">
+						                    수신함
+						                </a>
+						                <div class="collapse menu-dropdown" id="sidebarApprovalreceive">
+						                    <ul class="nav nav-sm flex-column">
+						                        <li class="nav-item">
+						                            <a th:href="@{/approval/inboxList(num=${1})}" class="nav-link">대기</a>
+						                        </li>
+						                        <li class="nav-item">
+						                            <a th:href="@{/approval/inboxList(num=${2})}" class="nav-link">완료</a>
+						                        </li>
+						                        <li class="nav-item">
+						                            <a th:href="@{/approval/inboxList(num=${3})}" class="nav-link">반려</a>
+						                        </li>
+						                        <li class="nav-item">
+						                            <a th:href="@{/approval/inboxList(num=${4})}" class="nav-link">수신참조</a>
+						                        </li>
+						                    </ul>
+						                </div>
+						            </li>
+						        </ul>
+						    </div>
 						</li>
 						
 						<li th:if="${#authentication.name} != '12345678'" class="nav-item">
@@ -182,7 +214,7 @@
 							</a>
 						</li>
 						
-						<li class="nav-item">
+						<li class="nav-item" th:if="${#authentication.name} != '12345678'">
 							<a href="#sidebarAttendanceManager" class="nav-link menu-link" data-bs-toggle="collapse"
 								role="button" aria-expanded="false" aria-controls="sidebarAttendanceManager">
 								<i class="bx bx-time-five"></i> <span>근태 관리</span>
@@ -202,7 +234,7 @@
 							</div>
 						</li>
 						
-						<li class="nav-item">
+						<li class="nav-item" th:if="${#authentication.name} != '12345678'">
 							<a href="/announce" class="nav-link menu-link">
 								<i class="ri-survey-line"></i> <span>게시판</span>
 							</a>
@@ -230,27 +262,13 @@
 							</div>
 						</li>
 						
-						<!--------------------- 수수수영 추가 ------------- -->
-						<th:block th:if="${#authentication.name} == '12345678'">
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button"
-								aria-expanded="false" aria-controls="sidebarLayouts">
-								<i class="ri-layout-3-line"></i> <span>직원 관리</span> 
-							</a>
-							<div class="collapse menu-dropdown" id="sidebarLayouts">
-								<ul class="nav nav-sm flex-column">
-									<li class="nav-item">
-									</li>
-									<li>
-										<a th:href="@{/admin/list}" class="nav-link"> 직원 정보 관리 </a>
-									</li>
-									<li class="nav-item">
-										<a th:href="@{/admin/dept}" class="nav-link"> 부서 관리 </a>
-									</li>
-								</ul>
-							</div>
-						</li>
-						</th:block>
+						
+						
+						<li class="nav-item" th:if="${#authentication.name} == '12345678'">
+						<a class="nav-link menu-link"
+							href="admin_approval_list" aria-expanded="false"> <i
+								class="las la-file-alt"></i> <span>전자결재 관리</span>
+						</a>
 						
 
 						<!-- <li class="nav-item">

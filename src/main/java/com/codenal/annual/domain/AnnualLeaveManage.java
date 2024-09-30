@@ -31,13 +31,13 @@ public class AnnualLeaveManage {
 	private Long annualManageNo;
 	
 	@Column(name="annual_total_day")
-	private int annualTotalDay;
+	private float annualTotalDay;
 	
 	@Column(name="annual_used_day")
-	private int annualUsedDay;
+	private float annualUsedDay;
 	
 	@Column(name="annual_remain_day")
-	private int annualRemainDay;
+	private float annualRemainDay;
 	
 	@ManyToOne
 	@JoinColumn(name="emp_id")

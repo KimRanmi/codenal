@@ -59,7 +59,7 @@ public class Approval {
     @JoinColumn(name="cate_code")
     private ApprovalCategory approvalCategory;
     
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="annual_usage_no")
     private AnnualLeaveUsage annualLeaveUsage;
     
@@ -67,10 +67,10 @@ public class Approval {
     private ApprovalFile approvalFiles;
     
     @OneToMany(mappedBy="approval")
-    private List<Approver> approvers;
+    private List<Approver> approver;
     
     @OneToMany(mappedBy="approval")
-    private List<Referrer> referrers;
+    private List<Referrer> referrer;
     
 }
 

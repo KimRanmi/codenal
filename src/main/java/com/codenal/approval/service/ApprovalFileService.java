@@ -111,17 +111,19 @@ public class ApprovalFileService {
 		int result = -1;
 		System.out.println(no);
 		try {
-			// 
-			ApprovalFile af = approvalFileRepository.findByApprovalNo(no);
-			String newFileName = af.getFileNewName();
 			
-			String resultDir = fileDir + URLDecoder.decode(newFileName,"UTF-8");
+			ApprovalFile af = approvalFileRepository.findByApprovalApprovalNo(no);
 			
-			if(resultDir != null && resultDir.isEmpty() ==false) {
-				File file = new File(resultDir);
-				if(file.exists()) {
-					file.delete();
-				}
+			if(af != null) {
+				String newFileName = af.getFileNewName();
+				String resultDir = fileDir + URLDecoder.decode(newFileName,"UTF-8");
+				
+				if(resultDir != null && resultDir.isEmpty() ==false) {
+					File file = new File(resultDir);
+					if(file.exists()) {
+						file.delete();
+					}
+				}	
 			}
 			
 			result = approvalFileRepository.deleteByApprovalNo(no);
