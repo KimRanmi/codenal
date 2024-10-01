@@ -26,10 +26,10 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public Employee selectEmpId(String empId) {
-    	Employee emp = employeeRepository.findByEmpName(empId);
-    	return emp;
-    }
+//    public Employee selectEmpId(String empId) {
+//    	Employee emp = employeeRepository.findByEmpName(empId);
+//    	return emp;
+//    }
     
 
     public void saveEmployee(Employee employee) {
