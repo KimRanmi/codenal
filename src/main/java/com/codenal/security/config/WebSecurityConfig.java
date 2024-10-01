@@ -29,8 +29,8 @@ import com.codenal.security.service.SecurityService;
 public class WebSecurityConfig {
 
 	private final DataSource dataSource;
-	
-	
+
+
 
 	@Autowired
 	public WebSecurityConfig(DataSource dataSource) {
@@ -39,40 +39,57 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityService securityService) throws Exception {
-		http
-		// CORS 설정 적용
-		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-		.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/auth-signin-basic", "/assets/**", "/admin/**", "/announce/**", "/approval/**", "/employee/**", "/list", "/chatList/**", "/chatting").permitAll()
-				 .requestMatchers("/mypage/**").authenticated()
-				 .requestMatchers("/documents/**").authenticated() 
-				 .anyRequest().authenticated()
-				)
+	    http
+	    // CORS 설정 적용
+	    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+	    .authorizeHttpRequests((requests) -> requests
+	    		
+	            .requestMatchers("/auth-signin-basic", "/assets/**").permitAll()
+	            .requestMatchers("/admin/list").permitAll()
+	            .requestMatchers("/admin/join").permitAll()
+	            .requestMatchers("/admin/update/**").permitAll()
+	            .requestMatchers("/admin/dept").permitAll()
+	            .requestMatchers("/announce/createEnd").permitAll()
+	            .requestMatchers("/announce/delete/**").permitAll()
+	            .requestMatchers("/announce/updateEnd/**").permitAll()
+	            .requestMatchers("/approval/leaveUpdate/**").permitAll()
+	            .requestMatchers("/approval/detail/**").permitAll()
+	            .requestMatchers("/employee/addressBook/**").permitAll()
+	            .requestMatchers("/approval/**").authenticated()
+	            .requestMatchers("/approval/update/**").authenticated()
+	            .requestMatchers("/list").permitAll() 
+	            .requestMatchers("/mypage/**", "/").authenticated()
+	            .requestMatchers("/documents/**").authenticated() 
+	            .requestMatchers("/api/attendance/**").permitAll()
+	            .requestMatchers("/chatList/**", "/chatting").permitAll()
+	            .anyRequest().authenticated()
+	    )
+	    .formLogin(login -> 
+	        login.loginPage("/auth-signin-basic")
+	            .loginProcessingUrl("/auth-signin-basic")
+	            .usernameParameter("emp_id")
+	            .passwordParameter("emp_pw")
+	            .permitAll()
+	            .defaultSuccessUrl("/", true)
+	            .successHandler(myLoginSuccessHandler())
+	            .failureHandler(myLoginFailureHandler())
+	    )
+	    .logout((logout) -> logout
+	        .logoutUrl("/auth-logout-basic")
+	        .logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
+	        .permitAll()
+	    )
+	    .rememberMe((rememberMe) -> rememberMe
+	    	    .key("uniqueAndSecret")
+	    	    .tokenRepository(tokenRepository()) // tokenRepository 추가
+	    	    .tokenValiditySeconds(86400 * 7)
+	    	    .userDetailsService(securityService)
+	    	);
 
-				.formLogin(login ->
-				login.loginPage("/auth-signin-basic")
-				.loginProcessingUrl("/auth-signin-basic")
-				.usernameParameter("emp_id")
-				.passwordParameter("emp_pw")
-				.permitAll()
-				.defaultSuccessUrl("/", true)
-				.successHandler(myLoginSuccessHandler())
-				.failureHandler(myLoginFailureHandler())
-						)
-				.logout((logout) -> logout
-						.logoutUrl("/auth-logout-basic")
-						.logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
-						.permitAll()
-						)
-				.rememberMe((rememberMe) -> rememberMe
-						.key("uniqueAndSecret")
-						.tokenValiditySeconds(86400*7)
-						.userDetailsService(securityService)
-						);
+	    return http.build();
 
-
-				return http.build();
-			}
+	
+	}
 
 	// CORS 설정을 위한 Bean 정의
 	@Bean
@@ -109,7 +126,7 @@ public class WebSecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return (web -> 
@@ -118,15 +135,15 @@ public class WebSecurityConfig {
 				PathRequest.toStaticResources().atCommonLocations()
 				));
 	}
-	
+
 	@Configuration // 파일경로
 	public class WebConfig implements WebMvcConfigurer {
-	    @Override
-	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	        registry.addResourceHandler("/uploads/**")
-	        .addResourceLocations("/classpath:/uploads/");// 실제 파일 시스템 경로
-	    }
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/uploads/**")
+			.addResourceLocations("/classpath:/uploads/");// 실제 파일 시스템 경로
+		}
 	}
-	
-	
+
+
 }

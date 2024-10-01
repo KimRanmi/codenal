@@ -19,6 +19,7 @@ import com.codenal.addressBook.domain.TreeMenuDto;
 import com.codenal.addressBook.service.AddressBookService;
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.service.DeptService;
+
 @Controller
 @RequestMapping("/admin/dept")
 public class DeptViewController {

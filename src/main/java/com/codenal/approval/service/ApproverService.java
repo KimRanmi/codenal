@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveManageRepository;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
@@ -18,12 +18,13 @@ import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.approval.repository.ReferrerRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
+import com.codenal.websocket.NotificationWebSocketHandler;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class ApproverService {
-
+	
 	private final ApproverRepository approverRepository;
 	private final ApprovalRepository approvalRepository;
 	private final EmployeeRepository employeeRepository;
@@ -85,6 +86,7 @@ public class ApproverService {
 				approverRepository.save(approvers);
 			}
 			approverRepository.firstUpdateStatus(firstId, createdApproval.getApprovalNo());
+			// 첫 번째 결재자에게 알림 전송
 		}
 
 	}
@@ -238,4 +240,9 @@ public class ApproverService {
 		public Approver findReject(Long approvalNo){
 			return approverRepository.findByApprovalApprovalNoAndApprovalStatus(approvalNo,3);
 		}
+		
+		public Approver findByEmployeeEmpIdAndApprovalStatus(int i,Long id){
+			return approverRepository.findByEmployeeEmpIdAndApprovalStatus(id,i);
+		}
+		
 }

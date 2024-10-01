@@ -1,5 +1,6 @@
 package com.codenal.meeting.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,5 @@ public interface MeetingRoomReserveRepository extends JpaRepository<MeetingRoomR
 
 	MeetingRoomReserve findByMeetingRoomReserveNo(Long meeting_room_no);
 
+	List<MeetingRoomReserve> findByMeetingRoomReserveDate(LocalDate date);
 }

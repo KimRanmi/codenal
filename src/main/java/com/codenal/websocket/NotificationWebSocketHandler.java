@@ -7,22 +7,31 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.codenal.chat.service.ChatService;
+import com.codenal.approval.domain.Approver;
+import com.codenal.approval.service.ApprovalService;
+import com.codenal.approval.service.ApproverService;
+import com.codenal.security.vo.SecurityUser;
 
 @Component
 public class NotificationWebSocketHandler extends TextWebSocketHandler{
 		
-		private final ChatService chatService;
+		private final ApprovalService approvalService;
+		private final ApproverService approverService;
 		
 		@Autowired
-		public NotificationWebSocketHandler(ChatService chatService) {
-			this.chatService = chatService;
+		public NotificationWebSocketHandler(
+				ApprovalService approvalService,
+				ApproverService approverService) {
+			this.approvalService = approvalService;
+			this.approverService = approverService;
 		}
 		
 
@@ -43,10 +52,22 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 			// 클라이언트가 웹소켓 서버로 메시지를 전송했을 때 설정
 			@Override
 			protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
-			    clients.put(session.getId(), session); // 클라이언트 등록
+				
+				Long id = Long.parseLong(session.getPrincipal().getName());
+				
+				System.out.println(id);
+				
+			    clients.put(session.getPrincipal().getName(), session); // 클라이언트 등록
 //			    System.out.println("=== 등록 확인 ===");
 			    System.out.println("현재 접속중인 클라이언트: " + clients);
+			    
+			    Approver approver = approverService.findByEmployeeEmpIdAndApprovalStatus(1,id);
+			    
+			    if(approver == null) {
+			    	 System.out.println("No approver found for id: " + id);
+			    }else {
+			    	System.out.println("Approver found: " + approver);
+			    }
 			    
 			    // 클라이언트로부터 받은 메시지 처리
 			    String receivedMessage = message.getPayload();
@@ -90,7 +111,12 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 //					break;
 //				}
 			}
-			
+
+			private Long parseLong(String name) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
 			// 알림 핸들러로 메시지 전송 메서드
 			public static void sendNotificationToAll(String notificationMessage) throws Exception {
 				for (WebSocketSession session : notificationSessions) {
@@ -100,7 +126,18 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 					}
 				}
 			}
-
+			
+			// 알림 핸들러로 메시지 전송 메서드
+			public void sendNotification(String notificationMessage) throws Exception {
+				for (WebSocketSession session : notificationSessions) {
+					if (session.isOpen()) {
+						System.out.println("알림 온다");
+						session.sendMessage(new TextMessage(notificationMessage));
+					}
+				}
+			}
+			
+			
 		
 			// 클라이언트가 연결을 끊었을 때 설정
 			@Override
@@ -113,5 +150,7 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 					System.out.println(senderNo +" : "+clients.get(senderNo));
 				}		
 			}
+			
+
 
 }

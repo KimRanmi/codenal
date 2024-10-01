@@ -18,5 +18,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     
     @Query("SELECT e FROM Employee e WHERE e.empStatus = 'Y' AND e.empId != ?1 AND e.empAuth !='ADMIN'")
     List<Employee> findAllActiveEmployees(Long empId);
-    
 }

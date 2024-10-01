@@ -253,6 +253,10 @@ public class Apps {
 		return "apps/file-manager";
 	}
 	
+	@GetMapping("/appss-attendance")
+	public String apps_attendance() {
+		return "apps/attendance";	
+	}
 	@GetMapping("/apps-todo")
 	public String apps_todo() {
 		return "apps/todo";

@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class JobsDto {
 
-    private int jobNo; // 직급 번호
+    private Long jobNo; // 직급 번호
     private String jobName; // 직급명
     private int jobPriority; // 우선순위
 

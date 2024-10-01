@@ -50,7 +50,7 @@ public class CalendarService {
 		Long detpNo = dto.getDeptNo();
 		Departments dept = departmentsRepository.findByDeptNo(detpNo);
 		
-		int jodNo = dto.getJobNo();
+		Long jodNo = dto.getJobNo();
 		Jobs job = jobsRepository.findByJobNo(jodNo);
 		System.out.println(job.getJobName());
 		String[] str = {dto.getEmpName(), dept.getDeptName(),job.getJobName()};
@@ -106,6 +106,7 @@ public class CalendarService {
 		List<Calendar> eventList = calendarRepository.findAll();
 		List<CalendarDto> eventDtoList = new ArrayList<CalendarDto>();
 		List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository.findAll();
+		System.out.println(annualLeaveList);
 		for(Calendar c : eventList) {
 			CalendarDto calendarDto = new CalendarDto().toDto(c);
 			Long writer = c.getCalendarScheduleWriter();

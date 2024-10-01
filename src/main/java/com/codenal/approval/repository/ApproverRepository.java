@@ -52,5 +52,7 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	
 	// 반려 상태 가져오기
 	Approver findByApprovalApprovalNoAndApprovalStatus(Long approvalNo, int approvalStatus);
-
+	
+	// 결재자 상태 1인 사람 조회
+	Approver findByEmployeeEmpIdAndApprovalStatus(Long id,int status);
 }
