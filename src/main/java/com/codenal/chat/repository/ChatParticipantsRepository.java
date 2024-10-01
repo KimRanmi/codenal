@@ -3,6 +3,7 @@ package com.codenal.chat.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.codenal.chat.domain.ChatParticipants;
@@ -15,9 +16,17 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.employee = ?1 AND p.participateStatus = 'Y' ")
 	List<ChatParticipants> findByChatRoom(Employee empId);
 
+	// 본인을 제외한 참여자 정보 조회 (나가기 했을때 오류나서......)
+	@Query(value="SELECT p FROM ChatParticipants p WHERE p.employee != ?1 AND p.chatRoom IN (SELECT e.chatRoom FROM ChatParticipants e WHERE e.employee = ?1 AND e.participateStatus = 'Y' ) ")
+	List<ChatParticipants> findByNotMeChatRoom(Employee empId);
+
+//	// 본인을 제외한 참여자 정보 조회
+//	@Query(value="SELECT p FROM ChatParticipants p WHERE p.participateStatus = 'Y' AND p.employee != ?1 AND p.chatRoom IN (SELECT e.chatRoom FROM ChatParticipants e WHERE e.employee = ?1 AND e.participateStatus = 'Y' ) ")
+//	List<ChatParticipants> findByNotMeChatRoom(Employee empId);
+	
 	// 본인을 제외한 참여자 정보 조회
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.participantNo != ?2 ")
-	List<ChatParticipants> findByChatRoom(ChatRoom roomNo, int userNo);
+	List<ChatParticipants> findByNotMeChatRoom(ChatRoom roomNo, int userNo);
 
 	// 내가 선택한 채팅방의 참가번호
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.participantNo = ?2 ")
@@ -26,5 +35,15 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
 	// 내가 선택한 채팅방의 참가번호
 	@Query(value="SELECT p FROM ChatParticipants p WHERE p.chatRoom = ?1 AND p.participateStatus = 'Y' AND p.employee = ?2 ")
 	ChatParticipants findByEmpId(ChatRoom roomNo, Employee empId);
+
+	@Modifying
+	@Query(value="UPDATE ChatParticipants c SET c.participateStatus = 'N', c.exitDate=CURRENT_TIMESTAMP WHERE c.chatRoom = ?1 AND c.employee = ?2 ")
+	int updateByParticipateStatus(ChatRoom roomNo, Employee empId);
+	
+	@Query("SELECT COUNT(c) FROM ChatParticipants c WHERE c.chatRoom = ?1 AND c.participateStatus = 'Y'")
+	long countParticipantsWithStatusY(ChatRoom roomNo);
+
+	void deleteByChatRoom(ChatRoom chatRoom);
+
 
 }

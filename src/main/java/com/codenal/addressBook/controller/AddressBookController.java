@@ -51,8 +51,6 @@ public class AddressBookController {
 	@GetMapping("/tree-menu")
 	@ResponseBody
 	public List<TreeMenuDto> getTreeMenu() {
-		List<TreeMenuDto> treeMenu = addressBookService.getTreeMenu();
-
 		return addressBookService.getTreeMenu();
 	}
 
