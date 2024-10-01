@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.codenal.chat.domain.ChatMsg;
 import com.codenal.chat.domain.ChatMsgDto;
+import com.codenal.chat.domain.ChatParticipantsDto;
 import com.codenal.chat.domain.ChatRoom;
 import com.codenal.chat.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,10 +29,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ChatWebSocketHandler extends TextWebSocketHandler{
 	
 	private final ChatService chatService;
+	private final NotificationWebSocketHandler notificationWebSocketHandler;
 	
 	@Autowired
-	public ChatWebSocketHandler(ChatService chatService) {
+	public ChatWebSocketHandler(ChatService chatService, NotificationWebSocketHandler notificationWebSocketHandler) {
 		this.chatService = chatService;
+		this.notificationWebSocketHandler = notificationWebSocketHandler;
 	}
 
 	private Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<WebSocketSession>());
@@ -57,8 +61,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 			ObjectMapper objectMapper = new ObjectMapper();
 			// JSON -> SendMessage 형태 변환
 			ChatMsgDto msg = objectMapper.readValue(payload, ChatMsgDto.class);
-			
-			Map<String,String> resultMap = new HashMap<String,String>();
 			
 			JSONObject json = new JSONObject(message.getPayload());
 			String chatType = json.getString("chat_type");
@@ -113,6 +115,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 				case "msg":
 					  // 메시지를 DB에 저장
 					  ChatMsg chat = chatService.createChatMsg(msg);
+					  Map<String,String> resultMap = new HashMap<String,String>();
 					  if(chat != null) {
 						  resultMap.put("res_code", "200");
 						  resultMap.put("res_msg", "채팅 전송을 완료했습니다.");
@@ -122,6 +125,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 						  LocalDateTime sendDate = chat.getSendDate();
 						  resultMap.put("send_date", sendDate.format(formatter)); // LocalDateTime을 문자열로 변환하여 Map에 저장
 						  resultMap.put("msg_type", String.valueOf(chat.getMsgType()));
+						  resultMap.put("room_no", String.valueOf(chat.getChatRoom().getRoomNo()));
+						  resultMap.put("sender_name", chat.getChatParticipant().getEmployee().getEmpName());
 						  
 					        // 메시지를 받은 사용자에게 읽음 상태 업데이트
 					        for (WebSocketSession client : clients.values()) {
@@ -132,8 +137,10 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 					                Long empNo = Long.parseLong(client.getPrincipal().getName());  // 수신자의 participantNo 확인
 					                chatService.updateMessageReadStatus(empNo);
 					                
-					                // 알림 핸들러로 메시지를 전달 (모든 사용자에게)
-					                NotificationWebSocketHandler.sendNotificationToAll(payload);
+					                // 특정 채팅방 참가자 리스트 조회
+					                List<ChatParticipantsDto> participantsList = chatService.selectChatRoomParticipants(chat.getChatRoom().getRoomNo());
+					                // 특정 대상자들에게만 알림 메시지 전송
+					                notificationWebSocketHandler.sendNotificationToSpecificUsers(participantsList, objectMapper.writeValueAsString(resultMap));
 					            }
 					        }
 						  
