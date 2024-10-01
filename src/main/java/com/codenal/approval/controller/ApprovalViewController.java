@@ -2,7 +2,6 @@ package com.codenal.approval.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -66,6 +66,7 @@ public class ApprovalViewController {
 		model.addAttribute("ldt", ldt);
 		model.addAttribute("no", no);
 		model.addAttribute("cateList", cateList);
+		
 		return "apps/approval_create";
 	}
 
@@ -237,15 +238,16 @@ public class ApprovalViewController {
 	}
 	
 	// admin 전자결재 추가
-	@GetMapping("/adminApprovalCreate")
+	@GetMapping("/admin/approvalCreate")
 	public String adminCreate() {
 		return "apps/adminApprovalCreate";
 	}
 	
 	// admin 전자결재 리스트 
-	@GetMapping("/admin_approval_list")
+	@GetMapping("/admin/approval_list")
 	public String adminList(Model model,
 			@PageableDefault(page = 0, size = 10, sort = "formCode", direction = Sort.Direction.DESC) Pageable pageable){
+		
 		Page<ApprovalForm> resultList = approvalService.adminApprovalList(pageable);
 		
 		model.addAttribute("resultList",resultList);
@@ -253,5 +255,14 @@ public class ApprovalViewController {
 		return "apps/admin_approval_list";
 	}
 	
+	// admin 리스트로 정보 보내기 / json으로 반환
+	@GetMapping("/admin/approvalDetail/{no}")
+	public String approvalDetail(@PathVariable("no") int form_no,Model model){
+		
+		ApprovalForm aft = approvalService.approvalFormDetail(form_no);
+		
+		model.addAttribute("approvalForm",aft);
+		return "apps/admin_approval_detail";
+	}
 	
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -277,7 +278,7 @@ public class ApprovalService {
       
       ApprovalBaseFormType at = approvalBaseFormTypeRepository.findByBaseFormCode(no);
       
-      List<ApprovalForm> ac = approvalFormRepository.findByApprovalBaseFormType_BaseFormCode(at.getBaseFormCode());
+      List<ApprovalForm> ac = approvalFormRepository.findByApprovalBaseFormType_BaseFormCodeAndFormVisibility(at.getBaseFormCode(),'Y');
       
       List<ApprovalFormDto> list = new ArrayList<ApprovalFormDto>();
       
@@ -453,4 +454,24 @@ public class ApprovalService {
 		   
 		   return approvalCategoryRepository.save(ac) ;
 	   }
+	   
+	   // 폼 정보 불러오기
+	   public ApprovalForm approvalFormDetail(int form_code) {
+		   return approvalFormRepository.findByFormCode(form_code);
+	   }
+	   
+	   // 폼 수정
+	   public ApprovalForm formUpdate(int formCode, String content) {
+		   
+		   ApprovalForm form = approvalFormRepository.findByFormCode(formCode);
+		   
+		   ApprovalForm af = ApprovalForm.builder()
+				   				.formCode(formCode)
+				   				.approvalBaseFormType(form.getApprovalBaseFormType())
+				   				.formName(form.getFormName())
+				   				.formVisibility(form.getFormVisibility())
+				   				.formContent(content)
+				   				.build();
+		   return approvalFormRepository.save(af);
+	   }				
 }

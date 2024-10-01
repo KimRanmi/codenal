@@ -12,7 +12,7 @@ import com.codenal.approval.domain.ApprovalFormDto;
 
 public interface ApprovalFormRepository extends JpaRepository<ApprovalForm, Integer>{
    
-   List<ApprovalForm> findByApprovalBaseFormType_BaseFormCode(int no);
+   List<ApprovalForm> findByApprovalBaseFormType_BaseFormCodeAndFormVisibility(int no,char visibility);
    
    ApprovalForm findByFormCode(int cateCode);
    

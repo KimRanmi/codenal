@@ -475,4 +475,27 @@ public class ApprovalApiController {
 		
 		return result;
 	}
+	
+	//  폼 수정
+	@ResponseBody
+	@PostMapping("/admin/approvalForm_update")
+	public Map<String,String> formUpdate(@RequestBody Map<String, Object> request){
+		Map<String,String> result = new HashMap<String,String>();
+		result.put("res_code","404");
+		result.put("res_msg","수정 실패하였습니다.");
+		
+		int formCode = (int) request.get("formCode");
+		
+		System.out.println(formCode);
+		
+	    String content = (String) request.get("content");
+	    
+	    System.out.println(content);
+		
+		if(approvalService.formUpdate(formCode,content) != null) {
+			result.put("res_code","200");
+			result.put("res_msg","수정되었습니다.");
+		}
+		return result;
+	}
 }
