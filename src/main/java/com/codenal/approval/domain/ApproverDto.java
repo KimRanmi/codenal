@@ -46,6 +46,7 @@ public class ApproverDto {
 				.approval_date(a.getApprovalDate())
 				.reject_comment(a.getRejectComment())
 				.approver_priority(a.getApproverPriority())
+				.emp_id(a.getEmployee().getEmpId())
 				.build();
 	}
 }
