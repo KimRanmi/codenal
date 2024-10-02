@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.codenal.alarms.service.AlarmsService;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalFileDto;
 import com.codenal.approval.domain.ApprovalForm;
-import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.service.ApprovalFileService;
 import com.codenal.approval.service.ApprovalService;
 import com.codenal.approval.service.ApproverService;
@@ -35,14 +35,17 @@ public class ApprovalApiController {
 	private final ApprovalFileService approvalFileService;
 	private final EmployeeService employeeService;
 	private final ApproverService approverService;
+	private final AlarmsService alarmsService;
 	
 	@Autowired
 	public ApprovalApiController(ApprovalService approvalService, ApprovalFileService approvalFileService,
-			EmployeeService employeeService, ApproverService approverService) {
+			EmployeeService employeeService, ApproverService approverService,
+			AlarmsService alarmsService) {
 		this.approvalService = approvalService;
 		this.approvalFileService = approvalFileService;
 		this.employeeService = employeeService;
 		this.approverService = approverService;
+		this.alarmsService = alarmsService;
 	}
 
 	// 전자결재 등록 (요청서, 품의서)
@@ -402,9 +405,6 @@ public class ApprovalApiController {
 			resultMap.put("res_code","200");
 			resultMap.put("res_msg", "승인되었습니다.");
 		}
-		
-		System.out.println(resultMap);
-		
 		return resultMap;
 	}
 	

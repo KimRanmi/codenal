@@ -130,7 +130,6 @@ public class ApprovalService {
 	         map.put("num", num);
 	         responseList.add(map);
 	         
-	         System.out.println("수신리스트 : "+approval.getApprovalTitle());
 	      }
 	      return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
 	   }
