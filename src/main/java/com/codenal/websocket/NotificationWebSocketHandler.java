@@ -92,9 +92,7 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 		
 		 // 알림 dto로 전달
 		public void sendNotification(String notificationMessage, Approval approval) throws Exception {
-			
-			String formattedMessage = notificationMessage + ": " + approval.getApprovalTitle() + " (" + approval.getApprovalNo() + ")";
-		    
+			    
 		    String message = "";
 	    	
 	    	switch(notificationMessage) {
@@ -122,11 +120,13 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 
 	    	 WebSocketSession recipientSession = clients.get(sessionId);
 	    	 
+	    	 String formattedMessage = alarms.getAlarmTitle()+" "+notificationMessage;
+	    	 
 	    	 System.out.println(recipientSession);
 		    
 		    if (recipientSession != null && recipientSession.isOpen()) {
 		        System.out.println("특정 사용자에게 알림 전송");
-		        recipientSession.sendMessage(new TextMessage(formattedMessage)); // 제목 및 번호 전송
+		        recipientSession.sendMessage(new TextMessage(formattedMessage));
 		    } else {
 		        System.out.println("세션이 없거나 닫혀 있습니다.");
 		    }

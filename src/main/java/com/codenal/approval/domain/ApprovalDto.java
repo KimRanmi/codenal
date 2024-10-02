@@ -47,6 +47,7 @@ public class ApprovalDto {
 				.approval_status(approval.getApprovalStatus())
 				.cate_code(approval.getApprovalCategory().getCateCode())
 				.emp_id(approval.getEmployee().getEmpId())
+				.annual_leave_usage_no(approval.getAnnualLeaveUsage().getAnnualUsageNo())
 				.build();
 	}
 }

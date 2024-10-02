@@ -57,7 +57,6 @@ public class CalendarService {
 		
 		Long jodNo = dto.getJobNo();
 		Jobs job = jobsRepository.findByJobNo(jodNo);
-		System.out.println(job.getJobName());
 		String[] str = {dto.getEmpName(), dept.getDeptName(),job.getJobName()};
 		// jobs, jobsDto 생성 후 부서명, 직급명 각자 레포지토리에서 가져온 후 String 객체 만들어서 거기다 넣어서 리턴 후 js에서 출력하기
 		
@@ -110,10 +109,7 @@ public class CalendarService {
 	public List<CalendarDto> selectEvent(Long writerId){
 		List<Calendar> eventList = calendarRepository.findAll();
 		List<CalendarDto> eventDtoList = new ArrayList<CalendarDto>();
-		List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository.findAll();
-		System.out.println(annualLeaveList);
 		List<Approval> approvalList = approvalRepository.findByApprovalStatus(3);
-
 		for(Calendar c : eventList) {
 			CalendarDto calendarDto = new CalendarDto().toDto(c);
 			Long writer = c.getCalendarScheduleWriter();
@@ -131,28 +127,30 @@ public class CalendarService {
 		}
 		for(Approval a : approvalList) {
 			ApprovalDto approvalDto = new ApprovalDto().toDto(a);
-//			List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository.findById(approvalDto.getAnnual_usage_no());
+			AnnualLeaveUsage annualLeaveList = annualLeaveUsageRepository.findByAnnualUsageNo(approvalDto.getAnnual_leave_usage_no());
+			AnnualLeaveUsageDto annualLeaveListDto = new AnnualLeaveUsageDto().toDto(annualLeaveList);
 			CalendarDto annualLeaveAdd = new CalendarDto();
 			annualLeaveAdd.setCalendar_schedule_category((long) 4);
-			System.out.println(approvalDto);
-//			Employee emp = employeeRepository.findByEmpId(approvalDto.getEmp_id());
-//			EmployeeDto empDto = EmployeeDto.fromEntity(emp);
-//			String title = "연차";
-//			switch(approvalDto.getAnnualLeaveUsage().getAnnualType()) {
-//				case 1: title="[반차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-//				case 2: title="[연차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-//				case 3: title="[경조휴가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-//				case 4: title="[병가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-//			}
-//			annualLeaveAdd.setCalendar_schedule_no(approvalDto.getAnnual_usage_no());
-//			annualLeaveAdd.setCalendar_schedule_title(title);
-//			annualLeaveAdd.setCalendar_schedule_start_date(LocalDateTime.of(approvalDto.getAnnualLeaveUsage().getAnnualUsageStartDate().getYear(), approvalDto.getAnnualLeaveUsage().getAnnualUsageStartDate().getMonth(), approvalDto.getAnnualLeaveUsage().getAnnualUsageStartDate().getDayOfMonth(), 0, 0));
-//			if(approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate() != null) {
-//				annualLeaveAdd.setCalendar_schedule_end_date(LocalDateTime.of(approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate().getYear(), approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate().getMonth(), approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate().getDayOfMonth(), 0, 0));
-//			}
-//			annualLeaveAdd.setCalendar_schedule_writer(approvalDto.getEmp_id());
-//			eventDtoList.add(annualLeaveAdd);
+			
+			Employee emp = employeeRepository.findByEmpId(approvalDto.getEmp_id());
+			EmployeeDto empDto = EmployeeDto.fromEntity(emp);
+			String title = "연차";
+			switch(annualLeaveListDto.getAnnual_type()) {
+				case 1: title="[반차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+				case 2: title="[연차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+				case 3: title="[경조휴가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+				case 4: title="[병가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+			}
+			annualLeaveAdd.setCalendar_schedule_no(annualLeaveListDto.getAnnual_usage_no());
+			annualLeaveAdd.setCalendar_schedule_title(title);
+			annualLeaveAdd.setCalendar_schedule_start_date(LocalDateTime.of(annualLeaveListDto.getAnnual_usage_start_date().getYear(), annualLeaveListDto.getAnnual_usage_start_date().getMonth(), annualLeaveListDto.getAnnual_usage_start_date().getDayOfMonth(), 0, 0));
+			if(annualLeaveListDto.getAnnual_usage_end_date() != null) {
+				annualLeaveAdd.setCalendar_schedule_end_date(LocalDateTime.of(annualLeaveListDto.getAnnual_usage_end_date().getYear(), annualLeaveListDto.getAnnual_usage_end_date().getMonth(), annualLeaveListDto.getAnnual_usage_end_date().getDayOfMonth(), 0, 0));
+			}
+			annualLeaveAdd.setCalendar_schedule_writer(annualLeaveListDto.getEmp_id());
+			eventDtoList.add(annualLeaveAdd);
 		}
+		System.out.println(eventDtoList);
 		return eventDtoList;
 	}
 	
