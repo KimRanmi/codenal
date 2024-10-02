@@ -13,6 +13,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Integer> {
 //	ChatRoom findAllById(ChatRoom chatRoom);
 	ChatRoom findByRoomNo(int roomNo);
 
+
 //	@Query(value="SELECT r FROM ChatRoom r WHERE r.participants = ?1")
 //	List<ChatRoom> findByEmpId(Employee emp);
 }

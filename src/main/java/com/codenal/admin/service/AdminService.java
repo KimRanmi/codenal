@@ -94,7 +94,7 @@ public class AdminService {
 			// 연차 초기화
 			AnnualLeaveManageDto almDto = new AnnualLeaveManageDto();
 
-			almDto.setEmployee(employee);
+			almDto.setEmp_id(employee.getEmpId());
 
 			AnnualLeaveManage alm = almDto.toEntity();
 			annualLeaveManageRepository.save(alm);

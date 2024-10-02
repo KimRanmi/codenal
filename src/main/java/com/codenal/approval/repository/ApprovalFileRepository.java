@@ -14,6 +14,4 @@ public interface ApprovalFileRepository extends JpaRepository <ApprovalFile, Lon
 	@Query(value="delete from ApprovalFile f where f.approval.approvalNo = ?1")
 	int deleteByApprovalNo(Long no);
 	
-	@Query(value="select f from ApprovalFile f where f.approval.approvalNo = ?1")
-	ApprovalFile findByApprovalNo(Long no);
 }

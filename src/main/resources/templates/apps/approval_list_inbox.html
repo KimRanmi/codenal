@@ -116,7 +116,7 @@
 											</tr>
 											<!-- 반려 상태 -->
 											<tr th:each="approval : ${resultList.content}"
-												th:if="${num == 3 and approval['approval'].approvalStatus == 3}">
+												th:if="${num == 3 and approval['approver'].approvalStatus == 3}">
 												<td
 													th:text="${resultList.totalElements - ((resultList.pageable.pageSize) * (resultList.pageable.pageNumber) + approvalStat.count)+1}"></td>
 												<td

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,7 @@ import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.service.AnnualLeaveManageService;
 import com.codenal.approval.domain.ApprovalBaseFormType;
+import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.domain.Approver;
 import com.codenal.approval.service.ApprovalService;
@@ -64,6 +66,7 @@ public class ApprovalViewController {
 		model.addAttribute("ldt", ldt);
 		model.addAttribute("no", no);
 		model.addAttribute("cateList", cateList);
+		
 		return "apps/approval_create";
 	}
 
@@ -116,8 +119,6 @@ public class ApprovalViewController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
 		Long id = Long.parseLong(username);
-		
-		System.out.println("지금 상태 : "+num);
 		
 		Page<Map<String, Object>> resultList = approvalService.selectApprovalinBoxList(pageable, num, id);
 		
@@ -217,23 +218,51 @@ public class ApprovalViewController {
 
 		List<ApprovalFormDto> cateList = new ArrayList<ApprovalFormDto>();
 		cateList = approvalService.selectApprovalCateList(typeInt);
+		
+		AnnualLeaveManage alm = annualLeaveManageService.getAnnualLeaveManageById(emp.getEmpId());
+
 
 		model.addAttribute("dto", resultList);
 		model.addAttribute("type", typeInt);
 		model.addAttribute("cateList", cateList);
 		model.addAttribute("emp", emp);
+		model.addAttribute("remainDay", alm.getAnnualRemainDay());
 		return "apps/" + returnResult;
 	}
-
 	
 	// 모달 데이터 보내기
-	
 	@GetMapping("/approval/modal")
 	@ResponseBody
 	public List<TreeMenuDto> getTreeMenu(Model model) {
 	    return addressBookService.getTreeMenu();
 	}
 	
-
+	// admin 전자결재 추가
+	@GetMapping("/admin/approvalCreate")
+	public String adminCreate() {
+		return "apps/adminApprovalCreate";
+	}
+	
+	// admin 전자결재 리스트 
+	@GetMapping("/admin/approval_list")
+	public String adminList(Model model,
+			@PageableDefault(page = 0, size = 10, sort = "formCode", direction = Sort.Direction.DESC) Pageable pageable){
+		
+		Page<ApprovalForm> resultList = approvalService.adminApprovalList(pageable);
+		
+		model.addAttribute("resultList",resultList);
+		
+		return "apps/admin_approval_list";
+	}
+	
+	// admin 리스트로 정보 보내기 / json으로 반환
+	@GetMapping("/admin/approvalDetail/{no}")
+	public String approvalDetail(@PathVariable("no") int form_no,Model model){
+		
+		ApprovalForm aft = approvalService.approvalFormDetail(form_no);
+		
+		model.addAttribute("approvalForm",aft);
+		return "apps/admin_approval_detail";
+	}
 	
 }

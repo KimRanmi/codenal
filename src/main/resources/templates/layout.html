@@ -1,4 +1,4 @@
-<html lang="utf-8" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg"
+ <html lang="utf-8" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg"
 	data-sidebar-image="none" data-preloader="disable" xmlns="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
@@ -30,6 +30,10 @@
 		<div th:replace="partials/app-chat-userprofile-canvas :: offcanvas"></div>	
 	</div>
 	
+	<!-- TOAST UI 알림 컨테이너 -->
+ <div id="toast-container" aria-live="polite" aria-atomic="true" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+	
+	
 	<th:block layout:fragment="modal" />
 
 	<div th:replace="partials/customizer :: customizer"></div>
@@ -39,6 +43,79 @@
 	<th:block layout:fragment="pagejs" />
 	<!-- App js -->
 	<script th:src="@{/assets/js/app.js}"></script>
+	
+	
+	    <!-- WebSocket 연결 스크립트 -->
+    <script>
+        // WebSocket 연결 설정
+   const socketUrl = 'ws://localhost:8083/allnotification';
+
+   // 페이지에서 WebSocket 사용 여부를 확인하기 위한 전역 상태
+   if (!window.isChatPage) {
+    if (!window.socket || window.socket.readyState === WebSocket.CLOSED) {
+        window.socket = new WebSocket(socketUrl);
+
+        window.socket.onopen = function(event) {
+            console.log("레이아웃 알림 WebSocket 연결 성공");
+        };
+
+        window.socket.onmessage = function(event) {
+            const message = event.data;
+            const resp = JSON.parse(event.data);
+            showToast(resp.msg_content, resp.sender_name, resp.send_date, resp.room_no);  // 받은 알림 메시지를 처리
+        };
+
+        window.socket.onclose = function(event) {
+            console.log("WebSocket 닫힘.");
+        };
+
+        window.socket.onerror = function(event) {
+            console.error("WebSocket 오류: ", event);
+        };
+    } else if (window.socket.readyState === WebSocket.OPEN) {
+        // 이미 WebSocket이 연결된 경우, 메시지를 보낼 수 있음
+        window.socket.send("getNotifications");
+    }
+    } else {
+        console.log("WebSocket 연결 대기중");
+    }
+
+        
+    </script>
+
+	<script>
+	     function showToast(msgContent, senderName, sendDate, roomNo) {
+	     const truncatedMsgContent = msgContent.length > 15 ? msgContent.substring(0, 15) + '...' : msgContent;
+         const toastHTML = `
+             <div class="toast fade" role="alert" aria-live="assertive" data-bs-autohide="true" aria-atomic="true" style="background-color: lightpink;">
+                 <div class="toast-header" >
+                     <img src="assets/images/logo-sm.png" class="rounded me-2" alt="..." height="20">
+                     <span class="fw-semibold me-auto">채팅 알림</span>
+                     <small>방금</small>&nbsp;
+                     <small>${new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                 </div>
+                 <div class="toast-body">
+                    ${senderName}: ${truncatedMsgContent}
+	                 <div style="text-align: right;">
+					    <a href="/chatList/${roomNo}"><button type="button" class="btn btn-primary btn-sm waves-effect waves-light"><i class="ri-mail-send-line"></i>&nbsp;이동</button></button></a>
+	    			</div>
+                 </div>
+             </div>
+         `;
+
+         const toastContainer = document.getElementById('toast-container');
+         toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+         const toastElement = toastContainer.lastElementChild;
+         const bsToast = new bootstrap.Toast(toastElement);
+         bsToast.show();
+
+         toastElement.addEventListener('hidden.bs.toast', () => {
+             toastElement.remove();
+         });
+     }
+     </script>
 </body>
 
 </html>
