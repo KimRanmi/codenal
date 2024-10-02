@@ -12,6 +12,15 @@
 <!-- glightbox css -->
 <link rel="stylesheet"
 	href="/assets/libs/glightbox/css/glightbox.min.css">
+ <style>
+.chat-conversation {
+    background: url('/images/chat-bg-pattern.png') no-repeat center center;
+    background-size: cover; /* 이미지가 요소의 크기에 맞게 조정되며 비율이 유지됨 */
+    width: 100%;  /* 부모 요소의 크기에 맞추기 */
+    height: 100vh; /* 뷰포트 전체 높이에 맞추기 */
+    position: relative;
+}
+</style>
 
 </head>
 
@@ -152,10 +161,30 @@
 			<!-- end chat leftsidebar -->
 			<!-- Start User chat -->
 			<div th:if="${chat==null}">
-				<p>채팅방을 선택하세요</p>
-				<!-- 바탕화면 이미지 넣는 자리!!!! -->
+				<div class="user-chat overflow-hidden">
+					<div class="chat-content d-lg-flex">
+						<div class="w-100 overflow-hidden position-relative">
+							<div class="position-relative">
+								<div class="position-relative" id="users-chat">
+									<div class="p-3 user-chat-topbar">
+										<div class="row align-items-center">
+											<p>채팅방을 선택하세요</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- 바탕화면 이미지 넣는 자리!!!! -->
+						</div>
+					</div>
+				</div>
+				<div class="chat-conversation p-3 p-lg-4" id="chat-conversation">
+					<div id="users-conversation">
+										
+					</div>
+				</div>
 			</div>
-			<div class="user-chat w-100 overflow-hidden" th:if="${chat!=null}">
+			
+			<div class="user-chat overflow-hidden" th:if="${chat!=null}">
 
 				<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
 				<div class="chat-content d-lg-flex">
@@ -563,8 +592,12 @@
 
 		<!-- chat init js -->
 <!-- 		<script src="/assets/js/pages/chat.init.js"></script> -->
+
 		
 		<script src="/assets/js/pages/project-overview.init.js"></script>
+		
+		<!-- 캔버스? -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 	
  <script>
  //채팅 페이지에서는 전역 상태 설정
@@ -811,14 +844,11 @@
 	        msg_type: '2'
 	    };
 	};
-
-
 </script>
 
 	</th:block>
 	
-	<!-- 캔버스? -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	
 
 </body>
 
