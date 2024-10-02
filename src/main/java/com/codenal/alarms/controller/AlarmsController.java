@@ -70,7 +70,7 @@ public class AlarmsController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
     
-    @GetMapping("/alarms")
+    @GetMapping("/")
     public String getAlarmsPage(Model model, Authentication authentication) {
         // 현재 로그인한 사용자 정보 가져오기
         Employee employee = (Employee) authentication.getPrincipal();
@@ -79,8 +79,10 @@ public class AlarmsController {
         // 알림 데이터 조회
         List<AlarmsDto> alarmsList = alarmsService.getAlarmsByEmpId(empId);
         model.addAttribute("alarms", alarmsList);
+        
+        System.out.println("알림리스트 : "+alarmsList);
 
         // 뷰 이름 반환 (HTML 템플릿 파일명)
-        return "alarms"; // alarms.html
+        return "partials/topbar"; // alarms.html
     }
 }

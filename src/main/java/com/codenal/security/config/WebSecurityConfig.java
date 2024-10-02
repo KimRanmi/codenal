@@ -61,6 +61,7 @@ public class WebSecurityConfig {
 	            .requestMatchers("/mypage/**", "/").authenticated()
 	            .requestMatchers("/documents/**").authenticated() 
 	            .requestMatchers("/api/attendance/**").permitAll()
+	            .requestMatchers("/topbar/**").permitAll()
 	            .requestMatchers("/chatList/**", "/chatting").permitAll()
 	            .anyRequest().authenticated()
 	    )

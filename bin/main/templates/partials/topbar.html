@@ -191,7 +191,7 @@
 						<div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
 							<!-- 알림 아이콘 시작 -->
 							<button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
-								<i class='bx bx-bell fs-22'></i> <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
+								<i class='bx bx-bell fs-22' id="alarmIcon"></i> <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
 							</button>
 							<!-- 알림 아이콘 끝 -->
 
@@ -224,7 +224,7 @@
 
 								<div class="tab-content position-relative" id="notificationItemsTabContent">
 									<!-------------- 전체 알림 시작------------- -->
-									<div th:each="alarm : ${alarms}" class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
+									<div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
 										<div data-simplebar style="max-height: 300px;" class="pe-2">
 											<!--  메세지 div -->
 											<div class="text-reset notification-item d-block dropdown-item position-relative">
@@ -236,20 +236,20 @@
 													<div class="flex-1">
 														<a class="stretched-link">
 															<h6 class="mt-0 mb-2 lh-base">
-															 	오늘 <b th:text="${alarm.alarmTime}"></b>에 
-															 	<b th:text="${alarm.roomName}">회의실 A </b>
-															 	<b th:text="${alarm.roomLocation}">3층 301호</b>에 예약이 있습니다.
+															 	오늘 <b></b>에 
+															 	<b>회의실 A </b>
+															 	<b>3층 301호</b>에 예약이 있습니다.
 															</h6>
 														</a>
 														<p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
 														<i class="mdi mdi-clock-outline"></i>
-															<span  th:text="${#temporals.format(alarm.alarmCreateTime, 'yyyy-MM-dd HH:mm')}"></span>
+															<span></span>
 														</p>
 													</div>
 													<div class="px-2 fs-15">
 														<div class="form-check notification-check">
-															<input  class="form-check-input" type="checkbox" th:id="'alarm-check-' + ${alarm.alarmNo}" th:data-alarm-no="${alarm.alarmNo}"> 
-															<label class="form-check-label" th:for="'alarm-check-' + ${alarm.alarmNo}"></label>
+															<input  class="form-check-input" type="checkbox" > 
+															<label class="form-check-label"></label>
 														</div>
 													</div>
 												</div>
@@ -436,9 +436,9 @@
 										</div>
 									</div>
 									<!--------------일정 알림 끝------------- -->
-
+									
 									<!--------------결재 알림 시작------------- -->
-									<div class="tab-pane fade p-4" id="approval-tab" role="tabpanel" aria-labelledby="alerts-tab"></div>
+									<!-- <div class="tab-pane fade p-4" id="approval-tab" role="tabpanel" aria-labelledby="alerts-tab"></div>
 
 									<div class="notification-actions" id="notification-actions">
 										<div class="d-flex text-muted justify-content-center">
@@ -446,6 +446,33 @@
 											<div id="select-content" class="text-body fw-semibold px-1">0</div>
 											Result
 											<button type="button" class="btn btn-link link-danger p-0 ms-3" data-bs-toggle="modal" data-bs-target="#removeNotificationModal">Remove</button>
+										</div>
+									</div> -->
+									<!--------------결재 알림 끝 ------------- -->
+									
+									<!--------------결재 알림 시작------------- -->
+									<div class="fade p-4" id="approval-tab" role="tabpanel"
+										aria-labelledby="alerts-tab">
+										<div data-simplebar style="max-height: 300px;" class="pe-2">
+											<div
+												class="text-reset notification-item d-block dropdown-item">
+												<div class="d-flex" th:each="alarm : ${alarms}"
+													th:if="${alarm.alarmType == 'approval'}">
+													<img src="/assets/images/users/avatar-3.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+													<a href="#!" class="stretched-link"
+														th:text="${alarm.alarmContext}"></a>
+
+
+													<div class="px-2 fs-15">
+														<div class="form-check notification-check">
+															<input class="form-check-input" type="checkbox" value=""
+																id="messages-notification-check01"> <label
+																class="form-check-label"
+																for="messages-notification-check01"></label>
+														</div>
+													</div>
+												</div>
+											</div>
 										</div>
 									</div>
 									<!--------------결재 알림 끝 ------------- -->
@@ -503,8 +530,9 @@
 			<!-- /.modal-dialog -->
 		</div>
 		<!-- /.modal -->
-	</div>
-
+	
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+		
 	<script>
         document.addEventListener("DOMContentLoaded", function() {
             const checkboxes = document.querySelectorAll('.notification-check .form-check-input');
@@ -534,6 +562,6 @@
             });
         });
     </script>
+</div>
 </body>
-
 </html>
