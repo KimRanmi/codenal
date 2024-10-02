@@ -17,6 +17,9 @@ import com.codenal.admin.repository.JobsRepository;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.domain.AnnualLeaveUsageDto;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
+import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.ApprovalDto;
+import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.calendar.domain.Calendar;
 import com.codenal.calendar.domain.CalendarDto;
 import com.codenal.calendar.repository.CalendarRepository;
@@ -32,14 +35,16 @@ public class CalendarService {
 	private final EmployeeRepository employeeRepository;
 	private final DepartmentsRepository departmentsRepository;
 	private final JobsRepository jobsRepository;
+	private final ApprovalRepository approvalRepository;
 	private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
 	
 	@Autowired
-	public CalendarService(CalendarRepository calendarRepository, EmployeeRepository employeeRepository, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository, AnnualLeaveUsageRepository annualLeaveUsageRepository) {
+	public CalendarService(CalendarRepository calendarRepository, EmployeeRepository employeeRepository, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository, ApprovalRepository approvalRepository, AnnualLeaveUsageRepository annualLeaveUsageRepository) {
 		this.calendarRepository = calendarRepository;
 		this.employeeRepository = employeeRepository;
 		this.departmentsRepository = departmentsRepository;
 		this.jobsRepository = jobsRepository;
+		this.approvalRepository = approvalRepository;
 		this.annualLeaveUsageRepository = annualLeaveUsageRepository;
 	}
 	
@@ -107,6 +112,8 @@ public class CalendarService {
 		List<CalendarDto> eventDtoList = new ArrayList<CalendarDto>();
 		List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository.findAll();
 		System.out.println(annualLeaveList);
+		List<Approval> approvalList = approvalRepository.findByApprovalStatus(3);
+
 		for(Calendar c : eventList) {
 			CalendarDto calendarDto = new CalendarDto().toDto(c);
 			Long writer = c.getCalendarScheduleWriter();
@@ -122,27 +129,29 @@ public class CalendarService {
 				
 			}
 		}
-		for(AnnualLeaveUsage a : annualLeaveList) {
-			AnnualLeaveUsageDto annualLeaveDto = new AnnualLeaveUsageDto().toDto(a);
+		for(Approval a : approvalList) {
+			ApprovalDto approvalDto = new ApprovalDto().toDto(a);
+//			List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository.findById(approvalDto.getAnnual_usage_no());
 			CalendarDto annualLeaveAdd = new CalendarDto();
 			annualLeaveAdd.setCalendar_schedule_category((long) 4);
-			Employee emp = employeeRepository.findByEmpId(annualLeaveDto.getEmp_id());
-			EmployeeDto empDto = EmployeeDto.fromEntity(emp);
-			String title = "연차";
-			switch(annualLeaveDto.getAnnual_type()) {
-				case 1: title="[반차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-				case 2: title="[연차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-				case 3: title="[경조휴가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-				case 4: title="[병가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
-			}
-			annualLeaveAdd.setCalendar_schedule_no(annualLeaveDto.getAnnual_usage_no());
-			annualLeaveAdd.setCalendar_schedule_title(title);
-			annualLeaveAdd.setCalendar_schedule_start_date(LocalDateTime.of(annualLeaveDto.getAnnual_usage_start_date().getYear(), annualLeaveDto.getAnnual_usage_start_date().getMonth(), annualLeaveDto.getAnnual_usage_start_date().getDayOfMonth(), 0, 0));
-			if(annualLeaveDto.getAnnual_usage_end_date() != null) {
-				annualLeaveAdd.setCalendar_schedule_end_date(LocalDateTime.of(annualLeaveDto.getAnnual_usage_end_date().getYear(), annualLeaveDto.getAnnual_usage_end_date().getMonth(), annualLeaveDto.getAnnual_usage_end_date().getDayOfMonth(), 0, 0));
-			}
-			annualLeaveAdd.setCalendar_schedule_writer(annualLeaveDto.getEmp_id());
-			eventDtoList.add(annualLeaveAdd);
+			System.out.println(approvalDto);
+//			Employee emp = employeeRepository.findByEmpId(approvalDto.getEmp_id());
+//			EmployeeDto empDto = EmployeeDto.fromEntity(emp);
+//			String title = "연차";
+//			switch(approvalDto.getAnnualLeaveUsage().getAnnualType()) {
+//				case 1: title="[반차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+//				case 2: title="[연차] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+//				case 3: title="[경조휴가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+//				case 4: title="[병가] "+empDto.getEmpName()+" "+empDto.getJobName(); break;
+//			}
+//			annualLeaveAdd.setCalendar_schedule_no(approvalDto.getAnnual_usage_no());
+//			annualLeaveAdd.setCalendar_schedule_title(title);
+//			annualLeaveAdd.setCalendar_schedule_start_date(LocalDateTime.of(approvalDto.getAnnualLeaveUsage().getAnnualUsageStartDate().getYear(), approvalDto.getAnnualLeaveUsage().getAnnualUsageStartDate().getMonth(), approvalDto.getAnnualLeaveUsage().getAnnualUsageStartDate().getDayOfMonth(), 0, 0));
+//			if(approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate() != null) {
+//				annualLeaveAdd.setCalendar_schedule_end_date(LocalDateTime.of(approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate().getYear(), approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate().getMonth(), approvalDto.getAnnualLeaveUsage().getAnnualUsageEndDate().getDayOfMonth(), 0, 0));
+//			}
+//			annualLeaveAdd.setCalendar_schedule_writer(approvalDto.getEmp_id());
+//			eventDtoList.add(annualLeaveAdd);
 		}
 		return eventDtoList;
 	}

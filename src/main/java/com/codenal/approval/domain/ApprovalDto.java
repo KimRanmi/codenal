@@ -22,6 +22,7 @@ public class ApprovalDto {
 	private Long emp_id;
 	private int cate_code;
 	private LocalDateTime approval_reg_date;
+
 	private String approval_title;
 	private String approval_content;
 	private int approval_status;
