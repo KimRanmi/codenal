@@ -51,7 +51,7 @@ public class WorkHistoryViewController {
         Long empId = getCurrentUserId();
         Page<WorkHistoryDto> workHistories;
 
-        // 날짜 범위가 지정된 경우와 그렇지 않은 경우 처리
+        // 날짜 범위가 지정된 경우와 그렇지 않은 경우 
         if (startDate != null && endDate != null) {
             workHistories = workHistoryService.getHistoriesByRange(empId, startDate, endDate, pageable);
         } else {
