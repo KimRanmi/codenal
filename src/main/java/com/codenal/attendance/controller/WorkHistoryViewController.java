@@ -65,6 +65,6 @@ public class WorkHistoryViewController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
 
-        return "apps/workhistory"; // templates/apps/workHistory.html 파일을 렌더링
+        return "apps/workhistory"; 
     }
 }
