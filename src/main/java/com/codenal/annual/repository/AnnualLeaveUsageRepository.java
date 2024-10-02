@@ -9,5 +9,7 @@ import com.codenal.annual.domain.AnnualLeaveUsage;
 public interface AnnualLeaveUsageRepository extends JpaRepository <AnnualLeaveUsage ,Long> {
 	
 	AnnualLeaveUsage getAnnualLeaveUsageByApproval_ApprovalNo(Long approvalNo);
+
+	AnnualLeaveUsage findByAnnualUsageNo(Long annual_leave_usage_no);
 	
 }

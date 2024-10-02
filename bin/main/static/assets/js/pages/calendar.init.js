@@ -397,7 +397,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     return x.id == selectedEvent.id
                 });
                 let eventWriter = defaultEvents[indexOfSelectedEvent].writer;
-                console.log(eventWriter+'확인');
+                console.log(eventWriter+'확인'+writer);
+                
+                if(eventWriter != writer){
+					document.getElementById("edit-event-btn").style.display = "none";
+					document.getElementById("btn-delete-event").style.display = "none";
+					
+				} else if(eventWriter == writer){
+					document.getElementById("edit-event-btn").style.display = "";
+					document.getElementById("btn-delete-event").style.display = "";
+				}
                 
                 fetch('/eventWriter'+eventWriter, {
 				method: 'POST',
