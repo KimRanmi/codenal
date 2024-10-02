@@ -12,31 +12,45 @@ import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalCategory;
 
 public interface ApprovalRepository extends JpaRepository<Approval, Long> {
-		
-		// 상신리스트
-		@Query(value="SELECT a,f FROM Approval a "
-				 + "JOIN a.employee e "
-		         + "JOIN a.approvalCategory c "
-		         + "JOIN c.approvalForm f "
-		         + "where a.approvalStatus = ?1 and e.empId = ?2",
-		         countQuery = "SELECT count(DISTINCT a) FROM Approval a "
-		         +"JOIN a.employee e "
-		         +"JOIN a.approvalCategory c "
-		         +"JOIN c.approvalForm f "
-		         +"WHERE a.approvalStatus = ?1 and e.empId = ?2 ")
-		Page<Object[]> findList(int num,Long id,Pageable pageable);
+	
+	// 카운트
+	int countByEmployee_EmpId(Long empId);
+	
+	// 상신리스트
+			@Query(value="SELECT a,f, v FROM Approval a "
+					 + "JOIN a.employee e "
+			         + "JOIN a.approvalCategory c "
+			         + "JOIN c.approvalForm f "
+			         + "LEFT JOIN a.approver v "
+			         + "where a.approvalStatus = ?1 and e.empId = ?2 "
+			         + "AND v.approvalDate = ( "
+			         + "      SELECT MAX(v2.approvalDate) "
+			         + "      FROM Approver v2 "
+			         + "      WHERE v2.approval.approvalNo = v.approval.approvalNo "
+			         + "  )"
+			         + "GROUP BY v.approval.approvalNo "
+			         + "ORDER BY v.approvalDate desc",
+			         countQuery = "SELECT count(DISTINCT a) FROM Approval a "
+			         +"JOIN a.employee e "
+			         +"JOIN a.approvalCategory c "
+			         +"JOIN c.approvalForm f "
+			         + "LEFT JOIN a.approver v "
+			         +"WHERE a.approvalStatus = ?1 and e.empId = ?2 "
+			         + "GROUP BY v.approval.approvalNo "
+			         + "ORDER BY v.approvalDate desc")
+			Page<Object[]> findList(int num,Long id,Pageable pageable);
 		
 		
 		// 수신리스트
 		@Query(value = "SELECT a, f, v FROM Approval a "
 				 + "JOIN a.approver v "
-	             + "JOIN v.employee e "
+	             + "JOIN a.employee e "
 	             + "JOIN a.approvalCategory c "
 	             + "JOIN c.approvalForm f "
 	             + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2 AND a.approvalStatus != 4",
 	       countQuery = "SELECT count(distinct a) FROM Approval a "
 	    		   	  + "JOIN a.approver v "
-	                  + "JOIN v.employee e "
+	                  + "JOIN a.employee e "
 	                  + "JOIN a.approvalCategory c "
 	                  + "JOIN c.approvalForm f "
 	                  + "WHERE v.approvalStatus = ?1 AND v.employee.empId = ?2 AND a.approvalStatus != 4")
