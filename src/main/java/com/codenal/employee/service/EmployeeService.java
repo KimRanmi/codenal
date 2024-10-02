@@ -53,5 +53,11 @@ public class EmployeeService {
     	return dtoList;
     }
    
-
+    public EmployeeDto getEmployeeDtoById(Long empId) {
+        Employee employee = employeeRepository.findByEmpId(empId);
+        if (employee != null) {
+            return EmployeeDto.fromEntity(employee);
+        }
+        return null;
+    }
 }

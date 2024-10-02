@@ -1,8 +1,10 @@
 package com.codenal.attendance.service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,31 +75,49 @@ public class AttendanceService {
         attendanceRepository.save(attendance);
     }
 	
-    // 퇴근하기 메서드
-    @Transactional
-    public void checkOut() {
-        Long empId = getCurrentUserId();
-        LocalDate today = LocalDate.now();
+ // 퇴근하기 메서드
+ 	@Transactional
+ 	public void checkOut() {
+ 		Long empId = getCurrentUserId();
+ 		LocalDate today = LocalDate.now();
 
-        // 오늘 출근 기록이 있는지 확인
-        Attendance attendance = attendanceRepository.findByEmpIdAndWorkDate(empId, today)
-                .orElseThrow(() -> new IllegalStateException("출근 기록이 없습니다. 먼저 출근 체크를 해주세요."));
+ 		// 오늘 출근 기록이 있는지 확인
+ 		Attendance attendance = attendanceRepository.findByEmpIdAndWorkDate(empId, today)
+ 				.orElseThrow(() -> new IllegalStateException("출근 기록이 없습니다. 먼저 출근 체크를 해주세요."));
 
-        // 이미 퇴근한 경우 예외 처리
-        if (attendance.getAttendEndTime() != null) {
-            throw new IllegalStateException("이미 퇴근 처리가 완료되었습니다.");
-        }
+ 		// 이미 퇴근한 경우 예외 처리
+ 		if (attendance.getAttendEndTime() != null) {
+ 			throw new IllegalStateException("이미 퇴근 처리가 완료되었습니다.");
+ 		}
 
-        LocalTime now = LocalTime.now();
+ 		LocalTime now = LocalTime.now();
+ 		attendance.setAttendEndTime(now);
 
-        attendance.setAttendEndTime(now);
+ 		// 근무 시간 계산 (BigDecimal로 계산)
+ 		BigDecimal workingHours = calculateWorkingHoursAsBigDecimal(attendance.getAttendStartTime(), now);
+ 		attendance.setAttendWorkingTime(workingHours);
 
-        // 근무 시간 계산 (시간 단위로 계산)
-        BigDecimal workingHours = calculateWorkingHours(attendance.getAttendStartTime(), now);
-        attendance.setAttendWorkingTime(workingHours);
+ 		attendanceRepository.save(attendance);
+ 	}
+        
+ // 근무시간을 "HH:mm" 형식으로 변환하는 메서드 (출력 시 사용)
+ 	public String formatHoursMinutes(BigDecimal totalHours) {
+ 	    long hours = totalHours.longValue();
+ 	    long minutes = totalHours.remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(60)).longValue();
+ 	    return String.format("%02d:%02d", hours, minutes);
+ 	}
 
-        attendanceRepository.save(attendance);
-    }
+ 	// 근무시간을 BigDecimal로 계산하는 메서드
+ 	private BigDecimal calculateWorkingHoursAsBigDecimal(LocalTime startTime, LocalTime endTime) {
+ 	    if (startTime != null && endTime != null) {
+ 	        Duration duration = Duration.between(startTime, endTime);
+ 	        long seconds = duration.getSeconds(); // 총 초로 계산
+ 	        BigDecimal hours = BigDecimal.valueOf(seconds).divide(BigDecimal.valueOf(3600), 2, BigDecimal.ROUND_HALF_UP);
+ 	        return hours;
+ 	    } else {
+ 	        return BigDecimal.ZERO;
+ 	    }
+ 	}
     
     // 연차 여부 확인 및 상태 결정
     public String determineStatus(Long empId, LocalDate workDate, LocalTime attendStartTime) {
@@ -133,11 +153,20 @@ public class AttendanceService {
         return "미출근";
     }
     
-    // 근무 시간 계산 메서드
-    private BigDecimal calculateWorkingHours(LocalTime startTime, LocalTime endTime) {
-        long seconds = java.time.Duration.between(startTime, endTime).getSeconds();
-        BigDecimal hours = BigDecimal.valueOf(seconds).divide(BigDecimal.valueOf(3600), 2, BigDecimal.ROUND_HALF_UP);
-        return hours;
+ // 근무 시간 계산 메서드
+    private String calculateWorkingHours(LocalTime startTime, LocalTime endTime) {
+        // 출근 시간과 퇴근 시간이 모두 존재할 때만 계산
+        if (startTime != null && endTime != null) {
+            Duration duration = Duration.between(startTime, endTime);
+            long hours = duration.toHours();
+            long minutes = duration.toMinutesPart();  // Java 9 이상에서 사용 가능
+
+            // 결과를 "HH:mm" 형식으로 반환
+            return String.format("%02d:%02d", hours, minutes);
+        } else {
+            // 퇴근 시간이 없는 경우, 근무 시간을 "-"로 표시
+            return "-";
+        }
     }
     
     public Page<AttendanceDto> getAllAttendances(Long empId, Pageable pageable) {
@@ -162,20 +191,41 @@ public class AttendanceService {
         return attendances.map(AttendanceDto::fromEntity);
     }
     
-    // 정상 출근 횟수 조회
-    public long getNormalAttendanceCount(Long empId) {
-        return attendanceRepository.countByEmpIdAndAttendStatus(empId, "정상출근");
+    // 현재 월의 시작일과 종료일을 계산하는 메서드
+    private LocalDate getStartOfCurrentMonth() {
+        YearMonth currentMonth = YearMonth.now();
+        return currentMonth.atDay(1);
     }
+
+    private LocalDate getEndOfCurrentMonth() {
+        YearMonth currentMonth = YearMonth.now();
+        return currentMonth.atEndOfMonth();
+    }
+
+
+    
+    
+    // 정상 출근 횟수 조회
+public long getNormalAttendanceCount(Long empId) {
+    LocalDate startDate = getStartOfCurrentMonth();
+    LocalDate endDate = getEndOfCurrentMonth();
+    return attendanceRepository.countByEmpIdAndAttendStatusAndWorkDateBetween(empId, "정상출근", startDate, endDate);
+}
 
     // 지각 횟수 조회
-    public long getLateAttendanceCount(Long empId) {
-        return attendanceRepository.countByEmpIdAndAttendStatus(empId, "지각");
-    }
+public long getLateAttendanceCount(Long empId) {
+    LocalDate startDate = getStartOfCurrentMonth();
+    LocalDate endDate = getEndOfCurrentMonth();
+    return attendanceRepository.countByEmpIdAndAttendStatusAndWorkDateBetween(empId, "지각", startDate, endDate);
+}
+
 
     // 연차 횟수 조회
-    public long getAnnualLeaveCount(Long empId) {
-        return attendanceRepository.countByEmpIdAndAttendStatus(empId, "연차");
-    }
+public long getAnnualLeaveCount(Long empId) {
+    LocalDate startDate = getStartOfCurrentMonth();
+    LocalDate endDate = getEndOfCurrentMonth();
+    return attendanceRepository.countByEmpIdAndAttendStatusAndWorkDateBetween(empId, "연차", startDate, endDate);
+}
 //    결근한 횟수 가져오기 (출근 기록이 없거나 결근으로 표시된 경우)
 //    public Long getAbsentCount(Long empId) {
 //        return attendanceRepository.countByEmpIdAndAttendStatus(empId, Attendance.ABSENT);
