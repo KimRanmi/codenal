@@ -51,7 +51,8 @@
 										<h4 class="card-title mb-3"><span id="month"></span>월 근태 현황</h4>
 									</div>
 									
-									<div class="row g-0 text-center">
+									<div class="row g-0 
+">
 										<div class="col-6 col-sm-4">
 											<div class="p-3 border border-dashed border-start-0">
 												<p class="text-muted mb-0 mb-1">출근</p>
@@ -89,130 +90,110 @@
 					<div class="col-xl-8">
 						<div class="card card-height-100">
 							<div class="card-header align-items-center d-flex">
-								<h4 class="card-title mb-0 flex-grow-1">결재 현황</h4>
-								
+								<h4 class="card-title mb-0 flex-grow-1">전체 공지</h4>
 							</div><!-- end card header -->
 
 							<div class="card-body p-0">
 
 								<div class="align-items-center p-3 justify-content-between d-flex">
 									<div class="flex-shrink-0">
-										<div class="text-muted">
-											미결 <span class="fw-semibold">3</span>건 
-											<span style="color: #5178DD;">결제완료 <span class="fw-semibold">8</span>건</span>
-											<span class="text-danger">반려 <span class="fw-semibold">54</span>건</span>
-										</div>
+										<div class="text-muted">전체 <span class="fw-semibold" th:text="${count}">4</span>개의 게시물 중 <span
+												class="fw-semibold">10</span>개</div>
 									</div>
-									<button type="button" class="btn btn-sm waves-effect" style="background-color: #5178DD; color: white;"><i
-											class="ri-add-line align-middle me-1"></i> 결재 작성하기</button>
+									<a href="/announce/create">
+										<button type="button" class="btn btn-sm btn-success"><i
+												class="ri-add-line align-middle me-1"></i> 게시글 작성하기</button>
+									</a>
 								</div><!-- end card header -->
 
-								<div data-simplebar style="max-height: 257px;">
+								<div data-simplebar style="max-height: 258px;">
 									<ul class="list-group list-group-flush border-dashed px-3">
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="form-check ps-0 flex-sharink-0">
-													<span class="badge rounded-pill badge-soft-primary">미결</span>
+										<th:block th:if="${#lists.isEmpty(announce)}">
+											<li class="list-group-item ps-0">
+												<div class="d-flex align-items-start">
+													게시글이 없습니다.
 												</div>
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_one">Review and
-														make
-														sure nothing slips through cracks</label>
+											</li>
+										</th:block>
+										<th:block th:if="${!#lists.isEmpty(announce)}" th:each="announce : ${announce}">
+											<li class="list-group-item ps-0">
+												<div class="d-flex align-items-start">
+													<div class="flex-grow-1">
+														<a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}">
+															<label class="form-check-label mb-0 ps-2" for="task_one" th:text="${announce.announce_title}">
+																[인사 발령] 막시무스 팀장 오아이오 지사 영업팀 팀장 발령
+															</label>
+														</a>
+													</div>
+													<div class="flex-shrink-0 ms-2">
+														<p class="text-muted fs-12 mb-0" th:text="${announce.reg_date}">15 Sep, 2021</p>
+													</div>
 												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">15 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="form-check ps-0 flex-sharink-0">
-													<span class="badge rounded-pill badge-soft-danger">반려</span>
-												</div>
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_two">Send
-														meeting
-														invites for sales upcampaign</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">20 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="form-check flex-sharink-0 ps-0">
-													<span class="badge rounded-pill badge-soft-primary">미결</span>
-												</div>
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_three">Weekly
-														closed
-														sales won checking with sales team</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">24 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="form-check ps-0 flex-sharink-0">
-													<span class="badge rounded-pill badge-soft-primary">미결</span>
-												</div>
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_four">Add notes
-														that
-														can be viewed from the individual view</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">27 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="form-check ps-0 flex-sharink-0">
-													<span class="badge rounded-pill badge-soft-danger">반려</span>
-												</div>
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_five">Move stuff
-														to
-														another page</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">27 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="form-check ps-0 flex-sharink-0">
-													<span class="badge rounded-pill badge-soft-primary">미결</span>
-												</div>
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_six">Styling
-														wireframe design and documentation for velzon admin</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">27 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
+											</li>
+										</th:block>
+										
 									</ul><!-- end ul -->
 								</div>
 								<div class="p-3">
-									<a href="javascript:void(0);" class="text-muted text-decoration-underline">Show
-										more...</a>
+									<a href="/announce" class="text-muted text-decoration-underline">전체 게시글 보기</a>
 								</div>
 							</div><!-- end card body -->
-						</div><!-- end card -->
+						</div>
 					</div><!-- end col -->
 					
 				</div><!-- end row -->
+				
+				<!-- 전자 결제 -->
 
 				<div class="row">
 					<div class="col-xl-4">
-						<div class="card">
+						<div class="card" style="height: 277px">
+							<div class="card-header align-items-center d-flex">
+								<h4 class="card-title mb-0 flex-grow-1">결재 현황</h4>
+								
+							</div><!-- end card header -->
+							
+								<div class="card-body">
+								<div class="mt-2">
+									<span class="text-muted" th:text="${#calendars.format(#calendars.createNow(), 'yyyy년 MM월 dd일 hh:mm 기준')}" style="padding-left: 15px"></span>
+								</div>
+									<div class="row g-0 text-center p-3">
+										<div class="col-6 col-sm-4">
+											<div class="p-3 border border-end-0 rounded-start">
+												<p class="text-muted mb-0 mb-1">미결</p>
+												<h5 class="mb-0 text-muted">
+													<span class="">0</span>건
+												</h5>
+											</div>
+										</div>
+										<!--end col-->
+										<div class="col-6 col-sm-4">
+											<div class="p-3 border" >
+												<p class="mb-0 mb-1" style="color: #5178DD;">결제완료</p>
+												<h5 class="mb-0" style="color: #5178DD;">
+													<span class="">0</span>건
+												</h5>
+											</div>
+										</div>
+										<!--end col-->
+										<div class="col-6 col-sm-4">
+											<div class="p-3 border border-start-0 rounded-end ">
+												<p class="mb-0 mb-1 text-danger">반려</p>
+												<h5 class="mb-0 text-danger">
+													<span class="">0</span>건
+												</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+							<div class="text-end p-3">
+								<a th:href="@{/approval/leave_create/{no}(no=${1})}">
+									<button type="button" class="btn btn-sm waves-effect" style="background-color: #5178DD; color: white;"><i
+											class="ri-add-line align-middle me-1"></i> 결재 작성하기</button>
+								</a>
+							</div>
+						</div>
+						<!-- <div class="card">
 							<div class="card-header">
 								<h4 class="card-title mb-0" style="font-weight: bold;">알림</h4>
 							</div>
@@ -334,83 +315,67 @@
 									</div>
 								</div>
 							</div>
-							<!-- end card body -->
-						</div>
+							end card body
+						</div> -->
 						<!-- end card -->
 					</div>
 					<div class="col-xxl-8">
 						<div class="card card-height-100">
 							<div class="card-header align-items-center d-flex">
-								<h4 class="card-title mb-0 flex-grow-1">전체 공지</h4>
+								<h4 class="card-title mb-0 flex-grow-1">회의실 예약 내역</h4>
 							</div><!-- end card header -->
 
 							<div class="card-body p-0">
 
 								<div class="align-items-center p-3 justify-content-between d-flex">
 									<div class="flex-shrink-0">
-										<div class="text-muted"><span class="fw-semibold">4</span> of <span
-												class="fw-semibold">10</span> remaining</div>
+										<div class="text-muted">전체 <span class="fw-semibold" th:text="${#lists.size(reserve)}">4</span>개</div>
 									</div>
-									<button type="button" class="btn btn-sm btn-success"><i
-											class="ri-add-line align-middle me-1"></i> 게시글 작성하기</button>
+									<a href="/apps-meeting-room">
+										<button type="button" class="btn btn-sm btn-success"><i
+												class="ri-add-line align-middle me-1"></i> 회의실 예약하기</button>
+									</a>
 								</div><!-- end card header -->
 
-								<div data-simplebar style="max-height: 250px;">
+								<div data-simplebar style="max-height: 114px;">
 									<ul class="list-group list-group-flush border-dashed px-3">
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_one">
-														[인사 발령] 막시무스 팀장 오아이오 지사 영업팀 팀장 발령
-													</label>
+										<th:block th:if="${#lists.isEmpty(reserve)}">
+											<li class="list-group-item ps-0">
+												<div class="d-flex align-items-start">
+													예약한 회의실이 없습니다.
 												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">15 Sep, 2021</p>
+											</li>
+										</th:block>
+										<th:block th:if="${!#lists.isEmpty(reserve)}" th:each="reserve : ${reserve}">
+											<li class="list-group-item ps-0">
+												<div class="d-flex align-items-start">
+													<div class="flex-grow-1">
+														<div class="d-flex align-items-start">
+															<div class="form-check ps-0 flex-sharink-0">
+																<span class="badge rounded-pill badge-soft-primary" th:text="${reserve.meeting_room_name}">미결</span>
+															</div>
+															<div class="flex-grow-1">
+																 
+																<label class="form-check-label mb-0 ps-2" for="task_one" th:text="${'['+reserve.meeting_room_reserve_date+'] '+reserve.meeting_room_start_time+ ' ~ ' +reserve.meeting_room_end_time}">
+																	내용</label>
+															</div>
+														</div>
+													</div>
+													<div class="flex-shrink-0 ms-2">
+														<p class="text-muted fs-12 mb-0" th:text="${reserve.meeting_room_place}">15 Sep, 2021</p>
+													</div>
 												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_two">Send
-														meeting
-														invites for sales upcampaign</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">20 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_six">Styling
-														wireframe design and documentation for velzon admin</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">27 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
-										<li class="list-group-item ps-0">
-											<div class="d-flex align-items-start">
-												<div class="flex-grow-1">
-													<label class="form-check-label mb-0 ps-2" for="task_six">Styling
-														wireframe design and documentation for velzon admin</label>
-												</div>
-												<div class="flex-shrink-0 ms-2">
-													<p class="text-muted fs-12 mb-0">27 Sep, 2021</p>
-												</div>
-											</div>
-										</li>
+											</li>
+										</th:block>
+										
 									</ul><!-- end ul -->
 								</div>
 								<div class="p-3">
-									<a href="javascript:void(0);" class="text-muted text-decoration-underline">Show
-										more...</a>
+									<a href="/apps-meeting-room-reserve-list" class="text-muted text-decoration-underline">전체 예약 내역 보기</a>
 								</div>
 							</div><!-- end card body -->
-						</div><!-- end card -->
+						</div>
+						<!-- end card -->
 					</div><!-- end col -->
 				</div>
 				<!-- end row -->
@@ -423,7 +388,7 @@
 								<h4 class="card-title mb-0">캘린더</h4>
 							</div>
 							<!-- end cardheader -->
-							<div class="card-body pt-0" style="height: 732px">
+							<div class="card-body pt-0" style="height: 670px">
 								<div class="upcoming-scheduled">
 									<input type="text" class="form-control"
 										data-provider="flatpickr" data-date-format="d M, Y"
@@ -431,7 +396,7 @@
 								</div>
 
 								<h6 class="text-uppercase fw-semibold mt-4 mb-3 text-muted">일정:</h6>
-								<div class="ml-0" data-simplebar style="max-height: 350px" >
+								<div class="ml-0" data-simplebar style="max-height: 250px" >
 									<div id="eventList">
 								
 										<!-- <ul class="mini-stats-wid d-flex align-items-center mt-3">

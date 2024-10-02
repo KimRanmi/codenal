@@ -200,7 +200,7 @@ public class ApproverService {
 		// 마지막 결재자인 경우 전자결재 완료 처리
 		if (currentPriority == approverCount) {
 			
-			// 휴가신청서인 경우
+			// 휴가신청서인 경우 ..  이건 내일 다시 물어보기 !
 			AnnualLeaveUsage alu = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
 			if(alu != null) {
 				int result = annualLeaveManageRepository.updateDay(alu.getEmployee().getEmpId(),alu.getTotalDay());

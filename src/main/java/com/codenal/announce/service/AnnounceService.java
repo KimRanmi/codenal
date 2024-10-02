@@ -43,6 +43,26 @@ public class AnnounceService {
 		this.employeeRepository = employeeRepository;
 	}
 	
+	//******************** 메인화면 출력용 *******************
+	// 최신 게시글 4개 뽑기
+	public List<AnnounceDto> nopageableAnnounceList(){
+		List<Announce> announce = announceRepository.findMainAnnounce();
+		List<AnnounceDto> announceDto = new ArrayList<AnnounceDto>();
+		for(Announce a : announce) {
+			AnnounceDto dto = new AnnounceDto().toDto(a);
+			announceDto.add(dto);
+		}
+		return announceDto;
+	}
+	
+	// 전체 게시글 개수 카운트
+	public int announceCount() {
+		int count = announceRepository.findAllCount();
+		return count;
+	}
+	
+	//****************************************************
+	
 	public Page<AnnounceDto> selectAnnounceList(AnnounceDto searchDto, Pageable pageable){
 		Page<Announce> announceList = null;
 		String searchText = searchDto.getSearch_text();

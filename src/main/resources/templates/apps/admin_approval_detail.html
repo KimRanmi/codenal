@@ -20,7 +20,7 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 </head>
 <style>
-  .toastui-editor-contents table {
+.toastui-editor-contents table {
     border-collapse: collapse; /* 테두리 간격 없애기 */
     text-align : center;
     margin : 0 auto;
@@ -38,7 +38,7 @@
     color: lightgrey;
     height:50px;
 }
-    </style>
+</style>
 <body>
 	<div layout:fragment="content">
 		<div th:replace="partials/page-title :: page-title('양식 추가', '전자결재 관리')"></div>
@@ -46,41 +46,27 @@
 			<div class="col-lg-12">
 				<div class="card">
 					<div class="card-body">
-						<form id="adminApprovalForm">
 							<input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
-
-							<div class="d-flex mb-3 mt-3">
-								<div class="form-check form-radio-success mb-3 me-3">
-									<input class="form-check-input" type="radio" name="base_form_code" value="요청서"
-										id="formradioRight7"> <label class="form-check-label"
-										for="formradioRight7"> 요청서 </label>
-								</div>
-								<div class="form-check form-radio-success mb-3">
-									<input class="form-check-input" type="radio" name="base_form_code"  value="품의서"
-										id="formradioRight8"> <label class="form-check-label"
-										for="formradioRight8"> 품의서 </label>
-								</div>
-							</div>
+							<input type="hidden" id="formCode" th:value="${approvalForm.formCode}"/>
+							
 							<div class="mb-3" style="width: 600px;">
 								<label class="form-label" for="project-title-input">양식 제목</label> <input
 									type="text" class="form-control" id="project-title-input"
-									placeholder="제목을 입력하세요" style="width: 500px;"
-									name="title">
+									th:value="${approvalForm.formName}" style="width: 500px;"
+									name="title" readonly>
 							</div>
 							
 							<!-- 토스트 api -->
 							<div class="col-11">
 								<label class="form-label">내용</label>
-								<div id="approval_edit" name="content"></div>
+								<div id="approval_edit" name="content" th:utext="${approvalForm.formContent}"></div>
 
 								<div style="float: right;" class="p-1 mt-3">
-									<button type="submit" class="btn btn-secondary w-sm">추가</button>
+									<button type="submit" class="btn btn-secondary w-sm" id="submitButton">수정</button>
 									<button type="button" class="btn btn-danger w-sm"
 										onclick="history.back()">취소</button>
 								</div>
 							</div>
-
-						</form>
 					</div>
 				</div>
 			</div>
@@ -104,17 +90,21 @@
     		});
 			
 		      function updateEditorContent() {
-			        let formContent = document.getElementById('approval_edit').innerHTML;          
-		            
-		            // 공백을 찾아서 띄어쓰기로 변환
-		             formContent = formContent.replace(/ /g, (match) => '&nbsp;'.repeat(match.length));
-		            
-		          // 줄바꿈을 <br>로 변환
-		             formContent = formContent.replace(/\n/g, '<br>');
-			        
-		             formContent = `<div style="text-align: center;">${formContent}</div>`;
-			        // 토스트 에디터 내용 저장한 값 불러옴
-			        contentEditor.setHTML(formContent);
+		    	  // 에디터에서 현재 HTML 내용 가져오기
+		    	    let currentContent = contentEditor.getHTML();
+
+		    	    // 공백을 찾아서 띄어쓰기로 변환 (필요시)
+		    	    currentContent = currentContent.replace(/ /g, (match) => '&nbsp;'.repeat(match.length));
+		    	    
+		    	    // 줄바꿈을 <br>로 변환 (필요시)
+		    	    currentContent = currentContent.replace(/\n/g, '<br>');
+
+		    	    // 중앙 정렬을 위한 스타일 추가
+		    	    const centeredContent = `<div style="text-align: center;">${currentContent}</div>`;
+		    	    
+		    	    // 중앙 정렬된 내용을 에디터에 설정
+		    	    contentEditor.setHTML(centeredContent);
+		    	
 			    }
 
 			    // 페이지 로드 시 기본 내용 설정
@@ -122,81 +112,41 @@
 			        updateEditorContent();
 			    });
 			    
-			    /* 데이터 저장 */
-			    const form = document.getElementById("adminApprovalForm");
-				form.addEventListener('submit', (e) => {
+			    /* 데이터 수정 */
+			   document.getElementById('submitButton').addEventListener('click', (e) => {
 			    e.preventDefault();
-			    const payload = new FormData(form);
+			    
 			    const csrfToken = document.getElementById('csrf_token').value;
-				const type = document.querySelector('input[type=radio]:checked').value;
 				
+			    const formCode = document.getElementById('formCode').value;
+			    
 			    // 토스트 API 안에 값 저장
 			    const content = contentEditor.getHTML();
-			    payload.append("content", content);
-			
-			    payload.forEach((value, key) => {
-			        console.log(`${key}: ${value}`);
-			    });
+
+				const id = {
+						'formCode' : parseInt(formCode),
+						'content' : content
+				}
 				
-			    // 유효성 검사
-			    let vali_check = true; // 기본값을 true로 설정
-			    let vali_text = "";
-				
-			    if (form.title.value === "") {
-			        vali_text += '제목을 입력하세요.\n';
-			        form.title.focus();
-			        vali_check = false; 
-			    } else if (content === " ") {
-			        vali_text += "내용을 입력하세요.\n";
-			        document.getElementById('approval_edit').focus();
-			        vali_check = false; 
-			    } else if(!form.base_form_code.value){
-			    	vali_text += '양식을 선택해주세요.\n';
-			    	vali_check = false;
-			    }
-			    if (!vali_check) {
-			        Swal.fire({
-			            icon: 'info',
-			            title: '실패',
-			            text: vali_text
-			        });
-			    } else {
-			        fetch('/form_find', {
+				console.log(id);
+			        fetch('/admin/approvalForm_update', {
 			            method: 'POST',
 			            headers: {
-			                'X-CSRF-TOKEN': csrfToken
+			                'Content-Type': 'application/json',
+			                'X-CSRF-TOKEN': csrfToken,
 			            },
-			            body: payload
+			            body: JSON.stringify(id),
 			        })
 			        .then(response => response.json())
 			        .then(data => {
 			            console.log(data.res_msg);
-			            if (data.res_code !== '200') {
+			            if (data.res_code == '200') {
 			                Swal.fire({
-			                    icon: 'info',
-			                    title: "실패",
+			                    icon: 'success',
+			                    title: "성공",
 			                    text: data.res_msg
-			                });
+		                });
 			            }else{
-			            	fetch('/form_create',{
-			            		method:'post',
-			            		headers : {
-			            			 'X-CSRF-TOKEN': csrfToken
-					            },
-					            body: payload
-			            	})
-			            	.then(response => response.json())
-			            	.then(data => {
-			            		if (data.res_code === '200') {
-					                Swal.fire({
-					                    icon: 'success',
-					                    title: "성공",
-					                    text: data.res_msg
-					            	})
-					            	.then(() => {
-					            		location.href = "/admin_approval_list"	
-					            	})
-				            	}else{
 				            		Swal.fire({
 					                    icon: 'error',
 					                    title: "실패",
@@ -204,10 +154,7 @@
 				            		  });
 		                        }
 		                    });
-		                }
-		            });
-		        }
-		    });
+		        });
     	</script>
 	</div>
 </body>
