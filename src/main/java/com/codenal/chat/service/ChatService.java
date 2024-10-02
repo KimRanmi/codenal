@@ -1,8 +1,12 @@
 package com.codenal.chat.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,19 +115,42 @@ public class ChatService {
 		return chatLists;
 	}
 	
-	// 본인의 활성 상태의 참여중인 채팅방 목록 조회
-//	public List<ChatRoomDto> chatListSelect(String username){
-//		Long empId = Long.parseLong(username);
-//		Employee emp = employeeRepository.findByEmpId(empId);
-//		List<ChatRoom> chatLists = chatRoomRepository.findByEmpId(emp);
-//		List<ChatRoomDto> chatListDto = new ArrayList<ChatRoomDto>();
-//		for(ChatRoom chatList :chatLists) {
-//			ChatRoomDto dto = new ChatRoomDto().toDto(chatList);
-//			chatListDto.add(dto);
-//		}
-//		
-//		return chatListDto;
-//	}
+	// 내가 속하면서 나를 제외한 채팅방 참가자 정보 조회
+	public List<ChatParticipants> notMeParticipant(String username){
+		Long empId = Long.parseLong(username);
+		Employee emp = employeeRepository.findByEmpId(empId);
+		List<ChatParticipants> chatLists = chatParticipantsRepository.findByNotMeChatRoom(emp);
+		if (chatLists != null) {
+			List<ChatParticipantsDto> chatListDto = new ArrayList<ChatParticipantsDto>();
+			for(ChatParticipants chatList :chatLists) {
+				ChatParticipantsDto dto = new ChatParticipantsDto().toDto(chatList);
+				dto.setRoom_no(chatList.getChatRoom().getRoomNo());
+				dto.setEmp_id(chatList.getEmployee().getEmpId());
+				chatListDto.add(dto);
+			}
+		} else {
+		    // chatParticipant가 null일 때의 처리 로직
+		    System.out.println("ChatParticipant 객체가 null입니다.");
+		}
+		
+		return chatLists;
+	}
+
+	
+	public Map<Integer, Long> countUnreadMessagesForParticipants(String username) {
+		List<ChatParticipants> participants = participantListSelect(username);
+        Map<Integer, Long> unreadCounts = new HashMap<>();
+
+        for (ChatParticipants participant : participants) {
+            int participantNo = participant.getParticipantNo(); // 내 참가자 No 조회
+            // 각 참가자에 대한 안 읽은 메시지 수 계산
+            Long unreadCount = chatReadRepository.countByChatParticipant_ParticipantNoAndIsReceiverRead(participantNo, 'N');
+            unreadCounts.put(participantNo, unreadCount);
+            System.out.println("ParticipantNo: " + participantNo + ", UnreadCount: " + unreadCount);
+        }
+
+        return unreadCounts;
+    }
 	
 	
 	// chat detail 부분
@@ -135,19 +162,33 @@ public class ChatService {
 		Employee employee = employeeRepository.findByEmpId(empId);
 		// 내 참가자 번호 불러오기
 		ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
-		// 메시지 상태들이 'Y'인 메시지 불러오기  --> 필요없는거 같긴 함
-//		List<ChatMsg> msgNo = chatMsgRepository.findAllById(roomNo);
-		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
 		
+		// 추가 초대한 경우 메시지 불러오는거 수정해야함
+		// 메시지 상태들이 'Y'이면서 내가 채팅방에 참여한 날짜 이후부터의 메시지만 불러오기
+//		List<ChatMsg> msgs = chatMsgRepository.findAllById(roomNo, chatParticipant.getParticipantNo());
+		chatReadRepository.updateByRead(chatParticipant.getParticipantNo());  // --> roomNo 마다 내 참가자 번호가 다르니까 위에서 찾은 참가자 번호로만 업데이트하면 됨
+	    
+		Hibernate.initialize(chatRoom.getMessages());
+
 		return chatRoom;
 	}
 	
+	// 추가 초대한 경우 메시지 불러오는거 수정 함께 해야함
+	@Transactional
+	public List<ChatMsg> selectChatMsgList(int roomNo, Long empId) {
+		ChatRoom chatRoom = chatRoomRepository.findByRoomNo(roomNo);
+		Employee employee = employeeRepository.findByEmpId(empId);
+		// 내 참가자 번호 불러오기
+		ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
+	    // 메시지 상태들이 'Y'이면서 내가 채팅방에 참여한 날짜 이후부터의 메시지만 불러오기
+		List<ChatMsg> msgs = chatMsgRepository.findAllById(roomNo, chatParticipant.getParticipantNo());
+		return msgs;
+	
+	}
 	
 	// 메시지 전송시 생성
 	@Transactional
-	public int createChatMsg(ChatMsgDto dto) {
-		int result = -1; 
-		try {
+	public ChatMsg createChatMsg(ChatMsgDto dto) {
 			ChatRoom room = chatRoomRepository.findByRoomNo(dto.getRoom_no());
 			ChatParticipants senderNo = chatParticipantsRepository.findByParticipants(room,dto.getSender_no());
 			ChatMsg target = ChatMsg.builder()					.chatRoom(room)
@@ -159,22 +200,105 @@ public class ChatService {
 
 			ChatMsg savedMsg = chatMsgRepository.save(target); // 채팅 메시지 정보 저장
 			
-			ChatParticipants participantNo = chatParticipantsRepository.findByParticipants(room,dto.getParticipant_no());
-//			List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoom(room, userNo); // 본인을 제외한 참여자 정보
-//			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
+			List<ChatParticipants> participants = chatParticipantsRepository.findByNotMeChatRoom(room, senderNo.getParticipantNo()); // 본인을 제외한 참여자 정보
+			for(ChatParticipants participant : participants) { // 읽지 않은 상태를 저장
 				ChatRead read = ChatRead.builder()
 						.chatMsg(savedMsg)
-						.chatParticipant(participantNo)
+						.chatParticipant(participant)
 						.isReceiverRead('N')
 						.build();
 				chatReadRepository.save(read);
-				result = 1;
-//			}
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return result;
+			}
+			return savedMsg;
 	}
 
+
+	@Transactional
+	public int removeUserFromRoom(int roomNo, Long empId) {
+	    int result = -1;
+
+	    ChatRoom chatRoom = chatRoomRepository.findByRoomNo(roomNo);
+	    Employee employee = employeeRepository.findByEmpId(empId);
+	    ChatParticipants chatParticipant = chatParticipantsRepository.findByEmpId(chatRoom, employee);
+	    
+	    if (chatParticipantsRepository.updateByParticipateStatus(chatRoom, employee) > 0) {
+	        ChatMsg target = ChatMsg.builder()
+	                .msgContent(employee.getEmpName() + "님이 채팅방에서 퇴장했습니다.")
+	                .chatRoom(chatRoom)
+	                .chatParticipant(chatParticipant)
+	                .msgStatus('Y')
+	                .msgType('1')
+	                .build();
+
+	        chatMsgRepository.save(target);
+
+	        boolean exists = chatParticipantsRepository.countParticipantsWithStatusY(chatRoom) > 0;
+
+	        if (!exists) {
+	            // 1) 읽음 테이블에서 해당 채팅방의 모든 데이터를 삭제 (ChatMsg 경유)
+	            chatReadRepository.deleteByChatRoom(chatRoom);
+
+	            // 2) 해당 채팅방의 메시지를 삭제
+	            chatMsgRepository.deleteByChatRoom(chatRoom);
+
+	            // 3) 해당 채팅방의 모든 참여자를 삭제
+	            chatParticipantsRepository.deleteByChatRoom(chatRoom);
+
+	            // 4) 마지막으로 채팅방 자체를 삭제
+	            chatRoomRepository.deleteById(roomNo);
+	        }
+
+	        result = 1;
+	    }
+
+	    return result;
+	}
+
+
+
+	@Transactional
+	public void updateMessageReadStatus(Long empId) {
+		chatReadRepository.updateByRead(empId);
+		
+	}
+
+
+
+//	public List<ChatMsgDto> latestMessages(List<ChatParticipants> participantList) {
+//	    List<ChatMsgDto> dtos = new ArrayList<>();
+//
+//	    for (ChatParticipants participant : participantList) {
+//	        ChatMsg latestMessage = chatMsgRepository.findTopByChatRoomOrderBySendDateDesc(participant.getChatRoom());
+//
+//	        if (latestMessage == null) {
+//	            continue;
+//	        }
+//
+//	        // 최신 메시지를 DTO로 변환
+//	        ChatMsgDto dto = ChatMsgDto.builder()
+//	            .participant_no(latestMessage.getChatParticipant().getParticipantNo())
+//	            .msg_content(latestMessage.getMsgContent())
+//	            .send_date(latestMessage.getSendDate())
+//	            .build();
+//
+//	        dtos.add(dto);
+//	    }
+//
+//	    return dtos;
+//	}
+
+	
+	public List<ChatParticipantsDto> selectChatRoomParticipants(int chatRoom){
+//		ChatRoom chatRoomFind = chatRoomRepository.findByRoomNo(chatRoom);
+//		List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoomAndParticipateStatus(chatRoomFind, "Y");
+		List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoomRoomNoAndParticipateStatus(chatRoom, 'Y');
+		List<ChatParticipantsDto> chatListDto = new ArrayList<ChatParticipantsDto>();
+		for(ChatParticipants participant : participants) {
+			ChatParticipantsDto dto = new ChatParticipantsDto().toDto(participant);
+			dto.setEmp_id(participant.getEmployee().getEmpId());
+			chatListDto.add(dto);
+		}
+		return chatListDto;
+	}
 }

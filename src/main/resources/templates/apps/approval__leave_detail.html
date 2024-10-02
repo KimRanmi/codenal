@@ -21,56 +21,10 @@
 <script
 	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <style>
-#modal {
-	position: fixed;
-	display: none;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 400px;
-	height: 400px;
-	background-color: white;
-	border: 1px solid #b9b9b9;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-	box-sizing: border-box;
-	overflow: hidden;
-}
-
-.modal-content {
-	display: flex;
-	flex-wrap: wrap;
-	padding: 20px;
-	height: calc(100% - 60px); /* 버튼 영역을 제외한 공간 */
-	box-sizing: border-box;
-	overflow-y: auto;
-}
-
-.modal-item {
-	border: 1px solid #b9b9b9;
-	width: 20px;
-	height: 20px;
-	display: contents;
-	align-items: center;
-	justify-content: center;
-	margin: 5px;
-	cursor: pointer;
-	user-select: none;
-}
-
-.modal-item.selected {
-	color: cornflowerblue;
-}
-
-.modal-footer {
-	display: flex;
-	justify-content: center;
-	padding: 10px;
-	border-top: 1px solid #b9b9b9;
-}
-
-.modal-item.disabled {
-	color: #b9b9b9;
-	cursor: not-allowed;
+.project-thumbnail-img {
+	border: 1px solid #d3d3d3;
+	border-radius: 4px;
+	height: 35px;
 }
 
 select, input[type=date], input[type=text], #totalDay {
@@ -103,99 +57,11 @@ select, input[type=date], input[type=text], #totalDay {
 		<div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
 		<div class="row">
 			<div class="col-lg-12">
-				<div style="background-color: white; width: 1750px; height: 1250px;">
-					<div style="margin-left: 50px; margin-top: -20px;">
-						<br>
-						<div style="display: flex; justify-content: space-between;">
-							<div class="w-50">
-								<div class="mb-3" style="width: 600px;">
-									<input type="hidden" th:value="${emp.empSignImage}"
-										id="sign_img"> <input type="hidden"
-										th:value="${emp.empId}" id="login_id"> <input
-										type="hidden" name="approvalNo" id="approvalNo"
-										th:value="${dto.approval.approvalNo}"> <input
-										type="hidden" id="csrf_token" th:value="${_csrf.token}" /> <label
-										class="form-label" for="project-title-input">제목</label> <input
-										type="text" class="form-control" id="project-title-input"
-										th:value="${dto.approval.approvalTitle}" name="approval_title"
-										readonly style="width: 500px;">
-								</div>
-								<div class="mb-3" style="width: 600px;">
-									<label class="form-label" for="project-author-input">기안자</label>
-									<input type="text" class="form-control"
-										th:value="${dto.employee.empName}" id="project-author-input"
-										readonly style="width: 500px;" name="emp_id">
-								</div>
-								<div class="mb-3" style="width: 600px;">
-									<label class="form-label" for="project-date-input">기안일</label>
-									<input type="text" class="form-control" id="project-date-input"
-										readonly style="width: 500px;" name="approval_reg_date"
-										th:value=${dto.approval.approvalRegDate}>
-								</div>
-								<div class="mb-3" style="width: 600px;">
-									<!-- status가 4가 아닐 때 -->
-									<div th:if="${dto.approval.approvalStatus != 4}">
-										<div th:if="${dto.file == null}">
-											<label class="form-label" for="file-upload">파일첨부</label> <input
-												class="form-control" id="file-upload" type="file"
-												accept="image/png, image/gif, image/jpeg"
-												style="width: 500px;">
-										</div>
-
-										<div th:if="${dto.file != null}">
-											<label class="form-label" for="file-link">첨부파일</label> <a
-												id="file-link" class="form-control"
-												th:text="${dto.file.fileOriName}"
-												th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}"
-												name="file" style="width: 500px;"></a>
-										</div>
-									</div>
-								</div>
-
-								<input type="hidden" id="hiddenRef"
-									th:each="ref : ${dto.referrer}"
-									th:value="${ref.employee.empName}"> <input
-									type="hidden" id="dept" th:each="ref : ${dto.referrer}"
-									th:value="${ref.employee.departments.deptName}"> <input
-									type="hidden" id="jobs" th:each="ref : ${dto.referrer}"
-									th:value="${ref.employee.jobs.jobName}">
-
-
-								<div class="mb-3">
-									<label class="form-label" for="references">수신참조자</label><br>
-									<input id="references" type="text"
-										style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-										class="selectedName3">
-								</div>
-
-								<!-- 회수함에 없는 상태 -->
-								<div class="mb-3" style="width: 600px;"
-									th:if="${dto.approval.approvalStatus!=4 && type==1}">
-									<label class="form-label" for="project-thumbnail-img">양식</label><br>
-									<input type="text" th:value="${dto.approvalForm.formName}" class="form-control"
-										style="width: 200px;" readonly>
-									<div>
-										<label class="form-label" for="project-thumbnail-img"
-											style="margin-top: 20px; margin-bottom: 10px;">날짜</label><br>
-										<input type="date" 
-											th:value="${dto.annualLeaveUsage.annualUsageStartDate}"
-											readonly style="width: 200px;"> - <input type="date"
-											th:value="${dto.annualLeaveUsage.annualUsageEndDate}"
-											th:if="${dto.annualLeaveUsage.annualUsageEndDate != null}"
-											readonly style="width: 200px;"> <input type="text"
-											th:value="${dto.annualLeaveUsage.timePeriod}"
-											th:if="${dto.annualLeaveUsage.timePeriod != null}"
-											style="width: 200px;" readonly> <input type="hidden"
-											th:if="${dto.annualLeaveUsage.timePeriod} == null"> <input
-											type="number" th:value="${dto.annualLeaveUsage.totalDay}"
-											id="totalDay" style="width: 50px;">
-									</div>
-								</div>
-							</div>
-							<br>
-							<!-- 합의자 결재자 확인 -->
-							<div style="flex-direction: column; margin-top: 0px;"
-								class="w-50">
+				<div class="card">
+					<div class="card-body">
+						<div>
+							<div style="float: right; margin-right: 200px;">
+								<!-- 합의자 결재자 확인 -->
 								<label>합의자</label>
 								<table
 									style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
@@ -240,15 +106,15 @@ select, input[type=date], input[type=text], #totalDay {
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
 											class="selectedName"
-											th:text="${ dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"></td>
+											th:text="${dto.agree.size() > 0 ? dto.agree[0].employee.departments.deptName + ' ' + dto.agree[0].employee.jobs.jobName + ' (' + dto.agree[0].employee.empName + ')' : ''}"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
 											class="selectedName"
-											th:text="${dto.agree.size() > 1 ? dto.agree[1].employee.empName : ''}"></td>
+											th:text="${dto.agree.size() > 1 ? dto.agree[1].employee.departments.deptName + ' ' + dto.agree[1].employee.jobs.jobName + ' (' + dto.agree[1].employee.empName + ')' : ''}"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
 											class="selectedName"
-											th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"></td>
+											th:text="${dto.agree.size() > 2 ? dto.agree[2].employee.departments.deptName + ' ' + dto.agree[2].employee.jobs.jobName + ' (' + dto.agree[2].employee.empName + ')' : ''}"></td>
 									</tr>
 								</table>
 								<br> <label>결재자</label>
@@ -293,30 +159,108 @@ select, input[type=date], input[type=text], #totalDay {
 								<table style="border-collapse: collapse; border-spacing: 0;">
 									<tr>
 										<td
+										    style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+										    th:text="${dto.approver.size() > 0 ? dto.approver[0].employee.departments.deptName + ' ' + dto.approver[0].employee.jobs.jobName + ' (' + dto.approver[0].employee.empName + ')' : ''}"
+										    class="selectedName2">
+										</td>
+										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											th:text="${ dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
+											th:text="${dto.approver.size() > 1 ? dto.approver[1].employee.departments.deptName + ' ' + dto.approver[1].employee.jobs.jobName + ' (' + dto.approver[1].employee.empName + ')' : ''}"
 											class="selectedName2"></td>
 										<td
 											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											th:text="${ dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
-											class="selectedName2"></td>
-										<td
-											style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
-											th:text="${ dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
+											th:text="${dto.approver.size() > 2 ? dto.approver[2].employee.departments.deptName + ' ' + dto.approver[2].employee.jobs.jobName + ' (' + dto.approver[2].employee.empName + ')' : ''}"
 											class="selectedName2"></td>
 									</tr>
 								</table>
 							</div>
+							<input type="hidden" th:value="${emp.empSignImage}" id="sign_img">
+							<input type="hidden" th:value="${emp.empId}" id="login_id">
+							<input type="hidden" name="approvalNo" id="approvalNo"
+								th:value="${dto.approval.approvalNo}"> <input
+								type="hidden" id="csrf_token" th:value="${_csrf.token}" />
 
+
+							<div class="mb-3" style="width: 500px;">
+								<label class="form-label" for="project-title-input">제목</label> <input
+									type="text" class="form-control" id="project-title-input"
+									th:value="${dto.approval.approvalTitle}" name="approval_title"
+									readonly style="width: 500px;">
+							</div>
+							<div class="mb-3" style="width: 600px;">
+								<label class="form-label" for="project-author-input">기안자</label>
+								<input type="text" class="form-control" th:value="${dto.employee.departments.deptName+' '+dto.employee.jobs.jobName+'('+dto.employee.empName+')'}" id="project-author-input"
+									readonly style="width: 500px;" name="emp_id">
+							</div>
+							<div class="mb-3" style="width: 600px;">
+								<label class="form-label" for="project-date-input">기안일</label> 
+								<input	type="text" class="form-control" id="project-date-input" readonly style="width: 500px;" name="approval_reg_date" th:value=${dto.approval.approvalRegDate}>
+							</div>
+							<div class="mb-3" style="width: 600px;">
+								<!-- status가 4가 아닐 때 -->
+								<div th:if="${dto.approval.approvalStatus != 4}">
+									<div th:if="${dto.file == null}">
+										<label class="form-label" for="file-upload">파일첨부</label> 
+										<input	class="form-control" id="file-upload" type="file" accept="image/png, image/gif, image/jpeg" style="width: 500px;">
+									</div>
+
+									<div th:if="${dto.file != null}">
+										<label class="form-label" for="file-link">첨부파일</label> <a
+											id="file-link" class="form-control"
+											th:text="${dto.file.fileOriName}"
+											th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}"
+											name="file" style="width: 500px;"></a>
+									</div>
+								</div>
+							</div>
+
+							<input type="hidden" id="hiddenRef"
+								th:each="ref : ${dto.referrer}"
+								th:value="${ref.employee.empName}"> <input type="hidden"
+								id="dept" th:each="ref : ${dto.referrer}"
+								th:value="${ref.employee.departments.deptName}"> <input
+								type="hidden" id="jobs" th:each="ref : ${dto.referrer}"
+								th:value="${ref.employee.jobs.jobName}">
+
+
+							<div class="mb-3">
+								<label class="form-label" for="references">수신참조자</label><br>
+								<input id="references" type="text"
+									style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
+									class="selectedName3">
+							</div>
+
+							<!-- 회수함에 없는 상태 -->
+							<div class="mb-3" style="width: 600px;"
+								th:if="${dto.approval.approvalStatus!=4 && type==1}">
+								<label class="form-label" for="project-thumbnail-img">양식</label><br>
+								<input type="text" th:value="${dto.approvalForm.formName}"
+									class="form-control" style="width: 200px;" readonly>
+								<div>
+									<label class="form-label" for="project-thumbnail-img"
+										style="margin-top: 20px; margin-bottom: 10px;">날짜</label><br>
+									<input type="date"
+										th:value="${dto.annualLeaveUsage.annualUsageStartDate}"
+										readonly style="width: 200px;"> - <input type="date"
+										th:value="${dto.annualLeaveUsage.annualUsageEndDate}"
+										th:if="${dto.annualLeaveUsage.annualUsageEndDate != null}"
+										readonly style="width: 200px;"> <input type="text"
+										th:value="${dto.annualLeaveUsage.timePeriod}"
+										th:if="${dto.annualLeaveUsage.timePeriod != null}"
+										style="width: 200px;" readonly> <input type="hidden"
+										th:if="${dto.annualLeaveUsage.timePeriod} == null"> <input
+										type="number" th:value="${dto.annualLeaveUsage.totalDay}"
+										id="totalDay" style="width: 50px;">
+								</div>
+							</div>
 						</div>
 					</div>
 
 					<!-- 토스트 api -->
-					<div class="col-lg-11" style="margin-left: 2.3rem;">
-						<label>내용</label><br>
+					<div class="col-11">
+						<label class="label-control">내용</label>
 						<div id="approval_edit" th:utext="${dto.approval.approvalContent}"
-							class="form-control p-5" style="height: 500px;" ><br></div>
-						
+							class="form-control" style="height: 300px;"></div>
 						<br>
 						<div style="float: right;">
 							<div
@@ -337,6 +281,31 @@ select, input[type=date], input[type=text], #totalDay {
 							</div>
 						</div>
 					</div>
+
+					<!-- 반려 모달 -->
+					<div id="myModal" class="modal" tabindex="-1"
+						aria-labelledby="myModalLabel" aria-hidden="true"
+						style="display: none;">
+						<div class="modal-dialog">
+							<div class="modal-content" style="display: flex !important;">
+								<div class="modal-header">
+									<h5 class="modal-title" id="myModalLabel">반려사유</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"
+										aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<textarea class="form-control" id="textReject"
+										style="width: 400px; height: 200px; resize: none;"></textarea>
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" id="success">완료</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
 
 					<!-- 반려 결과 모달 -->
 					<div class="modal fade" id="rejectModal" tabindex="-1"
@@ -391,41 +360,12 @@ select, input[type=date], input[type=text], #totalDay {
 	        const employeeName = id.getAttribute('value'); // 이름 가져오기
 	        const deptName = dept[index].getAttribute('value');
 	        const jobName = job[index].getAttribute('value'); 
-	        return `${employeeName} (${deptName}, ${jobName})`; // 형식으로 결합
+	        return `${deptName} ${jobName}(${employeeName})`; // 형식으로 결합
 	    });
 		console.log(references.join(' '));
 		document.getElementById('references').value = references.join(' ');
 		</script>
-
-
-		<!-- <!-- 토스트 api 설정 -->
-		<!-- <script>
-			const content = document.getElementById('contentDiv');
-	
-			console.log(content);
-			// 결과 값 초기 설정
-			let initialContent = content.textContent.trim();
-			
-			const contentEditor = new toastui.Editor({
-                el: document.querySelector('#approval_edit'),
-                width: '1300px',
-                height: '500px',
-                initialValue: initialContent,
-                initialEditType: 'wysiwyg',
-                previewStyle: 'vertical',
-                hideModeSwitch: true
-            });
-		    
-			document.addEventListener('DOMContentLoaded', () => {
-			    contentEditor();
-			    updateEditorContent();
-			});
-
-		 </script> -->
-
-
-		<!--  -->
-
+		
 		<!-- 회수로 이동 -->
 		<script>
     	document.addEventListener('DOMContentLoaded', function() {
@@ -529,16 +469,6 @@ select, input[type=date], input[type=text], #totalDay {
 			}); 
 	</script>
 
-		<!-- 반려 결과 모달 -->
-		<script>
-	document.getElementById('reject-0').addEventListener('click',function(){
-		$('#rejectModal').modal('show');
-	})
-	</script>
-
-
-
-
 		<!-- 반려로 이동 -->
 		<script>
 		document.getElementById('reject').addEventListener('click',function(){
@@ -586,6 +516,13 @@ select, input[type=date], input[type=text], #totalDay {
 	    }
 	}); 
 </script>
-	</div>
+<script>
+<!-- 반려 결과 모달 -->
+document.getElementById('reject-0').addEventListener('click',function(){
+	console.log(1);
+$('#rejectModal').modal('show');
+});
+</script>
+</div>
 </body>
 </html>

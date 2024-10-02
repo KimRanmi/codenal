@@ -57,175 +57,182 @@
 </head>
 <body>
 	<div layout:fragment="content">
-		<div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
-		<div class="row" >
-			<div class="col-lg-12">
-				<div style="background-color: white; width: 1750px; height: 1150px;">
-					<div style="margin-left: 50px; margin-top: -20px;">
-						<form id="approvalForm">
-							<br> <input type="hidden" name="approvalNo" id="approvalNo"
-								th:value="${dto.approval.approvalNo}"> <input
-								type="hidden" id="csrf_token" th:value="${_csrf.token}" /> <input
-								type="hidden" th:value="${emp.empSignImage}" id="sign_img">
-							<input type="hidden" th:value="${emp.empId}" id="login_id">
-							<div style="display: flex; justify-content: space-between;">
-    <div class="w-50">
-        <input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}">
-        <input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
-        
-        <div class="mb-3">
-            <label class="form-label" for="project-title-input">제목</label>
-            <input type="text" class="form-control" id="project-title-input"
-                th:value="${dto.approval.approvalTitle}" name="approval_title"
-                th:disabled="${dto.approval.approvalStatus != 4}" style="width: 500px;">
-        </div>
-        
-        <div class="mb-3" style="width: 600px;">
-            <label class="form-label" for="project-author-input">기안자</label>
-            <input type="text" class="form-control"
-                th:value="${dto.employee.empName}" id="project-author-input"
-                readonly style="width: 500px;" name="emp_id">
-        </div>
-        
-        <div class="mb-3" style="width: 600px;">
-            <label class="form-label" for="project-date-input">기안일</label>
-            <input type="text" class="form-control" id="project-date-input"
-                readonly style="width: 500px;" name="approval_reg_date"
-                th:value="${dto.approval.approvalRegDate}">
-        </div>
-        
-        <div class="mb-3" style="width: 600px;">
-            <!-- status가 4가 아닐 때 -->
-            <div th:if="${dto.approval.approvalStatus != 4}">
-                <div th:if="${dto.file == null}">
-                    <label class="form-label" for="file-upload">파일첨부</label>
-                    <input class="form-control" id="file-upload" type="file"
-                        accept="image/png, image/gif, image/jpeg" style="width: 500px;">
-                </div>
-                <div th:if="${dto.file != null}">
-                    <label class="form-label" for="file-link">첨부파일</label>
-                    <a id="file-link" class="form-control"
-                        th:text="${dto.file.fileOriName}"
-                        th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}"
-                        style="width: 500px;"></a>
-                </div>
-            </div>
-            <!-- status가 4일 때 -->
-            <div th:if="${dto.approval.approvalStatus == 4}">
-                <label class="form-label" for="file-upload">파일첨부</label>
-                <input class="form-control" id="file-upload" type="file"
-                    accept="image/png, image/gif, image/jpeg" style="width: 500px;" name="file">
-            </div>
-            <br>
-            <div class="mb-3">
-                <label class="form-label" for="references">수신참조자</label>
-                <input id="references" type="text"
-                    style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
-                    class="form-control" readonly data-id="">
-            </div>
-        </div>
-        
-        <div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus == 4 && type == 2}">
-            <label class="form-label" for="project-thumbnail-img">양식</label>
-            <select class="form-control" id="category-select" style="width: 500px;" name="form_code" onchange="updateEditorContent()">
-                <option>-- 선택하세요 --</option>
-                <option th:each="cate : ${cateList}" th:value="${cate.form_code}" th:text="${cate.form_name}" th:attr="data-content=${cate.form_content}"
-                    th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
-                </option>
-            </select>
-        </div>
-        
-        <div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus == 4 && type == 3}">
-            <label class="form-label" for="project-thumbnail-img">양식</label>
-            <select class="form-control" id="category-select" style="width: 500px;" name="form_code" onchange="updateEditorContent()">
-                <option>-- 선택하세요 --</option>
-                <option th:each="cate : ${cateList}" th:value="${cate.form_code}" th:text="${cate.form_name}"  th:attr="data-content=${cate.form_content}" 
-                    th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
-                </option>
-            </select>
-        </div>
-    </div>
+    <div th:replace="partials/page-title :: page-title('전자결재 상세', '전자결재')"></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <form id="approvalForm">
+                        <div>
+                            <div style="float: right; margin-right: 200px;">
+                                <!-- 결재자 합의자 -->
+                                <button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
+                                <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+                                    <tr>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                                    </tr>
+                                </table>
+                                <table style="border-collapse: collapse; border-spacing: 0;">
+                                    <tr>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+                                            class="selectedName" data-group="agree"
+                                            th:text="${ dto.agree.size() > 0 ? dto.agree[0].employee.empName : ''}"
+                                            th:attr="data-name=${ dto.agree.size() > 0 ? dto.agree[0].employee.empId : ''}"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+                                            class="selectedName" data-group="agree"
+                                            th:text="${ dto.agree.size() > 1 ? dto.agree[1].employee.empName : ''}"
+                                            th:attr="data-name=${ dto.agree.size() > 1 ? dto.agree[1].employee.empId : ''}"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+                                            class="selectedName" data-group="agree"
+                                            th:text="${ dto.agree.size() > 2 ? dto.agree[2].employee.empName : ''}"
+                                            th:attr="data-name=${ dto.agree.size() > 2 ? dto.agree[2].employee.empId : ''}"></td>
+                                    </tr>
+                                </table>
+                                <br>
+                                <button type="button" class="btn btn-light waves-effect" id="button_modal2">결재자</button>
+                                <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
+                                    <tr>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
+                                    </tr>
+                                </table>
+                                <table style="border-collapse: collapse; border-spacing: 0;">
+                                    <tr>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+                                            class="selectedName2" data-group="approver"
+                                            th:text="${ dto.approver.size() > 0 ? dto.approver[0].employee.empName : ''}"
+                                            th:attr="data-name=${ dto.approver.size() > 0 ? dto.approver[0].employee.empId : ''}"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+                                            class="selectedName2" data-group="approver"
+                                            th:text="${ dto.approver.size() > 1 ? dto.approver[1].employee.empName : ''}"
+                                            th:attr="data-name=${ dto.approver.size() > 1 ? dto.approver[1].employee.empId : ''}"></td>
+                                        <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;"
+                                            class="selectedName2" data-group="approver"
+                                            th:text="${ dto.approver.size() > 2 ? dto.approver[2].employee.empName : ''}"
+                                            th:attr="data-name=${ dto.approver.size() > 2 ? dto.approver[2].employee.empId : ''}"></td>
+                                    </tr>
+                                </table>
+                            </div>
 
-    <div style="flex-direction: column; margin-top: 0px;" class="w-50">
-        <button type="button" class="btn btn-light waves-effect" id="button_modal1">합의자</button>
-        <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-            <tr>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-            </tr>
-        </table>
-        <table style="border-collapse: collapse; border-spacing: 0;">
-            <tr>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName" data-group="agree"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName" data-group="agree"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName" data-group="agree"></td>
-            </tr>
-        </table>
-        <br>
-        <button type="button" class="btn btn-light waves-effect" id="button_modal2">결재자</button>
-        <table style="border-collapse: collapse; border-bottom: 1px solid #d3d3d3; margin-bottom: -1px;">
-            <tr>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 130px; text-align: center;"></td>
-            </tr>
-        </table>
-        <table style="border-collapse: collapse; border-spacing: 0;">
-            <tr>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2" data-group="approver"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2" data-group="approver"></td>
-                <td style="border: 1px solid #d3d3d3; width: 180px; height: 30px; text-align: center;" class="selectedName2" data-group="approver"></td>
-            </tr>
-        </table>
-    </div>
-</div>
+                            <input type="hidden" name="approvalNo" id="approvalNo" th:value="${dto.approval.approvalNo}">
+                            <input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
+                            <input type="hidden" th:value="${emp.empSignImage}" id="sign_img">
+                            <input type="hidden" th:value="${emp.empId}" id="login_id">
 
-							<br>
+                            <div class="w-50">
+                                <div class="mb-3">
+                                    <label class="form-label" for="project-title-input">제목</label>
+                                    <input type="text" class="form-control" id="project-title-input"
+                                        th:value="${dto.approval.approvalTitle}" name="approval_title"
+                                        th:disabled="${dto.approval.approvalStatus != 4}" style="width: 500px;">
+                                </div>
+
+                                <div class="mb-3" style="width: 600px;">
+                                    <label class="form-label" for="project-author-input">기안자</label>
+                                    <input type="text" class="form-control"
+                                        th:value="${dto.employee.empName}" id="project-author-input"
+                                        readonly style="width: 500px;">
+                                </div>
+
+                                <div class="mb-3" style="width: 600px;">
+                                    <label class="form-label" for="project-date-input">기안일</label>
+                                    <input type="text" class="form-control" id="project-date-input"
+                                        readonly style="width: 500px;" name="approval_reg_date"
+                                        th:value="${dto.approval.approvalRegDate}">
+                                </div>
+
+                                <div class="mb-3" style="width: 600px;">
+                                    <div th:if="${dto.approval.approvalStatus != 4}">
+                                        <div th:if="${dto.file == null}">
+                                            <label class="form-label" for="file-upload">파일첨부</label>
+                                            <input class="form-control" id="file-upload" type="file"
+                                                accept="image/png, image/gif, image/jpeg" style="width: 500px;">
+                                        </div>
+                                        <div th:if="${dto.file != null}">
+                                            <label class="form-label" for="file-link">첨부파일</label>
+                                            <a id="file-link" class="form-control"
+                                                th:text="${dto.file.fileOriName}"
+                                                th:href="@{/approval/download/{no}(no=${dto.approval.approvalNo})}"
+                                                style="width: 500px;"></a>
+                                        </div>
+                                    </div>
+                                    <div th:if="${dto.approval.approvalStatus == 4}">
+                                        <label class="form-label" for="file-upload">파일첨부</label>
+                                        <input class="form-control" id="file-upload" type="file"
+                                            accept="image/png, image/gif, image/jpeg" style="width: 500px;" name="file">
+                                    </div>
+                                    <br>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="references">수신참조자</label>
+                                        <input id="references" type="text"
+                                            style="width: 500px; height: 35px; border: 1px solid #d3d3d3; border-radius: 4px;"
+                                            class="form-control" readonly data-id="">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus == 4 && type == 2}">
+                                    <label class="form-label" for="project-thumbnail-img">양식</label>
+                                    <select class="form-control" id="category-select" style="width: 500px;" name="form_code" onchange="updateEditorContent()">
+                                        <option>-- 선택하세요 --</option>
+                                        <option th:each="cate : ${cateList}" th:value="${cate.form_code}" th:text="${cate.form_name}" th:attr="data-content=${cate.form_content}"
+                                            th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3" style="width: 600px;" th:if="${dto.approval.approvalStatus == 4 && type == 3}">
+                                    <label class="form-label" for="project-thumbnail-img">양식</label>
+                                    <select class="form-control" id="category-select" style="width: 500px;" name="form_code" onchange="updateEditorContent()">
+                                        <option>-- 선택하세요 --</option>
+                                        <option th:each="cate : ${cateList}" th:value="${cate.form_code}" th:text="${cate.form_name}" th:attr="data-content=${cate.form_content}"
+                                            th:selected="${dto.approvalForm.formCode == dto.approval.approvalCategory.cateCode}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
 							<div th:text="${dto.approval.approvalContent}"
 								style="display: none" id="contentDiv"></div>
 							<!-- 토스트 api -->
-							<div class="col-lg-11" style="margin-left: -15px;">
-								<label>내용</label>
+							<div class="col-11">
+								<label class="form-label">내용</label>
 								<div id="approval_edit"></div>
-							</div>
-							<!-- 버튼. 아이디와 empId가 같으면 회수 버튼, 그게 아니면 승인 반려로 -> 이건 나중에 수정해야함  -->
-							<br>
-							<div style="margin-left: 1350px; margin-top: 30px;">
-								<div>
-									<button type="submit" class="btn btn-secondary w-sm">재상신</button>
-									<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
-								</div>
-							</div>
-
-							<!-- 모달 생성 -->
-							<div class="modal fade" id="staticBackdrop"
-								data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-								role="dialog" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered" role="document">
-									<div class="modal-content">
-										<div class="modal-header">
-											<h5 class="modal-title" id="myModalLabel">직원 등록</h5>
-											<button type="button" class="btn-close"
-												data-bs-dismiss="modal" aria-label="Close"></button>
-										</div>
-										<div class="modal-body text-left">
-											<div id="treeMenu"></div>
-											<div id="treeAdd"></div>
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-light"
-												data-bs-dismiss="modal">초기화</button>
-											<button type="button" class="btn btn-success" id="successBtn">완료</button>
-											</div>
+								<br>
+								<div style="float: right;">
+									<div>
+										<button type="submit" class="btn btn-secondary w-sm">재상신</button>
+										<button type="button" class="btn btn-danger w-sm" id="delete">삭제</button>
 									</div>
 								</div>
 							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
+							<!-- 모달 생성 -->
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="myModalLabel">직원 등록</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-left">
+                                        <div id="treeMenu"></div>
+                                        <div id="treeAdd"></div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">초기화</button>
+                                        <button type="button" class="btn btn-success" id="successBtn">완료</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -378,8 +385,7 @@
 			const content = document.getElementById('contentDiv');
 			const contentEditor = new toastui.Editor({
                 el: document.querySelector('#approval_edit'),
-                width: '1300px',
-                height: '500px',
+                height: '400px',
                 initialValue: content.textContent,
                 initialEditType: 'wysiwyg',
                 previewStyle: 'vertical',
@@ -417,12 +423,18 @@
 				const payload = new FormData(form);
 				const csrfToken = document.getElementById('csrf_token').value;
 				const id = document.getElementById('approvalNo').value;
+				const emp_id = document.getElementById('login_id').value;
+				
+				console.log(document.querySelectorAll('td[data-group="agree"]'));
+				
 				const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
 	             .map(td => {
 	             	const value = td.getAttribute('data-name');
+	             	console.log(value);
 	             	return value ? Number(value) : null;
 	             })
 	              .filter(name => name !== null)
+				console.log(agree);
 	             
 	             
 	             const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))
@@ -446,6 +458,7 @@
 				payload.append("agree", agree);
 				payload.append("approver",approver);
 				payload.append("references", references);
+				payload.append("emp_id",emp_id);
 	            
 				payload.forEach((value, key) => {
 				    console.log(`${key}: ${value}`);
@@ -466,7 +479,7 @@
 							title : '성공',
 							text : data.res_msg
 						}).then(() =>{
-							location.href = "/approval/list?num=0";
+							location.href = "/approval/list?num=1";
 						});
 					}else{
 						Swal.fire({
@@ -502,7 +515,7 @@
 							title : '성공',
 							text : data.res_msg
 						}).then(() =>{
-							location.href = "/approval/list?num=0";
+							location.href = "/approval/list?num=1";
 						});
 					}else{
 						Swal.fire({

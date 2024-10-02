@@ -112,7 +112,7 @@ public class ApprovalFileService {
 		System.out.println(no);
 		try {
 			
-			ApprovalFile af = approvalFileRepository.findByApprovalNo(no);
+			ApprovalFile af = approvalFileRepository.findByApprovalApprovalNo(no);
 			
 			if(af != null) {
 				String newFileName = af.getFileNewName();

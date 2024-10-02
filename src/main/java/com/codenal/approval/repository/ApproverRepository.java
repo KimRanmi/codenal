@@ -11,14 +11,10 @@ import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.Approver;
 
 public interface ApproverRepository extends JpaRepository<Approver, Long>{
-
-	// 합의자
-	@Query(value = "select a from Approver a where a.approval.approvalNo = ?1 and a.approverType= '합의자'")
-	List<Approver> findByApproverNo_Agree(Long approvalNo);
 	
-	// 결재자
-	@Query(value = "select a from Approver a where a.approval.approvalNo = ?1 and a.approverType= '결재자'")
-	List<Approver> findByApproverNo_Approver(Long approvalNo);
+	// 결재자, 합의자 조회
+	List<Approver> findByApprovalApprovalNoAndApproverType(Long approvalNo, String approverType);
+
 	
 	// 결재 승인 시 상태 변경
 	@Modifying
@@ -55,6 +51,6 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	
 	
 	// 반려 상태 가져오기
-	@Query("select a from Approver a where a.approval.approvalNo =?1 and a.approvalStatus = 3 ")
-	Approver findByReject(Long approvalNo);
+	Approver findByApprovalApprovalNoAndApprovalStatus(Long approvalNo, int approvalStatus);
+
 }
