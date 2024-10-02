@@ -252,7 +252,7 @@ scrollToBottom(currentChatId);
 
 // Scroll to Bottom
 function scrollToBottom(id) {
-    setTimeout(function () {
+    /*setTimeout(function () {
         var simpleBar = (document.getElementById(id).querySelector("#chat-conversation .simplebar-content-wrapper")) ?
             document.getElementById(id).querySelector("#chat-conversation .simplebar-content-wrapper") : ''
 
@@ -264,7 +264,7 @@ function scrollToBottom(id) {
                 top: offsetHeight,
                 behavior: "smooth"
             });
-    }, 100);
+    }, 100);*/
 }
 
 const date=new Date();
@@ -317,13 +317,15 @@ fetchEventList().then(function(data) {
 	let toDay = new Date();
 	/*toDay.setDate(1);*/
 	let lastDate = new Date();
-	let lastDay = new Date(lastDate.getFullYear(), (lastDate.getMonth() + 1), 0);
+	let lastDay = new Date(lastDate.getFullYear(), (lastDate.getMonth() + 1), 7);
+	let firstDay = new Date(lastDate.getFullYear(), (lastDate.getMonth()), 1);
 	/*lastDay.setDate(lastDay.getDate()+7);*/
+			console.log(lastDay);
 	for(let i = 0; i <= data.eventList.length; i++){
 		let startDate = new Date(data[i].start);
 		let endDate = new Date(data[i].end);
 		
-		if (startDate >= toDay) {
+		if (startDate >= firstDay && endDate <= lastDay) {
 			
 			let startAmpm = '';
 			let endAmpm = '';
@@ -353,6 +355,7 @@ fetchEventList().then(function(data) {
 						</div>\
 					</ul>';
 			}else if(data[i].className == "bg-soft-success"){
+				console.log(data[i].className == "bg-soft-success");
 				document.getElementById("eventList").innerHTML +=
 					'<ul class="mini-stats-wid d-flex align-items-center mt-3 p-0">\
 						<div class="flex-shrink-0 avatar-sm">\

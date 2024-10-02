@@ -17,29 +17,30 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 	int countByEmployee_EmpId(Long empId);
 	
 	// 상신리스트
-			@Query(value="SELECT a,f, v FROM Approval a "
-					 + "JOIN a.employee e "
-			         + "JOIN a.approvalCategory c "
-			         + "JOIN c.approvalForm f "
-			         + "LEFT JOIN a.approver v "
-			         + "where a.approvalStatus = ?1 and e.empId = ?2 "
-			         + "AND v.approvalDate = ( "
-			         + "      SELECT MAX(v2.approvalDate) "
-			         + "      FROM Approver v2 "
-			         + "      WHERE v2.approval.approvalNo = v.approval.approvalNo "
-			         + "  )"
-			         + "GROUP BY v.approval.approvalNo "
-			         + "ORDER BY v.approvalDate desc",
-			         countQuery = "SELECT count(DISTINCT a) FROM Approval a "
-			         +"JOIN a.employee e "
-			         +"JOIN a.approvalCategory c "
-			         +"JOIN c.approvalForm f "
-			         + "LEFT JOIN a.approver v "
-			         +"WHERE a.approvalStatus = ?1 and e.empId = ?2 "
-			         + "GROUP BY v.approval.approvalNo "
-			         + "ORDER BY v.approvalDate desc")
-			Page<Object[]> findList(int num,Long id,Pageable pageable);
-		
+	@Query(value = "SELECT a, f, v FROM Approval a "
+            + "JOIN a.employee e "
+            + "JOIN a.approvalCategory c "
+            + "JOIN c.approvalForm f "
+            + "LEFT JOIN a.approver v "
+            + "WHERE a.approvalStatus = ?1 AND e.empId = ?2 "
+            + "AND (v.approvalDate = ( "
+            + "      SELECT MAX(v2.approvalDate) "
+            + "      FROM Approver v2 "
+            + "      WHERE v2.approval.approvalNo = v.approval.approvalNo) "
+            + "		or v.approvalDate IS NULL "
+            + "  ) " // v가 null인 경우도 포함
+            + "GROUP BY v.approval.approvalNo "
+            + "ORDER BY v.approvalDate DESC",
+            countQuery = "SELECT count(DISTINCT a) FROM Approval a "
+                       + "JOIN a.employee e "
+                       + "JOIN a.approvalCategory c "
+                       + "JOIN c.approvalForm f "
+                       + "LEFT JOIN a.approver v "
+                       + "WHERE a.approvalStatus = ?1 AND e.empId = ?2 "
+                       + "GROUP BY v.approval.approvalNo")
+		Page<Object[]> findList(int num, Long id, Pageable pageable);
+
+
 		
 		// 수신리스트
 		@Query(value = "SELECT a, f, v FROM Approval a "
@@ -90,5 +91,11 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		@Modifying
 		@Query(value="update Approval a set a.approvalStatus = ?1 where a.approvalNo = ?2")
 		int updateStatus(int status,Long approvalNo);
+		
+		
+		@Query(value="SELECT a, e FROM Approval a "
+					+ "JOIN a.employee e "
+		         + "where a.approvalStatus = ?1")
+		List<Approval> findByApprovalStatus(int i);
 		
 }

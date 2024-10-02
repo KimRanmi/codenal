@@ -19,24 +19,9 @@ import lombok.ToString;
 public class ReferrerDto {
 	
 	private Long reffere_no;
-	private Approval approval;
-	private Employee employee;
+	private Long approval_no;
+	private Long emp_id;
 	
-	public Referrer toEntity() {
-		return Referrer.builder()
-				.approval(approval)
-				.employee(employee)
-				.referrerNo(reffere_no)
-				.build();
-	}
 	
-	public ReferrerDto toDto(Referrer r) {
-		return ReferrerDto.builder()
-				.approval(approval)
-				.employee(employee)
-				.reffere_no(r.getReferrerNo())
-				.build();
-	}
-
 	
 }

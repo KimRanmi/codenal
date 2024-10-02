@@ -277,6 +277,9 @@ select, input[type=date], #totalDay {
 						
 		                };
 		                const formattedData = formatDataForJsTree(data);
+		                
+		                console.log("포멧 데이터"+formattedDate);
+		                
 		                const formattedDataLength = formattedData.length; 
 		                const companyNode = {
 		                    id: 'companyName',
@@ -522,7 +525,7 @@ select, input[type=date], #totalDay {
 			            const value = td.getAttribute('data-name');
 			            return value ? Number(value) : null;
 			        })
-			        .filter(Boolean);
+			        .filter(Boolean);ㅅ
 			    
 				// 2.결재자 값 가져오기
 			    const approver = Array.from(document.querySelectorAll('td[data-group="approver"]'))

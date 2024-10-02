@@ -134,7 +134,7 @@
                                     <label class="form-label" for="project-author-input">기안자</label>
                                     <input type="text" class="form-control"
                                         th:value="${dto.employee.empName}" id="project-author-input"
-                                        readonly style="width: 500px;" name="emp_id">
+                                        readonly style="width: 500px;">
                                 </div>
 
                                 <div class="mb-3" style="width: 600px;">
@@ -423,6 +423,7 @@
 				const payload = new FormData(form);
 				const csrfToken = document.getElementById('csrf_token').value;
 				const id = document.getElementById('approvalNo').value;
+				const emp_id = document.getElementById('login_id').value;
 				
 				console.log(document.querySelectorAll('td[data-group="agree"]'));
 				
@@ -457,6 +458,7 @@
 				payload.append("agree", agree);
 				payload.append("approver",approver);
 				payload.append("references", references);
+				payload.append("emp_id",emp_id);
 	            
 				payload.forEach((value, key) => {
 				    console.log(`${key}: ${value}`);
