@@ -61,11 +61,11 @@ public class EmployeeService {
     	}
     	return dtoList;
     }
-   
+    
     // 알림
     public Employee findByEmpId(Long empId) {
         Optional<Employee> optionalEmployee = empAlarmsRepository.findByEmpId(empId);
         return optionalEmployee.orElse(null);
     }
-
+   
 }
