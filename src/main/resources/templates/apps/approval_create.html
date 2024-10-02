@@ -177,6 +177,7 @@
 										<select class="form-control" id="category-select"
 											style="width: 500px;" name="form_code"
 											onchange="updateEditorContent()">
+											
 											<option value="">-- 선택하세요 --</option>
 											<option th:each="cate : ${cateList}"
 												th:value="${cate.form_code}" th:text="${cate.form_name}"

@@ -360,7 +360,7 @@ select, input[type=date], input[type=text], #totalDay {
 	        const employeeName = id.getAttribute('value'); // 이름 가져오기
 	        const deptName = dept[index].getAttribute('value');
 	        const jobName = job[index].getAttribute('value'); 
-	        return `${employeeName} (${deptName}, ${jobName})`; // 형식으로 결합
+	        return `${deptName} ${jobName}(${employeeName})`; // 형식으로 결합
 	    });
 		console.log(references.join(' '));
 		document.getElementById('references').value = references.join(' ');
