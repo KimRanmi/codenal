@@ -45,5 +45,9 @@ public interface ChatParticipantsRepository extends JpaRepository<ChatParticipan
 
 	void deleteByChatRoom(ChatRoom chatRoom);
 
+//	List<ChatParticipants> findByChatRoomAndParticipateStatus(ChatRoom chatRoomFind, String string);
+
+	List<ChatParticipants> findByChatRoomRoomNoAndParticipateStatus(int chatRoom, char status);
+
 
 }

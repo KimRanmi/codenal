@@ -1,11 +1,11 @@
 package com.codenal.approval.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,6 @@ import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
-import com.codenal.approval.domain.ApprovalCategoryDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
@@ -323,7 +322,7 @@ public class ApprovalService {
 			   				.approvalTitle((String)obj.get("제목"))
 			   				.employee(emp)
 			   				.approvalStatus(0)
-			   				.approvalRegDate((LocalDate)obj.get("날짜"))
+			   				.approvalRegDate((LocalDateTime)obj.get("날짜"))
 			   				.build();
 	   
 	   
@@ -386,7 +385,7 @@ public class ApprovalService {
 	   				.approvalTitle((String)obj.get("제목"))
 	   				.employee(emp)
 	   				.approvalStatus(0)
-	   				.approvalRegDate((LocalDate)obj.get("날짜"))
+	   				.approvalRegDate((LocalDateTime)obj.get("날짜"))
 	   				.annualLeaveUsage(au)
 	   				.build();
 		   

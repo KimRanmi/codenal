@@ -115,7 +115,7 @@ public class ChatService {
 		return chatLists;
 	}
 	
-	// 내가 속하면서 나를 제외한 채팅방 참가자 정보 조회  -->>>> 나가는 로직에서....한명만 남으면 오류
+	// 내가 속하면서 나를 제외한 채팅방 참가자 정보 조회
 	public List<ChatParticipants> notMeParticipant(String username){
 		Long empId = Long.parseLong(username);
 		Employee emp = employeeRepository.findByEmpId(empId);
@@ -288,4 +288,17 @@ public class ChatService {
 //	    return dtos;
 //	}
 
+	
+	public List<ChatParticipantsDto> selectChatRoomParticipants(int chatRoom){
+//		ChatRoom chatRoomFind = chatRoomRepository.findByRoomNo(chatRoom);
+//		List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoomAndParticipateStatus(chatRoomFind, "Y");
+		List<ChatParticipants> participants = chatParticipantsRepository.findByChatRoomRoomNoAndParticipateStatus(chatRoom, 'Y');
+		List<ChatParticipantsDto> chatListDto = new ArrayList<ChatParticipantsDto>();
+		for(ChatParticipants participant : participants) {
+			ChatParticipantsDto dto = new ChatParticipantsDto().toDto(participant);
+			dto.setEmp_id(participant.getEmployee().getEmpId());
+			chatListDto.add(dto);
+		}
+		return chatListDto;
+	}
 }

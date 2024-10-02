@@ -1,11 +1,10 @@
 package com.codenal.websocket;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,152 +17,133 @@ import com.codenal.alarms.domain.AlarmType;
 import com.codenal.alarms.domain.Alarms;
 import com.codenal.alarms.service.AlarmsService;
 import com.codenal.approval.domain.Approval;
-import com.codenal.approval.domain.Approver;
-import com.codenal.approval.service.ApprovalService;
-import com.codenal.approval.service.ApproverService;
+import com.codenal.chat.domain.ChatParticipantsDto;
+import com.codenal.chat.service.ChatService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class NotificationWebSocketHandler extends TextWebSocketHandler{
 		
+		private final ChatService chatService;
 		private final AlarmsService alarmsService;
 		
 		@Autowired
-		public NotificationWebSocketHandler(AlarmsService alarmsService) {
+		public NotificationWebSocketHandler(ChatService chatService, AlarmsService alarmsService) {
+			this.chatService = chatService;
 			this.alarmsService = alarmsService;
 		}
 		
 
-		 private Map<String,WebSocketSession> clients = new
-		 HashMap<String,WebSocketSession>();
-		 
-			
-		// WebSocket 세션을 관리하기 위한 리스트
-		 private static List<WebSocketSession> notificationSessions = new CopyOnWriteArrayList<>();
-		 
-		 
-			// 클라이언트가 연결되었을 때 설정
-			@Override
-			public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-			    System.out.println("New connection established: " + session.getId());
-			    notificationSessions.add(session);
-			}
+		private Map<String, WebSocketSession> clients = new ConcurrentHashMap<>();
+		private Map<String, String> empIdSession = new ConcurrentHashMap<>(); // empId 값
+
+		// 클라이언트가 연결되었을 때 세션 등록
+		@Override
+		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+		    System.out.println("New connection established: " + session.getId());
+		    clients.put(session.getId(), session);  // 클라이언트 세션 등록
+		    
+		    String empId = session.getPrincipal().getName(); // empId 가져오기
+		    empIdSession.put(empId, session.getId()); // empId와 세션 ID 매핑
+		}
+
+
+		// 클라이언트로부터 메시지를 받았을 때 처리(채팅하고는 별개로 가능하게 해뒀으니까 사용할 사람은 쓰세요)
+		@Override
+		protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+		    String receivedMessage = message.getPayload();
+		    System.out.println("Received message: " + receivedMessage);
+		    System.out.println("확인용 :" + message);
+
+		    ObjectMapper objectMapper = new ObjectMapper();
+//		    ChatMsgDto chatMessage = objectMapper.readValue(message.getPayload(), ChatMsgDto.class);  // 참고하세요
+		    
+		}
+
+		// 특정 대상자에게만 알림 메시지 전송
+		public void sendNotificationToSpecificUsers(List<ChatParticipantsDto> targetParticipants, String notificationMessage) throws Exception {
+		    System.out.println("notificationMessage: " + notificationMessage);
+
+		    for (WebSocketSession session : clients.values()) {
+		        if (session.isOpen()) {
+		            try {
+		                System.out.println("현재 채팅 메시지 오는 중");
+		                
+		                // 클라이언트 세션에서 empId 가져오기
+		                String clientEmpId = session.getPrincipal().getName();
+		                System.out.println(clientEmpId);
+		                // targetParticipants 리스트에서 각 참가자와 empId 비교
+		                for (ChatParticipantsDto participant : targetParticipants) {
+		                    String empIdAsString = String.valueOf(participant.getEmp_id()).trim();
+		                    
+		                    if (Objects.equals(empIdAsString, clientEmpId.trim())) {
+		                        System.out.println("알림 전송 대상: " + clientEmpId);
+		                        session.sendMessage(new TextMessage(notificationMessage));
+		                        break;
+		                    }
+		                }
+		            } catch (Exception e) {
+		                e.printStackTrace();
+		            }
+		        }
+		    }
+		}
 		
-			// 클라이언트가 웹소켓 서버로 메시지를 전송했을 때 설정
-			@Override
-			protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-				
-			    clients.put(session.getPrincipal().getName(), session); // 클라이언트 등록
-//			    System.out.println("=== 등록 확인 ===");
-			 //   System.out.println("현재 접속중인 클라이언트: " + clients);
-			    
-			    
-			    
-			    // 클라이언트로부터 받은 메시지 처리
-			    String receivedMessage = message.getPayload();
-				System.out.println("알림Received payload: " + receivedMessage);
-
-			    System.out.println("받은 메시지: " + receivedMessage);
-			    
-			    // 받은 메시지에 따라 처리 후 클라이언트로 응답 전송
-			    if (receivedMessage.equals("New chat message")) {
-			        // 클라이언트에 알림 메시지 전송
-			        String notificationMessage = "You have 3 new notifications!";
-			        session.sendMessage(new TextMessage(notificationMessage));
-			    }
-			    
-			    
-			    
-			    
-//				// 클라이언트가 보낸 메시지 
-//				String payload = message.getPayload();
-//				System.out.println("Received payload: " + payload);
-//				// Jackson ObjectMapper 객체 생성
-//				ObjectMapper objectMapper = new ObjectMapper();
-//				
-//				Map<String,String> resultMap = new HashMap<String,String>();
-//				
-//				JSONObject json = new JSONObject(message.getPayload());
-//				
-//				switch(){
-//					case "noti":
-//						
-//						  
-//						        
-//						        for (WebSocketSession client : clients.values()) {
-//						            if (client.isOpen()) {  // 세션이 열려있는지 확인
-//						                // 클라이언트에게 메시지 전송
-//						                client.sendMessage(new TextMessage(objectMapper.writeValueAsString(resultMap)));
-//						            }
-//						        }
-//							  
-//						  
-//					break;
-//				}
-			}
-
-			// 알림 핸들러로 메시지 전송 메서드
-			public static void sendNotificationToAll(String notificationMessage) throws Exception {
-				for (WebSocketSession session : notificationSessions) {
-					if (session.isOpen()) {
-						System.out.println("알림 1");
-						session.sendMessage(new TextMessage(notificationMessage));
-					}
-				}
-			}
+		
+		 // 알림 dto로 전달
+		public void sendNotification(String notificationMessage, Approval approval) throws Exception {
 			
-			// 알림 핸들러로 메시지 전송 메서드
-			public void sendNotification(String notificationMessage, Approval approval) throws Exception {
-			    
-				String formattedMessage = notificationMessage + ": " + approval.getApprovalTitle() + " (" + approval.getApprovalNo() + ")";
-			    
-			    String message = "";
-		    	
-		    	switch(notificationMessage) {
-		    		case "authorization" :  
-		    			message = "승인되었습니다.";
-		        		break;
-		    	
-		    	}
-		    	
-		    	Alarms alarms = Alarms.builder()
-		    					.employee(approval.getEmployee())
-		    					.alarmTitle(message)
-		    					.alarmContext(approval.getApprovalTitle()+"의 결재가 "+message)
-		    					.alarmType(AlarmType.APPROVAL)
-		    					.alarmReferenceNo(approval.getApprovalNo())
-		    					.alarmCreateTime(LocalDateTime.now())
-		    					.alarmIsRead("N")
-		    					.alarmIsDeleted("N")
-		    					.alarmUrl("/approval/"+approval.getApprovalNo())
-		    					.build();
-		    	alarmsService.createAlarm(alarms);
-			     
-			    // 승인 당사자의 세션을 찾고 메시지 전송
-			    WebSocketSession recipientSession = clients.get(approval.getEmployee().getEmpId().toString());
-			    if (recipientSession != null && recipientSession.isOpen()) {
-			        System.out.println("특정 사용자에게 알림 전송");
-			        recipientSession.sendMessage(new TextMessage(formattedMessage)); // 제목 및 번호 전송
-			    } else {
-			        System.out.println("세션이 없거나 닫혀 있습니다.");
-			    }
-			    
-			    
-			    
-			}
+			String formattedMessage = notificationMessage + ": " + approval.getApprovalTitle() + " (" + approval.getApprovalNo() + ")";
+		    
+		    String message = "";
+	    	
+	    	switch(notificationMessage) {
+	    		case "authorization" :  
+	    			message = "승인되었습니다.";
+	        		break;
+	    	
+	    	}
+	    	
+	    	Alarms alarms = Alarms.builder()
+	    					.employee(approval.getEmployee())
+	    					.alarmTitle(message)
+	    					.alarmContext(approval.getApprovalTitle()+"의 결재가 "+message)
+	    					.alarmType(AlarmType.APPROVAL)
+	    					.alarmReferenceNo(approval.getApprovalNo())
+	    					.alarmCreateTime(LocalDateTime.now())
+	    					.alarmIsRead("N")
+	    					.alarmIsDeleted("N")
+	    					.alarmUrl("/approval/"+approval.getApprovalNo())
+	    					.build();
+	    	alarmsService.createAlarm(alarms);
+		     
+	    	 String empId = String.valueOf(approval.getEmployee().getEmpId());
+	    	 String sessionId = empIdSession.get(empId); // empId로 세션 ID 가져오기
 
-			
-			// 클라이언트가 연결을 끊었을 때 설정
-			@Override
-			public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-				// 나간 사용자의 세션을 clients 맵에서 제거
-			    // 나머지 사용자들의 세션은 여전히 clients 맵에 남아있으므로, 채팅 가능
-				clients.values().removeAll(Arrays.asList(session));
-				System.out.println("=== 삭제 확인 ===");
-				for(String senderNo : clients.keySet()) {
-					System.out.println(senderNo +" : "+clients.get(senderNo));
-				}		
-			}
-			
+	    	 WebSocketSession recipientSession = clients.get(sessionId);
+	    	 
+	    	 System.out.println(recipientSession);
+		    
+		    if (recipientSession != null && recipientSession.isOpen()) {
+		        System.out.println("특정 사용자에게 알림 전송");
+		        recipientSession.sendMessage(new TextMessage(formattedMessage)); // 제목 및 번호 전송
+		    } else {
+		        System.out.println("세션이 없거나 닫혀 있습니다.");
+		    }
+		}
 
+		
+		// 클라이언트가 연결을 끊었을 때 설정
+		@Override
+		public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+			// 나간 사용자의 세션을 clients 맵에서 제거
+			// 나머지 사용자들의 세션은 여전히 clients 맵에 남아있으므로, 채팅 가능
+		     clients.remove(session.getId());  // 세션 제거
+			//clients.values().removeAll(Arrays.asList(session));
+			System.out.println("=== 삭제 확인 ===");
+			for(String senderNo : clients.keySet()) {
+				System.out.println(senderNo +" : "+clients.get(senderNo));
+			}		
+		}
 
 }
