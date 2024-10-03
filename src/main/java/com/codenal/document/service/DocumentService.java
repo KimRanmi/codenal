@@ -18,6 +18,7 @@ import com.codenal.document.domain.DocumentDto;
 import com.codenal.document.domain.DocumentSharedUsers;
 import com.codenal.document.domain.DocumentSharedUsersId;
 import com.codenal.document.domain.Documents;
+import com.codenal.document.domain.Storage;
 import com.codenal.document.repository.DocumentRepository;
 import com.codenal.document.repository.DocumentSharedUsersRepository;
 
@@ -218,6 +219,29 @@ public class DocumentService {
         if (!updatedDocuments.isEmpty()) {
             documentRepository.saveAll(updatedDocuments);
         }
+    }
+    
+    // 공유된 사용자 ID들을 가져오는 메서드 추가
+    public List<Long> findSharedUsersByDocIds(List<Long> docIds) {
+        return documentRepository.findSharedUsersByDocIds(docIds);
+    }
+    
+    public long getUsedStorage(Long empId) {
+        // 개인 문서와 공유 문서의 크기를 합산하여 long으로 반환
+        Long totalUsedStorage = documentRepository.sumDocSize(empId);
+        return totalUsedStorage != null ? totalUsedStorage : 0L;
+    }
+
+    // 고정된 총 용량을 반환하는 메서드 (MB 단위)
+    public long getTotalStorage() {
+        return 100L * 1024 * 1024 * 1024; // 300GB를 바이트 단위로 변환
+    }
+
+    // Storage 객체를 반환하는 메서드
+    public Storage getStorageInfo(Long empId) {
+        long usedStorage = getUsedStorage(empId);   // 바이트 단위
+        long totalStorage = getTotalStorage();      // 바이트 단위
+        return new Storage(usedStorage, totalStorage);
     }
 }
 	

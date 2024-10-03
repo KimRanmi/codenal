@@ -38,20 +38,20 @@
 	crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
+.jstree-icon.ri-building-fill { /* 회사 아이콘 */
+	color: #3e4a6e;
+	font-size: 24px;
+}
 
- .jstree-icon.ri-building-fill { /* 회사 아이콘 */
-            color: #3e4a6e; 
-            font-size: 24px;
-        }
-        .jstree-icon.ri-team-fill { /* 부서 아이콘 */
-            color: #3577f1; 
-            font-size: 20px;
-        }
-        .jstree-icon.ri-user-2-fill { /* 직원 아이콘 */
-            color: #9a9ba0; 
-            font-size: 16px;
-        }
+.jstree-icon.ri-team-fill { /* 부서 아이콘 */
+	color: #3577f1;
+	font-size: 20px;
+}
 
+.jstree-icon.ri-user-2-fill { /* 직원 아이콘 */
+	color: #9a9ba0;
+	font-size: 16px;
+}
 
 .favorite-icon {
 	font-size: 20px;
@@ -98,20 +98,18 @@
 #shared-docs-tabs a.active {
 	border-color: #007bff; /* 활성화된 탭에 하이라이트 */
 	font-weight: bold;
-}
+}	
 
 #shared-docs-tabs a:hover {
 	color: #0056b3; /* 탭 hover 시 색상 */
 	border-bottom: 2px solid #0056b3; /* hover 시 하단선 */
 }
-
-
 </style>
 </head>
 
 <body>
 	<div layout:fragment="content">
-		<div th:replace="partials/page-title :: page-title('문서함','개인문서')"></div>
+		<div th:replace="partials/page-title :: page-title('문서함','-')"></div>
 		<div class="chat-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1">
 			<div class="file-manager-sidebar">
 				<div class="p-3 d-flex flex-column h-100">
@@ -140,11 +138,12 @@
 							<div class="flex-grow-1 ms-3 overflow-hidden">
 								<div class="progress mb-2 progress-sm">
 									<div class="progress-bar bg-success" role="progressbar"
-										style="width: 25%" aria-valuenow="25" aria-valuemin="0"
-										aria-valuemax="100"></div>
+										id="storage-progress-bar" style="width: 0%" aria-valuenow="0"
+										aria-valuemin="0" aria-valuemax="100"></div>
 								</div>
-								<span class="text-muted fs-12 d-block text-truncate"><b>47.52</b>GB
-									used of <b>119</b>GB</span>
+								<span class="text-muted fs-12 d-block text-truncate"> <b
+									id="used-storage">0</b> used of <b id="total-storage">0</b>
+								</span>
 							</div>
 						</div>
 					</div>
@@ -199,6 +198,9 @@
 								onclick="restoreSelectedFiles()" style="display: none;">복원</button>
 							<!-- 복원 버튼 -->
 							<!-- 다운로드 버튼 수정 -->
+							<button type="button" id="share-setting-btn"
+								style="display: none;" class="btn btn-secondary"
+								onclick="openShareSettingModal()">공유자 설정</button>
 							<button id="download-btn" type="button"
 								class="btn btn-primary btn-sm-1"
 								onclick="downloadSelectedFiles()">다운로드</button>
@@ -216,7 +218,8 @@
 
 
 					<!-- 개인 문서 테이블 -->
-					<div id="personal-files-table" class="table-responsive">
+					<div id="personal-files-table" class="table-responsive"
+						style="display: none;">
 						<table class="table align-middle table-nowrap mb-0">
 							<thead class="table-active">
 								<tr>
@@ -239,7 +242,7 @@
 					</div>
 					<!-- 공유 문서 탭 네비게이션 추가 -->
 					<!-- 공유 문서 탭 네비게이션 추가 -->
-					<div id="shared-docs-tabs">
+					<div id="shared-docs-tabs" style="display: none;">
 						<a class="nav-link active" id="shared-by-me-tab" href="#"
 							onclick="showSharedByMeFiles()">공유한 문서함</a> <a class="nav-link"
 							id="shared-with-me-tab" href="#"
@@ -248,7 +251,7 @@
 
 					<!-- 공유한 문서 테이블 -->
 					<div id="shared-by-me-files-table" class="table-responsive"
-						style="display: block;">
+						style="display: none;">
 						<table class="table align-middle table-nowrap mb-0">
 							<thead class="table-active">
 								<tr>
@@ -347,35 +350,35 @@
 				</div>
 
 			</div>
-				<div id="shareModal" class="modal fade zoomIn" tabindex="-1"
-					aria-labelledby="shareModalLabel" aria-hidden="true">
-					<div class="modal-dialog modal-dialog-centered modal-custom-width">
-						<div class="modal-content">
-							<!-- 모달 헤더 -->
-							<div class="modal-header">
-								<h5 class="modal-title" id="shareModalLabel">파일 공유 설정</h5>
-								<button type="button" class="btn-close" data-bs-dismiss="modal"
-									aria-label="Close" onclick="closeShareModal()"></button>
+			<div id="shareModal" class="modal fade zoomIn" tabindex="-1"
+				aria-labelledby="shareModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-custom-width">
+					<div class="modal-content">
+						<!-- 모달 헤더 -->
+						<div class="modal-header">
+							<h5 class="modal-title" id="shareModalLabel">파일 공유 설정</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close" onclick="closeShareModal()"></button>
+						</div>
+						<!-- 모달 바디 -->
+						<div class="modal-body">
+							<div id="organization-chart">
+								<!-- 조직도가 여기에 로드됩니다 -->
 							</div>
-							<!-- 모달 바디 -->
-							<div class="modal-body">
-								<div id="organization-chart">
-									<!-- 조직도가 여기에 로드됩니다 -->
-								</div>
-							</div>
-							<!-- 모달 푸터 -->
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary"
-									data-bs-dismiss="modal" onclick="closeShareModal()">닫기</button>
-								<button type="button" class="btn btn-primary"
-									onclick="shareSelectedFiles()">공유</button>
-							</div>
+						</div>
+						<!-- 모달 푸터 -->
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary"
+								data-bs-dismiss="modal" onclick="closeShareModal()">닫기</button>
+							<button type="button" class="btn btn-primary"
+								onclick="shareSelectedFiles()">공유</button>
 						</div>
 					</div>
 				</div>
+			</div>
 			<th:block layout:fragment="pagejs">
 				<!-- 파일 공유 설정 모달 -->
-			
+
 				<!-- apexcharts -->
 				<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
 				<script src="/assets/js/pages/file-manager.init.js"></script>
@@ -402,6 +405,7 @@
 			            document.getElementById('file-register-btn').style.display = 'none';
 			            document.getElementById('delete-btn').style.display = 'inline-block';
 			            document.getElementById('share-btn').style.display = 'none';
+			            document.getElementById('share-setting-btn').style.display = 'inline-block';
 			            loadSharedByMeFiles();
 			        }
 			
@@ -441,6 +445,7 @@
 			    document.getElementById('file-register-btn').style.display = 'inline-block';
 			    document.getElementById('delete-btn').style.display = 'inline-block';
 			    document.getElementById('share-btn').style.display = 'inline-block';
+			    document.getElementById('share-setting-btn').style.display = 'none';
 			    loadPersonalFiles();
 			}
 			
@@ -454,6 +459,7 @@
 			    	    document.getElementById('file-register-btn').style.display = 'none';
 			    	    document.getElementById('delete-btn').style.display = 'none'; // 삭제 버튼 숨김
 			    	    document.getElementById('share-btn').style.display = 'none';
+			    	    document.getElementById('share-setting-btn').style.display = 'none';
 			    	    loadFavoriteFiles();
 			    	}
 			     
@@ -467,6 +473,7 @@
 			    	    document.getElementById('download-btn').style.display = 'none';
 			    	    document.getElementById('file-register-btn').style.display = 'none';
 			    	    document.getElementById('share-btn').style.display = 'none';
+			    	    document.getElementById('share-setting-btn').style.display = 'none';
 			    	    loadTrashFiles(0); // 첫 번째 페이지 로드
 			    	}
 			
@@ -608,7 +615,8 @@
 			               } else if (activeTableId === 'favorite-files-table') {
 			                   loadFavoriteFiles();  // 즐겨찾기 파일 목록 갱신
 			               } else if (activeTableId === 'trash-files-table') {
-			                   loadTrashFiles();     // 휴지통 파일 목록 갱신
+			                   loadTrashFiles(); 
+			                   clearSelection();  // 휴지통 파일 목록 갱신
 			               }
 			           })
 			           .catch(error => {
@@ -625,26 +633,20 @@
 			        }
 			       
 			        	
-			        function formatFileSize(bytes) {
-			            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-			            if (bytes === 0) return '0 Byte';
-			            const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-			            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-			        }
-			        
+			      
 			        
 			        
 			        
 			        
 			     // 개인 문서 파일 목록 불러오기 (휴지통 파일 제외)
-			  function loadPersonalFiles(page = 0, size = 10) {
-				  fetch(`/api/documents/list-paged?status=0&page=${page}&size=${size}`)
+			 function loadPersonalFiles(page = 0, size = 10) {
+    fetch(`/api/documents/list-paged?status=0&page=${page}&size=${size}`)
         .then(response => response.json())
         .then(data => {
             const fileList = document.getElementById('file-list');	
             fileList.innerHTML = '';  // 기존 목록 지우기
 
-            if (data.content.length === 0) {
+            if (!data.content || data.content.length === 0) {
                 fileList.innerHTML = '<tr><td colspan="6" class="text-center">파일이 없습니다.</td></tr>';
             } else {
                 data.content.forEach(document => {
@@ -656,9 +658,9 @@
                             <td style="text-align: center;">
                                 <input type="checkbox" class="file-checkbox" value="${document.docNo}">
                             </td>
-                            <td>${document.docName}</td>
-                            <td>${formatFileSize(document.docSize)}</td>
-                            <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
+                            <td>${document.docName || '이름 없음'}</td>
+                            <td>${document.docSize ? formatFileSize(document.docSize) : '0 Byte'}</td>
+                            <td>${document.docCreatedDate ? new Date(document.docCreatedDate).toLocaleDateString() : '날짜 없음'}</td>
                             <td>${document.docStatus == 1 ? '공유문서' : '개인문서'}</td>
                             <td class="text-center">
                                 <i class="${starClass} favorite-icon" data-id="${document.docNo}" onclick="toggleFavorite(${document.docNo}, this)"></i>
@@ -670,13 +672,19 @@
             }
 
             // 페이지네이션 정보 업데이트
-            updatePagination(data.pageable.pageNumber, data.totalPages, 'loadPersonalFiles');
+            if (data.pageable && typeof data.pageable.pageNumber === 'number' && typeof data.totalPages === 'number') {
+                updatePagination(data.pageable.pageNumber, data.totalPages, 'loadPersonalFiles');
+            } else {
+                // 페이지 정보가 없을 경우 기본값 설정
+                updatePagination(0, 1, 'loadPersonalFiles');
+            }
         })
         .catch(error => {
             console.error('Error fetching personal files:', error);
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '<tr><td colspan="6" class="text-center">파일을 불러오는 중 오류가 발생했습니다.</td></tr>';
         });
 }
-
 
 
 			       
@@ -900,11 +908,12 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			        
 			        document.addEventListener('DOMContentLoaded', function() {
 			            showPersonalFiles();  // 기본적으로 개인 문서를 보여줌
-			            
-			            // 개인 문서 탭을 기본적으로 active 상태로 설정
 			            document.getElementById('personal-docs').classList.add('active');
-			            // 초기 로드 시 공유문서 탭 숨기기
 			            document.getElementById('shared-docs-tabs').style.display = 'none';
+			            updateStorageUsage();
+			            
+			            // 페이지가 완전히 로드되면 컨텐츠 보이기
+			            document.body.style.visibility = 'visible';
 			        });
 			
 			        // 각각의 메뉴 클릭 시 테이블 전환
@@ -934,24 +943,28 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			            const selectedFiles = [];
 			            const activeTableId = getActiveTableId(); // 현재 활성화된 테이블 확인
 			            let className = 'file-checkbox'; // 기본 체크박스 클래스는 개인 문서용
-			
+
 			            if (activeTableId === 'shared-by-me-files-table') {
 			                className = 'shared-checkbox'; // 공유 문서 체크박스
 			            } else if (activeTableId === 'shared-with-me-files-table') {
 			                className = 'shared-checkbox'; // 공유받은 문서 체크박스
+			            } else if (activeTableId === 'favorite-files-table') {
+			                className = 'favorite-checkbox'; // 즐겨찾기 문서 체크박스
+			            } else if (activeTableId === 'trash-files-table') {
+			                className = 'trash-checkbox'; // 휴지통 문서 체크박스 (필요시 추가)
 			            }
-			
+
 			            // 선택된 체크박스들에서 파일 ID 추출
 			            const checkboxes = document.querySelectorAll(`.${className}:checked`);
 			            checkboxes.forEach(checkbox => {
 			                selectedFiles.push(checkbox.value); // 체크박스의 value는 파일 ID
 			            });
-			
+
 			            if (selectedFiles.length === 0) {
 			                alert('다운로드할 파일을 선택하세요.');
 			                return;
 			            }
-			
+
 			            // 파일이 1개일 때는 바로 다운로드
 			            if (selectedFiles.length === 1) {
 			                downloadFile(selectedFiles[0]);
@@ -961,8 +974,9 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			                    downloadFile(fileId);
 			                });
 			            }
+			            clearSelection();
 			        }
-			
+
 			        function downloadFile(fileId) {
 			            fetch(`/api/documents/download?docId=${fileId}`, {  
 			                method: 'GET',
@@ -1130,46 +1144,48 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			    }
 			}
 
-			        function loadOrganizationChart() {
-			            $.ajax({
-			                url: '/employee/addressBook/tree-menu',
-			                method: 'GET',
-			                dataType: 'json',
-			                success: function (data) {
-			                    const formattedData = formatDataForJsTree(data);
+			function loadOrganizationChart(sharedUsers = []) {
+			    $.ajax({
+			        url: '/employee/addressBook/tree-menu',
+			        method: 'GET',
+			        dataType: 'json',
+			        success: function (data) {
+			            const formattedData = formatDataForJsTree(data, sharedUsers);
 
-			                    // jsTree 초기화
-			                    $('#organization-chart').jstree('destroy'); // 기존 트리 제거
-			                    $('#organization-chart').jstree({
-			                        'core': {
-			                            'data': formattedData
-			                        },
-			                        'checkbox': {
-			                            'keep_selected_style': false
-			                        },
-			                        'plugins': ['checkbox']
-			                    });
+			            // jsTree 초기화 후 데이터 적용
+			            $('#organization-chart').jstree('destroy');
+			            $('#organization-chart').jstree({
+			                'core': {
+			                    'data': formattedData
 			                },
-			                error: function (xhr, status, error) {
-			                    console.error('Error loading organization chart:', error);
-			                }
+			                'checkbox': {
+			                    'keep_selected_style': false
+			                },
+			                'plugins': ['checkbox']
 			            });
+			        },
+			        error: function (xhr, status, error) {
+			            console.error('Error loading organization chart:', error);
 			        }
+			    });
+			}
 
-			        function formatDataForJsTree(nodes) {
-			            return nodes.map(node => {
-			                return {
-			                    id: node.nodeId,
-			                    text: node.nodeName,
-			                    state: {
-			                        opened: node.nodeState.opened
-			                    },
-			                    children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
-			                    icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-			                };
-			            });
-			        }
 
+			function formatDataForJsTree(nodes, sharedUsers = []) {
+			    return nodes.map(node => {
+			        const isChecked = sharedUsers.includes(node.nodeId); // 공유된 사용자에 포함되는지 확인
+			        return {
+			            id: node.nodeId,
+			            text: node.nodeName,
+			            state: {
+			                opened: node.nodeState.opened,
+			                selected: isChecked  // 포함된 사용자면 체크
+			            },
+			            children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren, sharedUsers) : [],
+			            icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+			        };
+			    });
+			}
 			        function getSelectedEmployees() {
 			            const selectedNodes = $('#organization-chart').jstree('get_checked', true);
 			            // 직원(사원) 노드만 필터링 (자식이 없는 노드)
@@ -1204,7 +1220,8 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			            .then(result => {
 			                alert(result);
 			                closeShareModal();
-			                loadPersonalFiles(); // 목록 갱신을 위해 동일한 함수 호출
+			                loadPersonalFiles();
+			                clearSelection();  // 목록 갱신을 위해 동일한 함수 호출
 			            })
 			            .catch(error => {
 			                console.error('Error sharing files:', error);
@@ -1212,14 +1229,125 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			        }
 	
 
-			        // 선택된 파일 ID 가져오기
+			     // 선택된 파일 ID 가져오기
 			        function getSelectedFiles() {
-			            const checkboxes = document.querySelectorAll('.file-checkbox:checked');
+			            const activeTableId = getActiveTableId();  // 현재 활성화된 테이블 확인
+			            let className = 'file-checkbox';  // 기본 체크박스 클래스
+
+			            // 활성화된 테이블에 따라 체크박스 클래스 설정
+			            if (activeTableId === 'shared-by-me-files-table') {
+			                className = 'shared-checkbox';
+			            } else if (activeTableId === 'shared-with-me-files-table') {
+			                className = 'shared-with-me-checkbox';
+			            } else if (activeTableId === 'favorite-files-table') {
+			                className = 'favorite-checkbox';
+			            } else if (activeTableId === 'trash-files-table') {
+			                className = 'trash-checkbox';
+			            }
+
+			            // 선택된 파일의 체크박스를 찾아 ID 값 반환
+			            const checkboxes = document.querySelectorAll(`.${className}:checked`);
 			            return Array.from(checkboxes).map(checkbox => parseInt(checkbox.value));
 			        }
 
-			       
+
+			     // 공유자 설정 모달 열기 함수
+			     function openShareSettingModal() {
+    const selectedFiles = getSelectedFiles();
+    if (selectedFiles.length === 0) {
+        alert('공유자를 설정할 파일을 선택하세요.');
+        return;
+    }
+
+    // 선택한 파일에 대해 공유된 사용자 목록을 가져오기
+    fetch('/api/documents/shared-users', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(selectedFiles)
+    })
+    .then(response => response.json())
+    .then(sharedUsers => {
+        // 공유된 사용자 목록을 받으면 모달을 열면서 공유된 사용자 정보 전달
+        openShareModal(sharedUsers);  
+    })
+    .catch(error => {
+        console.error('Error fetching shared users:', error);
+    });
+}     
+			     function openShareModal(sharedUsers) {
+			    	    const shareModalElement = document.getElementById('shareModal');
+			    	    const myModal = bootstrap.Modal.getOrCreateInstance(shareModalElement);
+			    	    myModal.show();
+			    	    
+			    	    // 공유된 사용자 목록을 사용하여 조직도를 로드하고 체크 상태로 설정
+			    	    loadOrganizationChart(sharedUsers);
+			    	}
+			  // 체크박스 해제 함수
+			     function clearSelection() {
+			         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+			         checkboxes.forEach(checkbox => {
+			             checkbox.checked = false;
+			         });
+			     
+			  }
+			  
+			  // --------------------------------------저장용량 
+			  
+			
+			function updateStorageUsage() {
+			    fetch('/api/storage/storage-usage', {  // 엔드포인트 URL 수정
+			        method: 'GET',
+			        headers: {
+			            'X-CSRF-TOKEN': csrfToken,      // csrfToken이 정의되어 있는지 확인
+			            'Content-Type': 'application/json'
+			        }
+			    })
+			    .then(response => {
+			        if (!response.ok) {
+			            throw new Error(`HTTP error! status: ${response.status}`);
+			        }
+			        return response.json();
+			    })
+			    .then(data => {
+			        const usedStorageBytes = data.usedStorage;      // 바이트 단위
+			        const totalStorageBytes = data.totalStorage;    // 바이트 단위
+
+			        // 바이트를 GB로 변환 (1 GB = 1024 * 1024 * 1024 바이트)
+			        const usedStorageGB = usedStorageBytes / (1024 ** 3);
+			        const totalStorageGB = totalStorageBytes / (1024 ** 3);
+
+			        // 퍼센트 계산
+			        const percentage = (usedStorageGB / totalStorageGB) * 100;
+
+			        // Progress bar 업데이트
+			        const progressBar = document.getElementById('storage-progress-bar');
+			        progressBar.style.width = `${percentage}%`;
+			        progressBar.setAttribute('aria-valuenow', percentage);
+
+			        // 텍스트 업데이트 (usedStorage는 GB 단위로 표시)
+			        document.getElementById('used-storage').textContent = `${usedStorageGB.toFixed(2)} GB`;
+			        document.getElementById('total-storage').textContent = `${totalStorageGB.toFixed(2)} GB`; // 총 용량은 GB 단위로 출력
+			    })
+			    .catch(error => {
+			        console.error('Error fetching storage usage:', error);
+			    });
+			}
+
+// 용량을 사람이 읽기 쉬운 형식으로 변환하여 표시 (바이트 단위를 자동 변환)
+function formatFileSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Byte';
+
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const convertedSize = (bytes / Math.pow(1024, i)).toFixed(2);
+
+    return `${convertedSize} ${sizes[i]}`;
+} 
+
 			    </script>
 			</th:block>
 </body>
-</html>	
+</html>

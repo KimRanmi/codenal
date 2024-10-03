@@ -29,6 +29,8 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	// 2. 부서명 검색
 	Page<Departments> findByDeptNameContaining(String deptName, Pageable pageable);
 
+
+
 	// 3. 부서별 직원 수
 	// 부서별 직원 수를 포함하여 전체 조회 (empStatus가 'Y'인 직원만 집계)
 	@Query("SELECT d.deptNo AS deptNo, d.deptName AS deptName, d.deptCreateDate AS deptCreateDate, COUNT(e) AS empCount " +
@@ -47,9 +49,13 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	// 1. 부서 추가
 	boolean existsByDeptName(String deptName);
 
+
+
+
 	// 2. 부서명 수정
 	// 동일한 부서명이 있는지 확인 (부서번호가 다른 경우)
 	boolean existsByDeptNameAndDeptNoNot(String deptName, Long deptNo);
 
 
 }
+

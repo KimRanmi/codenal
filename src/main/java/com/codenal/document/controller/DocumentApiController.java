@@ -55,7 +55,7 @@ public class DocumentApiController {
         Long empId = Long.parseLong(empIdString);
 
         // 파일 저장 경로 설정 (예: 파일을 로컬에 저장)
-        Path uploadDir = Paths.get("uploads/");
+        Path uploadDir = Paths.get("uploads");
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
@@ -251,6 +251,10 @@ public class DocumentApiController {
         }
     }
 
-    
+    @PostMapping("/shared-users")
+    public ResponseEntity<List<Long>> getSharedUsers(@RequestBody List<Long> docIds) {
+        List<Long> sharedUsers = documentService.findSharedUsersByDocIds(docIds);
+        return ResponseEntity.ok(sharedUsers);
+    }
 
 }
