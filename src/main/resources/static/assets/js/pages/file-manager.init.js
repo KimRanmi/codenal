@@ -77,7 +77,7 @@ var getJSON = function (jsonurl, callback) {
   xhr.send();
 };
 
-fetch("/api/documents/list")
+fetch("/api/documents/list-paged")
   .then(response => response.json())
   .then(data => {
     allFileList = data;

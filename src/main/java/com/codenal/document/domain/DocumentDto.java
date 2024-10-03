@@ -16,6 +16,7 @@ import java.util.Date;
 @Setter
 @ToString
 @Builder
+
 public class DocumentDto {
 
     private Long docNo;

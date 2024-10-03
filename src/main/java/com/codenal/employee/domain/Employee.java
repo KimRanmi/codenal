@@ -106,4 +106,8 @@ public class Employee {
 
 	@OneToMany(mappedBy = "employee")
 	private List<ChatParticipants> participants;
+	
+	   public Employee(Long empId) {
+	        this.empId = empId;
+	    }
 }

@@ -26,10 +26,10 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public Employee selectEmpId(String empId) {
-    	Employee emp = employeeRepository.findByEmpName(empId);
-    	return emp;
-    }
+//    public Employee selectEmpId(String empId) {
+//    	Employee emp = employeeRepository.findByEmpName(empId);
+//    	return emp;
+//    }
     
 
     public void saveEmployee(Employee employee) {
@@ -53,5 +53,11 @@ public class EmployeeService {
     	return dtoList;
     }
    
-
+    public EmployeeDto getEmployeeDtoById(Long empId) {
+        Employee employee = employeeRepository.findByEmpId(empId);
+        if (employee != null) {
+            return EmployeeDto.fromEntity(employee);
+        }
+        return null;
+    }
 }

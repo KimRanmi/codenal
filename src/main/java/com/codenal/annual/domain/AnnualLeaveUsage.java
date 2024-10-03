@@ -32,13 +32,13 @@ public class AnnualLeaveUsage {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Id
    @Column(name="annual_usage_no")
-   private Long annualUsageNo;
+   private Long annualUsageNo;	
    
    @Column(name="annual_usage_start_date")
    private LocalDate annualUsageStartDate;
    
    @Column(name="annual_usage_end_date")
-   private LocalDate annualUsageEndDate;
+   private LocalDate annualUsageEndDate;	
    
    @Column(name="total_day")
    private float totalDay;
