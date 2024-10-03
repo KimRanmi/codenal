@@ -55,7 +55,7 @@ public class CalendarService {
 		Long detpNo = dto.getDeptNo();
 		Departments dept = departmentsRepository.findByDeptNo(detpNo);
 		
-		int jodNo = dto.getJobNo();
+		Long jodNo = dto.getJobNo();
 		Jobs job = jobsRepository.findByJobNo(jodNo);
 		String[] str = {dto.getEmpName(), dept.getDeptName(),job.getJobName()};
 		// jobs, jobsDto 생성 후 부서명, 직급명 각자 레포지토리에서 가져온 후 String 객체 만들어서 거기다 넣어서 리턴 후 js에서 출력하기

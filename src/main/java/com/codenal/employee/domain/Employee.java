@@ -1,5 +1,6 @@
 package com.codenal.employee.domain;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,7 +36,6 @@ import lombok.Setter;
 @Builder
 @Setter
 public class Employee {
-
 	@Id
 	@Column(name = "emp_id")
 	private Long empId;
@@ -106,8 +106,4 @@ public class Employee {
 
 	@OneToMany(mappedBy = "employee")
 	private List<ChatParticipants> participants;
-	
-	   public Employee(Long empId) {
-	        this.empId = empId;
-	    }
 }

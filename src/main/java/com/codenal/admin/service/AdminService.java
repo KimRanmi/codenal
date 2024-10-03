@@ -80,16 +80,25 @@ public class AdminService {
 			dto.setEmpId(empId);
 
 			Employee employee = dto.toEntity();
+
+			// 부서 셀렉트박스
+			Departments department = Departments.builder().deptNo(dto.getDeptNo()).build();
+			employee.setDepartments(department);
+
+			// 직무 셀렉트 박스
+			Jobs job = Jobs.builder().jobNo(dto.getJobNo()).build();
+			employee.setJobs(job);
+
 			adminRepository.save(employee); // DB 저장
-			
+
 			// 연차 초기화
 			AnnualLeaveManageDto almDto = new AnnualLeaveManageDto();
-			
+
 			almDto.setEmp_id(employee.getEmpId());
-			
+
 			AnnualLeaveManage alm = almDto.toEntity();
 			annualLeaveManageRepository.save(alm);
-			
+
 			result = 1;
 
 		} catch (Exception e) {
@@ -100,6 +109,23 @@ public class AdminService {
 
 	}
 
+	// 부서 셀렉트
+	public List<DepartmentsDto> getAllDepartments() {
+		List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
+		return departments.stream()
+				.map(DepartmentsDto::fromEntity)
+				.collect(Collectors.toList());
+	}
+
+	// 직급 셀렉트
+	public List<JobsDto> getAllJobs() {
+		List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
+		return jobs.stream()
+				.map(JobsDto::fromEntity) 
+				.collect(Collectors.toList());
+	}
+
+
 
 	// ---------------- 직원 목록 검색 1 (재직 or 퇴사)
 	public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
@@ -108,21 +134,16 @@ public class AdminService {
 		String searchText = searchDto.getEmpStatus();
 
 		if (searchText != null && !"".equals(searchText)) {
-			switch (searchText) {
-			case "ALL" :	// 전체
-				adminSearchOne = adminRepository.findAllByEmpAuth("USER", pageable);
-				break;
-			case "Y" :  // empStatus가 'Y'일 경우 (재직)
-				adminSearchOne = adminRepository.findByEmpStatusAndEmpAuth("Y", "USER", pageable);
-				break;
-			case "N":  // empStatus가 'N'일 경우 (퇴사)
-				adminSearchOne = adminRepository.findByEmpStatusAndEmpAuth("N", "USER", pageable);
-				break;
+			if ("ALL".equals(searchText)) {  // 전체 검색
+				adminSearchOne = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
+			} else if ("Y".equals(searchText)) {  // 재직자 검색
+				adminSearchOne = adminRepository.searchByMultipleFields("USER", "Y", null, "", pageable);
+			} else if ("N".equals(searchText)) {  // 퇴사자 검색
+				adminSearchOne = adminRepository.searchByMultipleFields("USER", "N", null, "", pageable);
 			}
 		} else {
-			adminSearchOne = adminRepository.findAllByEmpAuth("USER", pageable);
+			adminSearchOne = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
 		}
-
 
 		List<EmployeeDto> adminSearchOneList = new ArrayList<>();
 		for (Employee e : adminSearchOne) {
@@ -132,7 +153,6 @@ public class AdminService {
 
 		return new PageImpl<>(adminSearchOneList, pageable, adminSearchOne.getTotalElements());
 	}
-
 
 	// ------------------ 직원 목록 검색 2 (직원 정보)
 	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
@@ -144,31 +164,30 @@ public class AdminService {
 			int searchType = searchDto.getSearch_type();
 
 			switch (searchType) {
-			case 1:
-				adminSearchTwo = adminRepository.findAllByEmpAuth("USER", pageable);
+			case 1: // 전체 검색
+				adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
 				break;
-			case 2:
-				adminSearchTwo = adminRepository.findByEmpIdContainingAndEmpAuth(searchText, "USER", pageable);
+			case 2: // 사번 검색 (부분 검색 가능)
+				adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, searchText, pageable);
 				break;
-			case 3:
+			case 3: // 직원명 검색
 				adminSearchTwo = adminRepository.findByEmpNameContainingAndEmpAuth(searchText, "USER", pageable);
 				break;
-			case 4:
+			case 4: // 부서명 검색
 				adminSearchTwo = adminRepository.findByDepartments_DeptNameContainingAndEmpAuth(searchText, "USER", pageable);
 				break;
-			case 5:
+			case 5: // 직급명 검색
 				adminSearchTwo = adminRepository.findByJobs_JobNameContainingAndEmpAuth(searchText, "USER", pageable);
 				break;
-			case 6:
+			case 6: // 전화번호 검색
 				adminSearchTwo = adminRepository.findByEmpPhoneContainingAndEmpAuth(searchText, "USER", pageable);
 				break;
 			}
 		} else {
-			adminSearchTwo = adminRepository.findAllByEmpAuth("USER", pageable);
+			adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);  // 전체 검색
 		}
 
-
-		List<EmployeeDto> adminSearchTwoList = new ArrayList<EmployeeDto>();
+		List<EmployeeDto> adminSearchTwoList = new ArrayList<>();
 		for (Employee e : adminSearchTwo) {
 			EmployeeDto dto = EmployeeDto.fromEntity(e);
 			adminSearchTwoList.add(dto);
@@ -177,10 +196,8 @@ public class AdminService {
 		return new PageImpl<>(adminSearchTwoList, pageable, adminSearchTwo.getTotalElements());
 	}
 
-
 	// ---------------- 직원 검색 통합 (재직/퇴사 + 직원 정보)
 	public Page<EmployeeDto> searchAll(EmployeeDto searchDto, Pageable pageable) {
-
 		if (searchDto.getSearch_type() == 0) {
 			// 재직 상태 검색
 			return searchByStatus(searchDto, pageable);
@@ -203,7 +220,7 @@ public class AdminService {
 	public void resetEmployeePassword(Long empId, String newPw) {
 		EmployeeDto e = employeeDetail(empId);
 		e.setEmpPw(newPw); // 암호화하지 않고 저장
-		
+
 		adminRepository.save(e.toEntity());
 	}
 
@@ -226,24 +243,6 @@ public class AdminService {
 	}
 
 
-	// 부서 셀렉트
-	public List<DepartmentsDto> getAllDepartments() {
-		List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
-		return departments.stream()
-				.map(DepartmentsDto::fromEntity)
-				.collect(Collectors.toList());
-	}
-
-	// 직급 셀렉트
-	public List<JobsDto> getAllJobs() {
-		List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
-		return jobs.stream()
-				.map(JobsDto::fromEntity) 
-				.collect(Collectors.toList());
-	}
-
-
-
 	// ---------------- 직원 정보 수정
 	@Transactional
 	public Employee employeeUpdate(Long empId, EmployeeDto dto) { 
@@ -261,28 +260,20 @@ public class AdminService {
 	}
 
 
-	// 직원 정보 상세 조회
-	//	public EmployeeDto selectEmployeeListDetail(Long employeeId) {
-	//	Employee announce = employeeListRepository.findByEmployeeId(employeeId);
-	//	EmployeeDto dto = new EmployeeDto().toDto(announce);
-	//     return dto;
-	//    }
-
-
 	// 직원 정보 수정
-	//@Transactional
-	//	public Employee selectEmployeeListUpdate(EmployeeDto dto) { 
-	//	EmployeeDto temp = selectEmployeeOne(dto.get());
-	//	temp.setBoard_title(dto.getBoard_title());
-	//	temp.setBoard_content(dto.getBoard_content());
-	//	if(dto.getOri_thumbnail() != null && "".equals(dto.getOri_thumbnail()) == false) {
-	//		temp.setOri_thumbnail(dto.getOri_thumbnail());
-	//		temp.setNew_thumbnail(dto.getNew_thumbnail());
-	//	}
+	 @Transactional
+	    public Employee updateEmployee(Long empId, EmployeeDto dto) { 
+	        Employee e = adminRepository.findByEmpId(empId);
 
-	//	Board board = temp.toEntity();
-	//	Board result = boardRepository.save(board);
-	//	return result;
-	//}
+	        e.setEmpName(dto.getEmpName());
+
+	        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+	        e.setDepartments(department);
+
+	        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+	        e.setJobs(job);
+
+	        return adminRepository.save(e);
+	    }
 
 }

@@ -58,4 +58,3 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 
 
 }
-

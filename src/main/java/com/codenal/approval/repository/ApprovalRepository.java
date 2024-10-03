@@ -91,11 +91,17 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		@Modifying
 		@Query(value="update Approval a set a.approvalStatus = ?1 where a.approvalNo = ?2")
 		int updateStatus(int status,Long approvalNo);
+
+		Long findByEmployeeEmpId(Long empId);
 		
 		
 		@Query(value="SELECT a, e FROM Approval a "
 					+ "JOIN a.employee e "
 		         + "where a.approvalStatus = ?1")
 		List<Approval> findByApprovalStatus(int i);
+		
+		// 메인화면
+		@Query("SELECT COUNT(a) FROM Approval a WHERE a.employee.empId = ?1 AND a.approvalStatus = ?2")
+		int findByEmployeeEmpIdAndApprovalStatus(Long empId, int i);
 		
 }

@@ -29,8 +29,8 @@ import com.codenal.security.service.SecurityService;
 public class WebSecurityConfig {
 
 	private final DataSource dataSource;
-	
-	
+
+
 
 	@Autowired
 	public WebSecurityConfig(DataSource dataSource) {
@@ -87,6 +87,8 @@ public class WebSecurityConfig {
 	    	);
 
 	    return http.build();
+
+	
 	}
 
 	// CORS 설정을 위한 Bean 정의
@@ -124,7 +126,7 @@ public class WebSecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return (web -> 
@@ -133,15 +135,15 @@ public class WebSecurityConfig {
 				PathRequest.toStaticResources().atCommonLocations()
 				));
 	}
-	
+
 	@Configuration // 파일경로
 	public class WebConfig implements WebMvcConfigurer {
-	    @Override
-	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	        registry.addResourceHandler("/uploads/**")
-	        .addResourceLocations("/classpath:/uploads/");// 실제 파일 시스템 경로
-	    }
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/uploads/**")
+			.addResourceLocations("/classpath:/uploads/");// 실제 파일 시스템 경로
+		}
 	}
-	
-	
+
+
 }
