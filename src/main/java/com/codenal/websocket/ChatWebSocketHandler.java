@@ -128,21 +128,22 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 						  resultMap.put("room_no", String.valueOf(chat.getChatRoom().getRoomNo()));
 						  resultMap.put("sender_name", chat.getChatParticipant().getEmployee().getEmpName());
 						  
-					        // 메시지를 받은 사용자에게 읽음 상태 업데이트
-					        for (WebSocketSession client : clients.values()) {
-					            if (client.isOpen()) {  // 세션이 열려있는지 확인
-					                // 클라이언트에게 메시지 전송
-					                client.sendMessage(new TextMessage(objectMapper.writeValueAsString(resultMap)));
+					      // 메시지를 받은 사용자에게 읽음 상태 업데이트
+						  for (WebSocketSession client : clients.values()) {
+						      if (client.isOpen()) {  // 세션이 열려있는지 확인
+						          // 클라이언트에게 메시지 전송
+						          client.sendMessage(new TextMessage(objectMapper.writeValueAsString(resultMap)));
 
-					                Long empNo = Long.parseLong(client.getPrincipal().getName());  // 수신자의 participantNo 확인
-					                chatService.updateMessageReadStatus(empNo);
-					                
-					                // 특정 채팅방 참가자 리스트 조회
-					                List<ChatParticipantsDto> participantsList = chatService.selectChatRoomParticipants(chat.getChatRoom().getRoomNo());
-					                // 특정 대상자들에게만 알림 메시지 전송
-					                notificationWebSocketHandler.sendNotificationToSpecificUsers(participantsList, objectMapper.writeValueAsString(resultMap));
-					            }
-					        }
+						          Long empNo = Long.parseLong(client.getPrincipal().getName());  // 수신자의 participantNo 확인
+						          chatService.updateMessageReadStatus(empNo);
+						      }
+						  }
+
+						  // 특정 채팅방 참가자 리스트 조회
+						  List<ChatParticipantsDto> participantsList = chatService.selectChatRoomParticipants(chat.getChatRoom().getRoomNo());
+
+						  // 특정 대상자들에게만 알림 메시지 전송 (반복문 바깥에서 한 번만 실행)
+						  notificationWebSocketHandler.sendNotificationToSpecificUsers(participantsList, objectMapper.writeValueAsString(resultMap));
 						  
 					  }
 				break;

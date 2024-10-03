@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.codenal.employee.domain.Employee;
 
@@ -18,5 +19,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     
     @Query("SELECT e FROM Employee e WHERE e.empStatus = 'Y' AND e.empId != ?1 AND e.empAuth !='ADMIN'")
     List<Employee> findAllActiveEmployees(Long empId);
+
+    @Query(value="SELECT e FROM Employee e "
+            + "WHERE (:searchText IS NULL OR :searchText = '' OR e.departments.deptName Like CONCAT('%', :searchText, '%') "
+            + "OR e.empName LIKE CONCAT('%', :searchText, '%')) "
+            + "AND e.empId != :empId "
+            + "AND e.empStatus = 'Y' "
+            + "AND e.empAuth != 'ADMIN' "
+            + "ORDER BY e.departments.deptName DESC")
+    List<Employee> findByEmpNameContainingOrDepartmentsDeptNameContaining(@Param("empId") Long empId, @Param("searchText") String searchText);
     
 }

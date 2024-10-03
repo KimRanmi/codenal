@@ -1,10 +1,14 @@
 package com.codenal.chat.controller;
 
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -17,8 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.codenal.chat.domain.ChatMsg;
-import com.codenal.chat.domain.ChatMsgDto;
 import com.codenal.chat.domain.ChatParticipants;
 import com.codenal.chat.domain.ChatRoom;
 import com.codenal.chat.domain.ChatRoomDto;
@@ -57,14 +59,35 @@ public class ChatController {
         List<ChatParticipants> notMeParticipantList = chatService.notMeParticipant(username);  // 같이 속한 채팅방 참가자의 정보 조회
         model.addAttribute("notMeParticipantList",notMeParticipantList);
         
-		List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);  // 채팅방 초대버튼 클릭시 조회할 직원목록
+        List<EmployeeDto> employeeList = employeeService.getActiveEmployeeList(username);		
 		model.addAttribute("employeeList",employeeList);
-		
+
+	    
 //		List<ChatMsgDto> lastMsg = chatService.latestMessages(participantList);
 //		model.addAttribute("lastMsg",lastMsg);
 		
 		return "apps/chat";
 	}
+	
+	
+	@GetMapping("/chatList/search")
+	public ResponseEntity<List<EmployeeDto>> searchEmployees(@RequestParam(value = "keyword", required = false) String keyword) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User)authentication.getPrincipal();
+		String username = user.getUsername();
+        
+	    List<EmployeeDto> employeeList = new ArrayList<EmployeeDto>();
+	    employeeList = employeeService.getActiveEmployeeList(username);  // 전체 직원 목록 반환
+
+	    // 검색어가 있을 경우 검색, 없을 경우 전체 목록 반환
+	    if (keyword != null && !keyword.isEmpty()) {
+	        employeeList = chatService.getActiveEmployeeListSearch(username, keyword);
+	    }
+
+	    return new ResponseEntity<>(employeeList, HttpStatus.OK);  // JSON으로 응답
+	}
+	
+	
 	
 	@ResponseBody
 	@PostMapping("/chatList/chatRoom/create")
@@ -132,6 +155,6 @@ public class ChatController {
         
 		int chat = chatService.removeUserFromRoom(roomNo, empId);
 
-        return chat(model); // 나간 후 chat메소드로 가서 채팅 첫 페이지로 이동
+	    return "redirect:/chatList";  // "redirect:"를 사용해 /chatList로 이동
     }
 }

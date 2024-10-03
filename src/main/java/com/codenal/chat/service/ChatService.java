@@ -22,6 +22,7 @@ import com.codenal.chat.repository.ChatParticipantsRepository;
 import com.codenal.chat.repository.ChatReadRepository;
 import com.codenal.chat.repository.ChatRoomRepository;
 import com.codenal.employee.domain.Employee;
+import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.repository.EmployeeRepository;
 
 import jakarta.transaction.Transactional;
@@ -301,4 +302,17 @@ public class ChatService {
 		}
 		return chatListDto;
 	}
+
+	public List<EmployeeDto> getActiveEmployeeListSearch(String username, String empSearch) {
+    	Long empId = Long.parseLong(username);
+    	List<Employee> empList = employeeRepository.findByEmpNameContainingOrDepartmentsDeptNameContaining(empId, empSearch);;
+    	
+    	List<EmployeeDto> dtoList = new ArrayList<EmployeeDto>();
+    	for(Employee e : empList) {
+    		EmployeeDto dto = new EmployeeDto().fromEntity(e);
+    		dtoList.add(dto);
+    	}
+    	return dtoList;
+	}
+
 }
