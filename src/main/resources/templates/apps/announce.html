@@ -16,6 +16,13 @@
 <!-- 폰트 -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"/>
+
 <style>
 	* {font-family: "Noto Sans KR", sans-serif !important;} 
 tr {
@@ -38,68 +45,44 @@ tr {
 							<h5 class="card-title mb-0 flex-grow-1">게시판 목록</h5>
 							<div class="flex-shrink-0">
 								<div class="d-flex flex-wrap gap-2">
-									<a href="/announce/create"><i
+									<a href="/announce/create" class="btn btn-primary"><i
 										class="ri-add-line align-bottom me-1"></i> 게시글 작성 </a>
-									<!-- 게시글 체크박스 기능 안넣을거면 지우기 -->
-									<!--체크박스 									<button class="btn btn-soft-danger" id="remove-actions"
-										onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
 								</div>
 							</div>
 						</div>
 					</div>
-					<div
-						class="card-body border border-dashed border-end-0 border-start-0">
-						<form>
+					<div class="card-body border border-dashed border-end row justify-content-end">
 							<input type="hidden" th:value="${username}"></input>
-							<div class="row g-3">
-								<div class="col-xxl-5 col-sm-12">
-									<div class="search-box">
-										<input type="text"
-											class="form-control search bg-light border-light"
-											placeholder="검색어를 입력하세요."> <i
-											class="ri-search-line search-icon"></i>
-									</div>
-								</div>
+							<div class="search col-1 col-sm-3" th:if="${searchDto != null}">
+								<form th:action="@{/announce}" th:object="${searchDto}" method="get">
 
-								<div class="col-xxl-3 col-sm-4">
-									<div class="input-light">
-										<select class="form-control" data-choices
-											data-choices-search-false name="choices-single-default"
-											id="idStatus">
-											<option value="">정렬</option>
-											<option value="New" selected>최신순</option>
-											<option value="Old">오래된순</option>
-											<option value="Manyview">조회 높은순</option>
-											<option value="littleview">조회 낮은순</option>
-										</select>
-									</div>
-								</div>
+										<select name="search_type" class="form-select-sm rounded-pill mb-3 text-muted" th:value="${searchDto.search_type}">
+											<option th:value="1" th:selected="${searchDto.search_type} == '1'">제목</option>
+											<option th:value="2" th:selected="${searchDto.search_type} == '2'">작성자</option>
+											<option th:value="3" th:selected="${searchDto.search_type} == '3'">제목+작성자</option>
+										</select> 
+										<div class="search-box">
+											<div class="input-group">
+											<input type="text" name="search_text" th:field="*{search_text}" 
+												class="form-control" aria-describedby="button-addon"
+												placeholder="검색어를 입력하세요."><i class="ri-search-line search-icon"></i>
+											<button type="submit" class="btn btn-soft-warning waves-effect waves-light w-45" id="button-addon">
+											검색</button>
+											</div>
+										</div>
+
 								<!--end col-->
-								<div class="col-xxl-1 col-sm-4">
-									<!--onclick="SearchData(); JS파일에 있는거 지우기 -->
-									<button type="button" class="btn btn-primary w-100" onclick="">
-										<i class="ri-equalizer-fill me-1 align-bottom"></i> 필터
-									</button>
-								</div>
-								<!--end col-->
+								</form>
 							</div>
 							<!--end row-->
-						</form>
 					</div>
 					<!--end card-body-->
 					<div class="card-body">
 						<div class="table-responsive table-card mb-4">
-							<table class="table align-middle table-nowrap mb-0"
+							<table class="table align-middle table-nowrap mb-0 table table-bordered dt-responsive table-striped" 
 								id="tasksTable">
-								<thead class="table-light text-muted">
+								<thead class="table-primary text-muted">
 									<tr>
-										<!--체크박스 										<th style="width: 40px;">
-											<div class="form-check">
-												<input class="form-check-input" type="checkbox" id="checkAll"
-													value="option">
-											</div>
-										</th> -->
-										<th></th>
 										<th>번호</th>
 										<th>조회수</th>
 										<th>제목</th>
@@ -107,7 +90,7 @@ tr {
 										<th>작성 날짜</th>
 									</tr>
 								</thead>
-								<tbody class="">
+								<tbody>
 									<!-- announceList 꺼내기(게시글 존재x) -->
 									<th:block th:if="${#lists.isEmpty(announceList.content)}">
 										<tr>
@@ -117,14 +100,7 @@ tr {
 									<!-- announceList 꺼내기(게시글 존재o) -->
 									<th:block th:if="${!#lists.isEmpty(announceList.content)}">
 										<tr th:each="announce, stat : ${announceList}">
-											<!--체크박스 										<th scope="row">
-												<div class="form-check">
-													<input class="form-check-input" type="checkbox" name="chk_child"
-														value="option1">
-												</div>
-											</th> -->
 											<!-- pageable 활용한 게시글 번호 수정 -->
-											<td></td>
 											<td
 												th:text="${(announceList.pageable.pageSize) * (announceList.pageable.pageNumber)+stat.count}"></td>
 											<td th:text="${announce.view_count}"></td>
@@ -188,18 +164,16 @@ tr {
 
 	</div>
 
-
-	<!-- list.js min js -->
-	<script src="/assets/libs/list.js/list.min.js"></script>
-
-	<!--list pagination js-->
-	<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
-
-	<!-- titcket init js -->
-	<script src="/assets/js/pages/tasks-list.init.js"></script>
-
-	<!-- Sweet Alerts js -->
-	<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	<th:block layout:fragment="pagejs">
+		<script src="/assets/libs/prismjs/prism.js"></script>
+		<!-- list.js min js -->
+		<script src="/assets/libs/list.js/list.min.js"></script>		
+		<!--list pagination js-->
+		<script src="/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+		<!-- Sweet Alerts js -->
+		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+		<!-- announce init js -->
+		<script src="/assets/js/pages/announce.init.js"></script>
 	</th:block>
 
 
