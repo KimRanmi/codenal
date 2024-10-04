@@ -150,7 +150,7 @@ public class CalendarService {
 			annualLeaveAdd.setCalendar_schedule_writer(annualLeaveListDto.getEmp_id());
 			eventDtoList.add(annualLeaveAdd);
 		}
-		System.out.println(eventDtoList);
+		System.out.println("확인"+eventDtoList);
 		return eventDtoList;
 	}
 	

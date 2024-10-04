@@ -32,16 +32,21 @@ public class MeetingRoomImgFileService {
 			String imgPath = mr.getMeetingRoomImg();
 			String resultDir = uploadDir + URLDecoder.decode(imgPath, "UTF-8");
 			
-			if(resultDir != null && resultDir.isEmpty() == false) {
-				File file = new File(resultDir);
+			if(imgPath != null || !imgPath.equals("")) {
 				
-				if(file.exists()) {
-					file.delete();
-					result = 1;
-				} else {
-					result = 0;
+				if(resultDir != null && resultDir.isEmpty() == false) {
+					File file = new File(resultDir);
+					
+					if(file.exists()) {
+						file.delete();
+						result = 1;
+					} else {
+						result = 0;
+					}
+					
 				}
-				
+			} else {
+				result = 1;
 			}
 			
 		} catch (Exception e) {

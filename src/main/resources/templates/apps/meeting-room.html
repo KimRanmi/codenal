@@ -12,15 +12,11 @@
 <!--Swiper slider css-->
 <link href="assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet"
 	type="text/css" />
-	
-	<style type="text/css">
-		.flatpickr-monthDropdown-months {
-			display: none;
-		}
-		.numInputWrapper {
-			display: none;
-		}
-	</style>
+<!-- 폰트 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+<style type="text/css">
+	* {font-family: "Noto Sans KR", sans-serif !important;} 
+</style>
 </head>
 
 <body>
@@ -37,7 +33,7 @@
 			<div class="col-xxl-4 col-xl-6">
 				<div class="card">
 					<div class="card-header align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">회의실 리스트</h4>
+						<h4 class="card-title mb-0 flex-grow-1" style="font-family: 'Noto Sans KR', sans-serif;">회의실 리스트</h4>
 					</div>
 					<!-- end card header -->
 
@@ -95,7 +91,7 @@
 					<div th:if="${!#lists.isEmpty(meetingRoom)}" class='tab-pane fade meetingRoomActive' th:each="meetingRoomDetail : ${meetingRoom}" id='meetingRoomDetail' th:attr="id=meetingRoomDetail+${meetingRoomDetail.meeting_room_no}"
 						role='tabpanel' aria-labelledby='custom-v-pills-home-tab'>
 						<div class='card-header align-items-center d-flex'>
-							<h4 class='card-title mb-0 flex-grow-1' th:text="${meetingRoomDetail.meeting_room_name}"></h4>
+							<h4 class='card-title mb-0 flex-grow-1' th:text="${meetingRoomDetail.meeting_room_name}" style="font-family: 'Noto Sans KR', sans-serif;"></h4>
 						</div>
 						<div class='card-body'>
 							<div class='mx-n3'>
@@ -109,13 +105,13 @@
 											<div class='mt-xl-0 mt-5'>
 												<div class="d-flex">
 													<div class='flex-grow-1'>
-														<h4 th:text="${meetingRoomDetail.meeting_room_name}">회의실A</h4>
+														<h4 style="font-family: 'Noto Sans KR', sans-serif;" th:text="${meetingRoomDetail.meeting_room_name}">회의실A</h4>
 														<div class='hstack gap-3 flex-wrap mb-4'>
 															<div>
-																<a class='text-primary d-block' th:text="${meetingRoomDetail.meeting_room_place}"> 3층 301호 </a>
+																<a class='text-primary d-block' style="font-family: 'Noto Sans KR', sans-serif;" th:text="${meetingRoomDetail.meeting_room_place}"> 3층 301호 </a>
 															</div>
 															<div class='vr'></div>
-															<div class='text-muted'>어매니티 : <span class='text-body fw-medium' th:text="${meetingRoomDetail.meeting_room_amenity}"> TV, 화이트 보드, 빔 프로젝터 </span>
+															<div class='text-muted' style="font-family: 'Noto Sans KR', sans-serif;">어매니티 : <span class='text-body fw-medium' th:text="${meetingRoomDetail.meeting_room_amenity}"> TV, 화이트 보드, 빔 프로젝터 </span>
 															</div>
 														</div>
 													</div>
@@ -150,16 +146,22 @@
 															</div>
 														</div>
 														<div class='col-xl-5'>
-															<h5 class='fs-16 fw-bold'>예약 시간</h5>
+															<h5 class='fs-16 fw-bold' style="font-family: 'Noto Sans KR', sans-serif;">예약 시간</h5>
 																<div class='mb-3 mt-3'>
-																	<h5 class="fs-12 fw-bold text-muted">오전</h5>
-																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전')}">
+																	<h5 class="fs-12 fw-bold text-muted" style="font-family: 'Noto Sans KR', sans-serif;">오전</h5>
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전') && !meetingRoomTimeDetail.meeting_room_end_time.isAfter(#calendars.createNow())}">
+																		<input type="checkbox" disabled="disabled" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
+																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
+																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
+																		style='width: 120px'><span th:text="${meetingRoomTimeDetail.meeting_room_start_time}"></span> ~ <span th:text="${meetingRoomTimeDetail.meeting_room_end_time}"></span></label>
+																	</th:block>
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전') && meetingRoomTimeDetail.meeting_room_end_time.isAfter(#calendars.createNow())}">
 																		<input type="checkbox" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
 																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
 																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
 																		style='width: 120px'><span th:text="${meetingRoomTimeDetail.meeting_room_start_time}"></span> ~ <span th:text="${meetingRoomTimeDetail.meeting_room_end_time}"></span></label>
 																	</th:block>
-																	<h5 class="fs-12 fw-bold text-muted">오후</h5>
+																	<h5 class="fs-12 fw-bold text-muted" style="font-family: 'Noto Sans KR', sans-serif;">오후</h5>
 																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오후')}">
 																		<input type="checkbox" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
 																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
@@ -167,7 +169,7 @@
 																		style='width: 120px'><span th:text="${meetingRoomTimeDetail.meeting_room_start_time}"></span> ~ <span th:text="${meetingRoomTimeDetail.meeting_room_end_time}"></span></label>
 																	</th:block>
 																</div>
-															<button th:if="${empAuth} != 'ADMIN'" type="button" class='btn btn-primary' id="reserve_submit" th:value="${meetingRoomDetail.meeting_room_no}" onclick="reserve(this);" style="bottom: 100px; position: fixed; right: 40px; width: 430px">회의실 예약</button>
+															<button th:if="${empAuth} != 'ADMIN'" type="button" class='btn btn-primary' id="reserve_submit" th:value="${meetingRoomDetail.meeting_room_no}" onclick="reserve(this);" style="bottom: 100px; position: fixed; right: 40px; width: 430px; font-family: 'Noto Sans KR', sans-serif;">회의실 예약</button>
 														</div>
 													</div>
 												</form>
