@@ -1,6 +1,6 @@
 package com.codenal.approval.domain;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.UpdateTimestamp;
@@ -39,7 +39,7 @@ public class Approval {
     
     @Column(name="approval_reg_date")
     @UpdateTimestamp
-    private LocalDate approvalRegDate;
+    private LocalDateTime approvalRegDate;
     
     @Column(name="approval_title")
     private String approvalTitle;
@@ -73,4 +73,3 @@ public class Approval {
     private List<Referrer> referrer;
     
 }
-

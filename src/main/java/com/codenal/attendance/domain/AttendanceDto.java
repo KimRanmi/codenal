@@ -1,3 +1,4 @@
+
 package com.codenal.attendance.domain;
 
 import java.math.BigDecimal;
@@ -23,7 +24,7 @@ public class AttendanceDto {
 	private LocalTime attendStartTime;
 	private LocalTime attendEndTime;
 	private LocalDate workDate;
-	private BigDecimal attendWorkingTime;
+    private BigDecimal attendWorkingTime;
 	private String attendStatus;
 	private Long empId;
 
@@ -52,4 +53,14 @@ public class AttendanceDto {
 				.empId(dto.getEmpId())
 				.build();
 	}
+	
+	  // 근무시간을 "HH:mm" 형식으로 반환하는 메서드
+    public String getFormattedWorkingTime() {
+        if (attendWorkingTime != null) {
+            long hours = attendWorkingTime.longValue();
+            long minutes = attendWorkingTime.remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(60)).longValue();
+            return String.format("%02d:%02d", hours, minutes);
+        }
+        return "-";  // 근무시간이 없을 때
+    }
 }

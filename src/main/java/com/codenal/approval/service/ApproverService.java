@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.codenal.annual.domain.AnnualLeaveManage;
+import com.codenal.alarms.service.AlarmsService;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveManageRepository;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
@@ -18,29 +18,33 @@ import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.approval.repository.ReferrerRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
+import com.codenal.websocket.NotificationWebSocketHandler;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class ApproverService {
-
+	
 	private final ApproverRepository approverRepository;
 	private final ApprovalRepository approvalRepository;
 	private final EmployeeRepository employeeRepository;
 	private final ReferrerRepository referrerRepository;
 	private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
 	private final AnnualLeaveManageRepository annualLeaveManageRepository;
+	private final NotificationWebSocketHandler notificationWebSocketHandler;
 
 	public ApproverService(ApproverRepository approverRepository, ApprovalRepository approvalRepository,
 			EmployeeRepository employeeRepository, ReferrerRepository referrerRepository,
 			AnnualLeaveUsageRepository annualLeaveUsageRepository,
-			AnnualLeaveManageRepository annualLeaveManageRepository) {
+			AnnualLeaveManageRepository annualLeaveManageRepository,
+			NotificationWebSocketHandler notificationWebSocketHandler) {
 		this.approverRepository = approverRepository;
 		this.approvalRepository = approvalRepository;
 		this.employeeRepository = employeeRepository;
 		this.referrerRepository = referrerRepository;
 		this.annualLeaveUsageRepository = annualLeaveUsageRepository;
 		this.annualLeaveManageRepository = annualLeaveManageRepository;
+		this.notificationWebSocketHandler = notificationWebSocketHandler;
 	}
 
 	// 결재자, 합의자 등록 (상태 수정)
@@ -85,6 +89,7 @@ public class ApproverService {
 				approverRepository.save(approvers);
 			}
 			approverRepository.firstUpdateStatus(firstId, createdApproval.getApprovalNo());
+			// 첫 번째 결재자에게 알림 전송
 		}
 
 	}
@@ -114,7 +119,7 @@ public class ApproverService {
 				approverRepository.save(approvers);
 			}
 			approverRepository.firstUpdateStatus(firstId, updateApproval.getApprovalNo());
-
+			
 			// 결재자 등록
 			for (int i = 0; i < approver.size(); i++) {
 				Long id = approver.get(i);
@@ -123,6 +128,7 @@ public class ApproverService {
 						.approverType("결재자").employee(emp).build();
 
 				approverRepository.save(approvers);
+				
 			}
 
 		} else { // 합의자가 없을경우 결재자를 우선순위 1로 두기
@@ -136,6 +142,7 @@ public class ApproverService {
 				approverRepository.save(approvers);
 			}
 			approverRepository.firstUpdateStatus(firstId, updateApproval.getApprovalNo());
+			
 		}
 
 	}
@@ -204,9 +211,17 @@ public class ApproverService {
 			AnnualLeaveUsage alu = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
 			if(alu != null) {
 				int result = annualLeaveManageRepository.updateDay(alu.getEmployee().getEmpId(),alu.getTotalDay());
-				System.out.println("결과 : "+result);
 			}
 			approvalRepository.updateStatus(2, no);
+			
+			// 승인 알림 전송 => 핸들러
+	        Approval approval = approvalRepository.findByApprovalNo(no); // 승인된 approval을 가져옴
+	        try {
+				notificationWebSocketHandler.sendNotification("authorization", approval);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 		}
 
 		return app;
@@ -237,5 +252,13 @@ public class ApproverService {
 	// 반려 상태 가져오기
 		public Approver findReject(Long approvalNo){
 			return approverRepository.findByApprovalApprovalNoAndApprovalStatus(approvalNo,3);
+		}
+		
+		public Approver findByEmployeeEmpIdAndApprovalStatus(int i,Long id){
+			return approverRepository.findByEmployeeEmpIdAndApprovalStatus(id,i);
+		}
+		
+		public int approverCount(Long empId, int i) {
+			return approverRepository.findByEmployeeEmpIdAndApprovalStatusCount(empId,i);
 		}
 }

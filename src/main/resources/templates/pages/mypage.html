@@ -49,20 +49,8 @@
 	<div layout:fragment="content">
 		<div class="position-relative mx-n4 mt-n4">
 			<div class="profile-wid-bg profile-setting-img">
-				<img src="/assets/images/profile-bg.jpg" class="profile-wid-img"
-					alt="">
-				<div class="overlay-content">
-					<div class="text-end p-3">
-						<div class="p-0 ms-auto rounded-circle profile-photo-edit">
-							<input id="profile-foreground-img-file-input" type="file"
-								class="profile-foreground-img-file-input"> <label
-								for="profile-foreground-img-file-input"
-								class="profile-photo-edit btn btn-light"> <i
-								class="ri-image-edit-line align-bottom me-1"></i> Change Cover
-							</label>
-						</div>
-					</div>
-				</div>
+				
+				
 			</div>
 		</div>
 
@@ -80,7 +68,7 @@
 									<img
 										th:src="${session.profileImage != null ? session.profileImage : '/assets/images/users/avatar-1.jpg'}"
 										class="rounded-circle avatar-xl img-thumbnail user-profile-image"
-										alt="user-profile-image">
+										alt="user-profile-image" id="profileImage">
 									<div class="avatar-xs p-0 rounded-circle profile-photo-edit">
 										<input id="profile-img-file-input" type="file"
 											class="profile-img-file-input" name="profileImage" disabled>
@@ -336,32 +324,47 @@
 		const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 		const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 		
-		function updateProfileImage() {
-		    const profileImageInput = document.getElementById('profile-img-file-input');
-		    if (profileImageInput.files.length > 0) {
-		        const formData = new FormData();
-		        formData.append('profileImage', profileImageInput.files[0]);
-		        
-		        fetch('/mypage/updateProfile', {
-		            method: 'POST',
-		            body: formData,
-		            headers: { [header]: token }
-		        })
-		        .then(response => response.json())
-		        .then(data => {
-		            if (data.success) {
-		                // 세션에 새로운 이미지 경로 업데이트
-		                document.getElementById('profileImage').src = data.filePath;
-		                alert('프로필 이미지가 성공적으로 저장되었습니다.');
-		            } else {
-		                alert('프로필 이미지 저장에 실패했습니다: ' + data.error);
+		
+		
+		   document.addEventListener('DOMContentLoaded', function() {
+		        // 기존 DOMContentLoaded 이벤트 리스너 생략
+
+		        // 프로필 이미지 업데이트 성공 시 localStorage에 저장
+		        function updateProfileImage() {
+		            const profileImageInput = document.getElementById('profile-img-file-input');
+		            if (profileImageInput.files.length > 0) {
+		                const formData = new FormData();
+		                formData.append('profileImage', profileImageInput.files[0]);
+
+		                fetch('/mypage/updateProfile', {
+		                    method: 'POST',
+		                    body: formData,
+		                    headers: { [csrfHeaderName]: csrfToken }
+		                })
+		                .then(response => response.json())
+		                .then(data => {
+		                    if (data.success) {
+		                        // 프로필 이미지 업데이트
+		                        document.getElementById('profileImage').src = data.imageUrl;
+		                        alert('프로필 이미지가 성공적으로 저장되었습니다.');
+
+		                        // localStorage에 업데이트 이벤트 기록 (타임스탬프 추가하여 캐싱 문제 방지)
+		                        const updatedImageUrl = data.imageUrl + '?t=' + new Date().getTime();
+		                        localStorage.setItem('profileImageUpdated', updatedImageUrl);
+		                    } else {
+		                        alert('프로필 이미지 저장에 실패했습니다: ' + data.error);
+		                    }
+		                })
+		                .catch(error => {
+		                    console.error('Error:', error);
+		                });
 		            }
-		        })
-		        .catch(error => {
-		            console.error('Error:', error);
-		        });
-		    }
-		}
+		        }
+
+		        // 프로필 이미지 입력 필드에 이벤트 리스너 추가
+		        const profileImageInputField = document.getElementById('profile-img-file-input');
+		        profileImageInputField.addEventListener('change', updateProfileImage);
+		    });
 		
 		const canvas = document.getElementById('signatureCanvas');
 		

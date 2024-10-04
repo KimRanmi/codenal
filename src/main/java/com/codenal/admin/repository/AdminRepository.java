@@ -88,4 +88,5 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	// 전화번호
 	Page<Employee> findByEmpPhoneContainingAndEmpAuthAndEmpStatus(String empPhone, String empAuth, String empStatus, Pageable pageable);
 
+
 }

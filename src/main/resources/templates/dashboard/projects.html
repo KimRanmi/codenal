@@ -45,6 +45,7 @@
 
                                     <input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
                                     <h5 id="candidate-name" class="mb-1" style="font-weight: bold;">
+
                                         <span th:text="${empDto.empName}"></span> 
                                     </h5>
                                     
@@ -53,6 +54,7 @@
                                         <span th:text="${empDto.deptName}"></span>
                                     </h5>
                                  <div class="mb-4"></div>
+
                                     <div class="d-flex gap-2 justify-content-center">
                                         <div class="btn-group" role="group"
                                              aria-label="Basic button group" style="width: 100%">
