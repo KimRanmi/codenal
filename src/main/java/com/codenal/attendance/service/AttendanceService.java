@@ -1,6 +1,7 @@
 package com.codenal.attendance.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,6 +21,7 @@ import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.attendance.domain.Attendance;
 import com.codenal.attendance.domain.AttendanceDto;
+import com.codenal.attendance.domain.WorkHistoryDto;
 import com.codenal.attendance.repository.AttendanceRepository;
 import com.codenal.security.vo.SecurityUser;
 
@@ -30,15 +32,20 @@ public class AttendanceService {
 	
 	private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
 	
+    private final WorkHistoryService workHistoryService; 
+
+	
 	// 출근 기준 시간과 퇴근 기준 시간 설정
     private final LocalTime standardStartTime = LocalTime.of(9, 0); // 오전 9시
     private final LocalTime standardEndTime = LocalTime.of(18, 0); // 오후 6시
     
 
 	@Autowired
-	public AttendanceService(AttendanceRepository attendanceRepository, AnnualLeaveUsageRepository annualLeaveUsageRepository) {
+	public AttendanceService(AttendanceRepository attendanceRepository, AnnualLeaveUsageRepository annualLeaveUsageRepository ,WorkHistoryService workHistoryService) {
 		 this.attendanceRepository = attendanceRepository;
 	        this.annualLeaveUsageRepository = annualLeaveUsageRepository;
+	        this.workHistoryService = workHistoryService;
+
 	}
 
 	  // 현재 사용자의 empId를 가져오는 메서드
@@ -75,30 +82,53 @@ public class AttendanceService {
         attendanceRepository.save(attendance);
     }
 	
- // 퇴근하기 메서드
- 	@Transactional
- 	public void checkOut() {
- 		Long empId = getCurrentUserId();
- 		LocalDate today = LocalDate.now();
+ // 퇴근하기 메서드 수정
+    @Transactional
+    public void checkOut() {
+        Long empId = getCurrentUserId();
+        LocalDate today = LocalDate.now();
 
- 		// 오늘 출근 기록이 있는지 확인
- 		Attendance attendance = attendanceRepository.findByEmpIdAndWorkDate(empId, today)
- 				.orElseThrow(() -> new IllegalStateException("출근 기록이 없습니다. 먼저 출근 체크를 해주세요."));
+        // 오늘 출근 기록이 있는지 확인
+        Attendance attendance = attendanceRepository.findByEmpIdAndWorkDate(empId, today)
+                .orElseThrow(() -> new IllegalStateException("출근 기록이 없습니다. 먼저 출근 체크를 해주세요."));
 
- 		// 이미 퇴근한 경우 예외 처리
- 		if (attendance.getAttendEndTime() != null) {
- 			throw new IllegalStateException("이미 퇴근 처리가 완료되었습니다.");
- 		}
+        // 이미 퇴근한 경우 예외 처리
+        if (attendance.getAttendEndTime() != null) {
+            throw new IllegalStateException("이미 퇴근 처리가 완료되었습니다.");
+        }
 
- 		LocalTime now = LocalTime.now();
- 		attendance.setAttendEndTime(now);
+        LocalTime now = LocalTime.now();
+        attendance.setAttendEndTime(now);
 
- 		// 근무 시간 계산 (BigDecimal로 계산)
- 		BigDecimal workingHours = calculateWorkingHoursAsBigDecimal(attendance.getAttendStartTime(), now);
- 		attendance.setAttendWorkingTime(workingHours);
+        // 근무 시간 계산
+        BigDecimal workingHours = calculateWorkingHoursAsBigDecimal(attendance.getAttendStartTime(), now);
+        
+        // 초과 근무 시간 계산
+        BigDecimal overTime = BigDecimal.ZERO;
+        if (workingHours.compareTo(BigDecimal.valueOf(9)) > 0) { // 9시간 초과 시 초과근무시간 계산
+            overTime = workingHours.subtract(BigDecimal.valueOf(9));
+        }
 
- 		attendanceRepository.save(attendance);
- 	}
+        // 전체 근무 시간을 근무시간 + 초과근무시간으로 설정
+        BigDecimal totalWorkingTime = workingHours;
+
+        // attendWorkingTime에 근무 시간을 설정
+        attendance.setAttendWorkingTime(totalWorkingTime);
+
+        attendanceRepository.save(attendance);
+
+        // WorkHistory 기록
+        WorkHistoryDto workHistoryDto = WorkHistoryDto.builder()
+                .workHistoryDate(today)
+                .workHistoryWorkingTime(workingHours)  // 정규 근무 시간
+                .workHistoryOverTime(overTime)         // 초과 근무 시간
+                .workHistoryTotalTime(totalWorkingTime)  // 전체 근무 시간 (정규 근무 + 초과 근무)
+                .empId(empId)
+                .build();
+
+        workHistoryService.createOrUpdateWorkHistory(empId, workHistoryDto);
+    }
+
         
  // 근무시간을 "HH:mm" 형식으로 변환하는 메서드 (출력 시 사용)
  	public String formatHoursMinutes(BigDecimal totalHours) {
@@ -107,12 +137,12 @@ public class AttendanceService {
  	    return String.format("%02d:%02d", hours, minutes);
  	}
 
- 	// 근무시간을 BigDecimal로 계산하는 메서드
  	private BigDecimal calculateWorkingHoursAsBigDecimal(LocalTime startTime, LocalTime endTime) {
  	    if (startTime != null && endTime != null) {
  	        Duration duration = Duration.between(startTime, endTime);
  	        long seconds = duration.getSeconds(); // 총 초로 계산
- 	        BigDecimal hours = BigDecimal.valueOf(seconds).divide(BigDecimal.valueOf(3600), 2, BigDecimal.ROUND_HALF_UP);
+ 	        BigDecimal hours = BigDecimal.valueOf(seconds)
+ 	                .divide(BigDecimal.valueOf(3600), 2, RoundingMode.HALF_UP); // 두 자리까지 반올림
  	        return hours;
  	    } else {
  	        return BigDecimal.ZERO;
@@ -120,25 +150,25 @@ public class AttendanceService {
  	}
     
     // 연차 여부 확인 및 상태 결정
-    public String determineStatus(Long empId, LocalDate workDate, LocalTime attendStartTime) {
-        // 연차 사용 내역 확인
-        List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository
-                .findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
-                        empId, workDate, workDate);
+ 	public String determineStatus(Long empId, LocalDate workDate, LocalTime attendStartTime) {
+ 	    // 연차 사용 내역 확인
+ 	    List<AnnualLeaveUsage> annualLeaveList = annualLeaveUsageRepository
+ 	            .findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
+ 	                    empId, workDate, workDate);
 
-        if (!annualLeaveList.isEmpty()) {  // 연차 내역이 존재하는지 확인
-            return "연차";  // 연차일 경우 연차로 상태 설정
-        } else if (attendStartTime != null) {
-            if (attendStartTime.isBefore(standardStartTime)) {
-                return "정상출근";
-            } else {
-                return "지각";
-            }
-        } else if (workDate.isBefore(LocalDate.now())) {
-            return "결근";
-        }
-        return "미출근";
-    }
+ 	    if (!annualLeaveList.isEmpty()) {  // 연차 내역이 존재하는지 확인
+ 	        return "연차";  // 연차일 경우 연차로 상태 설정
+ 	    } else if (attendStartTime != null) {
+ 	        if (!attendStartTime.isAfter(standardStartTime)) {
+ 	            return "정상출근";  // 기준 시간과 같거나 이전인 경우 정상출근
+ 	        } else {
+ 	            return "지각";  // 기준 시간을 초과하면 지각 처리
+ 	        }
+ 	    } else if (workDate.isBefore(LocalDate.now())) {
+ 	        return "결근";  // 과거의 근무 날짜에 기록이 없다면 결근
+ 	    }
+ 	    return "미출근";  // 현재 날짜 기준으로 아직 출근하지 않은 경우
+ 	}
     
  // 해당 날짜의 출근 기록이 있는지 확인하고 없으면 결근으로 처리
     public String checkAttendanceStatus(Long empId, LocalDate workDate) {
@@ -183,10 +213,7 @@ public class AttendanceService {
         return attendances.map(AttendanceDto::fromEntity);
     }
 
-    // 특정 날짜 범위의 출퇴근 기록을 조회하는 메서드
-    public Page<AttendanceDto> getAttendancesByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Long empId = getCurrentUserId();
-
+    public Page<AttendanceDto> getAttendancesByDateRange(Long empId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Page<Attendance> attendances = attendanceRepository.findByEmpIdAndWorkDateBetween(empId, startDate, endDate, pageable);
         return attendances.map(AttendanceDto::fromEntity);
     }

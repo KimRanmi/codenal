@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.stream.Collectors;
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +22,8 @@ import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
+
+import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
@@ -472,7 +478,15 @@ public class ApprovalService {
 				   				.formContent(content)
 				   				.build();
 		   return approvalFormRepository.save(af);
-	   }
+	   }				
+	   // 승인된 연차 신청서 목록 조회 메서드
+	    public List<ApprovalDto> getApprovedAnnualLeaves() {
+	        List<Approval> approvals = approvalRepository.findApprovedAnnualLeaves();
+	        return approvals.stream()
+	                .map(ApprovalDto::toDto)
+	                .collect(Collectors.toList());
+	    }
+	   
 	   
 	   // 메인화면 approvalcount
 	   public int approvalCount(Long empId, int i) {

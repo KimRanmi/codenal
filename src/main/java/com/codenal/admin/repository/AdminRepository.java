@@ -15,10 +15,12 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 
 	// 1. 검색
 	// 재직 상태
-	Page<Employee> findByEmpStatusAndEmpAuth(String empStatus, String empAuth, Pageable pageable);	
+	@Query("SELECT e FROM Employee e WHERE e.empStatus = :empStatus AND e.empAuth = :empAuth")
+	Page<Employee> searchByEmpStatusAndEmpAuth(@Param("empStatus") String empStatus, @Param("empAuth") String empAuth, Pageable pageable);
 
 	// 사번
-	Page<Employee> findByEmpIdContainingAndEmpAuth(String empId, String empAuth, Pageable pageable);
+	@Query("SELECT e FROM Employee e WHERE e.empId = :empId AND e.empAuth = :empAuth")
+	Page<Employee> searchByEmpId(@Param("empId") Long empId, @Param("empAuth") String empAuth, Pageable pageable);
 
 	// 이름
 	Page<Employee> findByEmpNameContainingAndEmpAuth(String empName, String empAuth, Pageable pageable);
@@ -33,33 +35,58 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	Page<Employee> findByEmpPhoneContainingAndEmpAuth(String empPhone, String empAuth, Pageable pageable);	
 
 	// 전체
-	Page<Employee> findAllByEmpAuth(String empStatus, Pageable pageable);
-	
-	
+	@Query("SELECT e FROM Employee e " +
+		       "WHERE e.empAuth = :empAuth " +
+		       "AND (:empStatus IS NULL OR e.empStatus = :empStatus) " +  // 재직 상태 필터링
+		       "AND (" +
+		       "(COALESCE(:empId, NULL) IS NULL OR CAST(e.empId AS string) LIKE %:keyword%) " +  // 사번은 문자열로 변환하여 LIKE 연산
+		       "OR e.empName LIKE %:keyword% " +       // 직원명
+		       "OR e.departments.deptName LIKE %:keyword% " +  // 부서명
+		       "OR e.jobs.jobName LIKE %:keyword% " +  // 직급명
+		       "OR e.empPhone LIKE %:keyword%" +       // 전화번호
+		       ")")
+		Page<Employee> searchByMultipleFields(
+		    @Param("empAuth") String empAuth, 
+		    @Param("empStatus") String empStatus,  // 재직 상태 (필요 없을 경우 null)
+		    @Param("empId") Long empId,  // 사번 (필요 없을 경우 null)
+		    @Param("keyword") String keyword,  // 검색어 (사번, 직원명 등)
+		    Pageable pageable);
+
+
+
+
 	// 2. 퇴사
-	 // 직원의 상태(empStatus)를 'N'으로 업데이트하는 메서드
-    @Modifying
-    @Query("UPDATE Employee e SET e.empStatus = 'N' WHERE e.empId = :employeeId")
-    void updateEmployeeStatusToN(@Param("employeeId") Long employeeId);
-	
-	
+	// 직원의 상태(empStatus)를 'N'으로 업데이트하는 메서드
+	@Modifying
+	@Query("UPDATE Employee e SET e.empStatus = 'N' WHERE e.empId = :employeeId")
+	void updateEmployeeStatusToN(@Param("employeeId") Long employeeId);
+
+
 	// 3. 상세 조회 // 정보 수정
-    Employee findByEmpId(Long empId);
-  
- 
+	Employee findByEmpId(Long empId);
+
+
 	// 4. TreeMenu
-    // 부서 번호로 직원 조회
-    List<Employee> findByDepartments_DeptNoAndEmpAuthAndEmpStatus(Long deptNo, String empAuth, String empStatus);
-    
-    // 5. 주소록 (재직 중인 사람만)
-    Page<Employee> findAllByEmpAuthAndEmpStatus(String empAuth, String empStatus, Pageable pageable);
+	// 부서 번호로 직원 조회
+	List<Employee> findByDepartments_DeptNoAndEmpAuthAndEmpStatus(Long deptNo, String empAuth, String empStatus);
 
-    Page<Employee> findByEmpNameContainingAndEmpAuthAndEmpStatus(String empName, String empAuth, String empStatus, Pageable pageable);
+	// 5. 주소록 (재직 중인 사람만)
+	// 전체
+	Page<Employee> findAllByEmpAuthAndEmpStatus(String empAuth, String empStatus, Pageable pageable);
 
-    Page<Employee> findByDepartments_DeptNameContainingAndEmpAuthAndEmpStatus(String deptName, String empAuth, String empStatus, Pageable pageable);
+	// 직원명
+	Page<Employee> findByEmpNameContainingAndEmpAuthAndEmpStatus(String empName, String empAuth, String empStatus, Pageable pageable);
 
-    Page<Employee> findByJobs_JobNameContainingAndEmpAuthAndEmpStatus(String jobName, String empAuth, String empStatus, Pageable pageable);
+	// 부서명
+	@Query("SELECT e FROM Employee e WHERE e.departments.deptName LIKE %:deptName% AND e.empAuth = :empAuth AND e.empStatus = :empStatus")
+	Page<Employee> searchByDeptName(@Param("deptName") String deptName, @Param("empAuth") String empAuth, @Param("empStatus") String empStatus, Pageable pageable);
 
-    Page<Employee> findByEmpPhoneContainingAndEmpAuthAndEmpStatus(String empPhone, String empAuth, String empStatus, Pageable pageable);
+	// 직급명
+	@Query("SELECT e FROM Employee e WHERE e.jobs.jobName LIKE %:jobName% AND e.empAuth = :empAuth AND e.empStatus = :empStatus")
+	Page<Employee> searchByJobName(@Param("jobName") String jobName, @Param("empAuth") String empAuth, @Param("empStatus") String empStatus, Pageable pageable);
+
+	// 전화번호
+	Page<Employee> findByEmpPhoneContainingAndEmpAuthAndEmpStatus(String empPhone, String empAuth, String empStatus, Pageable pageable);
+
 
 }
