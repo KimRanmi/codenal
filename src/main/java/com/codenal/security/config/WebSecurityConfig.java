@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -54,6 +55,7 @@ public class WebSecurityConfig {
 	            .requestMatchers("/announce/updateEnd/**").permitAll()
 	            .requestMatchers("/approval/leaveUpdate/**").permitAll()
 	            .requestMatchers("/approval/detail/**").permitAll()
+	            .requestMatchers("/api/approved-annual-leaves").permitAll()
 	            .requestMatchers("/employee/addressBook/**").permitAll()
 	            .requestMatchers("/approval/**").authenticated()
 	            .requestMatchers("/approval/update/**").authenticated()
@@ -62,6 +64,7 @@ public class WebSecurityConfig {
 	            .requestMatchers("/documents/**").authenticated() 
 	            .requestMatchers("/api/attendance/**").permitAll()
 	            .requestMatchers("/chatList/**", "/chatting").permitAll()
+	           
 	            .anyRequest().authenticated()
 	    )
 	    .formLogin(login -> 
@@ -143,5 +146,8 @@ public class WebSecurityConfig {
 	    }
 	}
 	
-	
+	  @Bean
+	    public RestTemplate restTemplate() {
+	        return new RestTemplate();
+	    }
 }

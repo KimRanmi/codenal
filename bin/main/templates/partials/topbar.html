@@ -203,7 +203,9 @@
 							</div>
 						</div> -->
 
-						
+						<div class="ms-1 header-item d-none d-sm-flex">
+							<span class="nav-link" id="loginTimer">Login on: 00:00:00</span>
+						</div>
 
 						<div class="ms-1 header-item d-none d-sm-flex">
 							<button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
@@ -570,7 +572,7 @@
 							<div class="dropdown-menu dropdown-menu-end">
 								<!-- item-->
 								<h6 class="dropdown-header">어서오세요!</h6>
-								<a class="dropdown-item" href="/pages-profile"><i
+								<a class="dropdown-item" href="/mypage"><i
 										class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
 										class="align-middle">마이페이지</span></a>
 								<a class="dropdown-item" href="/apps-chat"><i
@@ -578,9 +580,7 @@
 									<span class="align-middle">채팅</span></a>
 								
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="/pages-profile-settings"><i
-										class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
-										class="align-middle">개인정보 수정</span></a>
+								
 								
 								<a class="dropdown-item" href="/auth-signin-basic"><i
 										class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
@@ -619,6 +619,36 @@
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->
+		<script>
+		 document.addEventListener('DOMContentLoaded', function () {
+		        let startTime;
+
+		        // localStorage에서 로그인 시작 시간을 가져옴
+		        const storedTime = localStorage.getItem('loginStartTime');
+		        if (storedTime) {
+		            startTime = parseInt(storedTime, 10);
+		        } else {
+		            startTime = Date.now(); // 현재 시간을 시작 시간으로 설정
+		            localStorage.setItem('loginStartTime', startTime);
+		        }
+
+		        // 즉시 업데이트하여 새로고침 시 00:00:00 방지
+		        updateLoginTimer();
+
+		        function updateLoginTimer() {
+		            const currentTime = Date.now();
+		            const elapsed = Math.floor((currentTime - startTime) / 1000);
+
+		            const hours = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+		            const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+		            const seconds = String(elapsed % 60).padStart(2, '0');
+		            document.getElementById('loginTimer').textContent = `Login on :: ${hours}:${minutes}:${seconds}`;
+		        }
+
+		        // 타이머 시작
+		        setInterval(updateLoginTimer, 1000);
+		    });
+</script>
 	</div>
 </body>
 

@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFileDto;
 import com.codenal.approval.domain.ApprovalForm;
-import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.service.ApprovalFileService;
 import com.codenal.approval.service.ApprovalService;
 import com.codenal.approval.service.ApproverService;
@@ -498,4 +498,10 @@ public class ApprovalApiController {
 		}
 		return result;
 	}
+	  // 승인된 연차 신청서 목록을 반환하는 API
+	@ResponseBody
+    @GetMapping("/api/approved-annual-leaves")
+    public List<ApprovalDto> getApprovedAnnualLeaves() {
+        return approvalService.getApprovedAnnualLeaves();
+    }
 }
