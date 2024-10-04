@@ -36,9 +36,9 @@ public class EmployeeDto {
     private String empProfilePicture;
     private String empSignImage;
     private Long deptNo;
-    private String deptName; 
+    private String deptName; // 추가
     private Long jobNo;
-    private String jobName; 
+    private String jobName;  // 추가
     private String empAuth;
     
     private int search_type = 1; // int는 null 인식X

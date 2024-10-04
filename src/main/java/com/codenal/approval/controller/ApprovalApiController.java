@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalFileDto;
 import com.codenal.approval.domain.ApprovalForm;
-import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.service.ApprovalFileService;
 import com.codenal.approval.service.ApprovalService;
 import com.codenal.approval.service.ApproverService;
@@ -402,9 +401,6 @@ public class ApprovalApiController {
 			resultMap.put("res_code","200");
 			resultMap.put("res_msg", "승인되었습니다.");
 		}
-		
-		System.out.println(resultMap);
-		
 		return resultMap;
 	}
 	

@@ -47,10 +47,10 @@ public class AddressBookService {
 	                addressBookSearch = adminRepository.findByEmpNameContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);
 	                break;
 	            case 3:
-	                addressBookSearch = adminRepository.searchByDeptName(searchText, "USER", "Y", pageable);
+	                addressBookSearch = adminRepository.findByDepartments_DeptNameContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);
 	                break;
 	            case 4:
-	                addressBookSearch = adminRepository.searchByJobName(searchText, "USER", "Y", pageable);
+	                addressBookSearch = adminRepository.findByJobs_JobNameContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);
 	                break;
 	            case 5:
 	                addressBookSearch = adminRepository.findByEmpPhoneContainingAndEmpAuthAndEmpStatus(searchText, "USER", "Y", pageable);

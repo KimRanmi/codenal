@@ -36,7 +36,7 @@
                 <div class="row">
                     <div class="col-lg-12">
 						<div class="card" id="companyList">
-							<div class="card-header border-0">
+							<div class="card-header border-0" style="height:600px;">
 								<div class="d-flex align-items-center">
 									<div class="flex-shrink-0">
 										<div class="d-flex flex-wrap gap-2">
@@ -98,7 +98,7 @@
 													th:text="${approval['approval'].approvalTitle}"></a></td>
 												<td>대기</td>
 												<td th:text="${approval['employee'].empName}"></td>
-												<td th:text="${approval['approval'].approvalRegDate}"></td>
+												<td th:text="${#temporals.format(approval['approval'].approvalRegDate,'yyyy-MM-dd HH:mm') }"></td>
 											</tr>
 											<!-- 완료 -->
 											<tr th:each="approval : ${resultList.content}"
@@ -112,7 +112,7 @@
 													th:text="${approval['approval'].approvalTitle}"></a></td>
 												<td>완료</td>
 												<td th:text="${approval['employee'].empName}"></td>
-												<td th:text="${approval['approval'].approvalRegDate}"></td>
+												<td th:text="${#temporals.format(approval['approval'].approvalRegDate,'yyyy-MM-dd HH:mm') }"></td>
 											</tr>
 											<!-- 반려 상태 -->
 											<tr th:each="approval : ${resultList.content}"
@@ -126,7 +126,7 @@
 													th:text="${approval['approval'].approvalTitle}"></a></td>
 												<td>반려</td>
 												<td th:text="${approval['employee'].empName}"></td>
-												<td th:text="${approval['approval'].approvalRegDate}"></td>
+												<td th:text="${#temporals.format(approval['approval'].approvalRegDate,'yyyy-MM-dd HH:mm') }"></td>
 											</tr>
 
 											<!-- 수신참조 상태 -->
@@ -140,15 +140,17 @@
 													th:text="${approval['approval'].approvalTitle}"></a></td>
 												<td>수신참조</td>
 												<td th:text="${approval['employee'].empName}"></td>
-												<td th:text="${approval['approval'].approvalRegDate}"></td>
+												<td th:text="${#temporals.format(approval['approval'].approvalRegDate,'yyyy-MM-dd HH:mm') }"></td>
 											</tr>
 										</tbody>
 
 									</table>
 
+                                </div>
+                            </div>
 									 <!-- 페이징 -->
                                     <div class="col-lg-6">
-									<div class="d-flex justify-content-end mt-2 pagination">
+									<div class="justify-content-end pagination">
 									<th:block layout:fragment="pagejs">
 									    <div>
 									        <ul class="pagination"
@@ -188,8 +190,6 @@
 									</th:block>
 									</div>
 									</div>
-                                </div>
-                            </div>
                         </div>
                         
                     </div>

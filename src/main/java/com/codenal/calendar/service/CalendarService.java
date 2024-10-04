@@ -2,7 +2,10 @@ package com.codenal.calendar.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import com.codenal.calendar.repository.CalendarRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.repository.EmployeeRepository;
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Empty;
 
 @Service
 public class CalendarService {

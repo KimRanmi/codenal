@@ -1,7 +1,5 @@
 package com.codenal.annual.domain;
 
-import com.codenal.employee.domain.Employee;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +37,7 @@ public class AnnualLeaveManageDto {
 				.annual_total_day(alm.getAnnualTotalDay())
 				.annual_used_day(alm.getAnnualUsedDay())
 				.annual_remain_day(alm.getAnnualRemainDay())
+				.emp_id(alm.getEmployee().getEmpId())
 				.build();
 	}
 }
