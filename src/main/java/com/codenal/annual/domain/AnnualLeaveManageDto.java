@@ -24,12 +24,13 @@ public class AnnualLeaveManageDto {
 	private float annual_remain_day;
 	private Long emp_id;
 	
-	public AnnualLeaveManage toEntity() {
+	public AnnualLeaveManage toEntity(Employee employee) {
 		return AnnualLeaveManage.builder()
 				.annualManageNo(annual_manage_no)
 				.annualTotalDay(annual_total_day)
 				.annualUsedDay(annual_used_day)
 				.annualRemainDay(annual_remain_day)
+				.employee(employee)
 				.build();
 	}
 	

@@ -96,7 +96,7 @@ public class AdminService {
 
 			almDto.setEmp_id(employee.getEmpId());
 
-			AnnualLeaveManage alm = almDto.toEntity();
+			AnnualLeaveManage alm = almDto.toEntity(employee);
 			annualLeaveManageRepository.save(alm);
 
 			result = 1;
