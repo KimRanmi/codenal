@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.codenal.alarms.service.AlarmsService;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalFileDto;
 import com.codenal.approval.domain.ApprovalForm;
@@ -35,17 +34,14 @@ public class ApprovalApiController {
 	private final ApprovalFileService approvalFileService;
 	private final EmployeeService employeeService;
 	private final ApproverService approverService;
-	private final AlarmsService alarmsService;
 	
 	@Autowired
 	public ApprovalApiController(ApprovalService approvalService, ApprovalFileService approvalFileService,
-			EmployeeService employeeService, ApproverService approverService,
-			AlarmsService alarmsService) {
+			EmployeeService employeeService, ApproverService approverService) {
 		this.approvalService = approvalService;
 		this.approvalFileService = approvalFileService;
 		this.employeeService = employeeService;
 		this.approverService = approverService;
-		this.alarmsService = alarmsService;
 	}
 
 	// 전자결재 등록 (요청서, 품의서)

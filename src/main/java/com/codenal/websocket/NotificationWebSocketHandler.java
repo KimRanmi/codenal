@@ -1,6 +1,5 @@
 package com.codenal.websocket;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,10 +12,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.codenal.alarms.domain.AlarmType;
-import com.codenal.alarms.domain.Alarms;
-import com.codenal.alarms.service.AlarmsService;
-import com.codenal.approval.domain.Approval;
 import com.codenal.chat.domain.ChatParticipantsDto;
 import com.codenal.chat.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,26 +20,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class NotificationWebSocketHandler extends TextWebSocketHandler{
 		
 		private final ChatService chatService;
-		private final AlarmsService alarmsService;
 		
 		@Autowired
-		public NotificationWebSocketHandler(ChatService chatService, AlarmsService alarmsService) {
+		public NotificationWebSocketHandler(ChatService chatService) {
 			this.chatService = chatService;
-			this.alarmsService = alarmsService;
 		}
 		
 
 		private Map<String, WebSocketSession> clients = new ConcurrentHashMap<>();
-		private Map<String, String> empIdSession = new ConcurrentHashMap<>(); // empId 값
 
 		// 클라이언트가 연결되었을 때 세션 등록
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		    System.out.println("New connection established: " + session.getId());
 		    clients.put(session.getId(), session);  // 클라이언트 세션 등록
-		    
-		    String empId = session.getPrincipal().getName(); // empId 가져오기
-		    empIdSession.put(empId, session.getId()); // empId와 세션 ID 매핑
 		}
 
 
@@ -88,49 +77,7 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 		        }
 		    }
 		}
-		
-		
-		 // 알림 dto로 전달
-		public void sendNotification(String notificationMessage, Approval approval) throws Exception {
-			    
-		    String message = "";
-	    	
-	    	switch(notificationMessage) {
-	    		case "authorization" :  
-	    			message = "승인되었습니다.";
-	        		break;
-	    	
-	    	}
-	    	
-	    	Alarms alarms = Alarms.builder()
-	    					.employee(approval.getEmployee())
-	    					.alarmTitle(message)
-	    					.alarmContext(approval.getApprovalTitle()+"의 결재가 "+message)
-	    					.alarmType(AlarmType.APPROVAL)
-	    					.alarmReferenceNo(approval.getApprovalNo())
-	    					.alarmCreateTime(LocalDateTime.now())
-	    					.alarmIsRead("N")
-	    					.alarmIsDeleted("N")
-	    					.alarmUrl("/approval/"+approval.getApprovalNo())
-	    					.build();
-	    	alarmsService.createAlarm(alarms);
-		     
-	    	 String empId = String.valueOf(approval.getEmployee().getEmpId());
-	    	 String sessionId = empIdSession.get(empId); // empId로 세션 ID 가져오기
-
-	    	 WebSocketSession recipientSession = clients.get(sessionId);
-	    	 
-	    	 String formattedMessage = alarms.getAlarmTitle()+" "+notificationMessage;
-	    	 
-	    	 System.out.println(recipientSession);
-		    
-		    if (recipientSession != null && recipientSession.isOpen()) {
-		        System.out.println("특정 사용자에게 알림 전송");
-		        recipientSession.sendMessage(new TextMessage(formattedMessage));
-		    } else {
-		        System.out.println("세션이 없거나 닫혀 있습니다.");
-		    }
-		}
+	
 
 		
 		// 클라이언트가 연결을 끊었을 때 설정
