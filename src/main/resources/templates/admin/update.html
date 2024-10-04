@@ -8,7 +8,7 @@
     <head>
     <style>
     /* 사번, 개인번호, 주민등록번호, 주소, 상세주소, 입사일, 퇴사일 */
-    #lastnameInput, #phonenumberInput, #emailInput, #addressInput,
+    #lastnameInput, #phonenumberInput, #ssnInput, #addressInput,
         #addressDetailInput, #hireDateInput, #endDateInput {
         background-color: #eeeeeea8;
         border: 1px solid #e6e6e6;
@@ -82,7 +82,7 @@
                                                 <!-- 주소 -->
                                                 <div class="col-lg-5">
                                                     <div class="mb-3">
-                                                        <label for="addressInput" class="form-label">주소</label>
+                                                        <label for="addressInput" class="form-label" style="font-size: 16px; font-weight: bold;">주소</label>
                                                         <input type="text" class="form-control" id="addressInput" th:field="*{empAddress}" readonly>
                                                     </div>
                                                 </div>

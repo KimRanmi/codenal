@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.data.domain.Sort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.domain.JobsDto;
@@ -33,6 +35,7 @@ import com.codenal.employee.domain.EmployeeDto;
 @RequestMapping("/admin")
 public class AdminViewController {
 
+	private static final Logger logger = LoggerFactory.getLogger(AdminViewController.class);
 	private final AdminService adminService;
 
 	@Autowired
@@ -175,36 +178,44 @@ public class AdminViewController {
 	}
 
 
-	// 직원 정보 수정 (수정페이지에 상세정보 남아있기)
-	@GetMapping("/update/{empId}")
-	public String showUpdateForm(@PathVariable("empId") Long empId, Model model){
-		EmployeeDto dto = adminService.employeeDetail(empId);
-		List<DepartmentsDto> departments = adminService.getAllDepartments();
-		List<JobsDto> jobs = adminService.getAllJobs();
-		model.addAttribute("employeeDetail", dto);
-		model.addAttribute("departments", departments);
-		model.addAttribute("jobs", jobs);
-		return "admin/update"; 
-	}
+	 // 직원 정보 수정 (수정페이지에 상세정보 남아있기)
+    @GetMapping("/update/{empId}")
+    public String showUpdateForm(@PathVariable("empId") Long empId, Model model) {
+        logger.info("view 1-1: " + empId);
 
-	// 직원 정보 수정 
-	@ResponseBody
+        EmployeeDto dto = adminService.employeeDetail(empId);
+        List<DepartmentsDto> departments = adminService.getAllDepartments();
+        List<JobsDto> jobs = adminService.getAllJobs();
+        model.addAttribute("employeeDetail", dto);
+        model.addAttribute("departments", departments);
+        model.addAttribute("jobs", jobs);
+
+        logger.info("view 1-2: " + dto);
+        return "admin/update";
+    }
+
+    // 직원 정보 수정 (HTML 폼 처리)
     @PostMapping("/update/{empId}")
-    public String updateEmployee(@PathVariable("empId") Long empId,
-                                 @ModelAttribute("employeeDetail") EmployeeDto dto,
-                                 BindingResult result,
-                                 Model model,
-                                 RedirectAttributes redirectAttributes) {
+    public String updateEmployeeForm(@PathVariable("empId") Long empId,
+                                     @ModelAttribute("employeeDetail") EmployeeDto dto,
+                                     BindingResult result,
+                                     Model model,
+                                     RedirectAttributes redirectAttributes) {
+        logger.info("view 1: " + empId);
+        logger.info("view 2: " + dto);
+
         if (result.hasErrors()) {
+            logger.error("view 3: " + result.getAllErrors());
             model.addAttribute("departments", adminService.getAllDepartments());
             model.addAttribute("jobs", adminService.getAllJobs());
             return "admin/update";
         }
 
         adminService.updateEmployee(empId, dto);
+        logger.info("view 4: " + empId);
 
-        // alert
-        redirectAttributes.addAttribute("success", "true");
+        redirectAttributes.addFlashAttribute("success", "true");
         return "redirect:/admin/update/" + empId;
     }
+
 }
