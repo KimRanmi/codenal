@@ -2,6 +2,7 @@ package com.codenal.meeting.service;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -118,9 +119,15 @@ public class MeetingRoomService {
 		List<MeetingRoomReserveDto> reserveDto = new ArrayList<MeetingRoomReserveDto>();
 		for(MeetingRoomReserve r : reserve) {
 			MeetingRoomReserveDto toDto = new MeetingRoomReserveDto().toDto(r);
-			reserveDto.add(toDto);
+			
+			// 만약 예약 일이 현재 날짜보다 후에 있고, 예약 종료 시간이 현재 시간보다 후에 있으면 출력
+			if(toDto.getMeeting_room_reserve_date().isAfter(LocalDate.now()) || toDto.getMeeting_room_end_time().isAfter(LocalTime.now())) {
+				reserveDto.add(toDto);
+			} else { 
+				// 예약 일과 예약 시간이 지났으면 삭제
+				ReserveDelete(toDto.getMeeting_room_reserve_no());
+			}
 		}
-		System.out.println(reserveDto);
 		return reserveDto;
 	}
 	
@@ -133,6 +140,7 @@ public class MeetingRoomService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("확인"+result);
 		return result;
 	}
 	

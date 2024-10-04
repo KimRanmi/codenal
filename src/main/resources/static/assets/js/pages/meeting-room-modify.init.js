@@ -78,7 +78,7 @@ formData.addEventListener('submit', (e) => {
 				
 				alert(data.res_msg);
 
-				/*const xhr = new XMLHttpRequest();
+				const xhr = new XMLHttpRequest();
 				xhr.open("post", "/meetingRoomTimeModify", true);
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == 4 && xhr.status == 200) {
@@ -89,7 +89,7 @@ formData.addEventListener('submit', (e) => {
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 				xhr.setRequestHeader(header, csrfToken);
 				xhr.send("time="+listTime);
-				location.href="apps-meeting-room";*/
+				location.href="/apps-meeting-room";
 			})
 		
 	

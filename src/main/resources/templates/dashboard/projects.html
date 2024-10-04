@@ -14,6 +14,11 @@
         <meta name="_csrf_header" th:content="${_csrf.headerName}" />
         <title>메인화면</title>
         <!-- 필요한 CSS 및 기타 head 요소 추가 -->
+        <!-- 폰트 -->
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    	<style type="text/css">
+			* {font-family: "Noto Sans KR", sans-serif !important;} 
+		</style>
     </head>
 
     <body>
@@ -31,7 +36,7 @@
                         <!-- 사용자 정보 카드 -->
                         <div class="col-xl-4">
                             <div class="card">
-                            <div class="card-body">
+                            <div class="card-body card-height-100" style="height: 420px">
                                 <div class="card-body text-center">
                                     <div class="avatar-md mb-3 mx-auto" style="width: 100px; height: 100px;">
                                         <div class='img-thumbnail rounded-circle shadow-none'
@@ -47,20 +52,15 @@
                                     <h5 id="candidate-name" class="mb-1" style="font-weight: bold;">
                                         <span th:text="${empDto.empName}"></span> <span th:text="${empDto.jobName}"></span>
                                     </h5>
-                                    <h5 id="candidate-dept" class="mb-1" style="font-size: 13px;">
+                                    <h5 id="candidate-dept" class="mb-3" style="font-size: 13px;">
                                         <span th:text="${empDto.deptName}"></span>
                                     </h5>
-                                    <div class="d-flex gap-2 justify-content-center">
+                                    <div class="d-flex gap-2 justify-content-center mb-4">
                                         <div class="btn-group" role="group"
                                              aria-label="Basic button group" style="width: 100%">
                                             <button type="button" class="btn btn-light" id="checkInBtn">출근하기</button>
                                             <button type="button" class="btn btn-light" id="checkOutBtn">퇴근하기</button>
                                         </div>
-                                    </div>
-                                    <div class="border-0 d-flex justify-content-end">
-                                        <p class="text-muted mb-3" style="font-size: 11px">
-                                            최근 로그인 <span></span>
-                                        </p>
                                     </div>
                                     <div class="border-0 d-flex">
                                         <h4 class="card-title mb-3">
@@ -140,7 +140,7 @@
 												<div class="d-flex align-items-start">
 													<div class="flex-grow-1">
 														<a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}">
-															<label class="form-check-label mb-0 ps-2" for="task_one" th:text="${announce.announce_title}">
+															<label class="form-check-label mb-0 ps-2 text-black" for="task_one" th:text="${announce.announce_title}">
 																[인사 발령] 막시무스 팀장 오아이오 지사 영업팀 팀장 발령
 															</label>
 														</a>
