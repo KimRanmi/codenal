@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-
-import com.codenal.alarms.service.AlarmsService;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveManageRepository;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
@@ -214,14 +212,6 @@ public class ApproverService {
 			}
 			approvalRepository.updateStatus(2, no);
 			
-			// 승인 알림 전송 => 핸들러
-	        Approval approval = approvalRepository.findByApprovalNo(no); // 승인된 approval을 가져옴
-	        try {
-				notificationWebSocketHandler.sendNotification("authorization", approval);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
 		}
 
 		return app;
@@ -253,6 +243,7 @@ public class ApproverService {
 		public Approver findReject(Long approvalNo){
 			return approverRepository.findByApprovalApprovalNoAndApprovalStatus(approvalNo,3);
 		}
+
 		
 		public Approver findByEmployeeEmpIdAndApprovalStatus(int i,Long id){
 			return approverRepository.findByEmployeeEmpIdAndApprovalStatus(id,i);
@@ -261,4 +252,5 @@ public class ApproverService {
 		public int approverCount(Long empId, int i) {
 			return approverRepository.findByEmployeeEmpIdAndApprovalStatusCount(empId,i);
 		}
+
 }

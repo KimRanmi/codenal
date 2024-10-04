@@ -541,6 +541,26 @@
 	</div>
 </body>
 
+<<<<<<< HEAD
+<script type="text/javascript">
+window.onload=()=>{
+console.log('확인');
+const csrfToken = document.getElementById('csrf_token').value;
+fetch('/sidebar', {
+	method: 'POST',
+	headers: {
+            'X-CSRF-TOKEN': csrfToken
+        }
+})
+.then(response => response.json())
+.then(data => {
+	alert('성공');
+});
+	
+}
+</script>
+=======
+>>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
 
 
 </html>

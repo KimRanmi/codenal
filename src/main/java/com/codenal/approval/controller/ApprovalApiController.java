@@ -1,6 +1,7 @@
 package com.codenal.approval.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,7 +214,7 @@ public class ApprovalApiController {
 		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
 		
 		// 날짜 최신 날짜로 수정
-		LocalDate ldt = LocalDate.now();
+		LocalDateTime ldt = LocalDateTime.now();
 
 		// 타입 형변환
 		Integer form_code = Integer.parseInt(formCode);
@@ -298,7 +299,7 @@ public class ApprovalApiController {
 		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
 		
 		// 날짜 최신 날짜로 수정
-		LocalDate ldt = LocalDate.now();
+		LocalDateTime ldt = LocalDateTime.now();
 		
 
 		// 타입 형변환
@@ -402,9 +403,6 @@ public class ApprovalApiController {
 			resultMap.put("res_code","200");
 			resultMap.put("res_msg", "승인되었습니다.");
 		}
-		
-		System.out.println(resultMap);
-		
 		return resultMap;
 	}
 	
