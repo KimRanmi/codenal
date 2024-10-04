@@ -23,6 +23,8 @@ public class ChatRoomDto {
 	private int room_type;
 	private LocalDateTime create_date;
 	
+	private String search_text;
+	
 	
 	public ChatRoom toEntity() {
 		return ChatRoom.builder()

@@ -38,11 +38,78 @@ document.addEventListener('DOMContentLoaded', () => {
 selectRadio.addEventListener('change', () => {
     if (selectRadio.checked) {
         organizationChart.style.display = 'block';
-        loadOrganizationChart(); // 조직도 불러오기
+        
+		jQuery(document).ready(function () {				
+		    // 트리 메뉴 데이터
+		    $.ajax({
+		        url: '/employee/addressBook/tree-menu',
+		        method: 'GET',
+		        dataType: 'json',
+		        success: function (data) {		
+		        	
+		           /*  if (!data || data.length === 0) {
+		                console.error('Received data is empty or undefined.');
+		                return;
+		            } */
+
+		            // TreeMenuDto
+		            const formatDataForJsTree = (nodes) => {
+		                return nodes.map(node => {
+		                    return {
+		                        id: node.nodeId,
+		                        text: node.nodeName,
+		                        state: {
+		                            opened: false	// 직원은 처음에 접어둠
+		                        },
+		                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],						                    
+		                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
+		                        		// 부서 아이콘 : 직원 아이콘
+		                    };
+		                });
+		            };
+
+		            const formattedData = formatDataForJsTree(data);
+
+		            // 그룹웨어 회사 이름
+		            const companyNode = {
+		                id: 'companyName',
+		                text: 'withXwork', // 위드워크 회사명
+		                state: {
+		                    opened: true
+		                },
+		                children: formattedData, 
+		                icon: 'ri-building-fill' // 회사 아이콘
+		            };
+
+		            // jsTree 초기화
+		            $('#treeMenu').jstree({
+		                'core': {
+		                    "animation": 0,
+		                    "check_callback": false,
+		                    'data': [companyNode] 
+		                },
+		                "plugins": ["types"],
+		                "types": {
+		                    "default": {
+		                        "icon": "ri-team-fill"	// 부서 아이콘
+		                    },
+		                    "file": {
+		                        "icon": "ri-user-2-fill"	// 직원 아이콘
+		                    }
+		                }
+		            });
+		        },
+		       /*  error: function (xhr, status, error) {
+		            console.error('Error loading tree menu data:', error);
+		        } */
+		    });
+		});
+		
+        /*loadOrganizationChart(); // 조직도 불러오기*/
     }
 });
 
-// 조직도 불러오는 함수
+/*// 조직도 불러오는 함수
 function loadOrganizationChart() {
 	// 여기에 조직도를 불러오는 AJAX 요청 또는 다른 로직을 추가
 	// AJAX 요청을 통해 조직도 데이터를 가져와서 organizationChart div에 추가
@@ -52,7 +119,12 @@ function loadOrganizationChart() {
 	<h3>조직도</h3>
 	<p>부서 및 직급을 선택하세요.</p>
 	`;
+
+
+
 }
+*/
+
 });
 
 
