@@ -100,8 +100,19 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 		         + "where a.approvalStatus = ?1")
 		List<Approval> findByApprovalStatus(int i);
 		
+
+		
+		 // 승인된 연차 신청서 조회
+	    @Query("SELECT a FROM Approval a WHERE a.approvalStatus = 2 AND a.approvalCategory.approvalForm.approvalBaseFormType.baseFormCode = 1")
+	    List<Approval> findApprovedAnnualLeaves();
+	
+		
+
+
+
 		// 메인화면
 		@Query("SELECT COUNT(a) FROM Approval a WHERE a.employee.empId = ?1 AND a.approvalStatus = ?2")
 		int findByEmployeeEmpIdAndApprovalStatus(Long empId, int i);
 		
 }
+

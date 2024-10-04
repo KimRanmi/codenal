@@ -1,6 +1,7 @@
 package com.codenal.security.config;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -14,6 +15,7 @@ public class MyLoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        response.sendRedirect("/");
+    	request.getSession().setAttribute("loginTime", LocalDateTime.now());
+        response.sendRedirect("/"); // 메인페이지 
     }
 }

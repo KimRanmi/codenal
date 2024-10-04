@@ -50,18 +50,44 @@
 
                                     <input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
                                     <h5 id="candidate-name" class="mb-1" style="font-weight: bold;">
-                                        <span th:text="${empDto.empName}"></span> <span th:text="${empDto.jobName}"></span>
+
+                                        <span th:text="${empDto.empName}"></span> 
                                     </h5>
+<<<<<<< HEAD
                                     <h5 id="candidate-dept" class="mb-3" style="font-size: 13px;">
+=======
+                                    
+                                    <h5 id="candidate-dept" class="mb-1" style="font-size: 13px;">
+                                    <span th:text="${empDto.jobName}"></span>/
+>>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
                                         <span th:text="${empDto.deptName}"></span>
                                     </h5>
+<<<<<<< HEAD
                                     <div class="d-flex gap-2 justify-content-center mb-4">
+=======
+
+                                     <div class ="mb-4"></div>
+=
+                                 
+
+
+                                    <div class="d-flex gap-2 justify-content-center">
+>>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
                                         <div class="btn-group" role="group"
                                              aria-label="Basic button group" style="width: 100%">
                                             <button type="button" class="btn btn-light" id="checkInBtn">출근하기</button>
                                             <button type="button" class="btn btn-light" id="checkOutBtn">퇴근하기</button>
                                         </div>
                                     </div>
+<<<<<<< HEAD
+=======
+                                    <div class="border-0 d-flex justify-content-end">
+                                        <p class="text-muted mb-3" style="font-size: 11px">
+                                            
+                                        </p>
+                                        <div class ="mb-4"></div>
+                                    </div>
+>>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
                                     <div class="border-0 d-flex">
                                         <h4 class="card-title mb-3">
                                             <span id="month"></span>월 근태 현황

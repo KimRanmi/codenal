@@ -188,6 +188,7 @@ public class AdminViewController {
 	}
 
 	// 직원 정보 수정 
+	@ResponseBody
     @PostMapping("/update/{empId}")
     public String updateEmployee(@PathVariable("empId") Long empId,
                                  @ModelAttribute("employeeDetail") EmployeeDto dto,

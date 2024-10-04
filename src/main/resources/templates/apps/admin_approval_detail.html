@@ -150,7 +150,9 @@
 			                    icon: 'success',
 			                    title: "성공",
 			                    text: data.res_msg
-		                });
+		                }).then(() => {
+		            		location.href = "/admin_approval_list"	
+		            	})
 			            }else{
 				            		Swal.fire({
 					                    icon: 'error',

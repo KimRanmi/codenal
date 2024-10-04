@@ -27,4 +27,5 @@ public interface AlarmsRepository extends JpaRepository<Alarms, Long> {
     // 알림 삭제
     @Query("SELECT a FROM Alarms a WHERE a.alarmCreateTime < :date")
     List<Alarms> findAlarmsBeforeDate(@Param("date") LocalDateTime date);
+
 }
