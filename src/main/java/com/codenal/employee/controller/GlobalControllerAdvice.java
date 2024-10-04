@@ -2,14 +2,19 @@
 
 package com.codenal.employee.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.service.EmployeeService;
+
+import jakarta.servlet.http.HttpSession;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
@@ -38,5 +43,11 @@ public class GlobalControllerAdvice {
             }
         }
         return null; // 비로그인 상태일 경우 null
+    }
+    
+    @ModelAttribute
+    public void addAttributes(Model model, HttpSession session) {
+        LocalDateTime loginTime = (LocalDateTime) session.getAttribute("loginTime");
+        model.addAttribute("loginTime", loginTime);
     }
 }

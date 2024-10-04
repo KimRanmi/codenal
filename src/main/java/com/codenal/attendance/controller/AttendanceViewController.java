@@ -1,23 +1,24 @@
 	package com.codenal.attendance.controller;
 	
 	import java.time.LocalDate;
-	
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.data.domain.Page;
-	import org.springframework.data.domain.Pageable;
-	import org.springframework.data.domain.Sort;
-	import org.springframework.data.web.PageableDefault;
-	import org.springframework.format.annotation.DateTimeFormat;
-	import org.springframework.security.core.Authentication;
-	import org.springframework.security.core.context.SecurityContextHolder;
-	import org.springframework.stereotype.Controller;
-	import org.springframework.ui.Model;
-	import org.springframework.web.bind.annotation.GetMapping;
-	import org.springframework.web.bind.annotation.RequestParam;
-	
-	import com.codenal.attendance.domain.AttendanceDto;
-	import com.codenal.attendance.service.AttendanceService;
-	import com.codenal.security.vo.SecurityUser;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.codenal.attendance.domain.AttendanceDto;
+import com.codenal.attendance.service.AttendanceService;
+import com.codenal.security.vo.SecurityUser;
 	
 	@Controller
 	
@@ -38,34 +39,41 @@
 		        }
 		    }
 		
-		 	@GetMapping("/apps-attendance")
-		 	public String showAttendancePage(
-		 	        @RequestParam(value = "startDate", required = false)
-		 	        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-	
-		 	        @RequestParam(value = "endDate", required = false)
-		 	        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-	
-		 	        @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable, // 정렬 추가
-		 	        Model model) {
-	
-		 		 Long empId = getCurrentUserId();	
-		 		
-		 	    Page<AttendanceDto> attendances;
-	
-		 	   if (startDate != null && endDate != null) {
-		 	        attendances = attendanceService.getAttendancesByDateRange(startDate, endDate, pageable);
-		 	    } else {
-		 	        // 사용자 ID와 pageable을 함께 넘겨줍니다
-		 	        attendances = attendanceService.getAllAttendances(empId, pageable);
-		 	    }
-	
-		 	    model.addAttribute("attendances", attendances);
-		 	    model.addAttribute("currentPage", attendances.getNumber());
-		 	    model.addAttribute("totalPages", attendances.getTotalPages());
-		 	    model.addAttribute("startDate", startDate);
-		 	    model.addAttribute("endDate", endDate);
-	
-		 	    return "apps/attendance";
-		 	}
+		    @GetMapping("/apps-attendance")
+		    public String showAttendancePage(
+		            @RequestParam(value = "year", required = false) Integer year,
+		            @RequestParam(value = "month", required = false) Integer month,
+		            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable, 
+		            Model model) {
+
+		         Long empId = getCurrentUserId();
+
+		        // 선택된 연도와 월이 없으면 현재 연도와 월로 설정
+		        YearMonth selectedYearMonth;
+		        if (year != null && month != null) {
+		            selectedYearMonth = YearMonth.of(year, month);
+		        } else {
+		            selectedYearMonth = YearMonth.now();
+		        }
+
+		        // 시작일과 종료일 계산
+		        LocalDate startDate = selectedYearMonth.atDay(1);
+		        LocalDate endDate = selectedYearMonth.atEndOfMonth();
+
+		        // 출퇴근 기록 조회
+		        Page<AttendanceDto> attendances = attendanceService.getAttendancesByDateRange(empId, startDate, endDate, pageable);
+
+		        // 모델에 데이터 추가
+		        model.addAttribute("attendances", attendances);
+		        model.addAttribute("currentPage", attendances.getNumber());
+		        model.addAttribute("totalPages", attendances.getTotalPages());
+		        model.addAttribute("selectedYear", selectedYearMonth.getYear());
+		        model.addAttribute("selectedMonth", selectedYearMonth.getMonthValue());
+
+		        // 현재 선택된 연도와 월을 "yyyy.MM" 형식으로 포맷
+		        String currentMonth = selectedYearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM"));
+		        model.addAttribute("currentMonth", currentMonth);
+
+		        return "apps/attendance";
+		    }
 	}

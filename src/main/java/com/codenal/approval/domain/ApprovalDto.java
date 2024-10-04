@@ -1,9 +1,6 @@
 package com.codenal.approval.domain;
 
-import java.time.LocalDate;
-
-import com.codenal.annual.domain.AnnualLeaveUsage;
-import com.codenal.employee.domain.Employee;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +21,7 @@ public class ApprovalDto {
 	private Long approval_no;
 	private Long emp_id;
 	private int cate_code;
-	private LocalDate approval_reg_date;
+	private LocalDateTime approval_reg_date;
 	private String approval_title;
 	private String approval_content;
 	private int approval_status;
@@ -40,16 +37,21 @@ public class ApprovalDto {
 				.build();
 	}
 	
-	public ApprovalDto toDto(Approval approval) {
-		return ApprovalDto.builder()
-				.approval_no(approval.getApprovalNo())
-				.approval_title(approval.getApprovalTitle())
-				.approval_content(approval.getApprovalContent())
-				.approval_reg_date(approval.getApprovalRegDate())
-				.approval_status(approval.getApprovalStatus())
-				.cate_code(approval.getApprovalCategory().getCateCode())
-				.emp_id(approval.getEmployee().getEmpId())
-				.annual_leave_usage_no(approval.getAnnualLeaveUsage().getAnnualUsageNo())
-				.build();
+	public static ApprovalDto toDto(Approval approval) {
+	    Long annualUsageNo = null;
+	    if (approval.getAnnualLeaveUsage() != null) {
+	        annualUsageNo = approval.getAnnualLeaveUsage().getAnnualUsageNo();
+	    }
+
+	    return ApprovalDto.builder()
+	            .approval_no(approval.getApprovalNo())
+	            .approval_title(approval.getApprovalTitle())
+	            .approval_content(approval.getApprovalContent())
+	            .approval_reg_date(approval.getApprovalRegDate())
+	            .approval_status(approval.getApprovalStatus())
+	            .cate_code(approval.getApprovalCategory().getCateCode())
+	            .emp_id(approval.getEmployee().getEmpId())
+	            .annual_leave_usage_no(annualUsageNo)
+	            .build();
 	}
 }

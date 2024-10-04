@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -28,7 +27,10 @@ public class WorkHistoryApiController {
     @Autowired
     private WorkHistoryService workHistoryService;
 
-    // 현재 사용자의 empId를 가져오는 메서드
+    /**
+     * 현재 인증된 사용자의 ID를 가져오는 메서드
+     * @return 사용자 ID
+     */
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
@@ -40,39 +42,34 @@ public class WorkHistoryApiController {
     }
 
     /**
-     * 모든 근무 내역을 페이징하여 조회하는 API
-     * @param page 페이지 번호 (0부터 시작)
-     * @param size 페이지 크기
-     * @param sort 정렬 필드
-     * @return 페이징된 근무 내역 목록
-     */
-    @GetMapping("/all")
-    public ResponseEntity<Page<WorkHistoryDto>> getAllHistories(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "workHistoryDate") String sort) { 
-        Long empId = getCurrentUserId();
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort).descending());
-        Page<WorkHistoryDto> workHistories = workHistoryService.getHistories(empId, pageable);
-        return ResponseEntity.ok(workHistories);
-    }
-
-    /**
-     * 특정 날짜 범위의 근무 내역을 페이징하여 조회하는 API
+     * 특정 날짜 범위의 근무 내역을 조회하는 API
      * @param startDate 시작 날짜 (yyyy-MM-dd 형식)
      * @param endDate 종료 날짜 (yyyy-MM-dd 형식)
-     * @param page 페이지 번호 (0부터 시작)
-     * @param size 페이지 크기
-     * @param sort 정렬 필드
-     * @return 페이징된 근무 내역 목록
+     * @param pageable 페이지 정보
+     * @return 근무 내역 페이지
      */
     @GetMapping("/records")
-    public ResponseEntity<Page<WorkHistoryDto>> getHistoriesByRange(
+    public ResponseEntity<Page<WorkHistoryDto>> getWorkHistoriesByDateRange(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @PageableDefault(size = 10, sort = "workHistoryDate", direction = Sort.Direction.DESC) Pageable pageable) { 
+            @PageableDefault(size = 10, sort = "workHistoryDate", direction = Sort.Direction.DESC) Pageable pageable) {
         Long empId = getCurrentUserId();
         Page<WorkHistoryDto> workHistories = workHistoryService.getHistoriesByRange(empId, startDate, endDate, pageable);
         return ResponseEntity.ok(workHistories);
     }
+
+    /**
+     * 현재 사용자의 모든 근무 내역을 조회하는 API
+     * @param pageable 페이지 정보
+     * @return 근무 내역 페이지
+     */
+    @GetMapping("/all")
+    public ResponseEntity<Page<WorkHistoryDto>> getAllWorkHistories(
+            @PageableDefault(size = 10, sort = "workHistoryDate", direction = Sort.Direction.DESC) Pageable pageable) { 
+        Long empId = getCurrentUserId();
+        Page<WorkHistoryDto> workHistories = workHistoryService.getHistories(empId, pageable);
+        return ResponseEntity.ok(workHistories);
+    }
+
+    // 필요한 경우 추가적인 엔드포인트를 구현할 수 있습니다.
 }

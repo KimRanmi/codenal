@@ -32,7 +32,7 @@ public class Jobs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "job_no")
-    private int jobNo; // 직급 번호
+    private Long jobNo; // 직급 번호
 
     @Column(name = "job_name", nullable = false)
     private String jobName; // 직급명

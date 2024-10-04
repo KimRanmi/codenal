@@ -57,8 +57,9 @@ public class AttendanceApiController {
     public ResponseEntity<Page<AttendanceDto>> getAttendancesByDateRange(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable) { // 정렬 추가
-        Page<AttendanceDto> attendances = attendanceService.getAttendancesByDateRange(startDate, endDate, pageable);
+            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        Long empId = getCurrentUserId(); // 현재 사용자 ID 가져오기
+        Page<AttendanceDto> attendances = attendanceService.getAttendancesByDateRange(empId, startDate, endDate, pageable);
         return ResponseEntity.ok(attendances);
     }
 
