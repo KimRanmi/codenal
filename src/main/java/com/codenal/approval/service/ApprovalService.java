@@ -243,7 +243,7 @@ public class ApprovalService {
         case "연차":
             type = 2;
             break;
-        case "경조사휴가":
+        case "경조휴가":
             type = 3;
             break;
         case "병가":
@@ -361,7 +361,7 @@ public class ApprovalService {
 		        case "연차":
 		            type = 2;
 		            break;
-		        case "경조사휴가":
+		        case "경조휴가":
 		            type = 3;
 		            break;
 		        case "병가":
