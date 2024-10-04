@@ -1,6 +1,6 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
+	layout:decorate="~{layout}" data-sidebar="light">
 
 <th:block layout:fragment="pagetitle">
 	<!--page title-->
@@ -8,11 +8,14 @@
 </th:block>
 
 <head>
+<!--TOAST UI Editor CSS-->
+<link rel="stylesheet" type="text/css"
+	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+
 </head>
 
 <body>
 	<div layout:fragment="content">
-
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card mt-n4 mx-n4">
@@ -24,341 +27,260 @@
 										<div class="col-md-auto">
 											<div class="avatar-md">
 												<div class="avatar-title bg-white rounded-circle">
-													<img src="/assets/images/brands/slack.png" alt="" class="avatar-xs">
+													<img src="/assets/images/brands/slack.png" alt=""
+														class="avatar-xs">
 												</div>
 											</div>
 										</div>
 										<div class="col-md">
 											<div>
-												<h2 class="fw-bold">게시글 제목</h2>
+												<input type="hidden" id="csrf_token"
+													th:value="${_csrf.token}"> <input type="hidden"
+													th:value="${announceList.announce_no}" id="aNo">
+												<!-- 상세 조회 시작 -->
+												<h2 class="fw-bold" th:text="${announceList.announce_title}"></h2>
 												<br>
 												<div class="hstack gap-3 flex-wrap">
-													<div><i class="ri-user-3-fill align-bottom me-1"></i>작성자
+													<div>
+														<i class="ri-user-3-fill align-bottom me-1"></i> 작성자 : <span
+															class="fw-medium"
+															th:text="${announceList.employee.empName}"></span>
 													</div>
-													<div>개발팀<span class="fw-medium">대리</span></div>
+													<div th:text="${announceList.employee.departments.deptName}">
+													<span class="fw-medium" th:text="${announceList.employee.jobs.jobName}"></span>
+													</div>
 													<div class="vr"></div>
-													<div><i class="ri-user-settings-line align-bottom me-1"></i>
-													읽기 권한 :  <span class="fw-medium">전직원</span></div>
-												</div>
-												<br>
-												<div class="hstack gap-3 flex-wrap">
-													<div><i class="ri-pencil-fill align-bottom me-1"></i>
-													작성일 :  <span class="fw-medium">15 Sep, 2021</span></div>
-													<div><i class="ri-eraser-line align-bottom me-1"></i>
-													수정일 : <span class="fw-medium">29 Dec, 2021</span></div>
-												</div>
-												<br>
-												<div class="hstack gap-3 flex-wrap">
-												<div><i class="ri-eye-line align-bottom me-1"></i>
-													조회수 <span class="fw-medium">0</span></div>
+													<div>
+														<i class="ri-user-settings-line align-bottom me-1"></i> 읽기
+														권한 : <span class="fw-medium" th:text="${(announceList.read_authority_status != null and #strings.trim(announceList.read_authority_status).toUpperCase() == 'N') ? '전직원' : '권한 설정 상태'}"></span>
+													</div>
+													<br>
+													<div class="hstack gap-3 flex-wrap">
+														<div>
+															<i class="ri-pencil-fill align-bottom me-1"></i> 작성일 : <span
+																class="fw-medium"
+																th:text="${#temporals.format(announceList.reg_date, 'yy-MM-dd HH:mm:ss')}"></span>
+														</div>
+														<div id="modDate_div">
+															<i class="ri-eraser-line align-bottom me-1"></i> 수정일 : <span
+																id="modDate" class="fw-medium"
+																th:text="${#temporals.format(announceList.mod_date, 'yy-MM-dd HH:mm:ss')}"></span>
+														</div>
+													</div>
+													<br>
+													<div class="hstack gap-3 flex-wrap">
+														<div>
+															<i class="ri-eye-line align-bottom me-1"></i> 조회수 <span
+																class="fw-medium" th:text="${announceList.view_count}"></span>
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>
-									</div>
-								</div>
-								
-								<!-- 제목 옆에 빈 공간 필요없으면 지우기 -->
- 								<div class="col-md-auto">
- 								<button type="button" class="btn btn-soft-success waves-effect waves-light"><i class="ri-eraser-line align-bottom me-1"></i>
-										게시글 수정</button>
-								<button type="button" class="btn btn-soft-danger waves-effect waves-light"><i class="ri-close-fill align-bottom me-1"></i>
-										게시글 삭제</button>
-<!-- 									<div class="hstack gap-1 flex-wrap">
-										<button type="button" class="btn py-0 fs-16 favourite-btn active">
-											<i class="ri-star-fill"></i>
-										</button>
-										<button type="button" class="btn py-0 fs-16 text-body">
-											<i class="ri-share-line"></i>
-										</button>
-										<button type="button" class="btn py-0 fs-16 text-body">
-											<i class="ri-flag-line"></i>
-										</button>
-									</div> -->
-								</div>
-							</div>
 
-							<ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
-								<li class="nav-item">
-									<a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#project-overview"
-										role="tab">
-										view tab
-									</a>
-								</li>
-							</ul>
+
+										<div class="col-md-auto"
+											th:if="${username} == ${announceList.employee.empId.toString()}">
+											<a
+												th:href="@{/announce/update/{no}(no=${announceList.announce_no})}">
+												<button type="button"
+													class="btn btn-soft-success waves-effect waves-light">
+													<i class="ri-eraser-line align-bottom me-1"></i> 게시글 수정
+												</button>
+											</a>
+											<a class="delete_board_button"
+												th:onclick="announceDelete([[${announceList.announce_no}]])">
+												<button type="button"
+													class="btn btn-soft-danger waves-effect waves-light">
+													<i class="ri-close-fill align-bottom me-1"></i> 게시글 삭제
+												</button>
+											</a>
+										</div>
+									</div>
+									<!-- Tab Navigation -->
+									<ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
+										<li class="nav-item"><a
+											class="nav-link active fw-semibold" data-bs-toggle="tab"
+											href="#announce_content_view" role="tab"> 게시글 내용 </a></li>
+										<li class="nav-item" th:if="${announceList.announceFile != null and !#lists.isEmpty(announceList.announceFile)}"><a class="nav-link fw-semibold"
+											data-bs-toggle="tab" href="#announce_file_view" role="tab">
+												첨부 파일 </a></li>
+									</ul>
+								</div>
+								<!-- end card body -->
+							</div>
 						</div>
-						<!-- end card body -->
-					</div>
-				</div>
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="tab-content text-muted">
-					<div class="tab-pane fade show active" id="project-overview" role="tabpanel">
-						<div class="row">
-								<div class="card">
-									<div class="card-body">
-										<div class="text-muted">
-											<h6 class="mb-3 fw-semibold text-uppercase">게시글 내용</h6>
-											
-											<!-- 에디터 불러올 자리 -->
-											<p>It will be as simple as occidental in fact, it will be Occidental. To an
-												English person, it will seem like simplified English, as a skeptical
-												Cambridge friend of mine told me what Occidental is. The European
-												languages are members of the same family. Their separate existence is a
-												myth. For science, music, sport, etc, Europe uses the same vocabulary.
-												The languages only differ in their grammar, their pronunciation and
-												their most common words.</p>
+						<div class="tab-content text-muted">
+							<div class="tab-pane fade show active" id="announce_content_view"
+								role="tabpanel">
+								<div class="row">
+									<div class="card">
+										<div class="card-body">
 
-											<ul class="ps-4 vstack gap-2">
-												<li>Product Design, Figma (Software), Prototype</li>
-												<li>Four Dashboards : Ecommerce, Analytics, Project,etc.</li>
-												<li>Create calendar, chat and email app pages.</li>
-												<li>Add authentication pages.</li>
-												<li>Content listing.</li>
-											</ul>
+											<!--TOAST UI Editor-->
+											<script
+												src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.js"></script>
 
-											
-											
-											<!-- 파일 조회1 -->
 
-											<div class="pt-3 border-top border-top-dashed mt-4">
-												<h6 class="mb-3 fw-semibold text-uppercase"><i class="ri-download-cloud-2-line align-bottom me-1"></i>첨부 파일</h6>
-												<div class="row g-3">
-													<div class="col-xxl-4 col-lg-6">
-														<div class="border rounded border-dashed p-2">
-															<div class="d-flex align-items-center">
-																<div class="flex-shrink-0 me-3">
-																	<div class="avatar-sm">
-																		<div
-																			class="avatar-title bg-light text-secondary rounded fs-24">
-																			<i class="ri-folder-zip-line"></i>
-																		</div>
-																	</div>
-																</div>
-																<div class="flex-grow-1 overflow-hidden">
-																	<h5 class="fs-13 mb-1"><a href="#"
-																			class="text-body text-truncate d-block">App
-																			pages.zip</a></h5>
-																	<div>2.2MB</div>
-																</div>
-																<div class="flex-shrink-0 ms-2">
-																	<div class="d-flex gap-1">
-																		<button type="button"
-																			class="btn btn-icon text-muted btn-sm fs-18"><i
-																				class="ri-download-2-line"></i></button>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-													<!-- 파일 조회2 -->
-													<div class="col-xxl-4 col-lg-6">
-														<div class="border rounded border-dashed p-2">
-															<div class="d-flex align-items-center">
-																<div class="flex-shrink-0 me-3">
-																	<div class="avatar-sm">
-																		<div
-																			class="avatar-title bg-light text-secondary rounded fs-24">
-																			<i class="ri-file-ppt-2-line"></i>
-																		</div>
-																	</div>
-																</div>
-																<div class="flex-grow-1 overflow-hidden">
-																	<h5 class="fs-13 mb-1"><a href="#"
-																			class="text-body text-truncate d-block">Velzon
-																			admin.ppt</a></h5>
-																	<div>2.4MB</div>
-																</div>
-																<div class="flex-shrink-0 ms-2">
-																	<div class="d-flex gap-1">
-																		<button type="button"
-																			class="btn btn-icon text-muted btn-sm fs-18"><i
-																				class="ri-download-2-line"></i></button>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<!-- end col -->
-												</div>
-												<!-- end row -->
-											</div>
+											<!-- 내용이 포함된 div 숨김처리 -->
+											<div id="acontent" style="display: none;"
+												th:text="${announceList.announce_content}"></div>
+
+											<!-- TOAST UI Editor가 들어갈 div 태그 -->
+											<div id="editorContent"></div>
+
+											<script>
+														    document.addEventListener('DOMContentLoaded', function () {
+														        // 서버에서 렌더링된 HTML 콘텐츠를 가져오기
+														        const content = document.querySelector('#acontent').textContent;
+														
+														        // TOAST UI Editor 인스턴스 생성
+														        const editor = new toastui.Editor({
+														            el: document.querySelector('#editorContent'),
+														            viewer: true, // 읽기 전용 모드
+														            initialValue: content // 서버에서 가져온 HTML 콘텐츠 설정
+														        });
+														    });
+														</script>
+
+
 										</div>
+										<!-- end card body -->
 									</div>
-									<!-- end card body -->
+									<!-- end card -->
 								</div>
-								<!-- end card -->
-				<!-- end card -->
-			
-		</div>
-		<!-- end row -->
-<!-- 댓글
-								<div class="card">
-									<div class="card-header align-items-center d-flex">
-										<h4 class="card-title mb-0 flex-grow-1">Comments</h4>
-										<div class="flex-shrink-0">
-											<div class="dropdown card-header-dropdown">
-												<a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown"
-													aria-haspopup="true" aria-expanded="false">
-													<span class="text-muted">Recent<i
-															class="mdi mdi-chevron-down ms-1"></i></span>
-												</a>
-												<div class="dropdown-menu dropdown-menu-end">
-													<a class="dropdown-item" href="#">Recent</a>
-													<a class="dropdown-item" href="#">Top Rated</a>
-													<a class="dropdown-item" href="#">Previous</a>
-												</div>
-											</div>
-										</div>
-									</div>end card header
-
-									<div class="card-body">
-
-										<div data-simplebar style="height: 300px;" class="px-3 mx-n3 mb-2">
-											<div class="d-flex mb-4">
-												<div class="flex-shrink-0">
-													<img src="/assets/images/users/avatar-8.jpg" alt=""
-														class="avatar-xs rounded-circle" />
-												</div>
-												<div class="flex-grow-1 ms-3">
-													<h5 class="fs-13">Joseph Parker <small class="text-muted ms-2">20
-															Dec 2021 - 05:47AM</small></h5>
-													<p class="text-muted">I am getting message from customers that when
-														they place order always get error message .</p>
-													<a href="javascript: void(0);" class="badge text-muted bg-light"><i
-															class="mdi mdi-reply"></i> Reply</a>
-													<div class="d-flex mt-4">
-														<div class="flex-shrink-0">
-															<img src="/assets/images/users/avatar-10.jpg" alt=""
-																class="avatar-xs rounded-circle" />
-														</div>
-														<div class="flex-grow-1 ms-3">
-															<h5 class="fs-13">Alexis Clarke <small
-																	class="text-muted ms-2">22 Dec 2021 -
-																	02:32PM</small></h5>
-															<p class="text-muted">Please be sure to check your Spam
-																mailbox to see if your email filters have identified the
-																email from Dell as spam.</p>
-															<a href="javascript: void(0);"
-																class="badge text-muted bg-light"><i
-																	class="mdi mdi-reply"></i> Reply</a>
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="d-flex mb-4">
-												<div class="flex-shrink-0">
-													<img src="/assets/images/users/avatar-6.jpg" alt=""
-														class="avatar-xs rounded-circle" />
-												</div>
-												<div class="flex-grow-1 ms-3">
-													<h5 class="fs-13">Donald Palmer <small class="text-muted ms-2">24
-															Dec 2021 - 05:20PM</small></h5>
-													<p class="text-muted">If you have further questions, please contact
-														Customer Support from the “Action Menu” on your <a
-															href="javascript:void(0);"
-															class="text-decoration-underline">Online Order Support</a>.
-													</p>
-													<a href="javascript: void(0);" class="badge text-muted bg-light"><i
-															class="mdi mdi-reply"></i> Reply</a>
-												</div>
-											</div>
-											<div class="d-flex">
-												<div class="flex-shrink-0">
-													<img src="/assets/images/users/avatar-10.jpg" alt=""
-														class="avatar-xs rounded-circle" />
-												</div>
-												<div class="flex-grow-1 ms-3">
-													<h5 class="fs-13">Alexis Clarke <small class="text-muted ms-2">26
-															min ago</small></h5>
-													<p class="text-muted">Your <a href="javascript:void(0)"
-															class="text-decoration-underline">Online Order Support</a>
-														provides you with the most current status of your order. To help
-														manage your order refer to the “Action Menu” to initiate return,
-														contact Customer Support and more.</p>
-													<div class="row g-2 mb-3">
-														<div class="col-lg-1 col-sm-2 col-6">
-															<img src="/assets/images/small/img-4.jpg" alt=""
-																class="img-fluid rounded">
-														</div>
-														<div class="col-lg-1 col-sm-2 col-6">
-															<img src="/assets/images/small/img-5.jpg" alt=""
-																class="img-fluid rounded">
-														</div>
-													</div>
-													<a href="javascript: void(0);" class="badge text-muted bg-light"><i
-															class="mdi mdi-reply"></i> Reply</a>
-													<div class="d-flex mt-4">
-														<div class="flex-shrink-0">
-															<img src="/assets/images/users/avatar-6.jpg" alt=""
-																class="avatar-xs rounded-circle" />
-														</div>
-														<div class="flex-grow-1 ms-3">
-															<h5 class="fs-13">Donald Palmer <small
-																	class="text-muted ms-2">8 sec ago</small></h5>
-															<p class="text-muted">Other shipping methods are available
-																at checkout if you want your purchase delivered faster.
-															</p>
-															<a href="javascript: void(0);"
-																class="badge text-muted bg-light"><i
-																	class="mdi mdi-reply"></i> Reply</a>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<form class="mt-4">
-											<div class="row g-3">
-												<div class="col-12">
-													<label for="exampleFormControlTextarea1"
-														class="form-label text-body">Leave a Comments</label>
-													<textarea class="form-control bg-light border-light"
-														id="exampleFormControlTextarea1" rows="3"
-														placeholder="Enter your comment..."></textarea>
-												</div>
-												<div class="col-12 text-end">
-													<button type="button"
-														class="btn btn-ghost-secondary btn-icon waves-effect me-1"><i
-															class="ri-attachment-line fs-16"></i></button>
-													<a href="javascript:void(0);" class="btn btn-success">Post
-														Comments</a>
-												</div>
-											</div>
-										</form>
-									</div>
-									end card body
-								</div>
-								end card
-		댓글 				 -->	
+								<!-- end row -->
 							</div>
+							<div class="tab-pane fade" id="announce_file_view"
+								role="tabpanel" th:if="${announceList.announceFile != null and !#lists.isEmpty(announceList.announceFile)}">
+								<div class="row">
+									<div class="card">
+										<div class="card-body">
+											<!-- 파일 조회 -->
+											<div class="pt-3 border-top border-top-dashed mt-4">
+												<h6 class="mb-3 fw-semibold text-uppercase">
+													<i class="ri-download-cloud-2-line align-bottom me-1"></i>첨부
+													파일
+												</h6>
+												<div class="row g-3">
+													<!-- 파일 목록 반복 -->
+													<div th:each="file : ${announceList.announceFile}">
+														<div class="col-xxl-4 col-lg-6">
+															<div class="border rounded border-dashed p-2">
+																<div class="d-flex align-items-center">
+																	<div class="flex-shrink-0 me-3">
+																		<div class="avatar-sm">
+																			<div
+																				class="avatar-title bg-light text-secondary rounded fs-24">
+																				<i class="ri-folder-zip-line"></i>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="flex-grow-1 overflow-hidden">
+																		<h5 class="fs-13 mb-1">
+																			<a class="text-body text-truncate d-block"
+																				th:text="${file.fileOriName}"></a>
+																		</h5>
+																	</div>
+																	<div class="flex-shrink-0 ms-2">
+																		<div class="d-flex gap-1">
+																			<a th:href="@{/download/{no}(no=${file.fileNo})}">
+																			<button type="button" id="file_download" class="btn btn-icon text-muted btn-sm fs-18">
+																				<i class="ri-download-2-line"></i>
+																			</button></a>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<!-- end col -->
+												</div>
+
+												<!-- end row -->
+												<div class="pt-3 border-top border-top-dashed mt-4"></div>
+												<!-- border -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
 							<!-- ene col -->
 						</div>
 						<!-- end row -->
+
 					</div>
-					<!-- end tab pane -->
+					<!-- end col -->
 				</div>
+				<!-- 이전 페이지 버튼 -->
+				<div style="text-align: center; margin-bottom: 20px">
+					<button type="button"
+						class="btn rounded-pill btn-primary waves-effect waves-light btn-lg"
+						onclick="goBack()">이전 페이지 이동</button>
+					<a th:href="@{/announce}">
+						<button type="button" class="btn rounded-pill btn-primary waves-effect waves-light btn-lg">
+						<i class="ri-clipboard-line align-bottom me-1"></i> 게시판 목록</button></a>
+				</div>
+
+				<script>
+	        function goBack() {
+	        	window.location.href = document.referrer;  // 이전 페이지로 이동하면서 새로고침
+	        }
+	        
+	        // 'modDate' 요소의 텍스트 내용 가져오기
+	        const modDate = document.getElementById('modDate').textContent.trim();   // <span id="modDate"> </span> 공백 포함이기 때문에 공백 문자 제거후 판단
+	        const modDate_div = document.getElementById('modDate_div');
+	        
+	        // 만약 'modDate' 텍스트가 비어있다면 'modDate_div' 숨기기
+	        if (modDate.length < 1) {
+	          modDate_div.style.display = 'none';
+	        }
+	        
+	        
+	        
+	        const announceDelete = function(announceNo) {
+	            if(confirm("정말 삭제하시겠습니까?")) {
+	                const csrfTokenElement = document.getElementById("csrf_token");
+	                if (csrfTokenElement) {
+	                    const csrfToken = csrfTokenElement.value;
+	                    fetch('/announce/delete/' + announceNo, {
+	                        method: 'DELETE',
+	                        headers: {
+	                            'X-CSRF-TOKEN': csrfToken
+	                        }
+	                    })
+	                    .then(response => response.json())
+	                    .then(data => {
+	                        if (data.res_code === '200') {
+	                            alert(data.res_msg);
+	                            location.href = `/announce`;
+	                        } else {
+	                            alert(data.res_msg);
+	                        }
+	                    })
+	                    .catch(error => console.error('Error:', error));
+	                } else {
+	                    console.error('CSRF token element not found.');
+	                }
+	            }
+	        }
+	    </script>
+
+				<!--  container-fluid 위치-->
+				<!--end row-->
 			</div>
-			<!-- end col -->
 		</div>
-		<div style="text-align: center">
-		<button type="button" class="btn rounded-pill btn-primary waves-effect waves-light btn-lg">
-			<i class="ri-clipboard-line align-bottom me-1"></i>
-			조회 완료
-		</button></div>
-		
-		<!--  container-fluid 위치-->
-		<!--end row-->
 	</div>
 
-	</th:block>
-	
-	
 
 	<th:block layout:fragment="pagejs">
-
+		<script
+			src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 		<script src="/assets/js/pages/project-overview.init.js"></script>
 
 	</th:block>
+
 </body>
 
 </html>

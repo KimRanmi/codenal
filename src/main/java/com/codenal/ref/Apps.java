@@ -1,14 +1,39 @@
 package com.codenal.ref;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.codenal.employee.domain.Employee;
+import com.codenal.employee.domain.EmployeeDto;
+import com.codenal.employee.service.EmployeeService;
+import com.codenal.meeting.domain.MeetingRoom;
+import com.codenal.meeting.domain.MeetingRoomDto;
+import com.codenal.meeting.domain.MeetingRoomTimeDto;
+import com.codenal.meeting.service.MeetingRoomService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class Apps {
+	
+	private MeetingRoomService meetingRoomService;
+	private EmployeeService employeeService;
+	
+	@Autowired
+	public Apps(MeetingRoomService meetingRoomService, EmployeeService employeeService) {
+		this.meetingRoomService = meetingRoomService;
+		this.employeeService = employeeService;
+	}
+	
 
 	@GetMapping("/apps-calendar")
-	public String apps_calendar() {
+	public String apps_calendar(Model model) {
+		model.addAttribute("empId" , SecurityContextHolder.getContext().getAuthentication().getName());
 		return "apps/calendar";
 	}
 	
@@ -38,20 +63,13 @@ public class Apps {
 		return "apps/ecommerce-products";
 	}
 	
-	@GetMapping("/apps-ecommerce-product-details")
-	public String apps_ecommerce_product_details() {
-		return "apps/ecommerce-product-details";
-	}
+	
 	
 	@GetMapping("/apps-ecommerce-add-product")
 	public String apps_ecommerce_add_product() {
 		return "apps/ecommerce-add-product";
 	}
-	
-	@GetMapping("/apps-ecommerce-orders")
-	public String apps_ecommerce_orders() {
-		return "apps/ecommerce-orders";
-	}
+
 	
 	@GetMapping("/apps-ecommerce-order-details")
 	public String apps_ecommerce_orders_details() {
@@ -63,10 +81,7 @@ public class Apps {
 		return "apps/ecommerce-customers";
 	}
 	
-	@GetMapping("/apps-ecommerce-cart")
-	public String apps_ecommerce_cart() {
-		return "apps/ecommerce-cart";
-	}
+	
 	
 	@GetMapping("/apps-ecommerce-checkout")
 	public String apps_ecommerce_checkout() {
@@ -238,6 +253,10 @@ public class Apps {
 		return "apps/file-manager";
 	}
 	
+	@GetMapping("/appss-attendance")
+	public String apps_attendance() {
+		return "apps/attendance";	
+	}
 	@GetMapping("/apps-todo")
 	public String apps_todo() {
 		return "apps/todo";

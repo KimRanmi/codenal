@@ -1,149 +1,162 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout}">
-
-<th:block layout:fragment="pagetitle">
-	<!--page title-->
-	<div th:replace="partials/title-meta :: title-meta('게시글 작성 페이지')"></div>
-</th:block>
+      layout:decorate="~{layout}" data-sidebar="light">
 
 <head>
-	<!-- Plugins css -->
-	<link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
 </head>
 
 <body>
-	<div layout:fragment="content">
-		<div th:replace="partials/page-title :: page-title('게시글 작성','게시판')"></div>
+    <div layout:fragment="content">
+        <div th:replace="partials/page-title :: page-title('게시글 작성','게시판')"></div>
+		<form id="announceForm" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                    
+					<input type="hidden" id="csrf_token" th:value="${_csrf.token}">
+					<input type="hidden" id="announce_writer" th:value="${username}">
+					
+					    <div class="mb-3">
+                           <label class="form-label" for="announce_title">제목</label>
+                           <input type="text" class="form-control" id="announce_title"
+                                       placeholder="제목을 입력하세요.">
 
-		<div class="row">
-			<div class="col-lg-8">
-				<div class="card">
-					<div class="card-body">
-						<div class="mb-3">
-							<label class="form-label" for="project-title-input">제목</label>
-							<input type="text" class="form-control" id="project-title-input"
-								placeholder="제목을 입력하세요.">
+                        </div>
+                        <label class="form-label">내용</label>
+                        <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+                        <div id="editor"></div>
+                        <script>
+                            const editor = new toastui.Editor({
+                                el: document.querySelector('#editor'),
+                                height: '500px',                        // 에디터 영역의 높이 값 (OOOpx || auto)
+                                initialEditType: 'wysiwyg',            // 최초로 보여줄 에디터 타입 (markdown || wysiwyg)
+                                initialValue: '',                       // 내용의 초기 값으로, 반드시 마크다운 문자열 형태여야 함
+                                previewStyle: 'vertical',               // 마크다운 프리뷰 스타일 (tab || vertical)
+                                /* start of hooks */
+                                hooks: {
+                                    async addImageBlobHook(blob, callback) { // 이미지 업로드 로직 커스텀
+                                        try {
+                                            /*
+                                             * 1. 에디터에 업로드한 이미지를 FormData 객체에 저장
+                                             *    (이때, 컨트롤러 uploadEditorImage 메서드의 파라미터인 'image'와 formData에 append 하는 key('image')값은 동일해야 함)
+                                             */
+                                            const formData = new FormData();
+                                            formData.append('image', blob);
+
+                                            // 2. FileApiController - uploadEditorImage 메서드 호출
+                                            const csrfToken = document.getElementById("csrf_token").value;
+                                            const response = await fetch('/tui-editor/image-upload', {
+                                                method : 'POST',
+                                                body : formData,
+                                                headers: {
+                                         	       'X-CSRF-TOKEN': csrfToken
+
+                                                 },
+                                            });
+
+                                            // 3. 컨트롤러에서 전달받은 디스크에 저장된 파일명
+                                            const filename = await response.text();
+                                            console.log('서버에 저장된 파일명 : ', filename);
+
+                                            // 4. addImageBlobHook의 callback 함수를 통해, 디스크에 저장된 이미지를 에디터에 렌더링
+                                            const imageUrl = `/tui-editor/image-print?filename=${filename}`;
+                                            callback(imageUrl, 'image alt attribute');
+
+                                        } catch (error) {
+                                            console.error('업로드 실패 : ', error);
+                                        }
+                                    }
+                                }
+                                /* end of hooks */
+                            });
+                        </script>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">첨부할 파일 목록</h5>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <p class="text-muted">첨부할 파일을 이곳에 첨부하세요.</p>
+                            <!-- <div class="dropzone" id="fileDropzone"> -->
+                                <div class="fallback">
+                                    <input id="file" name="file" type="file" multiple="multiple">
+									    
+                                <!-- </div> -->
+<!--                                   <div class="dz-message needsclick">
+                                    <div class="mb-3">
+                                        <i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
+                                    </div>
+                                    <h6>이곳을 클릭하거나 올릴 파일을 드래그하세요.</h6>
+                                </div> -->
+                            </div>
+<!--                             <ul class="list-unstyled mb-0" id="dropzone-preview">
+                                <li class="mt-2" id="dropzone-preview-list">
+                                    <div class="border rounded">
+                                        <div class="d-flex p-2">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div class="avatar-sm bg-light rounded">
+                                                    <img src="#" alt="Project-Image" data-dz-thumbnail
+                                                         class="img-fluid rounded d-block" />
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="pt-1">
+                                                    <h5 class="fs-14 mb-1" data-dz-name>&nbsp;</h5>
+                                                    <p class="fs-13 text-muted mb-0" data-dz-size></p>
+                                                    <strong class="error text-danger" data-dz-errormessage></strong>
+                                                </div>
+                                            </div>
+                                            <div class="flex-shrink-0 ms-3">
+                                                <button data-dz-remove class="btn btn-sm btn-danger">Delete</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">읽기 권한 설정</h5>
+                    </div>
+                    <div class="card-body" style="height:100%">
+                        <div>
+                            <label for="choices-privacy-status-input" class="form-label"></label>
+                            <input type="radio" id="all" name="read_authority_status" value="N"><label for="all">전직원</label>
+                            <input type="radio" id="select" name="read_authority_status" value="Y"><label for="select">권한 직접 설정</label>
+                        </div>
+                        <!-- 조직도를 표시할 div -->
+						<div id="organization-chart" style="display: none;">
+						    <!-- 조직도 내용이 동적으로 삽입할 예정 -->
 						</div>
+                    </div>
+                </div>
+                <div class="text-end mb-4">
+                    <button type="button" class="btn btn-danger w-sm">이전으로</button>
+                    <button type="submit" class="btn btn-success w-sm" id="create-btn">작성 완료</button>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
 
-<!-- 		섬네일				<div class="mb-3">
-							<label class="form-label" for="project-thumbnail-img">Thumbnail Image</label>
-							<input class="form-control" id="project-thumbnail-img" type="file"
-								accept="image/png, image/gif, image/jpeg">
-						</div> -->
-
-						<div class="mb-3">
-							<label class="form-label">내용</label>
-							<div id="ckeditor-classic">
-								<!--에디터 작성 내용 -->
-							</div>
-						</div>
-
-					</div>
-					<!-- end card body -->
-				</div>
-				<!-- end card -->
-
-				<div class="card">
-					<div class="card-header">
-						<h5 class="card-title mb-0">첨부할 파일 목록</h5>
-					</div>
-					<div class="card-body">
-						<div>
-							<p class="text-muted">첨부할 파일을 이곳에 첨부하세요.</p>
-
-							<div class="dropzone">
-								<div class="fallback">
-									<input name="file" type="file" multiple="multiple">
-								</div>
-								<div class="dz-message needsclick">
-									<div class="mb-3">
-										<i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
-									</div>
-
-									<h6>이곳을 클릭하거나 올릴 파일을 드래그하세요.</h6>
-								</div>
-							</div>
-
-							<ul class="list-unstyled mb-0" id="dropzone-preview">
-								<li class="mt-2" id="dropzone-preview-list">
-									<!-- This is used as the file preview template -->
-									<div class="border rounded">
-										<div class="d-flex p-2">
-											<div class="flex-shrink-0 me-3">
-												<div class="avatar-sm bg-light rounded">
-													<img src="#" alt="Project-Image" data-dz-thumbnail
-														class="img-fluid rounded d-block" />
-												</div>
-											</div>
-											<div class="flex-grow-1">
-												<div class="pt-1">
-													<h5 class="fs-14 mb-1" data-dz-name>&nbsp;</h5>
-													<p class="fs-13 text-muted mb-0" data-dz-size></p>
-													<strong class="error text-danger" data-dz-errormessage></strong>
-												</div>
-											</div>
-											<div class="flex-shrink-0 ms-3">
-												<button data-dz-remove class="btn btn-sm btn-danger">Delete</button>
-											</div>
-										</div>
-									</div>
-								</li>
-							</ul>
-							<!-- end dropzon-preview -->
-						</div>
-					</div>
-				</div>
-				<!-- end card -->
-				<div class="text-end mb-4">
-					<button type="button" class="btn btn-danger w-sm">이전으로</button>
-					<button type="submit" class="btn btn-success w-sm">작성 완료</button>
-				</div>
-			</div>
-			<!-- end col -->
-			<!-- 조직도 불러올 자리...radio로 권한 설정 클릭시 체크 가능하도록 ! -->
-			<div class="col-lg-4">
-				<div class="card">
-					<div class="card-header">
-						<h5 class="card-title mb-0">읽기 권한 설정</h5>
-					</div>
-					<div class="card-body">
-						<div>
-							<label for="choices-privacy-status-input" class="form-label">Status</label>
-							<radio>전직원</radio>
-							<radio>권한 직접 설정</radio>
-							<select class="form-select" data-choices data-choices-search-false
-								id="choices-privacy-status-input">
-								<option value="Private" selected>Private</option>
-								<option value="Team">Team</option>
-								<option value="Public">Public</option>
-							</select>
-						</div>
-					</div>
-					<!-- end card body -->
-				</div>
-				<!-- end card -->
-			</div>
-			<!-- end col -->
-		</div>
-	</div>
-
-
-	<th:block layout:fragment="modal">
-
-	</th:block>
-
-	<th:block layout:fragment="pagejs">
-
-		<!-- ckeditor -->
-		<script src="/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
-
-		<!-- dropzone js -->
-		<script src="/assets/libs/dropzone/dropzone-min.js"></script>
-		<!-- project-create init -->
+      <th:block layout:fragment="pagejs">
+        <script src="/assets/libs/dropzone/dropzone-min.js"></script>
+        		<!--  project-create init  -->
 		<script src="/assets/js/pages/project-create.init.js"></script>
+    </th:block>
 
-	</th:block>
 </body>
-
 </html>

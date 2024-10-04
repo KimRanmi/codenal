@@ -7,6 +7,8 @@ File: Project Dashboard init js
 */
 
 
+const empId = document.getElementById("empId").value;
+
 // get colors array from the string
 function getChartColorsArray(chartId) {
     if (document.getElementById(chartId) !== null) {
@@ -250,7 +252,7 @@ scrollToBottom(currentChatId);
 
 // Scroll to Bottom
 function scrollToBottom(id) {
-    setTimeout(function () {
+    /*setTimeout(function () {
         var simpleBar = (document.getElementById(id).querySelector("#chat-conversation .simplebar-content-wrapper")) ?
             document.getElementById(id).querySelector("#chat-conversation .simplebar-content-wrapper") : ''
 
@@ -262,5 +264,143 @@ function scrollToBottom(id) {
                 top: offsetHeight,
                 behavior: "smooth"
             });
-    }, 100);
+    }, 100);*/
 }
+
+const date=new Date();
+const month=date.getMonth()+1;
+document.getElementById("month").innerHTML = month;
+
+
+const csrfToken = document.getElementById('csrf_token').value;
+const fetchEventList = () => {
+		return new Promise((resolve,reject)=>{
+			fetch('/eventList'+empId, {
+				method: 'POST',
+				headers: {
+								'X-CSRF-TOKEN': csrfToken
+							}
+			})
+			.then(response => response.json())
+			.then(data => {
+				defaultEvents = [];
+				for(let i=0; i<data.eventList.length; i++){
+					switch (data.eventList[i].calendar_schedule_category) {
+						case 1 : data.eventList[i].calendar_schedule_category = 'bg-soft-success'; break;
+						case 2 : data.eventList[i].calendar_schedule_category = 'bg-soft-info'; break;
+						case 3 : data.eventList[i].calendar_schedule_category = 'bg-soft-warning'; break;
+						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
+						case 5 : data.eventList[i].calendar_schedule_category = 'bg-soft-danger'; break;
+					}
+
+					data[i] = {
+						id: data.eventList[i].calendar_schedule_no,
+				        title: data.eventList[i].calendar_schedule_title,
+				        start: new Date(data.eventList[i].calendar_schedule_start_date),
+				        end: new Date(data.eventList[i].calendar_schedule_end_date),
+				        className: data.eventList[i].calendar_schedule_category,
+				        location: data.eventList[i].calendar_schedule_location,
+				        description: data.eventList[i].calendar_schedule_content,
+				        writer: data.eventList[i].calendar_schedule_writer,
+				        color: data.eventList[i].calendar_schedule_color
+					}
+				}
+				resolve(data);
+			})
+		})
+	}
+	
+fetchEventList().then(function(data) {
+
+	/*let nowDate = new Date();
+	nowDate = nowDate.getFullYear() + '-' + (nowDate.getMonth() + 1) + '-1';*/
+	let toDay = new Date();
+	/*toDay.setDate(1);*/
+	let lastDate = new Date();
+	let lastDay = new Date(lastDate.getFullYear(), (lastDate.getMonth() + 1), 7);
+	let firstDay = new Date(lastDate.getFullYear(), (lastDate.getMonth()), 1);
+	/*lastDay.setDate(lastDay.getDate()+7);*/
+			console.log(lastDay);
+	for(let i = 0; i <= data.eventList.length; i++){
+		let startDate = new Date(data[i].start);
+		let endDate = new Date(data[i].end);
+		
+		if (startDate >= firstDay && endDate <= lastDay) {
+			
+			let startAmpm = '';
+			let endAmpm = '';
+			if(startDate.getHours() < 12){
+				startAmpm = 'AM';
+			} else {
+				startAmpm = 'PM';
+			}
+			if(endDate.getHours() < 12){
+				endAmpm = 'AM';
+			} else {
+				endAmpm = 'PM';
+			}
+			if(data[i].className == "bg-soft-danger"){
+				
+				document.getElementById("eventList").innerHTML +=
+					'<ul class=" d-flex align-items-center mt-3 p-0">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="avatar-title rounded-circle text-danger bg-soft-danger fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">'+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</ul>';
+			}else if(data[i].className == "bg-soft-success"){
+				console.log(data[i].className == "bg-soft-success");
+				document.getElementById("eventList").innerHTML +=
+					'<ul class="mini-stats-wid d-flex align-items-center mt-3 p-0">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="avatar-title rounded-circle text-success bg-soft-success fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">[개인] '+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0 ms-3">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</ul>';
+			}else if(data[i].className == "bg-soft-info"){
+				document.getElementById("eventList").innerHTML +=
+					'<ul class="mini-stats-wid d-flex align-items-center mt-3 p-0">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="avatar-title rounded-circle text-info bg-soft-info fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">[부서] '+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</ul>';
+			}else if(data[i].className == "bg-soft-warning"){
+				document.getElementById("eventList").innerHTML +=
+					'<ul class="mini-stats-wid d-flex align-items-center mt-3 p-0">\
+						<div class="flex-shrink-0 avatar-sm">\
+							<span class="avatar-title rounded-circle text-warning bg-soft-warning fs-4">'+startDate.getDate()+'</span>\
+						</div>\
+						<div class="flex-grow-1 ms-3">\
+							<h6 class="mb-1">[전체] '+data[i].title+'</h6>\
+							<p class="text-muted mb-0">'+data[i].description+'</p>\
+						</div>\
+						<div class="flex-shrink-0">\
+							<p class="text-muted mb-0">'+startDate.getHours()+':'+startDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+startAmpm+'</span> ~ '+endDate.getHours()+':'+endDate.getMinutes().toString().padStart(2, '0')+' <span class="text-uppercase">'+endAmpm+'</span></p>\
+						</div>\
+					</ul>';
+			}
+		}
+		
+	}
+});
+
+

@@ -10,8 +10,54 @@ File: Calendar init js
 var start_date = document.getElementById("event-start-date");
 var timepicker1 = document.getElementById("timepicker1");
 var timepicker2 = document.getElementById("timepicker2");
+const csrfToken = document.getElementById('csrf_token').value;
+const writer = document.getElementById("empId").value;
 var date_range = null;
 var T_check = null;
+var eventContent = null;
+var defaultEvents = [];
+
+const fetchEventList = () => {
+		return new Promise((resolve,reject)=>{
+			fetch('/eventList'+writer, {
+				method: 'POST',
+				headers: {
+		                'X-CSRF-TOKEN': csrfToken
+		            }
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				defaultEvents = [];
+				for(let i=0; i<data.eventList.length; i++){
+					switch (data.eventList[i].calendar_schedule_category) {
+						case 1 : data.eventList[i].calendar_schedule_category = 'bg-soft-success'; break;
+						case 2 : data.eventList[i].calendar_schedule_category = 'bg-soft-info'; break;
+						case 3 : data.eventList[i].calendar_schedule_category = 'bg-soft-warning'; break;
+						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
+						case 5 : data.eventList[i].calendar_schedule_category = 'bg-soft-danger'; break;
+					}
+						
+						data[i] = {
+							id: data.eventList[i].calendar_schedule_no,
+					        title: data.eventList[i].calendar_schedule_title,
+					        start: new Date(data.eventList[i].calendar_schedule_start_date),
+					        end: new Date(data.eventList[i].calendar_schedule_end_date),
+					        className: data.eventList[i].calendar_schedule_category,
+					        location: data.eventList[i].calendar_schedule_location,
+					        description: data.eventList[i].calendar_schedule_content,
+					        writer: data.eventList[i].calendar_schedule_writer
+						}
+					
+					defaultEvents[i] = data[i];
+				}
+				resolve(defaultEvents);
+			})
+		})
+	}
+	
+	
+
 document.addEventListener("DOMContentLoaded", function () {
     flatPickrInit();
     var addEvent = new bootstrap.Modal(document.getElementById('event-modal'), {
@@ -30,201 +76,144 @@ document.addEventListener("DOMContentLoaded", function () {
     var y = date.getFullYear();
     var Draggable = FullCalendar.Draggable;
     var externalEventContainerEl = document.getElementById('external-events');
-    var defaultEvents = [{
-            id: 1,
-            title: "World Braille Day",
-            start: "2022-01-04",
-            className: "bg-soft-info",
+	var eventSelect = [];
+	/*var defaultEvents = [];*/
+	/*defaultEvents = [
+		{
+			id: 10,
+            title: "추석",
+            start: new Date("2024-09-16"),
+            end: new Date("2024-09-19"),
+            className: "bg-soft-danger",
             allDay: true
+		},
+		
+	]*/
+	/*if(document.getElementById("sss").checked){
+		console.log(document.getElementById("sss").value);
+		for(let i=0; i<=defaultEvents.length; i++){
+			if(defaultEvents[i].title == document.getElementById("sss").value){
+				defaultEvents[i] = '';
+			}
+		}
+	}*/
+	
+	/*const fetchEventList = () => {
+		return new Promise((resolve,reject)=>{
+			fetch('/eventList', {
+				method: 'POST'
+			})
+			.then(response => response.json())
+			.then(data => {
+				defaultEvents = [];
+				for(let i=0; i<data.eventList.length; i++){
+					
+					console.log(data.eventList[i].calendar_schedule_category);
+					switch (data.eventList[i].calendar_schedule_category) {
+						case 1 : data.eventList[i].calendar_schedule_category = 'bg-soft-success'; break;
+						case 2 : data.eventList[i].calendar_schedule_category = 'bg-soft-info'; break;
+						case 3 : data.eventList[i].calendar_schedule_category = 'bg-soft-warning'; break;
+						case 4 : data.eventList[i].calendar_schedule_category = 'bg-soft-primary'; break;
+					}
+					console.log(data.eventList[i].calendar_schedule_category);
 
-        },
-        {
-            id: 2,
-            title: "World Leprosy Day",
-            start: "2022-01-30",
-            className: "bg-soft-info",
-            allDay: true
-        },
+					data[i] = {
+						id: data.eventList[i].calendar_schedule_no,
+				        title: data.eventList[i].calendar_schedule_title,
+				        start: new Date(data.eventList[i].calendar_schedule_start_date),
+				        end: new Date(data.eventList[i].calendar_schedule_end_date),
+				        className: data.eventList[i].calendar_schedule_category,
+				        location: data.eventList[i].calendar_schedule_location,
+				        description: data.eventList[i].calendar_schedule_content,
+				        writer: data.eventList[i].calendar_schedule_writer,
+				        color: data.eventList[i].calendar_schedule_color
+					}
+					defaultEvents[i] = data[i];
+					
+				}
+				resolve(defaultEvents);
+			})
+		})
+	}*/
+	
+	
+	
+	/*function eventList(){
+		return new Promise(function(resolve,reject){
+			
+		fetch('/eventList', {
+			method: 'POST'
+		})
+		.then(response => response.json())
+		.then(data => {
+			for(let i=0; i<=data.eventList.length; i++){
+				data[i] = {
+					id: data.eventList[i].calendar_schedule_no,
+					category: data.eventList[i].calendar_schedule_category,
+			        title: data.eventList[i].calendar_schedule_title,
+			        start: data.eventList[i].calendar_schedule_start_date,
+			        end: data.eventList[i].calendar_schedule_end_date,
+			        className: 'bg-soft-primary',
+			        location: data.eventList[i].calendar_schedule_location,
+			        description: data.eventList[i].calendar_schedule_content,
+			        writer: data.eventList[i].calendar_schedule_writer,
+			        color: data.eventList[i].calendar_schedule_color
+				}
+				defaultEvents[i] = data[i];
+			}
+			resolve(defaultEvents);
+		})
+		})
+	}
+	eventList();*/
+	
+	/*	console.log(defaultEvents[0]);
+	for(let i=0; i<=5; i++){
+		
+		console.log(defaultEvents[i]);
+		defaultEvents[i] = {
+				id: defaultEvents[i],
+				category: 1,
+				title: "title1",
+				start: "2024-09-0"+(i+1)+"T00:00:00",
+				end: "2024-09-0"+(i+3)+"T00:00:00",
+				className: 'bg-soft-primary',
+				location: "location",
+				description: "content1",
+				writer: 12345678,
+				color: null
+			}
+	}*/
+	
 
-        {
-            id: 3,
-            title: "International Mother Language Day",
-            start: "2022-02-21",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 4,
-            title: "International Women's Day",
-            start: "2022-03-08",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 5,
-            title: "World Thinking Day",
-            start: "2022-02-22",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 6,
-            title: "International Mother Language Day",
-            start: "2022-03-21",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 7,
-            title: "World Water Day",
-            start: "2022-03-22",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 8,
-            title: "World Health Day",
-            start: "2022-04-07",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-
-        {
-            id: 9,
-            title: "International Special Librarians Day",
-            start: "2022-04-16",
-            className: "bg-soft-info",
-            allDay: true
-        },
-
-        {
-            id: 10,
-            title: "Earth Day",
-            start: "2022-04-22",
-            className: "bg-soft-info",
-            allDay: true
-        },
-        {
-            id: 153,
-            title: 'All Day Event',
-            start: new Date(y, m, 1),
-            className: 'bg-soft-primary',
-            location: 'San Francisco, US',
-            allDay: true,
-            extendedProps: {
-                department: 'All Day Event'
-            },
-            description: 'An all-day event is an event that lasts an entire day or longer'
-        },
-        {
-            id: 136,
-            title: 'Visit Online Course',
-            start: new Date(y, m, d - 5),
-            end: new Date(y, m, d - 2),
-            allDay: true,
-            className: 'bg-soft-warning',
-            extendedProps: {
-                department: 'Long Event'
-            },
-            description: 'Long Term Event means an incident that last longer than 12 hours.'
-        },
-        {
-            id: 999,
-            title: 'Client Meeting with Alexis',
-            start: new Date(y, m, d + 22, 20, 0),
-            end: new Date(y, m, d + 24, 16, 0),
-            allDay: true,
-            className: 'bg-soft-danger',
-            location: 'California, US',
-            extendedProps: {
-                department: 'Meeting with Alexis'
-            },
-            description: 'A meeting is a gathering of two or more people that has been convened for the purpose of achieving a common goal through verbal interaction, such as sharing information or reaching agreement.'
-        },
-        {
-            id: 991,
-            title: 'Repeating Event',
-            start: new Date(y, m, d + 4, 16, 0),
-            end: new Date(y, m, d + 9, 16, 0),
-            allDay: true,
-            className: 'bg-soft-primary',
-            location: 'Las Vegas, US',
-            extendedProps: {
-                department: 'Repeating Event'
-            },
-            description: 'A recurring or repeating event is simply any event that you will occur more than once on your calendar. ',
-        },
-        {
-            id: 112,
-            title: 'Meeting With Designer',
-            start: new Date(y, m, d, 12, 30),
-            allDay: true,
-            className: 'bg-soft-success',
-            location: 'Head Office, US',
-            extendedProps: {
-                department: 'Meeting'
-            },
-            description: 'Tell how to boost website traffic'
-        },
-        {
-            id: 113,
-            title: 'Weekly Strategy Planning',
-            start: new Date(y, m, d + 9),
-            end: new Date(y, m, d + 11),
-            allDay: true,
-            className: 'bg-soft-danger',
-            location: 'Head Office, US',
-            extendedProps: {
-                department: 'Lunch'
-            },
-            description: 'Strategies for Creating Your Weekly Schedule'
-        },
-        {
-            id: 875,
-            title: 'Birthday Party',
-            start: new Date(y, m, d + 1, 19, 0),
-            allDay: true,
-            className: 'bg-soft-success',
-            location: 'Los Angeles, US',
-            extendedProps: {
-                department: 'Birthday Party'
-            },
-            description: 'Family slumber party – Bring out the blankets and pillows and have a family slumber party! Play silly party games, share special snacks and wind down the fun with a special movie.'
-        },
-        {
-            id: 783,
-            title: 'Click for Google',
-            start: new Date(y, m, 28),
-            end: new Date(y, m, 29),
-            allDay: true,
-            url: 'http://google.com/',
-            className: 'bg-soft-dark',
-        },
-        {
-            id: 456,
-            title: 'Velzon Project Discussion with Team',
-            start: new Date(y, m, d + 23, 20, 0),
-            end: new Date(y, m, d + 24, 16, 0),
-            allDay: true,
-            className: 'bg-soft-info',
-            location: 'Head Office, US',
-            extendedProps: {
-                department: 'Discussion'
-            },
-            description: 'Tell how to boost website traffic'
-        },
-    ];
 
     // init draggable
     new Draggable(externalEventContainerEl, {
         itemSelector: '.external-event',
         eventData: function (eventEl) {
+			
+			let writer = 12345678;
+			let categoryNo = 0;
+			switch (eventEl.getAttribute('data-class')) {
+				case 'bg-soft-success': categoryNo = 1; break; /*개인일정*/
+				case 'bg-soft-info': categoryNo = 2; break; /*부서일정*/
+				case 'bg-soft-warning': categoryNo = 3; break; /*전체일정*/
+				case 'bg-soft-primary': categoryNo = 4; break; /*연차일정*/
+			}
+			startDate = new Date().getFullYear()+'-'+(new Date().getMonth()+1).toString().padStart(2, '0')+'-'+new Date().getDate().toString().padStart(2, '0')
+				+' '+new Date().getHours().toString().padStart(2, '0')+':'+new Date().getMinutes().toString().padStart(2, '0');
+			
+			const xhr = new XMLHttpRequest();
+			xhr.open("post", "/create/event", true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+				}
+			}
+			const header = document.getElementById("_csrf_header").value;
+			xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+			xhr.setRequestHeader(header, csrfToken);
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			xhr.send("category="+categoryNo+"&title="+eventEl.innerText+"&writer="+writer+"&start_date="+startDate);
             return {
                 id: Math.floor(Math.random() * 11000),
                 title: eventEl.innerText,
@@ -264,13 +253,15 @@ document.addEventListener("DOMContentLoaded", function () {
     var eventCategoryChoice = new Choices("#event-category", {
         searchEnabled: false
     });
-
+    fetchEventList().then(function(data){
+		console.log(data);
     var calendar = new FullCalendar.Calendar(calendarEl, {
         timeZone: 'local',
         editable: true,
         droppable: true,
         selectable: true,
         navLinks: true,
+        
         initialView: getInitialView(),
         themeSystem: 'bootstrap',
         headerToolbar: {
@@ -281,20 +272,15 @@ document.addEventListener("DOMContentLoaded", function () {
         windowResize: function (view) {
             var newView = getInitialView();
             calendar.changeView(newView);
-        },
+		},
         eventResize: function(info) {
             var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
                 return x.id == info.event.id
             });
             if (defaultEvents[indexOfSelectedEvent]) {
-                defaultEvents[indexOfSelectedEvent].title = info.event.title;
-                defaultEvents[indexOfSelectedEvent].start = info.event.start;
-                defaultEvents[indexOfSelectedEvent].end = (info.event.end) ? info.event.end : null;
-                defaultEvents[indexOfSelectedEvent].allDay = info.event.allDay;
-                defaultEvents[indexOfSelectedEvent].className = info.event.classNames[0];
-                defaultEvents[indexOfSelectedEvent].description = (info.event._def.extendedProps.description) ? info.event._def.extendedProps.description : '';
-                defaultEvents[indexOfSelectedEvent].location = (info.event._def.extendedProps.location) ? info.event._def.extendedProps.location : '';
+				
             }
+            console.log(defaultEvents);
             upcomingEvent(defaultEvents);
         },
         eventClick: function (info) {
@@ -308,6 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
             addEvent.show();
             formEvent.reset();
             selectedEvent = info.event;
+            eventContent = selectedEvent._def;
 
             // First Modal
             document.getElementById("modal-title").innerHTML = "";
@@ -347,8 +334,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateDay = endUpdateDay.setDate(endUpdateDay.getDate() - 1);
             }
             
-            var r_date = ed_date == null ? (str_dt(st_date)) : (str_dt(st_date)) + ' to ' + (str_dt(updateDay));
-            var er_date = ed_date == null ? (date_r(st_date)) : (date_r(st_date)) + ' to ' + (date_r(updateDay));
+            var r_date = ed_date == null ? (str_dt(st_date)) : (str_dt(st_date)) + ' ~ ' + (str_dt(updateDay));
+            var er_date = ed_date == null ? (date_r(st_date)) : (date_r(st_date)) + ' ~ ' + (date_r(updateDay));
 
             flatpickr(start_date, {
                 defaultDate: er_date,
@@ -404,6 +391,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 document.getElementById("event-timepicker1-tag").innerHTML = tConvert(gt_time);
                 document.getElementById("event-timepicker2-tag").innerHTML = tConvert(ed_time);
+                
+                
+                var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
+                    return x.id == selectedEvent.id
+                });
+                let eventWriter = defaultEvents[indexOfSelectedEvent].writer;
+                console.log(eventWriter+'확인'+writer);
+                
+                if(eventWriter != writer){
+					document.getElementById("edit-event-btn").style.display = "none";
+					document.getElementById("btn-delete-event").style.display = "none";
+					
+				} else if(eventWriter == writer){
+					document.getElementById("edit-event-btn").style.display = "";
+					document.getElementById("btn-delete-event").style.display = "";
+				}
+                
+                fetch('/eventWriter'+eventWriter, {
+				method: 'POST',
+				headers: {
+		                'X-CSRF-TOKEN': csrfToken
+		            },
+				})
+				.then(response => response.json())
+				.then(data => {
+					let empName = data.name;
+					let empDept = data.dept;
+					let empJob = data.job;
+					
+		            document.getElementById("event-writer").innerHTML = empDept+' '+empName+' '+empJob;
+				})
+                
+                
             }
             newEventData = null;
             modalTitle.innerText = selectedEvent.title;
@@ -432,6 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return x.id == info.event.id
             });
             if (defaultEvents[indexOfSelectedEvent]) {
+				defaultEvents[indexOfSelectedEvent].category = info.event.category;
                 defaultEvents[indexOfSelectedEvent].title = info.event.title;
                 defaultEvents[indexOfSelectedEvent].start = info.event.start;
                 defaultEvents[indexOfSelectedEvent].end = (info.event.end) ? info.event.end : null;
@@ -439,13 +460,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 defaultEvents[indexOfSelectedEvent].className = info.event.classNames[0];
                 defaultEvents[indexOfSelectedEvent].description = (info.event._def.extendedProps.description) ? info.event._def.extendedProps.description : '';
                 defaultEvents[indexOfSelectedEvent].location = (info.event._def.extendedProps.location) ? info.event._def.extendedProps.location : '';
+                defaultEvents[indexOfSelectedEvent].writer = info.event.writer;
             }
             upcomingEvent(defaultEvents);
         }
     });
 
     calendar.render();
-
     upcomingEvent(defaultEvents);
     /*Add new event*/
     // Form to add new event
@@ -455,13 +476,13 @@ document.addEventListener("DOMContentLoaded", function () {
         var updatedTitle = document.getElementById("event-title").value;
         var updatedCategory = document.getElementById('event-category').value;
         
-        var categoryNo = 0;
+        let categoryNo = 0;
         switch(updatedCategory){
 			case 'bg-soft-success' : categoryNo = 1; break; /*개인일정*/
-			case 'bg-soft-primary' : categoryNo = 2; break; /*부서일정*/
-			case 'bg-soft-info' : categoryNo = 3; break; /*전체일정*/
+			case 'bg-soft-info' : categoryNo = 2; break; /*부서일정*/
+			case 'bg-soft-warning' : categoryNo = 3; break; /*전체일정*/
+			case 'bg-soft-primary' : categoryNo = 4; break; /*연차일정*/
 		}
-		
         var start_date = (document.getElementById("event-start-date").value).split("to");
         var updateStartDate = new Date(start_date[0].trim());
 
@@ -469,38 +490,50 @@ document.addEventListener("DOMContentLoaded", function () {
         newdate.setDate(newdate.getDate() + 1);
 
         var updateEndDate = (start_date[1]) ? newdate : '';
+        
+        var start_time = (document.getElementById("timepicker1").value);
+        var end_time = (document.getElementById("timepicker2").value);
 
         var end_date = null;
         var event_location = document.getElementById("event-location").value;
         var eventDescription = document.getElementById("event-description").value;
         var eventid = document.getElementById("eventid").value;
+        console.log(eventid);
         var all_day = false;
         if (start_date.length > 1) {
+			
             var end_date = new Date(start_date[1]);
             end_date.setDate(end_date.getDate() + 1);
             start_date = new Date(start_date[0]);
             all_day = true;
         } else {
             var e_date = start_date;
-            var start_time = (document.getElementById("timepicker1").value).trim();
-            var end_time = (document.getElementById("timepicker2").value).trim();
+            start_time = (document.getElementById("timepicker1").value).trim();
+            end_time = (document.getElementById("timepicker2").value).trim();
+			updateStartDate.setHours(start_time.substring(0,2));
+			updateStartDate.setMinutes(start_time.substring(3));
+			
+			
+			updateEndDate = new Date(updateStartDate.getFullYear(),updateStartDate.getMonth(),updateStartDate.getDate(),
+			end_time.substring(0,2),end_time.substring(3));
+			
             start_date = new Date(start_date + "T" + start_time);
             end_date = new Date(e_date + "T" + end_time);
         }
         var e_id = defaultEvents.length + 1;
-        
+         
         	/*const payload = new FormData();
-        	payload.set('calendar_schedule_category' , categoryNo);
-        	payload.set('calendar_schedule_title' , updatedTitle);
-        	payload.set('calendar_schedule_location' , event_location);
-        	payload.set('calendar_schedule_content' , eventDescription);
-        	payload.set('calendar_schedule_writer' , 1);
-        	payload.set('calendar_schedule_start_date' , updateStartDate);
-        	payload.set('calendar_schedule_end_date' , updateEndDate);*/
-	    
+        	payload.append('calendar_schedule_category' , categoryNo);
+        	payload.append('calendar_schedule_title' , updatedTitle);
+        	payload.append('calendar_schedule_location' , event_location);
+        	payload.append('calendar_schedule_content' , eventDescription);
+        	payload.append('calendar_schedule_writer' , 1);
+        	payload.append('calendar_schedule_start_date' , updateStartDate);
+        	payload.append('calendar_schedule_end_date' , updateEndDate);
+	    	payload;*/
 	    	
 	        const payload = {
-				calendar_schedule_category : categoryNo,
+				calendar_schedule_category : updatedCategory,
 				calendar_schedule_title : updatedTitle,
 				calendar_schedule_location : event_location,
 				calendar_schedule_content : eventDescription,
@@ -508,19 +541,111 @@ document.addEventListener("DOMContentLoaded", function () {
 				calendar_schedule_start_date : updateStartDate,
 				calendar_schedule_end_date : updateEndDate
 			}
+	    	/*console.log(payload);*/
+	    	
+	    	
+            // JSON 객체 생성
+            /*let obj = {
+                calendar_schedule_title: updatedTitle
+            };
+            let jsonData = JSON.stringify(obj);
+            // fetch를 사용하여 서버에 POST 요청 보내기
+            fetch('/create/event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('전송 성공: ' + JSON.stringify(data));
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+                alert('전송 실패: ' + error.message);
+            });*/
+        
+	    	
 			/*const data = {
 				method:'POST',
 	            body:payload
 			}*/
-			const ggg = 1;
+			
+			/*const jsonData = JSON.stringify(updatedTitle);
+			const ttt = "yyy";
+			var allEvent = calendar.getEvents();
+			console.log(allEvent);
 	        fetch('/create/event',{
 	        	method:'POST',
-	            body:JSON.stringify(ggg)
+	            body:payload,
+	            headers: {
+					"Content-Type": "application/json;charset=utf-8", 
+					"Accept": "application/json"
+				}
 	        })
 	        .then(response => response.json())
 	        .then(data=>{
 	        	alert(data.res_msg);
-	        })
+	        })*/
+	        
+	        console.log('작성자'+writer);
+	        if(eventContent == null){
+				console.log('생성');
+				const xhr = new XMLHttpRequest();
+				xhr.open("post","/create/event",true);
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState == 4 && xhr.status == 200){ // 200: 정상적으로 작동한다는 뜻
+						/*alert('일정이 추가되었습니다.');*/
+					}
+				}
+				const header = document.getElementById("_csrf_header").value;
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				xhr.setRequestHeader(header, csrfToken);
+				updateStartDate = updateStartDate.getFullYear()+'-'+(updateStartDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateStartDate.getDate().toString().padStart(2, '0')
+				+' '+updateStartDate.getHours().toString().padStart(2, '0')+':'+updateStartDate.getMinutes().toString().padStart(2, '0');
+				
+				console.log(updateStartDate);
+				if(updateEndDate != null){
+					updateEndDate = updateEndDate.getFullYear()+'-'+(updateEndDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateEndDate.getDate().toString().padStart(2, '0')
+					+' '+updateEndDate.getHours().toString().padStart(2, '0')+':'+updateEndDate.getMinutes().toString().padStart(2, '0');
+					
+					xhr.send("category="+categoryNo+"&title="+updatedTitle+"&location="+event_location
+					+"&content="+eventDescription+"&writer="+writer+"&start_date="+updateStartDate+"&end_date="+updateEndDate+"&token="+csrfToken);
+				}
+			} else {
+				console.log('수정');
+				const xhr = new XMLHttpRequest();
+				xhr.open("post","/modify/event",true);
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState == 4 && xhr.status == 200){ // 200: 정상적으로 작동한다는 뜻
+						
+					}
+				}
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				const header = document.getElementById("_csrf_header").value;
+				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+				xhr.setRequestHeader(header, csrfToken);
+				updateStartDate = updateStartDate.getFullYear()+'-'+(updateStartDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateStartDate.getDate().toString().padStart(2, '0')
+				+' '+updateStartDate.getHours().toString().padStart(2, '0')+':'+updateStartDate.getMinutes().toString().padStart(2, '0');
+				
+				console.log(eventContent.publicId);
+				if(updateEndDate != null){
+					updateEndDate = updateEndDate.getFullYear()+'-'+(updateEndDate.getMonth()+1).toString().padStart(2, '0')+'-'+updateEndDate.getDate().toString().padStart(2, '0')
+					+' '+updateEndDate.getHours().toString().padStart(2, '0')+':'+updateEndDate.getMinutes().toString().padStart(2, '0');
+					
+					xhr.send("eventId="+eventContent.publicId+"&category="+categoryNo+"&title="+updatedTitle+"&location="+event_location
+					+"&content="+eventDescription+"&writer="+writer+"&start_date="+updateStartDate+"&end_date="+updateEndDate);
+				}
+			}
+				
+				
+				
 
         // validation
         if (forms[0].checkValidity() === false) {
@@ -528,6 +653,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             if (selectedEvent) {
                 selectedEvent.setProp("id", eventid);
+                selectedEvent.setProp("category", categoryNo);
                 selectedEvent.setProp("title", updatedTitle);
                 selectedEvent.setProp("classNames", [updatedCategory]);
                 selectedEvent.setStart(updateStartDate);
@@ -535,10 +661,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 selectedEvent.setAllDay(all_day);
                 selectedEvent.setExtendedProp("description", eventDescription);
                 selectedEvent.setExtendedProp("location", event_location);
+                selectedEvent.setProp("writer", writer);
                 var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
                     return x.id == selectedEvent.id
                 });
                 if (defaultEvents[indexOfSelectedEvent]) {
+					defaultEvents[indexOfSelectedEvent].category = categoryNo;
                     defaultEvents[indexOfSelectedEvent].title = updatedTitle;
                     defaultEvents[indexOfSelectedEvent].start = updateStartDate;
                     defaultEvents[indexOfSelectedEvent].end = updateEndDate;
@@ -546,6 +674,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     defaultEvents[indexOfSelectedEvent].className = updatedCategory;
                     defaultEvents[indexOfSelectedEvent].description = eventDescription;
                     defaultEvents[indexOfSelectedEvent].location = event_location;
+                    defaultEvents[indexOfSelectedEvent].writer = writer;
                 }
                 calendar.render();
                 // default
@@ -567,19 +696,37 @@ document.addEventListener("DOMContentLoaded", function () {
             upcomingEvent(defaultEvents);
         }
     });
+	});
+
 
     document.getElementById("btn-delete-event").addEventListener("click", function (e) {
         if (selectedEvent) {
-            for (var i = 0; i < defaultEvents.length; i++) {
-                if (defaultEvents[i].id == selectedEvent.id) {
-                    defaultEvents.splice(i, 1);
-                    i--;
-                }
-            }
-            upcomingEvent(defaultEvents);
-            selectedEvent.remove();
-            selectedEvent = null;
-            addEvent.hide();
+			if(confirm("정말 삭제하시겠습니까?")){
+				for (var i = 0; i < defaultEvents.length; i++) {
+				console.log(defaultEvents[i].id);
+				console.log(selectedEvent.id);
+					if (defaultEvents[i].id == selectedEvent.id) {
+						fetch('/delete/event' + (defaultEvents[i].id), {
+							method: 'delete',
+							headers: {
+								'X-CSRF-TOKEN': csrfToken
+							}
+						})
+						.then(response => response.json())
+						.then(data => {
+							
+						});
+						defaultEvents.splice(i, 1);
+						i--;
+					}
+				}
+	            upcomingEvent(defaultEvents);
+	            
+	            selectedEvent.remove();
+	            selectedEvent = null;
+	            addEvent.hide();
+			}
+			
         }
     });
     document.getElementById("btn-new-event").addEventListener("click", function (e) {
@@ -652,17 +799,25 @@ function eventClicked() {
 
 function editEvent(data) {
     var data_id = data.getAttribute("data-id");
+    var selectedEvent = null;
     if (data_id == 'new-event') {
         document.getElementById('modal-title').innerHTML = "";
         document.getElementById('modal-title').innerHTML = "일정 추가";
         document.getElementById("btn-save-event").innerHTML = "일정 추가";
         eventTyped();
     } else if (data_id == 'edit-event') {
-        data.innerHTML = "Cancel";
+		/*if (defaultEvents[i].id == selectedEvent.id) {}*/
+        data.innerHTML = "취소";
         data.setAttribute("data-id", 'cancel-event');
         document.getElementById("btn-save-event").innerHTML = "일정 수정";
         data.removeAttribute("hidden");
+        console.log(eventContent);
         eventTyped();
+        /*fetch('/modify/event'+eventContent,{
+			method:'post'
+		})
+	    .then(response => response.json())
+	    .then(data=>{});*/
     } else {
         data.innerHTML = "수정";
         data.setAttribute("data-id", 'edit-event');
@@ -692,10 +847,14 @@ function eventTyped() {
 
 // upcoming Event
 function upcomingEvent(a) {
+	console.log(a);
     a.sort(function (o1, o2) {
         return (new Date(o1.start)) - (new Date(o2.start));
     });
     document.getElementById("upcoming-event-list").innerHTML = null;
+    document.getElementById("upcoming-event-list2").innerHTML = null;
+    document.getElementById("upcoming-event-list3").innerHTML = null;
+    document.getElementById("upcoming-event-list4").innerHTML = null;
     Array.from(a).forEach(function (element) {
         var title = element.title;
         if (element.end) {
@@ -737,7 +896,17 @@ function upcomingEvent(a) {
         }
 
         var end_dt = (e_dt) ? " ~ " + e_dt : '';
-        var category = (element.className).split("-");
+        var category = '';
+        /*if(element.className.includes('bg-soft-success')){
+			category = '[개인]';
+		} else if(element.className.includes('bg-soft-info')){
+			category = '[부서]';
+		} else if(element.className.includes('bg-soft-warning')){
+			category = '[전체]';
+		} else {
+			category = '[연차]';
+		}*/
+        /*var category = (element.className).split("-");*/
         var description = (element.description) ? element.description : "";
         var e_time_s = tConvert(getTime(element.start));
         var e_time_e = tConvert(getTime(updatedDay));
@@ -747,24 +916,44 @@ function upcomingEvent(a) {
         }
         var e_time_e = (e_time_e) ? " ~ " + e_time_e : "";
         let nowDate = new Date();
-        nowDate = nowDate.getFullYear()+'-'+(nowDate.getMonth()+1)+'-'+nowDate.getDate();
+        nowDate = nowDate.getFullYear()+'-'+(nowDate.getMonth()+1)+'-1';
         let toDay = new Date(nowDate);
-		if(e_dt == null && element.start >= toDay || e_dt != null && element.end >= toDay){
-			
-        u_event = "<div class='card mb-3'>\
-                        <div class='card-body'>\
-                            <div class='d-flex mb-3'>\
-                                <div class='flex-grow-1'><i class='mdi mdi-checkbox-blank-circle me-2 text-" + category[2] + "'></i><span class='fw-medium'>" + startDate + end_dt + " </span></div>\
-                                <div class='flex-shrink-0'><small class='badge badge-soft-primary ms-auto'>" + e_time_s + e_time_e + "</small></div>\
-                            </div>\
-                            <h6 class='card-title fs-16'> " + title + "</h6>\
-                            <p class='text-muted text-truncate-two-lines mb-0'> " + description + "</p>\
-                        </div>\
-                    </div>";
-        document.getElementById("upcoming-event-list").innerHTML += u_event;
+        
+        let lastDate = new Date();
+        let lastDay = new Date(lastDate.getFullYear(),(lastDate.getMonth()+1),0);
+        /*console.log(element.end);*/
+		if (e_dt == null && element.start >= toDay || e_dt != null && element.end <= lastDay) {
+			if (element.className.includes('bg-soft-success')) {
+				u_event = "<div class='ms-2 mt-2 mb-2'>\
+						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
+							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
+					</div>";
+				document.getElementById("upcoming-event-list").innerHTML += u_event;
+
+			} else if(element.className.includes('bg-soft-info')) {
+				u_event = "<div class='ms-2 mt-2 mb-2'>\
+						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
+							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
+					</div>";
+				document.getElementById("upcoming-event-list2").innerHTML += u_event;
+			} else if(element.className.includes('bg-soft-warning')) {
+				u_event = "<div class='ms-2 mt-2 mb-2'>\
+						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
+							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
+					</div>";
+				document.getElementById("upcoming-event-list3").innerHTML += u_event;
+			} else {
+				u_event = "<div class='ms-2 mt-2 mb-2'>\
+						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
+							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
+					</div>";
+				document.getElementById("upcoming-event-list4").innerHTML += u_event;
+			}
 		}
     });
 };
+
+
 
 function getTime(params) {
     params = new Date(params);
@@ -779,7 +968,7 @@ function tConvert(time) {
     var t = time.split(":");
     var hours = t[0];
     var minutes = t[1];
-    var newformat = hours >= 12 ? '오전' : '오후';
+    var newformat = hours >= 12 ? '오후' : '오전';
     hours = hours % 12;
     hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;

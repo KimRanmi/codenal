@@ -1025,7 +1025,7 @@ File: Main Js File
 						if (!emptyNotificationElem) {
 							elem.innerHTML += '<div class="empty-notification-elem">\
 							<div class="w-25 w-sm-50 pt-3 mx-auto">\
-								<img src="assets/images/svg/bell.svg" class="img-fluid" alt="user-pic">\
+								<img src="/assets/images/svg/bell.svg" class="img-fluid" alt="user-pic">\
 							</div>\
 							<div class="text-center pb-5 mt-2">\
 								<h6 class="fs-18 fw-semibold lh-base">Hey! You have no any notifications </h6>\
@@ -1833,8 +1833,8 @@ File: Main Js File
 			layoutSwitch(isLayoutAttributes);
 
 			// open right sidebar on first time load
-			var offCanvas = document.querySelector('.btn[data-bs-target="#theme-settings-offcanvas"]');
-			offCanvas ? offCanvas.click() : "";
+			/*var offCanvas = document.querySelector('.btn[data-bs-target="#theme-settings-offcanvas"]');
+			offCanvas ? offCanvas.click() : "";*/
 		} else {
 			var isLayoutAttributes = {};
 			isLayoutAttributes["data-layout"] = sessionStorage.getItem("data-layout");
