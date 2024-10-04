@@ -11,9 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,13 +22,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.data.domain.Sort;
 
 import com.codenal.admin.domain.DepartmentsDto;
 import com.codenal.admin.domain.JobsDto;
 import com.codenal.admin.service.AdminService;
 import com.codenal.employee.domain.EmployeeDto;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -42,19 +43,8 @@ public class AdminViewController {
 
 	// 신규 직원 등록
 	@GetMapping("/join")
-	public String joinPage(Model model) {
-		List<DepartmentsDto> departments = adminService.getAllDepartments();
-		List<JobsDto> jobs = adminService.getAllJobs(); 
-
-		EmployeeDto employeeDto = EmployeeDto.builder()
-				.jobNo(null) 
-				.search_type(1) 
-				.build();
-
-		model.addAttribute("departments", departments);
-		model.addAttribute("jobs", jobs);
-		model.addAttribute("employeeDto", employeeDto); 
-		return "admin/join"; 
+	public String joinPage() {
+		return "admin/join";
 	}
 
 
@@ -64,11 +54,7 @@ public class AdminViewController {
 			@PageableDefault(page = 0, size = 10, sort = "empId", direction = Sort.Direction.DESC) Pageable pageable,
 			@ModelAttribute("searchDto") EmployeeDto searchDto) {
 
-		//System.out.println("empStatus: " + searchDto.getEmpStatus());
-		//System.out.println("search_type: " + searchDto.getSearch_type());
-		//System.out.println("search_text: " + searchDto.getSearch_text());
-
-		// 검색 처리
+		// 셀렉트 박스 통합
 		Page<EmployeeDto> resultList = adminService.searchAll(searchDto, pageable);
 
 		model.addAttribute("resultList", resultList);
@@ -83,19 +69,33 @@ public class AdminViewController {
 
 	public String employeeListDetail(@PathVariable("empId") Long empId, 
 			Model model) {
-
+		
 		EmployeeDto employeeDetail = adminService.employeeDetail(empId);
 		model.addAttribute("employeeDetail", employeeDetail);
 
 		// 부서 셀렉트 박스
-		//List<DepartmentsDto> departments = adminService.getAllDepartments();
-		//model.addAttribute("departments", departments);
+		List<DepartmentsDto> departments = adminService.getAllDepartments();
+		model.addAttribute("departments", departments);
 
 		// 퇴사자는 임시 비밀번호 발급, 수정, 퇴사 설정 불가
 		String empStatus = employeeDetail.getEmpStatus();
 		model.addAttribute("empStatus", empStatus);
 
 		return "admin/detail";
+	}
+
+	
+	// 직원 정보 상세 조회 (퇴사하고 JSON 반환)
+	@GetMapping("/detail/{empId}/json")
+	@ResponseBody
+	public ResponseEntity<?> employeeListDetailJson(@PathVariable("empId") Long empId) {
+		EmployeeDto employeeDetail = adminService.employeeDetail(empId);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+		response.put("employeeDetail", employeeDetail);
+
+		return ResponseEntity.ok(response); // JSON 응답 반환
 	}
 
 
@@ -111,7 +111,7 @@ public class AdminViewController {
 		// 관리자 비밀번호 확인 
 		if (!adminPw.equals("work1234")) {
 			response.put("success", false);
-			response.put("message", "비밀번호가 일치하지 않습니다.");
+			response.put("message", "관리자 비밀번호가 일치하지 않습니다.");
 			return response;
 		}
 
@@ -175,35 +175,39 @@ public class AdminViewController {
 	}
 
 
-	// 직원 정보 수정 (수정페이지에 상세정보 남아있기)
+	// 직원 정보 수정
 	@GetMapping("/update/{empId}")
-	public String showUpdateForm(@PathVariable("empId") Long empId, Model model){
-		EmployeeDto dto = adminService.employeeDetail(empId);
+	public String employeeUpdate(@PathVariable("empId") Long empId, Model model) {
+
+		EmployeeDto employeeUpdate = adminService.employeeDetail(empId);
+
+		System.out.println("employeeUpdate deptNo: " + employeeUpdate.getDeptNo());
+		model.addAttribute("employeeUpdate", employeeUpdate);
+
+		// 부서 셀렉트
 		List<DepartmentsDto> departments = adminService.getAllDepartments();
-		List<JobsDto> jobs = adminService.getAllJobs();
-		model.addAttribute("employeeDetail", dto);
 		model.addAttribute("departments", departments);
+
+		// 직급 목록 추가
+		List<JobsDto> jobs = adminService.getAllJobs();
 		model.addAttribute("jobs", jobs);
-		return "admin/update"; 
+
+		return "admin/update";
 	}
 
-	// 직원 정보 수정 
-    @PostMapping("/update/{empId}")
-    public String updateEmployee(@PathVariable("empId") Long empId,
-                                 @ModelAttribute("employeeDetail") EmployeeDto dto,
-                                 BindingResult result,
-                                 Model model,
-                                 RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            model.addAttribute("departments", adminService.getAllDepartments());
-            model.addAttribute("jobs", adminService.getAllJobs());
-            return "admin/update";
-        }
+	// 직원 정보 수정 (POST 요청)
+	@PostMapping("/update/{empId}")
+	public String saveEmployeeUpdate(@PathVariable("empId") Long empId, EmployeeDto employeeDto) {
+		System.out.println("Received empId: " + empId);
+		System.out.println("Received deptNo: " + employeeDto.getDeptNo());
 
-        adminService.updateEmployee(empId, dto);
+		try {
+			adminService.employeeUpdate(empId, employeeDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "redirect:/admin/detail/" + empId;
+	}
 
-        // alert
-        redirectAttributes.addAttribute("success", "true");
-        return "redirect:/admin/update/" + empId;
-    }
+
 }

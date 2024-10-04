@@ -472,5 +472,10 @@ public class ApprovalService {
 				   				.formContent(content)
 				   				.build();
 		   return approvalFormRepository.save(af);
-	   }				
+	   }
+	   
+	   // 메인화면 approvalcount
+	   public int approvalCount(Long empId, int i) {
+		   return approvalRepository.findByEmployeeEmpIdAndApprovalStatus(empId,i);
+	   }
 }

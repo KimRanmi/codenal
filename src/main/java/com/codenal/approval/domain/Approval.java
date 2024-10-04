@@ -73,4 +73,3 @@ public class Approval {
     private List<Referrer> referrer;
     
 }
-

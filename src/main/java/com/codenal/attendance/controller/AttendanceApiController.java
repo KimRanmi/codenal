@@ -123,6 +123,4 @@ public class AttendanceApiController {
        
         return ResponseEntity.ok(summary);	
     }
-    
-    
 }

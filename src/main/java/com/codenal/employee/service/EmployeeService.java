@@ -2,20 +2,15 @@ package com.codenal.employee.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.codenal.admin.repository.AdminRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.repository.EmployeeRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class EmployeeService {
     
     @Autowired
@@ -23,8 +18,7 @@ public class EmployeeService {
     
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository; 
-        }
+        this.employeeRepository = employeeRepository; }
 
     public void registerEmployee(EmployeeDto employeeDto) {
         // 비밀번호 암호화 제거, 원시 비밀번호를 그대로 사용
@@ -32,10 +26,10 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public Employee selectEmpId(String empId) {
-    	Employee emp = employeeRepository.findByEmpName(empId);
-    	return emp;
-    }
+//    public Employee selectEmpId(String empId) {
+//    	Employee emp = employeeRepository.findByEmpName(empId);
+//    	return emp;
+//    }
     
 
     public void saveEmployee(Employee employee) {
@@ -58,6 +52,12 @@ public class EmployeeService {
     	}
     	return dtoList;
     }
-    
    
+    public EmployeeDto getEmployeeDtoById(Long empId) {
+        Employee employee = employeeRepository.findByEmpId(empId);
+        if (employee != null) {
+            return EmployeeDto.fromEntity(employee);
+        }
+        return null;
+    }
 }
