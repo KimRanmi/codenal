@@ -5,6 +5,46 @@
 <head>
     <link href="/assets/libs/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+<!-- Font Awesome 라이브러리 추가 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- jsTree 테마 CSS 포함 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<!-- jQuery 포함 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<!-- jsTree 포함 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
+<style>
+.jstree-icon.ri-building-fill { /* 회사 아이콘 */
+	color: #3e4a6e;
+	font-size: 24px;
+}
+
+.jstree-icon.ri-team-fill { /* 부서 아이콘 */
+	color: #3577f1;
+	font-size: 20px;
+}
+
+.jstree-icon.ri-user-2-fill { /* 직원 아이콘 */
+	color: #9a9ba0;
+	font-size: 16px;
+}
+
+.body-list { /* 몸통 높이 고정(동적X) */
+	height: 598.5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	padding-bottom: 60px;
+}
+
+.pagination { /* 페이징 위치 고정 */
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+</style>
 </head>
 
 <body>
@@ -138,9 +178,21 @@
                             <input type="radio" id="select" name="read_authority_status" value="Y"><label for="select">권한 직접 설정</label>
                         </div>
                         <!-- 조직도를 표시할 div -->
-						<div id="organization-chart" style="display: none;">
-						    <!-- 조직도 내용이 동적으로 삽입할 예정 -->
-						</div>
+							<!--------------------------------- 조직도 ----------------------------------------------->
+							<div class="col-xxl-3" id="organization-chart" style="display: none;">
+								<div class="card" id="contact-view-detail">
+									<!-- 조직도 이름 -->
+									<div class="card-header border-0">
+										<div class="col-sm">
+											<h5 class="card-title mb-0" style="font-size: 18px; font-weight: 900;">조직도</h5>
+										</div>
+									</div>
+									<!-- JsTree -->
+									<div class="card-body border border-dashed border-end-0 border-start-0">
+										<div id="treeMenu"></div>
+									</div>
+								</div>
+							</div>
                     </div>
                 </div>
                 <div class="text-end mb-4">
@@ -154,6 +206,7 @@
 
       <th:block layout:fragment="pagejs">
         <script src="/assets/libs/dropzone/dropzone-min.js"></script>
+        		<script src="/assets/js/pages/remix-icons-listing.js"></script>
         		<!--  project-create init  -->
 		<script src="/assets/js/pages/project-create.init.js"></script>
     </th:block>

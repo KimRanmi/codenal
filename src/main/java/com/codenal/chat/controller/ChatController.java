@@ -134,7 +134,11 @@ public class ChatController {
 		model.addAttribute("notMeParticipantList",notMeParticipantList);
 		
 		ChatRoom chat = chatService.selectChatRoomOne(roomNo, empId);
-		model.addAttribute("chat",chat);
+		if (chat != null) {
+	        model.addAttribute("chat", chat);  // chat 데이터를 모델에 추가
+	    } else {
+	        model.addAttribute("chat", null);  // chat이 없으면 null로 설정
+	    }
 		
 		
 		// 추가 초대한 경우 메시지 불러오는거 수정 함께 해야함

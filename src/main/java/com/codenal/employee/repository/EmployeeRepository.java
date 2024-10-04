@@ -17,7 +17,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query(value = "select e from Employee e where e.empName = ?1")
     Employee findByEmpName(String empName);
     
-    @Query("SELECT e FROM Employee e WHERE e.empStatus = 'Y' AND e.empId != ?1 AND e.empAuth !='ADMIN'")
+    @Query("SELECT e FROM Employee e WHERE e.empStatus = 'Y' AND e.empId != ?1 AND e.empAuth !='ADMIN' ORDER BY e.departments.deptName ")
     List<Employee> findAllActiveEmployees(Long empId);
 
     @Query(value="SELECT e FROM Employee e "
