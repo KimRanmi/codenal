@@ -2,10 +2,7 @@ package com.codenal.calendar.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +23,6 @@ import com.codenal.calendar.repository.CalendarRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.repository.EmployeeRepository;
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Empty;
 
 @Service
 public class CalendarService {
@@ -55,7 +51,7 @@ public class CalendarService {
 		Long detpNo = dto.getDeptNo();
 		Departments dept = departmentsRepository.findByDeptNo(detpNo);
 		
-		int jodNo = dto.getJobNo();
+		Long jodNo = dto.getJobNo();
 		Jobs job = jobsRepository.findByJobNo(jodNo);
 		String[] str = {dto.getEmpName(), dept.getDeptName(),job.getJobName()};
 		// jobs, jobsDto 생성 후 부서명, 직급명 각자 레포지토리에서 가져온 후 String 객체 만들어서 거기다 넣어서 리턴 후 js에서 출력하기

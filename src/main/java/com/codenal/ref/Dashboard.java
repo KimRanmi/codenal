@@ -3,20 +3,19 @@ package com.codenal.ref;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.codenal.announce.domain.Announce;
 import com.codenal.announce.domain.AnnounceDto;
 import com.codenal.announce.service.AnnounceService;
+import com.codenal.approval.service.ApprovalService;
+import com.codenal.approval.service.ApproverService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.service.EmployeeService;
 import com.codenal.meeting.domain.MeetingRoomReserveDto;
-import com.codenal.meeting.repository.MeetingRoomReserveRepository;
 import com.codenal.meeting.service.MeetingRoomService;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,12 +26,17 @@ public class Dashboard {
 	private final EmployeeService employeeService;
 	private final AnnounceService announceService;
 	private final MeetingRoomService meetingRoomService;
+	private final ApprovalService approvalService;
+	private final ApproverService approverService;
 	
 	@Autowired
-	public Dashboard(EmployeeService employeeService, AnnounceService announceService, MeetingRoomService meetingRoomService) {
+	public Dashboard(EmployeeService employeeService, AnnounceService announceService, MeetingRoomService meetingRoomService, 
+			ApprovalService approvalService, ApproverService approverService) {
 		this.employeeService = employeeService;
 		this.announceService = announceService;
 		this.meetingRoomService = meetingRoomService;
+		this.approvalService = approvalService;
+		this.approverService = approverService;
 	}
 
 	@GetMapping("/")
@@ -56,6 +60,17 @@ public class Dashboard {
 		model.addAttribute("reserve" , reserve);
 		
 		// 전자결제 데이터 가져오기
+		
+		// 전자결재 수신대기
+		int approvalPendingCount = approverService.approverCount(empId,1);
+		// 전자결재 완료
+		int approvalCount = approvalService.approvalCount(empId,2);
+		// 전자결재 반려
+		int approvalRejectCount = approvalService.approvalCount(empId,3);
+		
+		model.addAttribute("pending",approvalPendingCount);
+		model.addAttribute("approval",approvalCount);
+		model.addAttribute("reject",approvalRejectCount);
 		
 		// 알림 데이터 가져오기
 		

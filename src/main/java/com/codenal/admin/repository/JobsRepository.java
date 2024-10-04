@@ -9,5 +9,5 @@ import com.codenal.admin.domain.Jobs;
 public interface JobsRepository extends JpaRepository<Jobs, Integer> {
 
     // 1. 직원 정보 수정
-    Jobs findByJobNo(int jobNo);
+    Jobs findByJobNo(Long jobNo);
 }

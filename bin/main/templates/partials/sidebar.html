@@ -225,7 +225,7 @@
 										<a href="/apps-attendance" class="nav-link"> 출퇴근 관리 </a>
 									</li>
 									<li class="nav-item">
-										<a href="/apps-work-history" class="nav-link"> 근무내역 관리 </a>
+										<a href="#" class="nav-link"> 근무내역 관리 </a>
 									</li>
 									<li class="nav-item">
 										<a href="/apps-annual-leave" class="nav-link"> 연차 관리 </a>
@@ -541,23 +541,6 @@
 	</div>
 </body>
 
-<script type="text/javascript">
-window.onload=()=>{
-console.log('확인');
-const csrfToken = document.getElementById('csrf_token').value;
-fetch('/sidebar', {
-	method: 'POST',
-	headers: {
-            'X-CSRF-TOKEN': csrfToken
-        }
-})
-.then(response => response.json())
-.then(data => {
-	alert('성공');
-});
-	
-}
-</script>
 
 
 </html>

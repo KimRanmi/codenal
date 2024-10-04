@@ -1,5 +1,6 @@
 package com.codenal.employee.domain;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class Employee {
 	@ManyToOne
 	@JoinColumn(name = "job_no",  referencedColumnName = "job_no")
 	private Jobs jobs;
-
+	
 	@Column(name = "emp_auth")
 	private String empAuth;
 
@@ -106,8 +107,4 @@ public class Employee {
 
 	@OneToMany(mappedBy = "employee")
 	private List<ChatParticipants> participants;
-	
-	   public Employee(Long empId) {
-	        this.empId = empId;
-	    }
 }
