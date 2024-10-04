@@ -155,8 +155,8 @@
                                         <span aria-hidden="true">&laquo;</span>
                                     </span>
                                 </li>
-
-                                <!-- 페이지 번호 버튼 -->
+		// 
+                                <!-- 페이지 번호 버튼 --> 
                                 <li class="page-item"
                                     th:each="i : ${#numbers.sequence(1, workHistories.totalPages)}"
                                     th:classappend="${i == workHistories.number + 1} ? 'active'">
