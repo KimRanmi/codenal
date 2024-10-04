@@ -2,13 +2,10 @@ package com.codenal.employee.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.codenal.admin.repository.AdminRepository;
-import com.codenal.alarms.repository.EmpAlarmsRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.repository.EmployeeRepository;
@@ -21,12 +18,10 @@ public class EmployeeService {
     
     @Autowired
     private EmployeeRepository employeeRepository;
-    private EmpAlarmsRepository empAlarmsRepository;
     
     @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository, EmpAlarmsRepository empAlarmsRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository; 
-        this.empAlarmsRepository = empAlarmsRepository;
         }
 
     public void registerEmployee(EmployeeDto employeeDto) {
@@ -62,10 +57,6 @@ public class EmployeeService {
     	return dtoList;
     }
     
-    // 알림
-    public Employee findByEmpId(Long empId) {
-        Optional<Employee> optionalEmployee = empAlarmsRepository.findByEmpId(empId);
-        return optionalEmployee.orElse(null);
-    }
+    
    
 }
