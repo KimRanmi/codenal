@@ -32,14 +32,14 @@ public class AnnualLeaveManage {
 	@Column(name="annual_manage_no")
 	private Long annualManageNo;
 	
-	@Column(name="annual_total_day")
-	private float annualTotalDay;
-	
-	@Column(name="annual_used_day")
-	private float annualUsedDay;
-	
-	@Column(name="annual_remain_day")
-	private float annualRemainDay;
+	@Column(name="annual_total_day", nullable = false)
+	private Double annualTotalDay = 0.0;
+
+	@Column(name="annual_used_day", nullable = false)
+	private Double annualUsedDay = 0.0;
+
+	@Column(name="annual_remain_day", nullable = false)
+	private Double annualRemainDay = 0.0;
 	
 	@ManyToOne
 	@JoinColumn(name="emp_id")

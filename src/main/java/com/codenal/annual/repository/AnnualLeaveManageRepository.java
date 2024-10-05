@@ -13,5 +13,5 @@ public interface AnnualLeaveManageRepository extends JpaRepository <AnnualLeaveM
 	@Modifying
 	@Query("update AnnualLeaveManage m set m.annualUsedDay = m.annualUsedDay + ?2 , m.annualRemainDay = m.annualTotalDay - m.annualUsedDay "
 			+ " where m.employee.empId = ?1")
-	int updateDay(Long empId, float day);
+	int updateDay(Long empId, Double  day);
 }

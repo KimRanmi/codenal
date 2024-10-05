@@ -64,6 +64,11 @@ public class AnnualLeaveManageController {
 
         // 연차 관리 정보 가져오기
         AnnualLeaveManage annualLeaveManage = annualLeaveManageService.getAnnualLeaveManageById(empId);
+        if (annualLeaveManage == null) {
+            // 기본 연차 관리 정보 초기화
+            annualLeaveManage = new AnnualLeaveManage();
+            // 필요에 따라 추가 초기화 로직 추가
+        }
 
         // 선택된 연도와 월 설정
         YearMonth selectedYearMonth;

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,261 +22,244 @@ import com.codenal.admin.domain.JobsDto;
 import com.codenal.admin.repository.AdminRepository;
 import com.codenal.admin.repository.DepartmentsRepository;
 import com.codenal.admin.repository.JobsRepository;
-import com.codenal.annual.domain.AnnualLeaveManage;
-import com.codenal.annual.domain.AnnualLeaveManageDto;
 import com.codenal.annual.repository.AnnualLeaveManageRepository;
+import com.codenal.annual.service.AnnualLeaveManageService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 
 @Service
 public class AdminService {
 
-	// private final PasswordEncoder passwordEncoder;
-	// 암호화
-	// Spring Security 설정 클래스에서 PasswordEncoder를 빈으로 등록
-	private final AdminRepository adminRepository;
-	private final AnnualLeaveManageRepository annualLeaveManageRepository;
-	private final DepartmentsRepository departmentsRepository;
-	private final JobsRepository jobsRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AdminRepository adminRepository;
+    private final AnnualLeaveManageRepository annualLeaveManageRepository;
+    private final DepartmentsRepository departmentsRepository;
+    private final JobsRepository jobsRepository;
+    private final AnnualLeaveManageService annualLeaveManageService;
 
+    @Autowired
+    public AdminService(AdminRepository adminRepository, DepartmentsRepository departmentsRepository,
+                        JobsRepository jobsRepository, AnnualLeaveManageRepository annualLeaveManageRepository,
+                        AnnualLeaveManageService annualLeaveManageService, PasswordEncoder passwordEncoder) {
+        this.adminRepository = adminRepository;
+        this.annualLeaveManageRepository = annualLeaveManageRepository;
+        this.departmentsRepository = departmentsRepository;
+        this.jobsRepository = jobsRepository;
+        this.annualLeaveManageService = annualLeaveManageService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-	@Autowired
-	public AdminService(AdminRepository adminRepository, DepartmentsRepository departmentsRepository, 
-			JobsRepository jobsRepository,  AnnualLeaveManageRepository annualLeaveManageRepository) {
-		this.adminRepository = adminRepository;
-		this.annualLeaveManageRepository = annualLeaveManageRepository;
-		this.departmentsRepository = departmentsRepository;
-		this.jobsRepository = jobsRepository;
-	}
+    // ------------------ 신규 직원 등록
+    public int createEmployee(EmployeeDto dto) {
+        int result = -1;
+        try {
+            // 기본 비밀번호 'work1234' 설정 및 암호화
+            if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
+                dto.setEmpPw(passwordEncoder.encode("work1234"));
+            } else {
+                // 비밀번호가 제공되었을 경우 암호화
+                dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
+            }
 
-	// ------------------ 신규 직원 등록
-	public int createEmployee(EmployeeDto dto) {
+            // 1. emp_hire 날짜를 기반으로 6자리 값 생성 (YYMMDD)
+            LocalDate hireDate = dto.getEmpHire();  // DTO에서 `emp_hire` 값을 가져옴
+            String hireDateString = hireDate.format(DateTimeFormatter.ofPattern("yyMMdd"));
 
-		int result = -1;
-		try {
+            // 2. 랜덤 숫자 4자리 생성
+            String randomDigits = String.format("%04d", new Random().nextInt(10000));
 
-			// 기본 비밀번호 'work1234' 설정
-			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
-				dto.setEmpPw("work1234");
-			}
-			// 기본 비밀번호 'work1234'암호화
-			//			if (dto.getEmpPw() == null || dto.getEmpPw().isEmpty()) {
-			//				String defaultPassword = passwordEncoder.encode("work1234");
-			//				dto.setEmpPw(defaultPassword);
-			//			} else {
-			//				// 비밀번호가 제공되었을 경우 암호화
-			//				dto.setEmpPw(passwordEncoder.encode(dto.getEmpPw()));
-			//			}
+            // 3. emp_hire 6자리 + 랜덤 숫자 4자리로 emp_id 생성
+            Long empId = Long.parseLong(hireDateString + randomDigits);
 
-			// 1. emp_hire 날짜를 기반으로 6자리 값 생성 (YYMMDD)
-			LocalDate hireDate = dto.getEmpHire();  // DTO에서 `emp_hire` 값을 가져옴
-			String hireDateString = hireDate.format(DateTimeFormatter.ofPattern("yyMMdd"));
+            dto.setEmpId(empId);
 
-			// 2. 랜덤 숫자 4자리 생성
-			String randomDigits = String.format("%04d", new Random().nextInt(10000));
+            Employee employee = dto.toEntity();
 
-			// 3. emp_hire 6자리 + 랜덤 숫자 4자리로 emp_id 생성
-			Long empId = Long.parseLong(hireDateString + randomDigits);
+            // 부서 셀렉트박스
+            Departments department = Departments.builder().deptNo(dto.getDeptNo()).build();
+            employee.setDepartments(department);
 
-			dto.setEmpId(empId);
+            // 직무 셀렉트 박스
+            Jobs job = Jobs.builder().jobNo(dto.getJobNo()).build();
+            employee.setJobs(job);
 
-			Employee employee = dto.toEntity();
+            adminRepository.save(employee); // DB 저장
+            
+            // 연차 초기화: AnnualLeaveManageService를 통해 연차 계산 및 저장
+            annualLeaveManageService.updateAnnualLeaveForEmployee(employee);
 
-			// 부서 셀렉트박스
-			Departments department = Departments.builder().deptNo(dto.getDeptNo()).build();
-			employee.setDepartments(department);
+            result = 1;
 
-			// 직무 셀렉트 박스
-			Jobs job = Jobs.builder().jobNo(dto.getJobNo()).build();
-			employee.setJobs(job);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-			adminRepository.save(employee); // DB 저장
+        return result;
+    }
 
-			// 연차 초기화
-			AnnualLeaveManageDto almDto = new AnnualLeaveManageDto();
+ // 비밀번호 암호화 및 저장
+    public void encryptAndSaveEmployeePassword(Employee employee) {
+        if (employee.getEmpPw() != null && !employee.getEmpPw().startsWith("$2a$")) {
+            employee.setEmpPw(passwordEncoder.encode(employee.getEmpPw()));
+            adminRepository.save(employee);
+        }
+    }
+    
+    
+    // 부서 셀렉트
+    public List<DepartmentsDto> getAllDepartments() {
+        List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
+        return departments.stream()
+                .map(DepartmentsDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 
-			almDto.setEmp_id(employee.getEmpId());
+    // 직급 셀렉트
+    public List<JobsDto> getAllJobs() {
+        List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
+        return jobs.stream()
+                .map(JobsDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 
+    // ---------------- 직원 목록 검색 1 (재직 or 퇴사)
+    public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
+        Page<Employee> adminSearchOne = null;
 
-			AnnualLeaveManage alm = almDto.toEntity(employee);
+        String searchText = searchDto.getEmpStatus();
 
-			annualLeaveManageRepository.save(alm);
+        if (searchText != null && !"".equals(searchText)) {
+            if ("ALL".equals(searchText)) {  // 전체 검색
+                adminSearchOne = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
+            } else if ("Y".equals(searchText)) {  // 재직자 검색
+                adminSearchOne = adminRepository.searchByMultipleFields("USER", "Y", null, "", pageable);
+            } else if ("N".equals(searchText)) {  // 퇴사자 검색
+                adminSearchOne = adminRepository.searchByMultipleFields("USER", "N", null, "", pageable);
+            }
+        } else {
+            adminSearchOne = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
+        }
 
-			result = 1;
+        List<EmployeeDto> adminSearchOneList = new ArrayList<>();
+        for (Employee e : adminSearchOne) {
+            EmployeeDto dto = EmployeeDto.fromEntity(e);
+            adminSearchOneList.add(dto);
+        }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        return new PageImpl<>(adminSearchOneList, pageable, adminSearchOne.getTotalElements());
+    }
 
-		return result;
+    // ------------------ 직원 목록 검색 2 (직원 정보)
+    public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
+        Page<Employee> adminSearchTwo = null;
 
-	}
+        String searchText = searchDto.getSearch_text();
 
-	// 부서 셀렉트
-	public List<DepartmentsDto> getAllDepartments() {
-		List<Departments> departments = departmentsRepository.findAll(); // 모든 부서 정보 가져오기
-		return departments.stream()
-				.map(DepartmentsDto::fromEntity)
-				.collect(Collectors.toList());
-	}
+        if (searchText != null && !"".equals(searchText)) {
+            int searchType = searchDto.getSearch_type();
 
-	// 직급 셀렉트
-	public List<JobsDto> getAllJobs() {
-		List<Jobs> jobs = jobsRepository.findAll(); // 모든 직급 정보 가져오기
-		return jobs.stream()
-				.map(JobsDto::fromEntity) 
-				.collect(Collectors.toList());
-	}
+            switch (searchType) {
+            case 1: // 전체 검색
+                adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
+                break;
+            case 2: // 사번 검색 (부분 검색 가능)
+                adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, searchText, pageable);
+                break;
+            case 3: // 직원명 검색
+                adminSearchTwo = adminRepository.findByEmpNameContainingAndEmpAuth(searchText, "USER", pageable);
+                break;
+            case 4: // 부서명 검색
+                adminSearchTwo = adminRepository.findByDepartments_DeptNameContainingAndEmpAuth(searchText, "USER", pageable);
+                break;
+            case 5: // 직급명 검색
+                adminSearchTwo = adminRepository.findByJobs_JobNameContainingAndEmpAuth(searchText, "USER", pageable);
+                break;
+            case 6: // 전화번호 검색
+                adminSearchTwo = adminRepository.findByEmpPhoneContainingAndEmpAuth(searchText, "USER", pageable);
+                break;
+            }
+        } else {
+            adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);  // 전체 검색
+        }
 
+        List<EmployeeDto> adminSearchTwoList = new ArrayList<>();
+        for (Employee e : adminSearchTwo) {
+            EmployeeDto dto = EmployeeDto.fromEntity(e);
+            adminSearchTwoList.add(dto);
+        }
 
+        return new PageImpl<>(adminSearchTwoList, pageable, adminSearchTwo.getTotalElements());
+    }
 
-	// ---------------- 직원 목록 검색 1 (재직 or 퇴사)
-	public Page<EmployeeDto> searchByStatus(EmployeeDto searchDto, Pageable pageable) {
-		Page<Employee> adminSearchOne = null;
+    // ---------------- 직원 검색 통합 (재직/퇴사 + 직원 정보)
+    public Page<EmployeeDto> searchAll(EmployeeDto searchDto, Pageable pageable) {
+        if (searchDto.getSearch_type() == 0) {
+            // 재직 상태 검색
+            return searchByStatus(searchDto, pageable);
+        } else {
+            // 직원 정보 검색
+            return searchByEmployeeInfo(searchDto, pageable);
+        }
+    }
 
-		String searchText = searchDto.getEmpStatus();
+    // ---------------- 직원 정보 상세 조회
+    public EmployeeDto employeeDetail(Long empId) {
+        Employee e = adminRepository.findByEmpId(empId);
+        return EmployeeDto.fromEntity(e);
+    }
 
-		if (searchText != null && !"".equals(searchText)) {
-			if ("ALL".equals(searchText)) {  // 전체 검색
-				adminSearchOne = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
-			} else if ("Y".equals(searchText)) {  // 재직자 검색
-				adminSearchOne = adminRepository.searchByMultipleFields("USER", "Y", null, "", pageable);
-			} else if ("N".equals(searchText)) {  // 퇴사자 검색
-				adminSearchOne = adminRepository.searchByMultipleFields("USER", "N", null, "", pageable);
-			}
-		} else {
-			adminSearchOne = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
-		}
+    // ---------------- 직원 비밀번호 변경
+    public void resetEmployeePassword(Long empId, String newPw) {
+        Employee e = adminRepository.findByEmpId(empId);
+        e.setEmpPw(passwordEncoder.encode(newPw)); // 비밀번호 암호화하여 저장
+        adminRepository.save(e);
+    }
 
-		List<EmployeeDto> adminSearchOneList = new ArrayList<>();
-		for (Employee e : adminSearchOne) {
-			EmployeeDto dto = EmployeeDto.fromEntity(e);
-			adminSearchOneList.add(dto);
-		}
+    // ---------------- 직원 퇴사
+    @Transactional
+    public boolean emdEndDate(Long empId, LocalDate empEnd) {
+        try {
+            Employee e = adminRepository.findById(empId).get();
 
-		return new PageImpl<>(adminSearchOneList, pageable, adminSearchOne.getTotalElements());
-	}
+            e.setEmpEnd(empEnd);  // 퇴사일 설정
+            e.setEmpStatus("N");  // empStatus 'N'으로 변경
 
-	// ------------------ 직원 목록 검색 2 (직원 정보)
-	public Page<EmployeeDto> searchByEmployeeInfo(EmployeeDto searchDto, Pageable pageable) {
-		Page<Employee> adminSearchTwo = null;
+            adminRepository.save(e);  // 저장
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-		String searchText = searchDto.getSearch_text();
+    // ---------------- 직원 정보 수정
+    @Transactional
+    public Employee employeeUpdate(Long empId, EmployeeDto dto) {
+        Employee e = adminRepository.findByEmpId(empId);
 
-		if (searchText != null && !"".equals(searchText)) {
-			int searchType = searchDto.getSearch_type();
+        e.setEmpName(dto.getEmpName());
 
-			switch (searchType) {
-			case 1: // 전체 검색
-				adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
-				break;
-			case 2: // 사번 검색 (부분 검색 가능)
-				adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, searchText, pageable);
-				break;
-			case 3: // 직원명 검색
-				adminSearchTwo = adminRepository.findByEmpNameContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			case 4: // 부서명 검색
-				adminSearchTwo = adminRepository.findByDepartments_DeptNameContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			case 5: // 직급명 검색
-				adminSearchTwo = adminRepository.findByJobs_JobNameContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			case 6: // 전화번호 검색
-				adminSearchTwo = adminRepository.findByEmpPhoneContainingAndEmpAuth(searchText, "USER", pageable);
-				break;
-			}
-		} else {
-			adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);  // 전체 검색
-		}
+        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+        e.setDepartments(department);
 
-		List<EmployeeDto> adminSearchTwoList = new ArrayList<>();
-		for (Employee e : adminSearchTwo) {
-			EmployeeDto dto = EmployeeDto.fromEntity(e);
-			adminSearchTwoList.add(dto);
-		}
+        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+        e.setJobs(job);
 
-		return new PageImpl<>(adminSearchTwoList, pageable, adminSearchTwo.getTotalElements());
-	}
+        return adminRepository.save(e);
+    }
 
-	// ---------------- 직원 검색 통합 (재직/퇴사 + 직원 정보)
-	public Page<EmployeeDto> searchAll(EmployeeDto searchDto, Pageable pageable) {
-		if (searchDto.getSearch_type() == 0) {
-			// 재직 상태 검색
-			return searchByStatus(searchDto, pageable);
-		} else {
-			// 직원 정보 검색
-			return searchByEmployeeInfo(searchDto, pageable);
-		}
-	}
+    // 직원 정보 수정
+    @Transactional
+    public Employee updateEmployee(Long empId, EmployeeDto dto) {
+        Employee e = adminRepository.findByEmpId(empId);
 
+        e.setEmpName(dto.getEmpName());
 
-	// ---------------- 직원 정보 상세 조회
-	public EmployeeDto employeeDetail(Long empId) {
+        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+        e.setDepartments(department);
 
-		Employee e = adminRepository.findByEmpId(empId);
-		return EmployeeDto.fromEntity(e);
-	}
+        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+        e.setJobs(job);
 
-
-	// ---------------- 직원 비밀번호 변경 
-	public void resetEmployeePassword(Long empId, String newPw) {
-		EmployeeDto e = employeeDetail(empId);
-		e.setEmpPw(newPw); // 암호화하지 않고 저장
-
-		adminRepository.save(e.toEntity());
-	}
-
-
-	// ---------------- 직원 퇴사
-	@Transactional
-	public boolean emdEndDate(Long empId , LocalDate empEnd) {
-		try {
-			Employee e = adminRepository.findById(empId).get();
-
-			e.setEmpEnd(empEnd);  // 퇴사일 설정
-			e.setEmpStatus("N");  // empStatus 'N'으로 변경
-
-			adminRepository.save(e);	// 저장
-			return true;
-		} catch (Exception e) {
-
-			return false;
-		}
-	}
-
-
-	// ---------------- 직원 정보 수정
-	@Transactional
-	public Employee employeeUpdate(Long empId, EmployeeDto dto) { 
-		Employee e = adminRepository.findByEmpId(empId);
-
-		e.setEmpName(dto.getEmpName());
-
-		Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
-		e.setDepartments(department);
-
-		Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
-		e.setJobs(job);
-
-		return adminRepository.save(e);
-	}
-
-
-	// 직원 정보 수정
-	 @Transactional
-	    public Employee updateEmployee(Long empId, EmployeeDto dto) { 
-	        Employee e = adminRepository.findByEmpId(empId);
-
-	        e.setEmpName(dto.getEmpName());
-
-	        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
-	        e.setDepartments(department);
-
-	        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
-	        e.setJobs(job);
-
-	        return adminRepository.save(e);
-	    }
-
+        return adminRepository.save(e);
+    }
 }

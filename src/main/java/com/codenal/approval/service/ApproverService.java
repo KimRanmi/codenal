@@ -210,7 +210,7 @@ public class ApproverService {
 			// 휴가신청서인 경우 ..  이건 내일 다시 물어보기 !
 			AnnualLeaveUsage alu = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
 			if(alu != null) {
-				int result = annualLeaveManageRepository.updateDay(alu.getEmployee().getEmpId(),alu.getTotalDay());
+				int result = annualLeaveManageRepository.updateDay(alu.getEmployee().getEmpId(), alu.getTotalDay());
 			}
 			approvalRepository.updateStatus(2, no);
 			
