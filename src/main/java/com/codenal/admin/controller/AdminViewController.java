@@ -192,7 +192,7 @@ public class AdminViewController {
         return "admin/update";
     }
 
-    // 직원 정보 수정 (HTML 폼 처리)
+    // 직원 정보 수정
     @PostMapping("/update/{empId}")
     public String updateEmployeeForm(@PathVariable("empId") Long empId,
                                      @ModelAttribute("employeeDetail") EmployeeDto dto,
@@ -213,7 +213,7 @@ public class AdminViewController {
         logger.info("view 4: " + empId);
 
         redirectAttributes.addFlashAttribute("success", "true");
-        return "redirect:/admin/update/" + empId;
+        return "redirect:/admin/detail/" + empId;
     }
 
 }
