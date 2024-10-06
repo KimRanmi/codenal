@@ -15,7 +15,7 @@ public interface AnnualLeaveUsageRepository extends JpaRepository <AnnualLeaveUs
 	
 	AnnualLeaveUsage getAnnualLeaveUsageByApproval_ApprovalNo(Long approvalNo);
 
-	AnnualLeaveUsage findByAnnualUsageNo(Long annual_leave_usage_no);
+	AnnualLeaveUsage findByAnnualUsageNo(Long annualUsageNo);
 	
 	 List<AnnualLeaveUsage> findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
 		        Long empId, LocalDate startDate, LocalDate endDate);

@@ -258,16 +258,7 @@ public long getAnnualLeaveCount(Long empId) {
 //        return attendanceRepository.countByEmpIdAndAttendStatus(empId, Attendance.ABSENT);
 //    }
     // 연차 처리 메서드
-    @Transactional
-    public void applyAnnualLeave(Long empId, LocalDate date) {
-        Attendance attendance = Attendance.builder()
-                .empId(empId)
-                .workDate(date)
-                .attendStatus(Attendance.ANNUAL_LEAVE)
-                .build();
-        
-        attendanceRepository.save(attendance);
-    }
+  
 
     // 결근 상태 자동 처리 (출근 기록이 없는 경우)
     public void markAbsent(Long empId, LocalDate date) {
@@ -276,6 +267,25 @@ public long getAnnualLeaveCount(Long empId) {
                     .empId(empId)
                     .workDate(date)
                     .attendStatus(Attendance.ABSENT)
+                    .build();
+            attendanceRepository.save(attendance);
+        }
+    }
+    
+    @Transactional
+    public void applyAnnualLeave(Long empId, LocalDate date) {
+        // 해당 날짜에 대한 출근 기록이 있는지 확인
+        Optional<Attendance> attendanceOpt = attendanceRepository.findByEmpIdAndWorkDate(empId, date);
+        if (attendanceOpt.isPresent()) {
+            Attendance attendance = attendanceOpt.get();
+            // 이미 출근 기록이 있다면 연차로 상태 변경
+            attendance.setAttendStatus("연차");
+        } else {
+            // 출근 기록이 없다면 새로운 연차 기록 생성
+            Attendance attendance = Attendance.builder()
+                    .empId(empId)
+                    .workDate(date)
+                    .attendStatus("연차")
                     .build();
             attendanceRepository.save(attendance);
         }

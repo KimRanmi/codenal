@@ -24,7 +24,7 @@ public class AnnualLeaveUsageDto {
     private LocalDate annual_usage_end_date;
     private Long emp_id;
     private int annual_type;
-    private float total_day;
+    private Double total_day;
     private String time_period;
 
     // 추가 필드
