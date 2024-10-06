@@ -37,6 +37,7 @@ import com.codenal.approval.repository.ReferrerRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -257,7 +258,7 @@ public class ApprovalService {
                           .annualUsageStartDate((LocalDate)obj.get("시작일자"))
                           .annualUsageEndDate((LocalDate)obj.get("종료일자"))
                           .timePeriod((String)obj.get("반차시간대"))
-                          .totalDay((float)obj.get("사용일수"))
+                          .totalDay((Double)obj.get("사용일수"))
                           .build();
                               
          
@@ -307,8 +308,13 @@ public class ApprovalService {
    public int revoke(Long approvalNo) {
 	  int result = 4;
 	  
-	  Alarms alarms =  alarmsRepository.findByAlarmReferenceNoAndAlarmType(approvalNo,"approval");
-	  alarmsRepository.delete(alarms);
+	  Alarms alarms = alarmsRepository.findByAlarmReferenceNoAndAlarmType(approvalNo, "approval");
+	  if (alarms != null) {
+	      alarmsRepository.delete(alarms);
+	  } else {
+	      // 알람이 존재하지 않음을 처리하는 코드
+	      throw new EntityNotFoundException("알림 없음 : " + approvalNo);
+	  }
 	  return approvalRepository.updateStatus(result,approvalNo);
    }
    
@@ -380,7 +386,7 @@ public class ApprovalService {
 		                          .annualUsageStartDate((LocalDate)obj.get("시작일자"))
 		                          .annualUsageEndDate((LocalDate)obj.get("종료일자"))
 		                          .timePeriod((String)obj.get("반차시간대"))
-		                          .totalDay((float)obj.get("사용일수"))
+		                          .totalDay((Double)obj.get("사용일수"))
 		                          .annualUsageNo(annualNo.getAnnualUsageNo())
 		                          .build();
 		                              

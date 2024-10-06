@@ -35,9 +35,9 @@ public class AnnualLeaveUsageService {
     
     // 특정 사용자의 특정 날짜 범위의 연차 사용 내역 조회 (페이지네이션 적용)
     public Page<AnnualLeaveUsageDto> getAnnualLeaveUsageByDateRange(Long empId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-    	Page<AnnualLeaveUsage> usages = annualLeaveUsageRepository
-    		    .findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
-    		        empId, startDate, endDate, pageable); 
+        Page<AnnualLeaveUsage> usages = annualLeaveUsageRepository
+                .findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
+                    empId, startDate, endDate, pageable); // 올바른 순서
 
         return usages.map(AnnualLeaveUsageDto::toDto);
     }
@@ -48,10 +48,9 @@ public class AnnualLeaveUsageService {
         return usages.map(AnnualLeaveUsageDto::toDto);
     }
 
-    // 연차 사용 메서드
     public void useAnnualLeave(Long empId, LocalDate startDate, LocalDate endDate, int annualType, String timePeriod) {
         // 사용 일수 계산
-        float daysToUse = calculateDaysToUse(startDate, endDate, annualType, timePeriod);
+        Double daysToUse = calculateDaysToUse(startDate, endDate, annualType, timePeriod); // Double로 변경
 
         // 잔여 연차 확인 및 업데이트
         AnnualLeaveManage manage = annualLeaveManageService.getAnnualLeaveManageById(empId);
@@ -63,13 +62,14 @@ public class AnnualLeaveUsageService {
 
         if (manage.getAnnualRemainDay() >= daysToUse) {
             // 연차 사용 내역 저장
-            AnnualLeaveUsage usage = new AnnualLeaveUsage();
-            usage.setEmployee(employeeRepository.findById(empId).orElseThrow(() -> new IllegalArgumentException("Invalid empId")));
-            usage.setAnnualUsageStartDate(startDate);
-            usage.setAnnualUsageEndDate(endDate);
-            usage.setAnnualType(annualType);
-            usage.setTimePeriod(timePeriod);
-            usage.setTotalDay(daysToUse);
+            AnnualLeaveUsage usage = AnnualLeaveUsage.builder()
+                .employee(employeeRepository.findById(empId).orElseThrow(() -> new IllegalArgumentException("Invalid empId")))
+                .annualUsageStartDate(startDate)
+                .annualUsageEndDate(endDate)
+                .annualType(annualType)
+                .timePeriod(timePeriod)
+                .totalDay(daysToUse) // Double 타입 전달
+                .build();
             annualLeaveUsageRepository.save(usage);
 
             // 사용 연차 및 잔여 연차 업데이트
@@ -80,16 +80,14 @@ public class AnnualLeaveUsageService {
             throw new IllegalStateException("잔여 연차가 부족합니다.");
         }
     }
-
-    private float calculateDaysToUse(LocalDate startDate, LocalDate endDate, int annualType, String timePeriod) {
+    private Double calculateDaysToUse(LocalDate startDate, LocalDate endDate, int annualType, String timePeriod) {
         if (annualType == 1) {
             // 반차의 경우 0.5일
-            return 0.5f;
+            return 0.5;
         } else {
             // 연차의 경우 시작일과 종료일 사이의 일수 계산
             long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-            return (float) daysBetween;
+            return (double) daysBetween;
         }
     }
 }
-

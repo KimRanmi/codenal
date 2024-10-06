@@ -43,7 +43,7 @@ public class AnnualLeaveUsage {
    private LocalDate annualUsageEndDate;	
    
    @Column(name="total_day")
-   private float totalDay;
+   private Double totalDay;
    
    @ManyToOne
     @JoinColumn(name="emp_id")

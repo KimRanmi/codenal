@@ -179,6 +179,7 @@ public class ApprovalViewController {
       // 반려 상태 가져오기
       Approver reject = approverService.findReject(approval_no);
       
+      System.out.println("반려 : "+reject);
       
       model.addAttribute("dto", resultList);
       model.addAttribute("type", typeInt);
