@@ -30,8 +30,9 @@
 		<div th:replace="partials/app-chat-userprofile-canvas :: offcanvas"></div>	
 	</div>
 	
-	<!-- TOAST UI 알림 컨테이너 -->
- <div id="toast-container" aria-live="polite" aria-atomic="true" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+	<!-- 채팅 토스트 알림 컨테이너 -->
+	<!-- 이 자리에 동적으로 알림이 표시됨 -->
+	<div id="toast-container" aria-live="polite" aria-atomic="true" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 	
 	
 	<th:block layout:fragment="modal" />
@@ -45,47 +46,49 @@
 	<script th:src="@{/assets/js/app.js}"></script>
 	
 	
-	    <!-- WebSocket 연결 스크립트 -->
+	<!-- 알림 WebSocket 연결 스크립트 -->
     <script>
-        // WebSocket 연결 설정
-   const socketUrl = 'ws://localhost:8083/allnotification';
+    /* 알림 WebSocket 연결 설정 */
+    const notificationSocketUrl = 'ws://localhost:8083/allnotification';
 
-   // 페이지에서 WebSocket 사용 여부를 확인하기 위한 전역 상태
-   if (!window.isChatPage) {
-    if (!window.socket || window.socket.readyState === WebSocket.CLOSED) {
-        window.socket = new WebSocket(socketUrl);
+    /* 페이지에서 알림 WebSocket 사용 여부를 확인하기 위한 전역 상태 */
+    if (!window.notificationSocket || window.notificationSocket.readyState === WebSocket.CLOSED) {
+    	window.notificationSocket = new WebSocket(notificationSocketUrl);
+        setUpNotificationWebSocketHandlers(window.notificationSocket);
+    } else if (window.notificationSocket.readyState === WebSocket.OPEN) {
+        console.log("알림 WebSocket이 이미 연결되어 있는 상태");
+    }
+    
 
-        window.socket.onopen = function(event) {
-            console.log("레이아웃 알림 WebSocket 연결 성공");
+    /* WebSocket 핸들러 설정 함수 (알림) */
+    function setUpNotificationWebSocketHandlers(socket) {
+        socket.onopen = function(event) {
+            console.log("전역 알림 웹소켓 연결완료");
         };
 
-        window.socket.onmessage = function(event) {
+        socket.onmessage = function(event) {
             const resp = JSON.parse(event.data);
-            showToast(resp.msg_content, resp.sender_name, resp.send_date, resp.room_no);  // 받은 알림 메시지를 처리
+            
+            const receivedRoomNo = resp.room_no; // 수신된 메시지의 room_no
+            
+			// 채팅 페이지가 아니거나 현재 접속한 채팅방 번호와 다를 때만 showToast 함수 호출
+			if (!window.isChatPage || window.currentRoomNo !== receivedRoomNo) {
+				showToast(resp.msg_content, resp.sender_name, resp.send_date, resp.room_no);  // 받은 알림 메시지를 처리
+			}
         };
 
-        window.socket.onclose = function(event) {
-            console.log("WebSocket 닫힘.");
+        socket.onclose = function(event) {
+            console.log("알림 웹소켓 연결 종료");
         };
-
-        window.socket.onerror = function(event) {
-            console.error("WebSocket 오류: ", event);
-        };
-    } else if (window.socket.readyState === WebSocket.OPEN) {
-    	console.log("WebSocket이 이미 연결되어 있음.");
     }
-    } else {
-        console.log("WebSocket 연결 대기중");
-    }
-
    
-   
-   function showToast(msgContent, senderName, sendDate, roomNo) {
-	     const truncatedMsgContent = msgContent.length > 15 ? msgContent.substring(0, 15) + '...' : msgContent;
+    /* 토스트 알림 함수 */
+    function showToast(msgContent, senderName, sendDate, roomNo) {
+	   const truncatedMsgContent = msgContent.length > 15 ? msgContent.substring(0, 15) + '...' : msgContent;
        const toastHTML = `
-           <div class="toast fade" role="alert" aria-live="assertive" data-bs-autohide="true" aria-atomic="true" style="background-color: lightpink;">
+           <div class="toast fade" role="alert" aria-live="assertive" data-bs-autohide="true" aria-atomic="true" style="background-color: lightblue;">
                <div class="toast-header" >
-                   <img src="assets/images/logo-sm.png" class="rounded me-2" alt="..." height="20">
+                   <img src="/assets/images/main-logo.png" class="rounded me-2" alt="..." height="20">
                    <span class="fw-semibold me-auto">채팅 알림</span>
                    <small>방금</small>&nbsp;
                    <small>${new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
@@ -110,7 +113,7 @@
        toastElement.addEventListener('hidden.bs.toast', () => {
            toastElement.remove();
        });
-   }
+    }
         
     </script>
 
