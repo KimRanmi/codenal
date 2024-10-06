@@ -514,7 +514,7 @@ public class ApprovalService {
 	           // 출퇴근 관리 서비스 호출하여 연차 상태 반영
 	           for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
 	               attendanceService.applyAnnualLeave(empId, date);
-	           }
+	           } //
 	       }
 	   }
 }
