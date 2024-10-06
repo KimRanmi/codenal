@@ -123,7 +123,7 @@ public class ApproverService {
 		}
 		
 		// 기존 알림 지우기
-		Alarms alarm = alarmsRepository.findByAlarmReferenceNo(updateApproval.getApprovalNo());
+		Alarms alarm = alarmsRepository.findByAlarmReferenceNoAndAlarmType(updateApproval.getApprovalNo(),"approval");
 		alarmsRepository.delete(alarm);
 
 		// 합의자 등록 (합의자는 없을 수도 있음)

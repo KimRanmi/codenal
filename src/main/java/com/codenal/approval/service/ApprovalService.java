@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.stream.Collectors;
-
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,12 +14,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.codenal.alarms.domain.Alarms;
+import com.codenal.alarms.repository.AlarmsRepository;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
-
 import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
@@ -53,6 +51,7 @@ public class ApprovalService {
    private final ApprovalFileRepository approvalFileRepository;
    private final ApproverRepository approverRepository;
    private final ReferrerRepository referrerRepository;
+   private final AlarmsRepository alarmsRepository;
 
    @Autowired
    public ApprovalService(ApprovalRepository approvalRepository, 
@@ -63,7 +62,8 @@ public class ApprovalService {
          AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
          ApprovalFileRepository approvalFileRepository,
          ApproverRepository approverRepository,
-         ReferrerRepository referrerRepository) {
+         ReferrerRepository referrerRepository,
+         AlarmsRepository alarmsRepository) {
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -73,6 +73,7 @@ public class ApprovalService {
       this.approvalFileRepository = approvalFileRepository;
       this.approverRepository = approverRepository;
       this.referrerRepository = referrerRepository;
+      this.alarmsRepository = alarmsRepository;
    }
 
    // 상신리스트 => 조회 0-> 대기 , 1-> 진행중,  2->완료 , 3-> 반려 , 4->회수 
@@ -306,6 +307,8 @@ public class ApprovalService {
    public int revoke(Long approvalNo) {
 	  int result = 4;
 	  
+	  Alarms alarms =  alarmsRepository.findByAlarmReferenceNoAndAlarmType(approvalNo,"approval");
+	  alarmsRepository.delete(alarms);
 	  return approvalRepository.updateStatus(result,approvalNo);
    }
    
