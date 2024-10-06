@@ -8,6 +8,28 @@
         <div th:replace="partials/title-meta :: title-meta('연차 관리')"></div>
     </th:block>
 
+<<<<<<< HEAD
+<head>
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
+<!-- Sweet Alert css -->
+<link href="/assets/libs/sweetalert2/sweetalert2.min.css"
+	rel="stylesheet" type="text/css" />
+	
+<!-- 폰트 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+
+<style>
+* {font-family: "Noto Sans KR", sans-serif !important;} 
+.card-body.pt-0 {
+	height: 592.5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	padding-bottom: 60px;
+}
+=======
     <head>
         <meta name="_csrf" th:content="${_csrf.token}">
         <meta name="_csrf_header" th:content="${_csrf.headerName}">
@@ -22,6 +44,7 @@
                 position: relative;
                 padding-bottom: 60px;
             }
+>>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
 
             .pagination {
                 position: absolute;
