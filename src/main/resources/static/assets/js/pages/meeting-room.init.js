@@ -219,17 +219,15 @@ const reserve=(event)=> {
 	
 	console.log(listTime);
 	
+		let dateFormat = new Date();
+		let nowDay = new Date();
+		dateFormat.setDate(document.getElementById("meeting_room_reserve_date").value.substring(0,2))
 	let vali_check = false;
 	let vali_text = "";
-	/*if (document.getElementById("meeting_room_reserve_date").value == "") {
-		vali_text += '예약 날짜를 선택하세요.';
-		formData.meeting_room_reserve_date.focus();
-	} else */if (listTime == "") {
+	if (listTime == "") {
 		vali_text += '예약 시간을 선택하세요.';
-		
-		/*예약 시간 첫번째 꺼 선택 안할 시 진행 안되는 거 해결하고 라디오 말고 셀렉트로도 할 수 있게 픽스*/
-		
-		/*formData.meeting_room_reserve_time_no[0].focus();*/
+	} else if (dateFormat < nowDay) {
+		vali_text += '지난 날짜는 예약이 불가능합니다.';
 	} else {
 		vali_check = true;
 	}
@@ -244,8 +242,6 @@ const reserve=(event)=> {
 		
 		
 		console.log(document.getElementById("meeting_room_reserve_date").value.substring(0,2));
-		let dateFormat = new Date();
-		dateFormat.setDate(document.getElementById("meeting_room_reserve_date").value.substring(0,2))
 		let reserveDate = dateFormat.getFullYear()+"-"+(dateFormat.getMonth()+1).toString().padStart(2, '0')+"-"+dateFormat.getDate().toString().padStart(2, '0');
 		
 		/*const payload = new FormData(formData);

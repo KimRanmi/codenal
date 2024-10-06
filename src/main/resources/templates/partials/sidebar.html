@@ -145,7 +145,7 @@
 										<div class="collapse menu-dropdown" id="sidebarApprovalList">
 										
 											<ul class="nav nav-sm flex-column">
-												<li class="nav-item menu-link"><a
+												<li class="nav-item"><a
 													th:href="@{/approval/leave_create/1}" class="nav-link">
 														근태 신청서 </a></li>
 												<li class="nav-item"><a th:href="@{/approval/create/2}"
@@ -268,6 +268,15 @@
 							href="/admin/approval_list" aria-expanded="false"> <i
 								class="las la-file-alt"></i> <span>전자결재 관리</span>
 						</a>
+						
+						
+						<li>
+		<!-- 삭제할것 -->	<a class="nav-link menu-link"
+							href="/advance-ui-sweetalerts" aria-expanded="false"> <i
+								class="las la-file-alt"></i> <span>예시 스위트얼럿</span>
+						</a>
+						</li>
+						
 						
 						<!-- <li class="menu-title"><i class="ri-more-fill"></i> <span
 								data-key="t-components">Components</span></li>
@@ -540,6 +549,24 @@
 		<div class="vertical-overlay"></div>
 	</div>
 </body>
+
+<script type="text/javascript">
+window.onload=()=>{
+console.log('확인');
+const csrfToken = document.getElementById('csrf_token').value;
+fetch('/sidebar', {
+	method: 'POST',
+	headers: {
+            'X-CSRF-TOKEN': csrfToken
+        }
+})
+.then(response => response.json())
+.then(data => {
+	alert('성공');
+});
+	
+}
+</script>
 
 
 

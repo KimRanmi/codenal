@@ -18,8 +18,13 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+	
+<!-- 폰트 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+
 </head>
 <style>
+* {font-family: "Noto Sans KR", sans-serif !important;} 
 .toastui-editor-contents table {
     border-collapse: collapse; /* 테두리 간격 없애기 */
     text-align : center;
@@ -145,7 +150,9 @@
 			                    icon: 'success',
 			                    title: "성공",
 			                    text: data.res_msg
-		                });
+		                }).then(() => {
+		            		location.href = "/admin_approval_list"	
+		            	})
 			            }else{
 				            		Swal.fire({
 					                    icon: 'error',

@@ -113,7 +113,9 @@ public class MeetingController {
 	public Map<String, String> MeetingRoomDelete(@PathVariable("meetingRoomNo") Long roomNo){
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("msg", "삭제 중 문제가 발생했습니다.");
-		if(fileService.delete(roomNo) > 0) {
+		int aaa = fileService.delete(roomNo);
+		if(aaa > 0) {
+			System.out.println("확인"+roomNo);
 			
 			if(meetingRoomService.MeetingRoomDelete(roomNo) > 0) {
 				result.put("msg", "삭제되었습니다.");

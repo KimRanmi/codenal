@@ -215,51 +215,63 @@ public class AdminService {
         adminRepository.save(e);
     }
 
-    // ---------------- 직원 퇴사
-    @Transactional
-    public boolean emdEndDate(Long empId, LocalDate empEnd) {
-        try {
-            Employee e = adminRepository.findById(empId).get();
+   
+  
 
-            e.setEmpEnd(empEnd);  // 퇴사일 설정
-            e.setEmpStatus("N");  // empStatus 'N'으로 변경
+   
 
-            adminRepository.save(e);  // 저장
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
-    // ---------------- 직원 정보 수정
-    @Transactional
-    public Employee employeeUpdate(Long empId, EmployeeDto dto) {
-        Employee e = adminRepository.findByEmpId(empId);
+	
 
-        e.setEmpName(dto.getEmpName());
 
-        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
-        e.setDepartments(department);
+	// ---------------- 직원 퇴사
+	@Transactional
+	public boolean emdEndDate(Long empId , LocalDate empEnd) {
+		try {
+			Employee e = adminRepository.findById(empId).get();
 
-        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
-        e.setJobs(job);
+			e.setEmpEnd(empEnd);  // 퇴사일 설정
+			e.setEmpStatus("N");  // empStatus 'N'으로 변경
 
-        return adminRepository.save(e);
-    }
+			adminRepository.save(e);	
+			return true;
+		} catch (Exception e) {
 
-    // 직원 정보 수정
-    @Transactional
-    public Employee updateEmployee(Long empId, EmployeeDto dto) {
-        Employee e = adminRepository.findByEmpId(empId);
+			return false;
+		}
+	}
 
-        e.setEmpName(dto.getEmpName());
 
-        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
-        e.setDepartments(department);
+	// ---------------- 직원 정보 수정
+	@Transactional
+	public Employee employeeUpdate(Long empId, EmployeeDto dto) { 
+		Employee e = adminRepository.findByEmpId(empId);
 
-        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
-        e.setJobs(job);
+		e.setEmpName(dto.getEmpName());
 
-        return adminRepository.save(e);
-    }
+		Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+		e.setDepartments(department);
+
+		Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+		e.setJobs(job);
+
+		return adminRepository.save(e);
+	}
+
+
+	// 직원 정보 수정
+	 @Transactional
+	    public Employee updateEmployee(Long empId, EmployeeDto dto) { 
+	        Employee e = adminRepository.findByEmpId(empId);
+
+	        e.setEmpName(dto.getEmpName());
+
+	        Departments department = departmentsRepository.findByDeptNo(dto.getDeptNo());
+	        e.setDepartments(department);
+
+	        Jobs job = jobsRepository.findByJobNo(dto.getJobNo());
+	        e.setJobs(job);
+
+	        return adminRepository.save(e);
+	    }
 }

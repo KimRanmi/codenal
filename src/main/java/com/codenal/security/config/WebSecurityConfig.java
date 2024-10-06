@@ -1,5 +1,7 @@
 package com.codenal.security.config;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.codenal.employee.service.EmployeeService;
 import com.codenal.security.service.SecurityService;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -43,38 +43,60 @@ public class WebSecurityConfig {
         this.employeeService = employeeService;
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityService securityService) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정 적용
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/auth-signin-basic", "/assets/**" , "/api/approved-annual-leaves").permitAll()
+        // CORS 설정 적용
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .authorizeHttpRequests((requests) -> requests
+                .requestMatchers("/auth-signin-basic", "/assets/**", "/api/approved-annual-leaves").permitAll()
+                .requestMatchers("/admin/list").permitAll()
+                .requestMatchers("/admin/join").permitAll()
+                .requestMatchers("/admin/update/**").permitAll()
+                .requestMatchers("/admin/dept").permitAll()
+                .requestMatchers("/announce/createEnd").permitAll()
+                .requestMatchers("/announce/delete/**").permitAll()
+                .requestMatchers("/announce/updateEnd/**").permitAll()
+                .requestMatchers("/approval/leaveUpdate/**").permitAll()
+                .requestMatchers("/approval/detail/**").permitAll()
+                .requestMatchers("/api/approved-annual-leaves").permitAll()
+                .requestMatchers("/employee/addressBook/**").permitAll()
+                .requestMatchers("/approval/**").authenticated()
+                .requestMatchers("/approval/update/**").authenticated()
+                .requestMatchers("/list").permitAll()
+                .requestMatchers("/mypage/**", "/").authenticated()
+                .requestMatchers("/documents/**").authenticated()
+                .requestMatchers("/api/attendance/**").permitAll()
+                .requestMatchers("/topbar/**").permitAll()
+                .requestMatchers("/chatList/**", "/chatting").permitAll()
                 .anyRequest().authenticated()
-            )
-            .formLogin(login -> 
-                login.loginPage("/auth-signin-basic")
-                    .loginProcessingUrl("/auth-signin-basic")
-                    .usernameParameter("emp_id")
-                    .passwordParameter("emp_pw")
-                    .permitAll()
-                    .defaultSuccessUrl("/", true)
-                    .successHandler(myLoginSuccessHandler())
-                    .failureHandler(myLoginFailureHandler())
-            )
-            .logout((logout) -> logout
-                .logoutUrl("/auth-logout-basic")
-                .logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
+        )
+        .formLogin(login ->
+            login.loginPage("/auth-signin-basic")
+                .loginProcessingUrl("/auth-signin-basic")
+                .usernameParameter("emp_id")
+                .passwordParameter("emp_pw")
                 .permitAll()
-            )
-            .rememberMe((rememberMe) -> rememberMe
-                .key("uniqueAndSecret")
-                .tokenRepository(tokenRepository())
-                .tokenValiditySeconds(86400 * 7)
-                .userDetailsService(securityService)
-            );
+                .defaultSuccessUrl("/", true)
+                .successHandler(myLoginSuccessHandler())
+                .failureHandler(myLoginFailureHandler())
+        )
+        .logout((logout) -> logout
+            .logoutUrl("/auth-logout-basic")
+            .logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
+            .permitAll()
+        )
+        .rememberMe((rememberMe) -> rememberMe
+            .key("uniqueAndSecret")
+            .tokenRepository(tokenRepository())
+            .tokenValiditySeconds(86400 * 7)
+            .userDetailsService(securityService)
+        );
 
-        return http.build();
+        return http.build(); // SecurityFilterChain 객체를 반환하도록 수정
     }
+
 
     @Bean
     public MyLoginSuccessHandler myLoginSuccessHandler() {
