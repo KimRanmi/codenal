@@ -52,6 +52,12 @@ public class AddressBookController {
 		return addressBookService.getTreeMenu();
 	}
 
+	// TreeMenu(JsTree)
+	@GetMapping("/tree-menu-announce")
+	@ResponseBody
+	public List<TreeMenuDto> getTreeMenuAnnounce() {
+		return addressBookService.getTreeMenuAnnounce();
+	}
 
 
 }

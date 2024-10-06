@@ -18,12 +18,14 @@ import lombok.ToString;
 @Builder
 public class AnnounceReadAuthorityDto {
 
+	private int authority_no;
 	private Announce announce;
 	private Departments departments;
 	private Jobs jobs;
 	
 	public AnnounceReadAuthority toEntity() {
 		return AnnounceReadAuthority.builder()
+				.authorityNo(authority_no)
 				.announce(announce)
 				.departments(departments)
 				.jobs(jobs)
@@ -33,6 +35,7 @@ public class AnnounceReadAuthorityDto {
 	
 	public AnnounceReadAuthorityDto toDto(AnnounceReadAuthority announceReadAuthority) {
 		return AnnounceReadAuthorityDto.builder()
+				.authority_no(announceReadAuthority.getAuthorityNo())
 				.announce(announceReadAuthority.getAnnounce())
 				.departments(announceReadAuthority.getDepartments())
 				.jobs(announceReadAuthority.getJobs())

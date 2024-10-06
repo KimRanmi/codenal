@@ -22,37 +22,161 @@ if (dropzonePreviewNode) {
 
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 라디오 버튼 요소 가져오기
-    const allRadio = document.getElementById('all');
-    const selectRadio = document.getElementById('select');
-    const organizationChart = document.getElementById('organization-chart');
 
-    // 라디오 버튼의 변경 이벤트 리스너 등록
-    allRadio.addEventListener('change', () => {
-        if (allRadio.checked) {
-            organizationChart.style.display = 'none';
+
+document.addEventListener('DOMContentLoaded', () => {
+	// 삭제 버튼에 클릭 이벤트 리스너 추가
+    document.querySelectorAll('.delete-file-btn').forEach(function(button) {
+		const csrfToken = document.getElementById('csrf_token').value;
+        button.addEventListener('click', function() {
+		const fileId = this.getAttribute('data-file-id');  // 버튼에서 fileId를 가져옴
+        console.log(fileId);
+            if (confirm('정말로 이 파일을 삭제하시겠습니까?')) {
+                 fetch('/announce/deleteFile', {
+			        method: 'POST',
+			        headers: {
+						'Content-Type': 'application/json',
+			            'X-CSRF-TOKEN': csrfToken  // CSRF 토큰을 헤더에 추가
+			        },
+			        body: JSON.stringify({ fileId: fileId })  // 파일 ID를 요청 본문에 포함
+			    })
+			    .then(response => {
+			        if (response.ok) {
+			            alert('파일이 삭제되었습니다.');
+			            window.location.reload();  // 페이지를 새로고침
+			        } else {
+			            alert('파일 삭제 중 오류가 발생했습니다.');
+			        }
+			    })
+                .catch(error => {
+                    alert(error.message);
+                });
+            }
+        });
+    });
+    
+    // 읽기 권한 설정 모달 열기
+    const selectRadio = document.getElementById('select');
+
+    selectRadio.addEventListener('click', () => {
+        if (selectRadio.checked) {
+            jQuery(document).ready(function () {
+                const selectArray = [];
+                selectArray.length = 0;
+
+                if ($('#treeMenu').data('jstree')) {
+                    $('#treeMenu').jstree("deselect_all");
+                }
+
+                $.ajax({
+                    url: '/employee/addressBook/tree-menu-announce',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+
+                        const formatDataForJsTree = (nodes) => {
+                            return nodes.map(department => ({
+                                id: department.nodeId,  // 부서 ID
+                                text: department.nodeName,  // 부서명
+                                state: { opened: true },  // 부서 노드를 열어둠
+                                children: department.nodeChildren.map(job => ({
+                                    id: job.nodeId,
+                                    text: job.nodeName,  // 직급명
+                                    jobId: job.jobId,   // 직급 ID
+                                    state: { opened: false },  // 직급은 닫아둠
+                                    icon: 'ri-user-2-fill'  // 아이콘 설정
+                                })),
+                                icon: 'ri-team-fill'  // 부서 아이콘 설정
+                            }));
+                        };
+
+                        const formattedData = formatDataForJsTree(data);
+                        const companyNode = {
+		                    id: 'companyName',
+		                    text: 'withXwork',
+		                    state: { opened: true },
+		                    children: formattedData,
+		                    icon: 'ri-building-fill'
+		                };
+
+
+                        if ($('#treeMenu').data('jstree')) {
+                            $('#treeMenu').jstree("destroy");
+                        }
+
+                        $('#treeMenu').jstree({
+		                    'core': {
+		                        animation: 0,
+		                        check_callback: false,
+		                        data: [companyNode]
+		                    },
+		                    'plugins': ['checkbox'],
+		                    "types": {
+		                        default: { icon: "ri-team-fill" },
+		                        file: { icon: "ri-user-2-fill" }
+		                    }
+                       }).on('select_node.jstree', function(e, data) {
+		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
+		                    selectArray.length = 0; // 배열 초기화
+		
+		                    selectedNodes.forEach(node => {
+		                        if (node.parent !== 'companyName') {
+		                            selectArray.push({ id: node.id, text: node.text });
+		                            console.log("선택 노드 : "+node);
+		                        }
+		                    });
+		                });
+
+						// 모달 표시
+                        const modalElement = document.getElementById('staticBackdrop');
+                        if (modalElement) {
+                            const modal = new bootstrap.Modal(modalElement, {
+                                backdrop: 'static',
+                                keyboard: false 
+                            });
+                            modal.show();
+
+                            $(document).off('click', '#successBtn');
+							$(document).on('click', '#successBtn', function() {
+							    const selectedDeptIds = [];
+							    const selectedJobIds = [];
+							
+							    // 선택된 노드 확인
+							    $('#treeMenu').jstree("get_selected", true).forEach(item => {
+							        console.log("Selected Node:", item);
+							
+							        // 부모 노드가 "companyName"이 아니면, 해당 노드를 직급으로 간주
+							        if (item.parent !== 'companyName') {
+							            selectedJobIds.push(item.original.jobId);  // 직급 ID 저장
+							            if (item.parent) {
+							                // 부모 노드가 있으면 해당 부서 ID를 selectedDeptIds에 추가
+							                selectedDeptIds.push(item.parent);
+							            }
+							        } else {
+							            // 부모 노드가 "companyName"이면 부서로 간주
+							            selectedDeptIds.push(item.id);
+							        }
+							    });
+							
+							    const selectedDeptIdsString = selectedDeptIds.join(',');
+							    const selectedJobIdsString = selectedJobIds.join(',');
+							
+							    // hidden 필드에 선택된 값 설정 (부서 ID와 직급 ID를 각각 저장)
+							    document.getElementById('selectedDeptIds').value = selectedDeptIdsString;
+							    document.getElementById('selectedJobIds').value = selectedJobIdsString;
+							
+							    // 모달 닫기
+							    modal.hide();
+
+                            });
+                        } else {
+                            console.error("모달 요소를 찾을 수 없습니다.");
+                        }
+                    }
+                });
+            });
         }
     });
-
-selectRadio.addEventListener('change', () => {
-    if (selectRadio.checked) {
-        organizationChart.style.display = 'block';
-        loadOrganizationChart(); // 조직도 불러오기
-    }
-});
-
-// 조직도 불러오는 함수
-function loadOrganizationChart() {
-	// 여기에 조직도를 불러오는 AJAX 요청 또는 다른 로직을 추가
-	// AJAX 요청을 통해 조직도 데이터를 가져와서 organizationChart div에 추가
-
-	// 조직도 HTML을 삽입하는 코드
-	organizationChart.innerHTML = `
-	<h3>조직도</h3>
-	<p>부서 및 직급을 선택하세요.</p>
-	`;
-}
 });
 
 
@@ -60,14 +184,37 @@ function loadOrganizationChart() {
 document.addEventListener('DOMContentLoaded', () => {
 
 const form = document.getElementById("announceUpdateForm");
+const announceWriter = document.getElementById('announce_writer');
+const announceTitle = document.getElementById('announce_title');
+const allRadio = document.getElementById('all');
+const selectRadio = document.getElementById('select');
+const selectedDeptIds = document.getElementById('selectedDeptIds');
+const selectedJobIds = document.getElementById('selectedJobIds');
 
 form.addEventListener('submit', (e) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
     // 유효성 검사
-	if (editor.getMarkdown().length < 1) {
-	    alert('에디터 내용을 입력해 주세요.');
-	    throw new Error('내용이 없습니다!');
-	}
+    let isValid = true;
+    if(announceTitle.value.length < 1){
+		alert('게시글 제목을 입력하세요.');
+		announceTitle.focus(announceTitle);
+		isValid = false;
+	} else if(editor.getMarkdown().length < 1) {
+	    alert('게시글 내용을 입력하세요.');
+	    editor.focus(editor);
+	    isValid = false;
+	} else if (!allRadio.checked && !selectRadio.checked) { 	// 라디오 버튼 선택 여부 확인
+        alert('읽기 권한을 선택하세요.');
+        isValid = false;
+    } else if (selectRadio.checked) {
+        if (selectedDeptIds.value === '' && selectedJobIds.value === '') {    // '권한 직접 설정'을 선택한 경우 부서 또는 직급이 선택되었는지 확인
+            alert('부서 또는 직급을 선택하세요.');
+            isValid = false;
+        }
+    } else if (!isValid) {      // 유효성 검사를 통과하지 못한 경우 제출 방지
+        e.preventDefault();
+    }
+    
 	
     // FormData 객체를 생성하여 폼 데이터를 가져옴
     const formData = new FormData(form);
@@ -103,3 +250,6 @@ form.addEventListener('submit', (e) => {
      .catch(error => console.error('Error:', error));
 });
 });
+
+
+

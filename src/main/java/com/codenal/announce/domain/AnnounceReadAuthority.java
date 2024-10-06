@@ -3,7 +3,10 @@ package com.codenal.announce.domain;
 import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.Jobs;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,9 +29,10 @@ import lombok.Setter;
 public class AnnounceReadAuthority {
 	
 	@Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="authority_no")
+    private int authorityNo;
 	
-	@MapsId
 	@ManyToOne
 	@JoinColumn(name="announce_no")
 	private Announce announce;
