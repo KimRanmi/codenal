@@ -236,7 +236,7 @@ public class AdminService {
 			e.setEmpEnd(empEnd);  // 퇴사일 설정
 			e.setEmpStatus("N");  // empStatus 'N'으로 변경
 
-			adminRepository.save(e);	// 저장
+			adminRepository.save(e);	
 			return true;
 		} catch (Exception e) {
 
