@@ -247,150 +247,16 @@
 
 
       <!-- 모달 관련 js -->
-      <script>
-      // 로그인 한 사람 은 트리구조에서 지우기 
-         const loginId = document.getElementById('login_id').value;
-          const selectArray = []; // 선택된 이름을 저장할 배열
-          let buttonId = '';
-          
-          $('#button_modal1, #button_modal2,#references').click(function() {
-              console.log('모달이 열렸습니다.'); // 모달 열림 로그
-              buttonId = this.id;
-              console.log(buttonId);
-              
-              // 선택 배열 초기화
-              selectArray.length = 0; 
-      
-              $.ajax({
-                  url: '/approval/modal', // 데이터를 가져올 URL
-                  method: 'GET',
-                  dataType: 'json',
-                  success: function(data) {
-                      console.log(data); // 데이터 로그
-      
-                      // jsTree용 데이터 형식 변환. 지금 로그인한 사람 정보는 제외
-                      const formatDataForJsTree = (nodes) => {
-                          return nodes
-                          .filter(node => node.nodeId.toString() !== loginId)
-                          .map(node => ({
-                              id: node.nodeId,
-                              text: node.nodeName,
-                              state: { opened: true },
-                              children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
-                              icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-                          }));
-                  
-                      };
-                      const formattedData = formatDataForJsTree(data);
-                      const formattedDataLength = formattedData.length; 
-                      const companyNode = {
-                          id: 'companyName',
-                          text: 'withXwork',
-                          state: { opened: true },
-                          children: formattedData,
-                          icon: 'ri-building-fill'
-                      };
-      
-                      // 기존 jsTree 인스턴스 제거
-                      if ($('#treeMenu').data('jstree')) {
-                          $('#treeMenu').jstree("destroy");
-                      }
-      
-                      // jsTree 초기화
-                      $('#treeMenu').jstree({
-                          'core': {
-                              animation: 0,
-                              check_callback: false,
-                              data: [companyNode]
-                          },
-                          'plugins': ['checkbox'],
-                          types: {
-                              default: { icon: "ri-team-fill" },
-                              file: { icon: "ri-user-2-fill" }
-                          },
-                          selectbox: {
-                              multiple: true, // 여러 개 선택 가능
-                              select: true    // 선택 후 자동으로 선택
-                          }
-                      }).on('select_node.jstree', function(e, data) {
-                          const selectedNodes = $('#treeMenu').jstree("get_selected", true);
-                          selectArray.length = 0; // 배열 초기화
-      
-                          selectedNodes.forEach(node => {
-                              if (node.parent !== 'companyName') {
-                                  selectArray.push({id: node.id, text: node.text}); // 선택된 자식 노드의 이름 추가, 데이터 베이스에 보낼 id 설정
-                                  console.log(node);
-                              }
-                          });
-                      });
-      
-                      // 모달 표시
-                      const modalElement = document.getElementById('staticBackdrop');
-                      if (modalElement) {
-                          const modal = new bootstrap.Modal(modalElement, {
-                              backdrop: 'static',
-                              keyboard: false // ESC로 닫기 방지
-                          });
-                          modal.show(); // 모달 표시
-                          
-                          $(document).on('click', '#successBtn', function() {
-                              if (buttonId === "references") {
-                                  const selectedNames = selectArray.map(item => item.text).join(' '); // 선택된 이름을 결합
-                                  const selectNameElement = document.getElementById('references'); 
+     <script src="/assets/js/pages/project-create.init.js"></script>
 
-                                  selectNameElement.value = selectedNames; // 결합된 문자열 설정
-                                  selectNameElement.setAttribute("data-id", selectArray.map(item => item.id).join(' '));  // json 데이터로 보낼 때 쓸 data-id 값도 넣어주기
-
-                              } else {
-                                  const selectNameElements = buttonId === "button_modal1" 
-                                      ? document.querySelectorAll('.selectedName') 
-                                      : document.querySelectorAll('.selectedName2');
-
-                                  const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
-
-                                  for (let index = 0; index < length; index++) {
-                                      if (selectArray[index]) {
-                                          selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
-                                          selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
-                                      } else {
-                                          selectNameElements[index].textContent = ''; // 비워두기
-                                          selectNameElements[index].removeAttribute('data-name'); // data-name 제거
-                                      }
-                                  }
-                              }
-                              modal.hide(); // 모달 닫기
-                          });
-      
-                       // 초기화 버튼 이벤트 -> 이건 나중에 수정
-                          $(document).on('click', '#resetBtn', function() {
-                              const selectNameElements = buttonId === "button_modal1" 
-                                  ? document.querySelectorAll('.selectedName') 
-                                  : document.querySelectorAll('.selectedName2');
-
-                              selectNameElements.forEach((element) => {
-                                  if (element) { // 요소가 존재하는지 확인
-                                      element.innerHTML = ''; // 비워두기
-                                  } else {
-                                      console.warn("해당 요소가 존재하지 않습니다."); // 요소가 없을 때 경고 로그
-                                  }
-                              });
-                              selectArray.length = 0; // 배열 초기화
-                          });
-                      } else {
-                          console.error("모달 요소를 찾을 수 없습니다.");
-                      }
-                  }
-              });
-          });
-      </script>
 
       <script>
          // 기존 데이터 불러오면서 토스트 api 설정.
-         const content = document.getElementById('contentDiv');
+         const contentDiv = document.getElementById('contentDiv');
          const contentEditor = new toastui.Editor({
                 el: document.querySelector('#approval_edit'),
                 height: '400px',
-                initialValue: content.textContent,
+                initialValue: contentDiv.textContent,
                 initialEditType: 'wysiwyg',
                 previewStyle: 'vertical',
                 hideModeSwitch: true
@@ -421,6 +287,7 @@
 
       <!-- 수정  -->
       <script>
+      document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('approvalForm');
             form.addEventListener('submit',(e) =>{
             e.preventDefault();
@@ -494,6 +361,7 @@
                }
             })
          });   
+      });
       </script>
 
       <!-- 삭제 -->

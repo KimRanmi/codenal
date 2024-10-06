@@ -401,6 +401,9 @@ fetchEventList().then(function(data) {
 		}
 		
 	}
-});
+})
+
+
+
 
 

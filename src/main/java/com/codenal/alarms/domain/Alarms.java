@@ -40,7 +40,7 @@ public class Alarms implements Serializable {
 	private Long alarmNo;  // 알림 번호 
 
 	@ManyToOne
-	@JoinColumn(name = "emp_id", referencedColumnName = "emp_id")
+	@JoinColumn(name = "emp_id")
 	private Employee employee;  // Employee와 조인
 
 	@Column(name = "alarm_title")

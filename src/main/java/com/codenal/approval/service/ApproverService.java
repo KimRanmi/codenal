@@ -1,10 +1,14 @@
 package com.codenal.approval.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+
+import com.codenal.alarms.domain.Alarms;
+import com.codenal.alarms.repository.AlarmsRepository;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveManageRepository;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
@@ -30,12 +34,14 @@ public class ApproverService {
 	private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
 	private final AnnualLeaveManageRepository annualLeaveManageRepository;
 	private final NotificationWebSocketHandler notificationWebSocketHandler;
+	private final AlarmsRepository alarmsRepository;
 
 	public ApproverService(ApproverRepository approverRepository, ApprovalRepository approvalRepository,
 			EmployeeRepository employeeRepository, ReferrerRepository referrerRepository,
 			AnnualLeaveUsageRepository annualLeaveUsageRepository,
 			AnnualLeaveManageRepository annualLeaveManageRepository,
-			NotificationWebSocketHandler notificationWebSocketHandler) {
+			NotificationWebSocketHandler notificationWebSocketHandler,
+			AlarmsRepository alarmsRepository) {
 		this.approverRepository = approverRepository;
 		this.approvalRepository = approvalRepository;
 		this.employeeRepository = employeeRepository;
@@ -43,6 +49,7 @@ public class ApproverService {
 		this.annualLeaveUsageRepository = annualLeaveUsageRepository;
 		this.annualLeaveManageRepository = annualLeaveManageRepository;
 		this.notificationWebSocketHandler = notificationWebSocketHandler;
+		this.alarmsRepository = alarmsRepository;
 	}
 
 	// 결재자, 합의자 등록 (상태 수정)
@@ -65,7 +72,8 @@ public class ApproverService {
 				approverRepository.save(approvers);
 			}
 			approverRepository.firstUpdateStatus(firstId, createdApproval.getApprovalNo());
-
+			
+			
 			// 결재자 등록
 			for (int i = 0; i < approver.size(); i++) {
 				Long id = approver.get(i);
@@ -75,7 +83,11 @@ public class ApproverService {
 
 				approverRepository.save(approvers);
 			}
-
+			// 결재자 메소드로 이동
+			Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(createdApproval.getApprovalNo(),firstId);
+			Map<String,Object> map = new HashMap<>();
+			map.put("approver", aor);
+			notification(map,"approver");
 		} else { // 합의자가 없을경우 결재자를 우선순위 1로 두기
 			Long firstId = approver.get(0);
 			for (int i = 0; i < approver.size(); i++) {
@@ -87,7 +99,12 @@ public class ApproverService {
 				approverRepository.save(approvers);
 			}
 			approverRepository.firstUpdateStatus(firstId, createdApproval.getApprovalNo());
-			// 첫 번째 결재자에게 알림 전송
+			
+			Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(createdApproval.getApprovalNo(),firstId);
+			Map<String,Object> map = new HashMap<>();
+			map.put("approver", aor);
+			notification(map,"approver");
+			
 		}
 
 	}
@@ -104,6 +121,10 @@ public class ApproverService {
 		for (Approver apv : approverList) {
 			approverRepository.delete(apv);
 		}
+		
+		// 기존 알림 지우기
+		Alarms alarm = alarmsRepository.findByAlarmReferenceNo(updateApproval.getApprovalNo());
+		alarmsRepository.delete(alarm);
 
 		// 합의자 등록 (합의자는 없을 수도 있음)
 		if (!agree.isEmpty()) {
@@ -117,6 +138,11 @@ public class ApproverService {
 				approverRepository.save(approvers);
 			}
 			approverRepository.firstUpdateStatus(firstId, updateApproval.getApprovalNo());
+			
+			Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(updateApproval.getApprovalNo(),firstId);
+			Map<String,Object> map = new HashMap<>();
+			map.put("approver", approver);
+			notification(map,"updateApprover");
 			
 			// 결재자 등록
 			for (int i = 0; i < approver.size(); i++) {
@@ -137,9 +163,15 @@ public class ApproverService {
 				Approver approvers = Approver.builder().approval(updateApproval).approverPriority(agree.size() + i + 1)
 						.approverType("결재자").employee(emp).build();
 
-				approverRepository.save(approvers);
+				approverRepository.save(approvers);	
+				
 			}
 			approverRepository.firstUpdateStatus(firstId, updateApproval.getApprovalNo());
+			
+			Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(updateApproval.getApprovalNo(),firstId);
+			Map<String,Object> map = new HashMap<>();
+			map.put("approver", aor);
+			notification(map,"approver");
 			
 		}
 
@@ -190,28 +222,47 @@ public class ApproverService {
 
 		// 결재자 카운트
 		Long approverCount = approverRepository.countApprover(no);
+		
+		System.out.println("카운트 : "+approverCount);
+		System.out.println("우선순위 : "+currentPriority);
 
 		// 전자결재 상태 변경 (첫 번째 결재자일 경우)
 		if (currentPriority == 1) {
 			approvalRepository.updateStatus(status, no);
 		}
-
+		
 		// 결재자 상태 변경
 		app = approverRepository.updateStatus(approverStatus, ldt, no, loginId);
-
-		// 다음 결재자 상태 변경
-		approverRepository.updateNextEmpIdStatus(no, currentPriority + 1);
+		
+		if(currentPriority < approverCount) {
+			// 다음 결재자 상태 변경
+			approverRepository.updateNextEmpIdStatus(no, currentPriority + 1);
+			
+			Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(no,loginId);
+			Map<String,Object> map = new HashMap<>();
+			map.put("approver", aor);
+			notification(map,"approver");
+						
+		}
 
 		// 마지막 결재자인 경우 전자결재 완료 처리
 		if (currentPriority == approverCount) {
 			
-			// 휴가신청서인 경우 ..  이건 내일 다시 물어보기 !
+			// 휴가신청서인 경우 .. 
 			AnnualLeaveUsage alu = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
 			if(alu != null) {
 				int result = annualLeaveManageRepository.updateDay(alu.getEmployee().getEmpId(),alu.getTotalDay());
-			}
-			approvalRepository.updateStatus(2, no);
-			
+		}
+					
+		approvalRepository.updateStatus(2, no);
+		
+		// 결재 데이터 조회
+		Approval approval = approvalRepository.findByApprovalNo(no);
+		System.out.println("approval번호 : "+approval.getApprovalNo());
+		Map<String,Object> map = new HashMap<>();
+		map.put("approval", approval);
+		notification(map,"approval");
+	
 		}
 
 		return app;
@@ -235,7 +286,15 @@ public class ApproverService {
 				
 				approvalRepository.updateStatus(3, no);
 			}
-
+				
+			approvalRepository.updateStatus(2, no);
+			
+			// 결재 데이터 조회
+			Approval approval = approvalRepository.findByApprovalNo(no);
+			Map<String,Object> map = new HashMap<>();
+			map.put("approval", approval);
+			notification(map,"reject");
+			
 			return app;
 		}
 		
@@ -253,4 +312,13 @@ public class ApproverService {
 			return approverRepository.findByEmployeeEmpIdAndApprovalStatusCount(empId,i);
 		}
 
+		
+	// 알림 전송 핸들러로 보낼 변수
+	private void notification(Map<String,Object> map,String type) {
+	    try {
+	        notificationWebSocketHandler.sendApprovalNotification(map,type);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 }
