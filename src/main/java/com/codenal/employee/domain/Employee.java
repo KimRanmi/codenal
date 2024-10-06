@@ -1,11 +1,11 @@
 package com.codenal.employee.domain;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
 import com.codenal.admin.domain.Departments;
 import com.codenal.admin.domain.Jobs;
+import com.codenal.alarms.domain.Alarms;
 import com.codenal.announce.domain.Announce;
 import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveUsage;
@@ -107,4 +107,7 @@ public class Employee {
 
 	@OneToMany(mappedBy = "employee")
 	private List<ChatParticipants> participants;
+	
+	@OneToMany(mappedBy = "employee")
+	private List<Alarms> alarm; 
 }

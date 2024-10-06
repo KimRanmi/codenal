@@ -76,7 +76,7 @@ public class ApprovalService {
    }
 
    // 상신리스트 => 조회 0-> 대기 , 1-> 진행중,  2->완료 , 3-> 반려 , 4->회수 
-   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id) {
+   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id, String title) {
 	  
 	  Employee emp = employeeRepository.findByEmpId(id);
 	  
@@ -85,7 +85,7 @@ public class ApprovalService {
 	  
 	  System.out.println(approvalCount);
      
-      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),pageable);
+      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),title,pageable);
 	  
 	  System.out.println(approvalList.getTotalElements());
       
@@ -103,7 +103,6 @@ public class ApprovalService {
          map.put("num", num);
          responseList.add(map);
          
-         System.out.println("나와라 : "+approver.getEmployee().getEmpName());
       }
       
       
@@ -111,13 +110,13 @@ public class ApprovalService {
    }
    
    // 수신리스트 조회
-   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,int num2,Long id) {
+   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,String title,int num2,Long id) {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 		  
 		  System.out.println("num2 : "+num2);
-	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),pageable);
+	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),title,pageable);
 	      
 	      System.out.println("토탈 : "+approvalList.getTotalElements());
 	      
@@ -140,12 +139,12 @@ public class ApprovalService {
 	   }
    
    // 수신참조 리스트 조회
-   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,Long id) {
+   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,String title,Long id) {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 
-	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),pageable);
+	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),title,pageable);
 	      
 	      System.out.println(referrerList);
 	      
