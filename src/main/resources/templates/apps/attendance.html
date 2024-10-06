@@ -111,27 +111,24 @@
                         </div>
 
 					<!-- 날짜 검색 폼 -->
-					<form th:action="@{/apps-attendance}" method="get"
-						class="search-form">
-						<div
-							class="card-body border border-dashed border-end-0 border-start-0">
-							<div class="d-flex align-items-center">
-								<div>
-									<input type="date" class="form-control" name="startDate"
-										placeholder="시작 날짜 선택" th:value="${startDate}" />
-								</div>
-								<div class="date-separator">~</div>
-								<!-- 날짜 사이에 ~ 표시 -->
-								<div>
-									<input type="date" class="form-control" name="endDate"
-										placeholder="종료 날짜 선택" th:value="${endDate}" />
-								</div>
-								<div>
-									<button type="submit" class="btn btn-primary">검색</button>
-								</div>
-							</div>
-						</div>
-					</form>
+					<form th:action="@{/apps-attendance}" method="get" class="search-form">
+    <div class="card-body border border-dashed border-end-0 border-start-0">
+        <div class="d-flex align-items-center">
+            <div>
+                <!-- 시작 날짜 입력 필드: 검색 후에도 필드가 비어있도록 설정 -->
+                <input type="date" class="form-control" name="startDate" placeholder="시작 날짜 선택" th:value="${startDate}" />
+            </div>
+            <div class="date-separator">~</div>
+            <div>
+                <!-- 종료 날짜 입력 필드: 검색 후에도 필드가 비어있도록 설정 -->
+                <input type="date" class="form-control" name="endDate" placeholder="종료 날짜 선택" th:value="${endDate}" />
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">검색</button>
+            </div>
+        </div>
+    </div>
+</form>
 					<!-- 출퇴근 기록 목록 -->
 					<div class="mb-4"></div>
 					<div class="card-body pt-0">
@@ -263,6 +260,12 @@
 
             // 페이지 로드 시 초기 연도와 월 설정
             // 이미 서버에서 설정된 currentMonth가 있으므로 별도의 초기화는 필요 없습니다.
+
+            // 새로고침 시 검색 파라미터 제거
+            if (window.location.search.includes('startDate') || window.location.search.includes('endDate')) {
+                const urlWithoutParams = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, urlWithoutParams);
+            }
         });
         </script>
 	</div>

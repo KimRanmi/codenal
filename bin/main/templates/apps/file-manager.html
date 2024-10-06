@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout}" data-sidebar="light">
@@ -12,10 +11,13 @@
 <meta name="_csrf" th:content="${_csrf.token}">
 <meta name="_csrf_header" th:content="${_csrf.headerName}">
 <!-- jsTree 테마 CSS 포함 -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
 
@@ -24,12 +26,7 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet" />
 
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- jQuery 포함 (이미 있다면 생략) -->
-
-<!-- jsTree 포함 -->
 
 
 <link rel="stylesheet"
@@ -38,9 +35,11 @@
 	crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <!-- 폰트 -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
 <style>
-			* {font-family: "Noto Sans KR", sans-serif !important;} 
+* {
+	font-family: "Noto Sans KR", sans-serif
+}
+
 .jstree-icon.ri-building-fill { /* 회사 아이콘 */
 	color: #3e4a6e;
 	font-size: 24px;
@@ -101,7 +100,7 @@
 #shared-docs-tabs a.active {
 	border-color: #007bff; /* 활성화된 탭에 하이라이트 */
 	font-weight: bold;
-}	
+}
 
 #shared-docs-tabs a:hover {
 	color: #0056b3; /* 탭 hover 시 색상 */
@@ -207,8 +206,10 @@
 							<button id="download-btn" type="button"
 								class="btn btn-primary btn-sm-1"
 								onclick="downloadSelectedFiles()">다운로드</button>
-							<button type="button" id="share-btn" class="btn btn-primary" onclick="openShareModal()">파일 공유 설정</button>
-							<button type="button" id="delete-btn" class="btn btn-primary btn-sm-1" onclick="deleteSelectedFiles()">삭제</button>
+							<button type="button" id="share-btn" class="btn btn-primary"
+								onclick="openShareModal()">파일 공유 설정</button>
+							<button type="button" id="delete-btn"
+								class="btn btn-primary btn-sm-1" onclick="deleteSelectedFiles()">삭제</button>
 
 							<button type="button" id="file-register-btn"
 								class="btn btn-primary" onclick="openFileDialog()">파일
@@ -259,7 +260,7 @@
 								<tr>
 									<th style="width: 5%; text-align: center;"><input
 										type="checkbox" id="select-all-shared-by-me"
-										onclick="toggleSelectAll(this, 'shared-by-me-checkbox')"
+										onclick="toggleSelectAll(this, 'shared-checkbox')"
 										style="width: 16px; height: 16px; margin: 0; padding: 0;">
 									</th>
 									<th scope="col">파일명</th>
@@ -283,7 +284,7 @@
 								<tr>
 									<th style="width: 5%; text-align: center;"><input
 										type="checkbox" id="select-all-shared-with-me"
-										onclick="toggleSelectAll(this, 'shared-with-me-checkbox')"
+										onclick="toggleSelectAll(this, 'shared-checkbox')"
 										style="width: 16px; height: 16px; margin: 0; padding: 0;">
 									</th>
 									<th scope="col">파일명</th>
@@ -378,15 +379,15 @@
 					</div>
 				</div>
 			</div>
-			<th:block layout:fragment="pagejs">
-				<!-- 파일 공유 설정 모달 -->
+		</div>
+		<th:block layout:fragment="pagejs">
+			<!-- 파일 공유 설정 모달 -->
 
-				<!-- apexcharts -->
-				<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
-				<script src="/assets/js/pages/file-manager.init.js"></script>
+			<!-- apexcharts -->
+			<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+			<script src="/assets/js/pages/file-manager.init.js"></script>
 
 
-			</th:block>
 			<script>
 			        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 			        
@@ -511,12 +512,15 @@
 			    return null;
 			}
 			
-			        function searchFiles() {
-			            const keyword = document.getElementById('searchKeyword').value.trim();  // 검색어에서 공백 제거
-			            if (!keyword) {  // 검색어가 비어 있을 때
-			                alert('검색어를 입력하세요.');  // 경고 메시지 출력
-			                return;  // 검색 요청 중단
-			            }
+			     function searchFiles() {
+			    	    const keyword = document.getElementById('searchKeyword').value.trim();
+			    	    if (!keyword) {
+			    	        Swal.fire({
+			    	            icon: 'warning',
+			    	            title: '검색어를 입력하세요.'
+			    	        });
+			    	        return;
+			    	    }
 			
 			            const activeTableId = getActiveTableId();  // 활성화된 테이블 확인
 			            let fetchUrl = `/api/documents/search?keyword=${keyword}`;  // 키워드로 검색
@@ -591,7 +595,10 @@
 			           });
 			
 			           if (selectedFiles.length === 0) {
-			               alert('삭제할 파일을 선택하세요.');
+			               Swal.fire({
+			                   icon: 'warning',
+			                   title: '삭제할 파일을 선택하세요.'
+			               });
 			               return;
 			           }
 			
@@ -763,7 +770,7 @@
 				                                <td>${document.docName}</td>
 				                                <td>${formatFileSize(document.docSize)}</td>
 				                                <td>${new Date(document.docCreatedDate).toLocaleDateString()}</td>
-				                                <td>${document.docSharer}</td>
+				                                <td>${document.uploaderName}</td>
 				                                <td class="text-center">
 				                                <i class="far fa-star favorite-icon" data-id="${document.docNo}" onclick="toggleFavorite(${document.docNo}, this)"></i>
 				                            </td>
@@ -882,7 +889,10 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			            });
 			
 			            if (selectedFiles.length === 0) {
-			                alert('복원할 파일을 선택하세요.');
+			                Swal.fire({
+			                    icon: 'warning',
+			                    title: '복원할 파일을 선택하세요.'
+			                });
 			                return;
 			            }
 			
@@ -963,7 +973,10 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			            });
 
 			            if (selectedFiles.length === 0) {
-			                alert('다운로드할 파일을 선택하세요.');
+			                Swal.fire({
+			                    icon: 'warning',
+			                    title: '다운로드할 파일을 선택하세요.'
+			                });
 			                return;
 			            }
 
@@ -1123,7 +1136,10 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			function openShareModal() {
     const selectedFiles = getSelectedFiles();
     if (selectedFiles.length === 0) {
-        alert('공유할 파일을 선택하세요.');
+        Swal.fire({
+            icon: 'warning',
+            title: '공유할 파일을 선택하세요.'
+        });
         return;
     }
     
@@ -1203,7 +1219,10 @@ function loadFavoriteFiles(page = 0, size = 10) {
 			            const selectedEmployees = getSelectedEmployees();
 
 			            if (selectedEmployees.length === 0) {
-			                alert('공유할 사원을 선택하세요.');
+			                Swal.fire({
+			                    icon: 'warning',
+			                    title: '공유할 사원을 선택하세요.'
+			                });
 			                return;
 			            }
 
@@ -1232,32 +1251,35 @@ function loadFavoriteFiles(page = 0, size = 10) {
 	
 
 			     // 선택된 파일 ID 가져오기
-			        function getSelectedFiles() {
-			            const activeTableId = getActiveTableId();  // 현재 활성화된 테이블 확인
-			            let className = 'file-checkbox';  // 기본 체크박스 클래스
+			       function getSelectedFiles() {
+    const activeTableId = getActiveTableId();  // 현재 활성화된 테이블 확인
+    let className = 'file-checkbox';  // 기본 체크박스 클래스
 
-			            // 활성화된 테이블에 따라 체크박스 클래스 설정
-			            if (activeTableId === 'shared-by-me-files-table') {
-			                className = 'shared-checkbox';
-			            } else if (activeTableId === 'shared-with-me-files-table') {
-			                className = 'shared-with-me-checkbox';
-			            } else if (activeTableId === 'favorite-files-table') {
-			                className = 'favorite-checkbox';
-			            } else if (activeTableId === 'trash-files-table') {
-			                className = 'trash-checkbox';
-			            }
+    // 활성화된 테이블에 따라 체크박스 클래스 설정
+    if (activeTableId === 'shared-by-me-files-table') {
+        className = 'shared-checkbox';  // 공유한 문서 테이블 체크박스
+    } else if (activeTableId === 'shared-with-me-files-table') {
+        className = 'shared-checkbox';  // 공유받은 문서 테이블 체크박스 
+    } else if (activeTableId === 'favorite-files-table') {
+        className = 'favorite-checkbox';  // 즐겨찾기 문서 체크박스
+    } else if (activeTableId === 'trash-files-table') {
+        className = 'trash-checkbox';  // 휴지통 문서 체크박스
+    }
 
-			            // 선택된 파일의 체크박스를 찾아 ID 값 반환
-			            const checkboxes = document.querySelectorAll(`.${className}:checked`);
-			            return Array.from(checkboxes).map(checkbox => parseInt(checkbox.value));
-			        }
+    // 선택된 파일의 체크박스를 찾아 ID 값 반환
+    const checkboxes = document.querySelectorAll(`.${className}:checked`);
+    return Array.from(checkboxes).map(checkbox => parseInt(checkbox.value));
+}
 
 
 			     // 공유자 설정 모달 열기 함수
 			     function openShareSettingModal() {
     const selectedFiles = getSelectedFiles();
     if (selectedFiles.length === 0) {
-        alert('공유자를 설정할 파일을 선택하세요.');
+        Swal.fire({
+            icon: 'warning',
+            title: '공유자를 설정할 파일을 선택하세요.'
+        });
         return;
     }
 
@@ -1350,6 +1372,8 @@ function formatFileSize(bytes) {
 } 
 
 			    </script>
-			</th:block>
+	</div>
+	</th:block>
+
 </body>
 </html>

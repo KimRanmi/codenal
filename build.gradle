@@ -48,3 +48,9 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+//코드 캐시가 많이 쌓여서 사이즈를 늘렸어요
+bootRun {
+    jvmArgs = ["-XX:ReservedCodeCacheSize=512m"]
+} 

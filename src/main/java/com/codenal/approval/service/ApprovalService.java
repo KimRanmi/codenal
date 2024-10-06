@@ -32,6 +32,7 @@ import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.approval.repository.ReferrerRepository;
+import com.codenal.attendance.service.AttendanceService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
@@ -50,6 +51,7 @@ public class ApprovalService {
    private final ApproverRepository approverRepository;
    private final ReferrerRepository referrerRepository;
 
+
    @Autowired
    public ApprovalService(ApprovalRepository approvalRepository, 
          EmployeeRepository employeeRepository,
@@ -59,7 +61,8 @@ public class ApprovalService {
          AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
          ApprovalFileRepository approvalFileRepository,
          ApproverRepository approverRepository,
-         ReferrerRepository referrerRepository) {
+         ReferrerRepository referrerRepository
+) {
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -252,7 +255,7 @@ public class ApprovalService {
                           .annualUsageStartDate((LocalDate)obj.get("시작일자"))
                           .annualUsageEndDate((LocalDate)obj.get("종료일자"))
                           .timePeriod((String)obj.get("반차시간대"))
-                          .totalDay((Double)obj.get("사용일수"))
+                          .totalDay(((Number)obj.get("사용일수")).doubleValue())
                           .build();
                               
          
@@ -488,32 +491,6 @@ public class ApprovalService {
 		   return approvalRepository.findByEmployeeEmpIdAndApprovalStatus(empId,i);
 	   }
 	   
-	   @Transactional
-	   public void approveAnnualLeave(Long approvalNo) {
-	       // 연차 신청서 승인 처리
-	       Approval approval = approvalRepository.findByApprovalNo(approvalNo);
-	       if (approval == null) {
-	           throw new IllegalStateException("존재하지 않는 전자결재 번호입니다.");
-	       }
-
-	       if (approval.getApprovalStatus() != 1) { // 상태가 승인 대기 상태인 경우만 승인
-	           throw new IllegalStateException("이미 처리된 전자결재입니다.");
-	       }
-
-	       approval.setApprovalStatus(2); // 승인 상태로 변경
-	       approvalRepository.save(approval);
-
-	       // 연차 사용 내역 반영
-	       AnnualLeaveUsage annualLeaveUsage = approval.getAnnualLeaveUsage();
-	       if (annualLeaveUsage != null) {
-	           Long empId = approval.getEmployee().getEmpId();
-	           LocalDate startDate = annualLeaveUsage.getAnnualUsageStartDate();
-	           LocalDate endDate = annualLeaveUsage.getAnnualUsageEndDate();
-
-	           // 출퇴근 관리 서비스 호출하여 연차 상태 반영
-	           for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-	               attendanceService.applyAnnualLeave(empId, date);
-	           } //
-	       }
-	   }
+	 
+	   
 }

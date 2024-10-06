@@ -31,4 +31,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     long countByEmpIdAndAttendStatus(Long empId, String status);
     
     long countByEmpIdAndAttendStatusAndWorkDateBetween(Long empId, String attendStatus, LocalDate startDate, LocalDate endDate);
+    
+    
 }

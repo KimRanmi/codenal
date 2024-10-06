@@ -404,8 +404,7 @@ public class ApprovalApiController {
 	        resultMap.put("res_code", "200");
 	        resultMap.put("res_msg", "승인되었습니다.");
 
-	        // 연차 신청서 승인 시 출퇴근 관리와 연동
-	        approvalService.approveAnnualLeave(approvalNo);
+	       
 	    }
 
 	    return resultMap;
