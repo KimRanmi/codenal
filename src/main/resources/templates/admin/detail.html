@@ -384,6 +384,14 @@
 																	성공적으로 퇴사 처리했습니다.
 																</h5>
 															</div>
+															<div class="d-flex align-items-start gap-3 mt-4">
+															<button type="submit"
+																class="btn btn-success btn-label right ms-auto nexttab nexttab"
+																data-nexttab="pills-success-tab" 
+																th:onclick="|location.href='@{/admin/detail/{empId}(empId=${employeeDetail.empId})}'|">
+																<i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>이동
+															</button>
+															</div>
 														</div>
 													</div>
 													<!-- end tab pane -->
@@ -570,9 +578,9 @@
 	    document.getElementById('empEndButton').addEventListener('click', function(event) {
 	        event.preventDefault();
 
-	        var adminPw = document.getElementById('empEndInput').value; // 관리자 비밀번호 입력
-	        var empId = document.getElementById('employeeIdHiddenInput').value; // 직원 ID
-	        var empEnd = document.getElementById('detail-emp-end').value; // 퇴사일
+	        var adminPw = document.getElementById('empEndInput').value; 
+	        var empId = document.getElementById('employeeIdHiddenInput').value; 
+	        var empEnd = document.getElementById('detail-emp-end').value; 
 
 	        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 	        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
@@ -619,7 +627,7 @@
 	                    document.querySelector('.nav-item.col-lg-1 a[href="#empHire"]').parentElement.style.display = 'none';
 
 	                } else {
-	                    alert('퇴사 처리 중 오류가 발생했습니다: ' + data.message);
+	                    alert(data.message);
 	                }
 	            })
 	            .catch(error => {
@@ -632,6 +640,16 @@
 	    });
 	});
 
+	document.addEventListener('DOMContentLoaded', function() {
+	    document.querySelector('.nexttab[data-redirect]').addEventListener('click', function(event) {
+	        event.preventDefault();
+	        
+	        const redirectUrl = this.getAttribute('data-redirect');
+	        if (redirectUrl) {
+	            window.location.href = redirectUrl;
+	        }
+	    });
+	});
 </script>
 
 	</th:block>
