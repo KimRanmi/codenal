@@ -434,7 +434,14 @@ select, input[type=date], input[type=text], #totalDay {
                      return;
                  }
                
-               if(confirm('승인하시겠습니까?')){
+             Swal.fire({
+                 title: '승인하시겠습니까?',
+                 icon: 'warning',
+                 showCancelButton: true,
+                 confirmButtonText: '네',
+                 cancelButtonText: '아니요'
+             }).then((result) => {
+                 if (result.isConfirmed) {
                fetch('/approver/consent' ,{
                   method: 'POST',
                        headers: {
@@ -463,7 +470,8 @@ select, input[type=date], input[type=text], #totalDay {
                      }
                  });
              }
-         }); 
+         });
+     });
    </script>
 
       <!-- 반려로 이동 -->
@@ -473,8 +481,14 @@ select, input[type=date], input[type=text], #totalDay {
       const csrfToken = document.getElementById('csrf_token').value;
       const loginId = document.getElementById("login_id").value;
       
-         if(confirm('반려하시겠습니까?')){
-            
+      Swal.fire({
+    	    title: '반려하시겠습니까?',
+    	    icon: 'warning',
+    	    showCancelButton: true,
+    	    confirmButtonText: '네',
+    	    cancelButtonText: '아니요'
+    	}).then((result) => {
+    	    if (result.isConfirmed) {
             $('#myModal').modal('show');
             
             $(document).on('click','#success', function(){
@@ -509,8 +523,9 @@ select, input[type=date], input[type=text], #totalDay {
                    });
                }
            });
-         })      
-       }
+         })
+    	}
+      })
    }); 
 </script>
 <script>
