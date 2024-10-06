@@ -1,324 +1,519 @@
 package com.codenal.approval.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.codenal.alarms.domain.Alarms;
-import com.codenal.alarms.repository.AlarmsRepository;
 import com.codenal.annual.domain.AnnualLeaveUsage;
-import com.codenal.annual.repository.AnnualLeaveManageRepository;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.ApprovalBaseFormType;
+import com.codenal.approval.domain.ApprovalCategory;
+import com.codenal.approval.domain.ApprovalDto;
+import com.codenal.approval.domain.ApprovalFile;
+import com.codenal.approval.domain.ApprovalForm;
+import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.domain.Approver;
 import com.codenal.approval.domain.Referrer;
+import com.codenal.approval.repository.ApprovalBaseFormTypeRepository;
+import com.codenal.approval.repository.ApprovalCategoryRepository;
+import com.codenal.approval.repository.ApprovalFileRepository;
+import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.approval.repository.ReferrerRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
-import com.codenal.websocket.NotificationWebSocketHandler;
 
 import jakarta.transaction.Transactional;
 
 @Service
-public class ApproverService {
-   
-   private final ApproverRepository approverRepository;
+public class ApprovalService {
+
    private final ApprovalRepository approvalRepository;
    private final EmployeeRepository employeeRepository;
-   private final ReferrerRepository referrerRepository;
+   private final ApprovalCategoryRepository approvalCategoryRepository;
+   private final ApprovalFormRepository approvalFormRepository;
+   private final ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository;
    private final AnnualLeaveUsageRepository annualLeaveUsageRepository;
-   private final AnnualLeaveManageRepository annualLeaveManageRepository;
-   private final NotificationWebSocketHandler notificationWebSocketHandler;
-   private final AlarmsRepository alarmsRepository;
+   private final ApprovalFileRepository approvalFileRepository;
+   private final ApproverRepository approverRepository;
+   private final ReferrerRepository referrerRepository;
 
-   public ApproverService(ApproverRepository approverRepository, ApprovalRepository approvalRepository,
-         EmployeeRepository employeeRepository, ReferrerRepository referrerRepository,
-         AnnualLeaveUsageRepository annualLeaveUsageRepository,
-         AnnualLeaveManageRepository annualLeaveManageRepository,
-         NotificationWebSocketHandler notificationWebSocketHandler,
-         AlarmsRepository alarmsRepository) {
-      this.approverRepository = approverRepository;
+   @Autowired
+   public ApprovalService(ApprovalRepository approvalRepository, 
+         EmployeeRepository employeeRepository,
+         ApprovalCategoryRepository approvalCategoryRepository,
+         ApprovalFormRepository approvalFormRepository,
+         ApprovalBaseFormTypeRepository approvalBaseFormTypeRepository,
+         AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
+         ApprovalFileRepository approvalFileRepository,
+         ApproverRepository approverRepository,
+         ReferrerRepository referrerRepository) {
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
+      this.approvalCategoryRepository = approvalCategoryRepository;
+      this.approvalFormRepository = approvalFormRepository;
+      this.approvalBaseFormTypeRepository = approvalBaseFormTypeRepository;
+      this.annualLeaveUsageRepository = annualLeaveUsageRepositroy;
+      this.approvalFileRepository = approvalFileRepository;
+      this.approverRepository = approverRepository;
       this.referrerRepository = referrerRepository;
-      this.annualLeaveUsageRepository = annualLeaveUsageRepository;
-      this.annualLeaveManageRepository = annualLeaveManageRepository;
-      this.notificationWebSocketHandler = notificationWebSocketHandler;
-      this.alarmsRepository = alarmsRepository;
    }
 
-   // 결재자, 합의자 등록 (상태 수정)
-   @Transactional
-   public void createApprover(Map<String, List<Long>> obj, Approval createdApproval) {
-
-      // 합의자, 결재자 담아오기
-      List<Long> agree = (List<Long>) obj.get("합의자");
-      List<Long> approver = (List<Long>) obj.get("결재자");
-
-      // 합의자 등록 (합의자는 없을 수도 있음)
-      if (!agree.isEmpty()) {
-         Long firstId = agree.get(0);
-         for (int i = 0; i < agree.size(); i++) {
-            Long id = agree.get(i);
-            System.out.println(id);
-            Employee emp = employeeRepository.findByEmpId(id);
-            Approver approvers = Approver.builder().approval(createdApproval).approverPriority(i + 1)
-                  .approverType("합의자").employee(emp).build();
-            approverRepository.save(approvers);
-         }
-         approverRepository.firstUpdateStatus(firstId, createdApproval.getApprovalNo());
-         
-         
-         // 결재자 등록
-         for (int i = 0; i < approver.size(); i++) {
-            Long id = approver.get(i);
-            Employee emp = employeeRepository.findByEmpId(id);
-            Approver approvers = Approver.builder().approval(createdApproval).approverPriority(agree.size() + i + 1)
-                  .approverType("결재자").employee(emp).build();
-
-            approverRepository.save(approvers);
-         }
-         // 결재자 메소드로 이동
-         Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(createdApproval.getApprovalNo(),firstId);
-         Map<String,Object> map = new HashMap<>();
-         map.put("approver", aor);
-         notification(map,"approver");
-      } else { // 합의자가 없을경우 결재자를 우선순위 1로 두기
-         Long firstId = approver.get(0);
-         for (int i = 0; i < approver.size(); i++) {
-            Long id = approver.get(i);
-            Employee emp = employeeRepository.findByEmpId(id);
-            Approver approvers = Approver.builder().approval(createdApproval).approverPriority(agree.size() + i + 1)
-                  .approverType("결재자").employee(emp).build();
-
-            approverRepository.save(approvers);
-         }
-         approverRepository.firstUpdateStatus(firstId, createdApproval.getApprovalNo());
-         
-         Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(createdApproval.getApprovalNo(),firstId);
-         Map<String,Object> map = new HashMap<>();
-         map.put("approver", aor);
-         notification(map,"approver");
-         
-      }
-
-   }
-
-   // 합의자 결재자 수정하기
-   @Transactional
-   public void updateApprover(Map<String, List<Long>> obj, Approval updateApproval) {
-      // 합의자, 결재자 담아오기
-      List<Long> agree = (List<Long>) obj.get("합의자");
-      List<Long> approver = (List<Long>) obj.get("결재자");
-
-      // approver 지우기
-      List<Approver> approverList = approverRepository.findByApproval(updateApproval);
-      for (Approver apv : approverList) {
-         approverRepository.delete(apv);
-      }
+   // 상신리스트 => 조회 0-> 대기 , 1-> 진행중,  2->완료 , 3-> 반려 , 4->회수 
+   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id, String title) {
+	  
+	  Employee emp = employeeRepository.findByEmpId(id);
+	  
+	  // 리스트 개수 조회
+	  int approvalCount = approvalRepository.countByEmployee_EmpId(emp.getEmpId());
+	  
+	  System.out.println(approvalCount);
+     
+      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),title,pageable);
+	  
+	  System.out.println(approvalList.getTotalElements());
       
-      // 기존 알림 지우기
-      Alarms alarm = alarmsRepository.findByAlarmReferenceNo(updateApproval.getApprovalNo());
-      alarmsRepository.delete(alarm);
-
-      // 합의자 등록 (합의자는 없을 수도 있음)
-      if (!agree.isEmpty()) {
-         Long firstId = agree.get(0);
-         for (int i = 0; i < agree.size(); i++) {
-            Long id = agree.get(i);
-            System.out.println(id);
-            Employee emp = employeeRepository.findByEmpId(id);
-            Approver approvers = Approver.builder().approval(updateApproval).approverPriority(i + 1)
-                  .approverType("합의자").employee(emp).build();
-            approverRepository.save(approvers);
-         }
-         approverRepository.firstUpdateStatus(firstId, updateApproval.getApprovalNo());
+      List<Map<String, Object>> responseList = new ArrayList<>();
+      for (Object[] objects : approvalList.getContent()) {
+         Approval approval = (Approval) objects[0];
+         ApprovalForm approvalForm = (ApprovalForm) objects[1];
+         Approver approver = (Approver) objects[2];
          
-         Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(updateApproval.getApprovalNo(),firstId);
-         Map<String,Object> map = new HashMap<>();
-         map.put("approver", approver);
-         notification(map,"updateApprover");
-         
-         // 결재자 등록
-         for (int i = 0; i < approver.size(); i++) {
-            Long id = approver.get(i);
-            Employee emp = employeeRepository.findByEmpId(id);
-            Approver approvers = Approver.builder().approval(updateApproval).approverPriority(agree.size() + i + 1)
-                  .approverType("결재자").employee(emp).build();
-
-            approverRepository.save(approvers);
-            
-         }
-
-      } else { // 합의자가 없을경우 결재자를 우선순위 1로 두기
-         Long firstId = approver.get(0);
-         for (int i = 0; i < approver.size(); i++) {
-            Long id = approver.get(i);
-            Employee emp = employeeRepository.findByEmpId(id);
-            Approver approvers = Approver.builder().approval(updateApproval).approverPriority(agree.size() + i + 1)
-                  .approverType("결재자").employee(emp).build();
-
-            approverRepository.save(approvers);   
-            
-         }
-         approverRepository.firstUpdateStatus(firstId, updateApproval.getApprovalNo());
-         
-         Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(updateApproval.getApprovalNo(),firstId);
-         Map<String,Object> map = new HashMap<>();
-         map.put("approver", aor);
-         notification(map,"approver");
-         
-      }
-
-   }
-
-   // 수신참조자 등록
-   public void createReferences(List<Long> references, Approval createdApproval) {
-      if (!references.isEmpty()) {
-         for (int i = 0; i < references.size(); i++) {
-            Long id = references.get(i);
-            Employee emp = employeeRepository.findByEmpId(id);
-            Referrer referrer = Referrer.builder().approval(createdApproval).employee(emp).build();
-
-            System.out.println(referrer);
-            referrerRepository.save(referrer);
-         }
-      }
-   }
-
-   // 수신참조자 수정
-   public void updateReferrer(List<Long> referrers, Approval updateApproval) {
-
-      // 기존 수신참조자 지우기
-      List<Referrer> referrerList = referrerRepository.findByApproval(updateApproval);
-      for (Referrer ref : referrerList) {
-         referrerRepository.delete(ref);
-      }
-
-      // 생성 메서드 호출
-      if (!referrers.isEmpty()) {
-         createReferences(referrers, updateApproval);
-
-      }
-   }
-
-   // 결재자 승인
-   @Transactional
-   public int consentApprover(Long no, Long loginId) {
-      int status = 1;
-      int approverStatus = 2;
-      int app = 0;
-      
-      // 결재 시간
-      LocalDateTime ldt = LocalDateTime.now();
-
-      // 현재 approver 우선순위 상태 확인
-      int currentPriority = approverRepository.findApproverPriority(no, loginId);
-
-      // 결재자 카운트
-      Long approverCount = approverRepository.countApprover(no);
-      
-      System.out.println("카운트 : "+approverCount);
-      System.out.println("우선순위 : "+currentPriority);
-
-      // 전자결재 상태 변경 (첫 번째 결재자일 경우)
-      if (currentPriority == 1) {
-         approvalRepository.updateStatus(status, no);
-      }
-      
-      // 결재자 상태 변경
-      app = approverRepository.updateStatus(approverStatus, ldt, no, loginId);
-      
-      if(currentPriority < approverCount) {
-         // 다음 결재자 상태 변경
-         approverRepository.updateNextEmpIdStatus(no, currentPriority + 1);
-         
-         Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(no,loginId);
-         Map<String,Object> map = new HashMap<>();
-         map.put("approver", aor);
-         notification(map,"approver");
-                  
-      }
-
-      // 마지막 결재자인 경우 전자결재 완료 처리
-      if (currentPriority == approverCount) {
-         
-         // 휴가신청서인 경우 .. 
-         AnnualLeaveUsage alu = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
-         if(alu != null) {
-            int result = annualLeaveManageRepository.updateDay(alu.getEmployee().getEmpId(),alu.getTotalDay());
-      }
-               
-      approvalRepository.updateStatus(2, no);
-      
-      // 결재 데이터 조회
-      Approval approval = approvalRepository.findByApprovalNo(no);
-      System.out.println("approval번호 : "+approval.getApprovalNo());
-      Map<String,Object> map = new HashMap<>();
-      map.put("approval", approval);
-      notification(map,"approval");
-   
-      }
-
-      return app;
-   }
-   
-   // 결재자 반려
-      @Transactional
-      public int rejectApprover(Long no, Long loginId,String rejectText) {
-         int approverStatus = 3;
-         int app = 0;
-
-         // 결재 시간
-         LocalDateTime ldt = LocalDateTime.now();
-
-
-         // 결재자 상태 변경
-         app = approverRepository.updateReject(approverStatus, rejectText,ldt, no, loginId);
-         
-         
-         if(app > 0) {
-            
-            approvalRepository.updateStatus(3, no);
-         }
-            
-         approvalRepository.updateStatus(2, no);
-         
-         // 결재 데이터 조회
-         Approval approval = approvalRepository.findByApprovalNo(no);
-         Map<String,Object> map = new HashMap<>();
+         int num = approval.getApprovalStatus();
+         Map<String, Object> map = new HashMap<>();
          map.put("approval", approval);
-         notification(map,"reject");
+         map.put("formType", approvalForm);
+         map.put("approver",approver);
+         map.put("num", num);
+         responseList.add(map);
          
-         return app;
       }
       
-   // 반려 상태 가져오기
-      public Approver findReject(Long approvalNo){
-         return approverRepository.findByApprovalApprovalNoAndApprovalStatus(approvalNo,3);
-      }
-
       
-      public Approver findByEmployeeEmpIdAndApprovalStatus(int i,Long id){
-         return approverRepository.findByEmployeeEmpIdAndApprovalStatus(id,i);
-      }
-      
-      public int approverCount(Long empId, int i) {
-         return approverRepository.findByEmployeeEmpIdAndApprovalStatusCount(empId,i);
-      }
-
-      
-   // 알림 전송 핸들러로 보낼 변수
-   private void notification(Map<String,Object> map,String type) {
-       try {
-           notificationWebSocketHandler.sendApprovalNotification(map,type);
-       } catch (Exception e) {
-           e.printStackTrace();
-       }
+      return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
    }
+   
+   // 수신리스트 조회
+   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,String title,int num2,Long id) {
+		  
+		  Employee emp = employeeRepository.findByEmpId(id);
+		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
+		  
+		  System.out.println("num2 : "+num2);
+	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),title,pageable);
+	      
+	      System.out.println("토탈 : "+approvalList.getTotalElements());
+	      
+	      List<Map<String, Object>> responseList = new ArrayList<>();
+	      for (Object[] objects : approvalList.getContent()) {
+	         Approval approval = (Approval) objects[0];
+	         ApprovalForm approvalForm = (ApprovalForm) objects[1];
+	         Approver approver = (Approver) objects[2];
+	         int num = approval.getApprovalStatus();
+	         Map<String, Object> map = new HashMap<>();
+	         map.put("approval", approval);
+	         map.put("employee",approval.getEmployee());
+	         map.put("formType", approvalForm);
+	         map.put("approver",approver);
+	         map.put("num", num);
+	         responseList.add(map);
+	         
+	      }
+	      return new PageImpl<>(responseList, pageable, approvalList.getTotalElements());
+	   }
+   
+   // 수신참조 리스트 조회
+   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,String title,Long id) {
+		  
+		  Employee emp = employeeRepository.findByEmpId(id);
+		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
+
+	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),title,pageable);
+	      
+	      System.out.println(referrerList);
+	      
+	      List<Map<String, Object>> responseList = new ArrayList<>();
+	      for (Object[] objects : referrerList.getContent()) {
+	         Approval approval = (Approval) objects[0];
+	         ApprovalForm approvalForm = (ApprovalForm) objects[1];
+	         int num = approval.getApprovalStatus();
+	         
+	         Map<String, Object> map = new HashMap<>();
+	         map.put("approval", approval);
+	         map.put("employee",approval.getEmployee());
+	         map.put("formType", approvalForm);
+	         map.put("num", num);
+	         responseList.add(map);
+	         
+	      }
+	      return new PageImpl<>(responseList, pageable, referrerList.getTotalElements());
+	   }
+   
+   
+   // 상세조회
+   public Map<String, Object> detailApproval(Long approval_no) {
+      List<Object[]> object = approvalRepository.selectByapprovalNo(approval_no);
+      Map<String, Object> result = new HashMap<>();
+      
+      ApprovalFile file = approvalFileRepository.findByApprovalApprovalNo(approval_no);
+      Object[] obj = object.get(0);
+      
+      Approval approval = (Approval) obj[0];
+      Employee employee = (Employee) obj[1];
+      ApprovalBaseFormType baseForm = (ApprovalBaseFormType) obj[2];
+      
+      AnnualLeaveUsage annualLeaveUsage = null;
+      if (obj[3] != null) {
+          annualLeaveUsage = (AnnualLeaveUsage) obj[3];
+      }
+      
+      ApprovalForm af = (ApprovalForm) obj[4];
+      
+      List<Approver> agree = approverRepository.findByApprovalApprovalNoAndApproverType(approval_no,"합의자");
+      List<Approver> approver = approverRepository.findByApprovalApprovalNoAndApproverType(approval_no,"결재자");
+      List<Referrer> referrer = referrerRepository.findByApproval(approval);
+      
+      
+      System.out.println("agree : "+agree);
+      System.out.println("referrer : "+referrer);
+      
+      
+      result.put("approval", approval);
+      result.put("employee", employee);
+      result.put("baseForm", baseForm);
+      result.put("annualLeaveUsage", annualLeaveUsage);
+      result.put("approvalForm", af);
+      result.put("file", file);
+      result.put("agree", agree);
+      result.put("approver",approver);
+      result.put("referrer", referrer);
+      return result;
+   }
+   
+
+   // 전자결재 저장 (품의서, 요청서)
+   public Approval createApproval(Map<String,Object> obj) {
+      
+      Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
+      
+      
+      ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+      System.out.println("카테고리 출력 : "+ac);
+      Approval approval = Approval.builder()
+                     .approvalTitle((String)obj.get("제목"))
+                     .approvalContent((String)obj.get("내용"))
+                     .approvalCategory(ac)
+                     .employee(emp)
+                     .build();
+
+      return approvalRepository.save(approval);
+   }
+   
+   
+   @Transactional
+   // 전자결재(휴가신청서) 저장
+   public Approval createApprovalLeave(Map<String,Object> obj) {
+         
+         Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
+         
+     ApprovalForm af = approvalFormRepository.findByFormCode((Integer)obj.get("폼코드"));
+     
+     int type = 0;
+     switch (af.getFormName()) {
+        case "반차":
+            type = 1;
+            break;
+        case "연차":
+            type = 2;
+            break;
+        case "경조휴가":
+            type = 3;
+            break;
+        case "병가":
+            type = 4;
+            break; 
+     }
+     
+     AnnualLeaveUsage annual = AnnualLeaveUsage.builder()
+                          .annualType(type)
+                          .employee(emp)
+                          .annualUsageStartDate((LocalDate)obj.get("시작일자"))
+                          .annualUsageEndDate((LocalDate)obj.get("종료일자"))
+                          .timePeriod((String)obj.get("반차시간대"))
+                          .totalDay((Double)obj.get("사용일수"))
+                          .build();
+                              
+         
+         AnnualLeaveUsage au = annualLeaveUsageRepository.save(annual);
+         ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+         System.out.println("카테고리 출력 : "+ac);
+         
+         Approval approval = Approval.builder()
+                        .approvalTitle((String)obj.get("제목"))
+                        .approvalContent((String)obj.get("내용"))
+                        .approvalCategory(ac)
+                        .employee(emp)
+                        .annualLeaveUsage(annual)
+                        .build();
+   
+         return approvalRepository.save(approval);
+      }
+   
+   
+   // 카테고리 값 가져오기
+   public List<ApprovalFormDto> selectApprovalCateList(int no){
+      
+      ApprovalBaseFormType at = approvalBaseFormTypeRepository.findByBaseFormCode(no);
+      
+      List<ApprovalForm> ac = approvalFormRepository.findByApprovalBaseFormType_BaseFormCodeAndFormVisibility(at.getBaseFormCode(),'Y');
+      
+      List<ApprovalFormDto> list = new ArrayList<ApprovalFormDto>();
+      
+       for(ApprovalForm a : ac) { 
+          ApprovalFormDto dto = ApprovalFormDto.builder()
+                               .form_code(a.getFormCode())
+                               .base_form_code(at.getBaseFormCode())
+                               .form_name(a.getFormName())
+                               .form_content(a.getFormContent())
+                               .build();
+                list.add(dto);                
+       }
+       
+       
+      
+      return list;
+   }
+    
+   
+   // 회수함으로 이동
+   @Transactional
+   public int revoke(Long approvalNo) {
+	  int result = 4;
+	  
+	  return approvalRepository.updateStatus(result,approvalNo);
+   }
+   
+   // 게시글 수정
+   @Transactional
+   public Approval updateApproval(Map<String,Object> obj,Long no) {
+	   
+	   Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
+	   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+	      
+	   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+	   
+	   System.out.println("카테고리 : "+ac.getCateCode());
+	   
+	   Approval approval = Approval.builder()
+			   				.approvalNo(no)
+			   				.approvalCategory(ac)
+			   				.approvalContent((String)obj.get("내용"))
+			   				.approvalTitle((String)obj.get("제목"))
+			   				.employee(emp)
+			   				.approvalStatus(0)
+			   				.approvalRegDate((LocalDateTime)obj.get("날짜"))
+
+			   				.build();
+	   
+	   
+	   System.out.println("출력 : "+approval.getApprovalCategory().getCateCode());
+	   
+	   // 데이터베이스에 저장
+	   approvalRepository.save(approval);
+	   
+	   return approval;
+   }
+   
+	   // 전자결재(근태신청서) 수정
+	   @Transactional
+	   public Approval updateApprovalLeave(Map<String,Object> obj,Long no) {
+		   
+		   Employee emp = employeeRepository.findByEmpId((Long)obj.get("이름"));
+		   System.out.println("출력 해 제발 !!!"+obj.get("폼코드"));
+		      
+		   ApprovalCategory ac = approvalCategoryRepository.findByCateCode((Integer)obj.get("폼코드"));
+		   
+		   System.out.println("카테이름 : "+ac.getCateCode());
+		   ApprovalForm af = approvalFormRepository.findByFormCode((Integer)obj.get("폼코드"));
+		     
+		     int type = 0;
+		     switch (af.getFormName()) {
+		        case "반차":
+		            type = 1;
+		            break;
+		        case "연차":
+		            type = 2;
+		            break;
+		        case "경조휴가":
+		            type = 3;
+		            break;
+		        case "병가":
+		            type = 4;
+		            break; 
+		     }
+		     
+		     
+		     AnnualLeaveUsage annualNo = annualLeaveUsageRepository.getAnnualLeaveUsageByApproval_ApprovalNo(no);
+		     
+		     AnnualLeaveUsage annual = AnnualLeaveUsage.builder()
+		                          .annualType(type)
+		                          .employee(emp)
+		                          .annualUsageStartDate((LocalDate)obj.get("시작일자"))
+		                          .annualUsageEndDate((LocalDate)obj.get("종료일자"))
+		                          .timePeriod((String)obj.get("반차시간대"))
+		                          .totalDay((Double)obj.get("사용일수"))
+		                          .annualUsageNo(annualNo.getAnnualUsageNo())
+		                          .build();
+		                              
+		         
+		   AnnualLeaveUsage au = annualLeaveUsageRepository.save(annual);
+		   
+		   Approval approval = Approval.builder()
+	   				.approvalNo(no)
+	   				.approvalCategory(ac)
+	   				.approvalContent((String)obj.get("내용"))
+	   				.approvalTitle((String)obj.get("제목"))
+	   				.employee(emp)
+	   				.approvalStatus(0)
+	   				.approvalRegDate((LocalDateTime)obj.get("날짜"))
+	   				.annualLeaveUsage(au)
+	   				.build();
+		   
+		   // 데이터베이스에 저장
+		   approvalRepository.save(approval);
+		   
+		   return approval;
+	   }
+	   
+	   // 전자결재 삭제
+	   public int deleteApproval(Long no) {
+		   int result = 0;
+			try {
+			    approvalRepository.deleteById(no);	
+				result = 1;
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+	   }
+	   
+	   
+	   // admin 전자결재 리스트 
+	   public Page<ApprovalForm> adminApprovalList(Pageable pageable){		      
+		      return approvalFormRepository.findAll(pageable);
+		   }
+	   
+	   
+	   // 상태 전환
+	   @Transactional
+	   public int updateVisibility(int id, boolean checked) {
+		   char result;
+		   if(checked == true) {
+			   result = 'Y';
+		   }else{
+			   result = 'N';
+		   }
+		   return approvalFormRepository.updateVisibility(id,result);
+	   }
+	   
+	   // 폼 이름 찾기
+	   public ApprovalForm formFind(String title) {
+		   return approvalFormRepository.findByFormName(title);
+	   }
+	   
+	   // 폼 생성
+	   public ApprovalCategory formCreate(String title, String code, String content) {
+		   ApprovalBaseFormType abf = approvalBaseFormTypeRepository.findByBaseFormName(code);
+		   
+		   System.out.println("폼 네임"+abf.getBaseFormCode());
+		   
+		   ApprovalForm af = ApprovalForm.builder()
+				   					.approvalBaseFormType(abf)
+				   					.formName(title)
+				   					.formContent(content)
+				   					.formVisibility('Y')
+				   					.build();
+		   ApprovalForm approvalForm = approvalFormRepository.save(af);
+		   
+		   ApprovalCategory ac = ApprovalCategory.builder()
+				   					.approvalForm(approvalForm)
+				   					.build();
+		   
+		   
+		   return approvalCategoryRepository.save(ac) ;
+	   }
+	   
+	   // 폼 정보 불러오기
+	   public ApprovalForm approvalFormDetail(int form_code) {
+		   return approvalFormRepository.findByFormCode(form_code);
+	   }
+	   
+	   // 폼 수정
+	   public ApprovalForm formUpdate(int formCode, String content) {
+		   
+		   ApprovalForm form = approvalFormRepository.findByFormCode(formCode);
+		   
+		   ApprovalForm af = ApprovalForm.builder()
+				   				.formCode(formCode)
+				   				.approvalBaseFormType(form.getApprovalBaseFormType())
+				   				.formName(form.getFormName())
+				   				.formVisibility(form.getFormVisibility())
+				   				.formContent(content)
+				   				.build();
+		   return approvalFormRepository.save(af);
+	   }				
+	   // 승인된 연차 신청서 목록 조회 메서드
+	    public List<ApprovalDto> getApprovedAnnualLeaves() {
+	        List<Approval> approvals = approvalRepository.findApprovedAnnualLeaves();
+	        return approvals.stream()
+	                .map(ApprovalDto::toDto)
+	                .collect(Collectors.toList());
+	    }
+	   
+	   
+	   // 메인화면 approvalcount
+	   public int approvalCount(Long empId, int i) {
+		   return approvalRepository.findByEmployeeEmpIdAndApprovalStatus(empId,i);
+	   }
+	   
+	   @Transactional
+	   public void approveAnnualLeave(Long approvalNo) {
+	       // 연차 신청서 승인 처리
+	       Approval approval = approvalRepository.findByApprovalNo(approvalNo);
+	       if (approval == null) {
+	           throw new IllegalStateException("존재하지 않는 전자결재 번호입니다.");
+	       }
+
+	       if (approval.getApprovalStatus() != 1) { // 상태가 승인 대기 상태인 경우만 승인
+	           throw new IllegalStateException("이미 처리된 전자결재입니다.");
+	       }
+
+	       approval.setApprovalStatus(2); // 승인 상태로 변경
+	       approvalRepository.save(approval);
+
+	       // 연차 사용 내역 반영
+	       AnnualLeaveUsage annualLeaveUsage = approval.getAnnualLeaveUsage();
+	       if (annualLeaveUsage != null) {
+	           Long empId = approval.getEmployee().getEmpId();
+	           LocalDate startDate = annualLeaveUsage.getAnnualUsageStartDate();
+	           LocalDate endDate = annualLeaveUsage.getAnnualUsageEndDate();
+
+	           // 출퇴근 관리 서비스 호출하여 연차 상태 반영
+	           for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+	               attendanceService.applyAnnualLeave(empId, date);
+	           } //
+	       }
+	   }
 }
