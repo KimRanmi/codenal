@@ -636,7 +636,7 @@
     // 퇴사일 업데이트 함수
     function updateEmployeeDetails(empId) {
         fetch(`/admin/detail/${empId}/json`)
-            .then(response => response.json())
+            .then(response => response.json()) 
             .then(data => {
                 if (data.success) {
                     // 퇴사일을 직원 상세에 바로 업데이트

@@ -1,304 +1,260 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}" data-sidebar="light">
 
-    <th:block layout:fragment="pagetitle">
-        <div th:replace="~{partials/title-meta :: title-meta('직원 정보 상세')}"></div>
-    </th:block>
+<th:block layout:fragment="pagetitle">
+	<div th:replace="~{partials/title-meta :: title-meta('직원 정보 상세')}"></div>
+</th:block>
 
-    <head>
-    <style>
-    /* 사번, 개인번호, 주민등록번호, 주소, 상세주소, 입사일, 퇴사일 */
-    #lastnameInput, #phonenumberInput, #ssnInput, #addressInput,
-        #addressDetailInput, #hireDateInput, #endDateInput {
-        background-color: #eeeeeea8;
-        border: 1px solid #e6e6e6;
-    }
-    </style>
-    <!-- Sweet Alert css-->
-    <link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    </head>
+<head>
+<style>
+/* 사번, 개인번호, 주민등록번호, 주소, 상세주소, 입사일, 퇴사일 */
+#lastnameInput, #phonenumberInput, #emailInput, #addressInput,
+	#addressDetailInput, #hireDateInput, #endDateInput {
+	background-color: #eeeeeea8;
+	border: 1px solid #e6e6e6;
+}
+</style>
+<!-- Sweet Alert css-->
+<link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
 
-    <body>
-        <div layout:fragment="content">
-            <div th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card body">
-                        <!-- ----------------------탭---------------------------- -->
-                        <div class="card-header">
-                            <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
-                                <li class="nav-item col-lg-1">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;">
-                                        <i class="fas fa-home"></i> 직원 정보
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+<body>
+	<div layout:fragment="content">
+		<div th:replace="partials/page-title :: page-title('직원 정보 관리','직원 관리')"></div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="card body">
+					<!-- ----------------------탭---------------------------- -->
+					<div class="card-header">
+						<ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+							<li class="nav-item col-lg-1"><a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab" style="font-size: 18px; text-align: center; font-weight: bold;"> <i class="fas fa-home"></i> 직원 정보
+							</a></li>
+						</ul>
+					</div>
 
-                        <div class="card-body">
-                            <div class="tab-content">
-                                <!-- ------------------------직원 정보----------------------------- -->
-                                <div class="tab-pane active" id="personalUpdate" role="tabpanel">
-                                    <div class="row">
-                                        <form id="updateForm" th:object="${employeeDetail}" method="post">
+					<div class="card-body">
+						<div class="tab-content">
+							<!-- ------------------------직원 정보----------------------------- -->
+							<div class="tab-pane active" id="personalUpdate" role="tabpanel">
+							<div class="row">
+								<form th:action="@{/admin/update/{empId}(empId=${employeeDetail.empId})}" th:object="${employeeDetail}" method="post">
 
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <!-- 이름 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="firstnameInput" class="form-label" style="font-size: 16px; font-weight: bold;">이름 <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="firstnameInput" th:field="*{empName}" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-1"></div>
+									<div class="row d-flex justify-content-center align-items-center">
+										<!-- 이름 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="firstnameInput" class="form-label" style="font-size: 16px; font-weight: bold;">이름
+												<span class="text-danger">*</span></label> 
+												<input type="text" class="form-control" id="firstnameInput" th:field="*{empName}" required>
+											</div>
+										</div>
+										<div class="col-sm-1"></div>
 
-                                                <!-- 사번 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="lastnameInput" class="form-label" style="font-size: 16px; font-weight: bold;">사번</label>
-                                                        <input type="text" class="form-control" id="lastnameInput" th:field="*{empId}" readonly>
-                                                    </div>
-                                                </div>
+										<!-- 사번 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="lastnameInput" class="form-label" style="font-size: 16px; font-weight: bold;">사번</label> 
+												<input type="text" class="form-control" id="lastnameInput" th:field="*{empId}" readonly>
+											</div>
+										</div>
 
-                                                <!-- 개인 번호 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="phonenumberInput" class="form-label" style="font-size: 16px; font-weight: bold;">개인 번호</label>
-                                                        <input type="text" class="form-control" id="phonenumberInput" th:field="*{empPhone}" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-1"></div>
+										<!-- 개인 번호 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="phonenumberInput" class="form-label" style="font-size: 16px; font-weight: bold;">개인 번호</label> 
+												<input type="text" class="form-control" id="phonenumberInput" th:field="*{empPhone}" readonly>
+											</div>
+										</div>
+										<div class="col-sm-1"></div>
 
-                                                <!-- 주민 등록 번호 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="emailInput" class="form-label" style="font-size: 16px; font-weight: bold;">주민 등록 번호</label>
-                                                        <input type="text" class="form-control" id="ssnInput" th:field="*{empSsn}" readonly>
-                                                    </div>
-                                                </div>
+										<!-- 주민 등록 번호 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="emailInput" class="form-label" style="font-size: 16px; font-weight: bold;">주민 등록 번호</label> 
+												<input type="text" class="form-control" id="emailInput" th:field="*{empSsn}" readonly>
+											</div>
+										</div>
 
-                                                <!-- 주소 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="addressInput" class="form-label" style="font-size: 16px; font-weight: bold;">주소</label>
-                                                        <input type="text" class="form-control" id="addressInput" th:field="*{empAddress}" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-1"></div>
+										<!-- 주소 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="addressInput" class="form-label">주소</label> <input type="text" class="form-control" id="addressInput" th:field="*{empAddress}" readonly>
+											</div>
+										</div>
+										<div class="col-sm-1"></div>
 
-                                                <!-- 상세 주소 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="addressDetailInput" class="form-label" style="font-size: 16px; font-weight: bold;">상세 주소</label>
-                                                        <input type="text" class="form-control" id="addressDetailInput" th:field="*{empAddressDetail}" readonly>
-                                                    </div>
-                                                </div>
+										<!-- 상세 주소 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="addressDetailInput" class="form-label" style="font-size: 16px; font-weight: bold;">상세 주소</label> 
+												<input type="text" class="form-control" id="addressDetailInput" th:field="*{empAddressDetail}" readonly>
+											</div>
+										</div>
 
-                                                <!-- 부서 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="departmentInput" class="form-label" style="font-size: 16px; font-weight: bold;">부서 <span class="text-danger">*</span></label>
-                                                        <select class="form-select" id="departmentInput" th:field="*{deptNo}" required>
-                                                            <option value="" style="color: gray;">부서를 선택하세요</option>
-                                                            <th:block th:each="dept : ${departments}">
-                                                                <option th:value="${dept.deptNo}" th:text="${dept.deptName}" th:selected="${dept.deptNo == employeeDetail.deptNo}"></option>
-                                                            </th:block>
-                                                        </select>
-                                                        <div class="invalid-feedback">부서를 선택해주세요.</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-1"></div>
+										<!-- 부서 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="departmentInput" class="form-label" style="font-size: 16px; font-weight: bold;">부서
+												<span class="text-danger">*</span></label> 
+												<select class="form-select" id="departmentInput" th:field="*{deptNo}" required>
+													<option value="" style="color: gray;">부서를 선택하세요</option>
+													<th:block th:each="dept : ${departments}">
+														<option th:value="${dept.deptNo}" th:text="${dept.deptName}" th:selected="${dept.deptNo == employeeDetail.deptNo}"></option>
+													</th:block>
+												</select>
+												<div class="invalid-feedback">부서를 선택해주세요.</div>
+											</div>
+										</div>
+										<div class="col-sm-1"></div>
 
-                                                <!-- 직급 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="jobInput" class="form-label" style="font-size: 16px; font-weight: bold;">직급 <span class="text-danger">*</span></label>
-                                                        <select class="form-select" id="jobInput" th:field="*{jobNo}" required>
-                                                            <option value="" style="color: gray;">직급을 선택하세요</option>
-                                                            <th:block th:each="job : ${jobs}">
-                                                                <option th:value="${job.jobNo}" th:text="${job.jobName}" th:selected="${job.jobNo == employeeDetail.jobNo}"></option>
-                                                            </th:block>
-                                                        </select>
-                                                        <div class="invalid-feedback">직급을 선택해주세요.</div>
-                                                    </div>
-                                                </div>
+										<!-- 직급 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="jobInput" class="form-label" style="font-size: 16px; font-weight: bold;">직급
+												<span class="text-danger">*</span></label> 
+												<select class="form-select" id="jobInput" th:field="*{jobNo}" required>
+													<option value="" style="color: gray;">직급을 선택하세요</option>
+													<th:block th:each="job : ${jobs}">
+														<option th:value="${job.jobNo}" th:text="${job.jobName}" th:selected="${job.jobNo == employeeDetail.jobNo}"></option>
+													</th:block>
+												</select>
+												<div class="invalid-feedback">직급을 선택해주세요.</div>
+											</div>
+										</div>
+										
 
-                                                <!-- 입사일 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="hireDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">입사일</label>
-                                                        <input type="text" class="form-control" id="hireDateInput" th:field="*{empHire}" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-1"></div>
+										<!-- 입사일 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="hireDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">입사일</label> 
+												<input type="text" class="form-control" id="hireDateInput" th:field="*{empHire}" readonly>
+											</div>
+										</div>
+										<div class="col-sm-1"></div>
 
-                                                <!-- 퇴사일 -->
-                                                <div class="col-lg-5">
-                                                    <div class="mb-3">
-                                                        <label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label>
-                                                        <input type="text" class="form-control" id="endDateInput" th:field="*{empEnd}" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-4"></div>
+										<!-- 퇴사일 -->
+										<div class="col-lg-5">
+											<div class="mb-3">
+												<label for="endDateInput" class="form-label" style="font-size: 16px; font-weight: bold;">퇴사일</label> 
+												<input type="text" class="form-control" id="endDateInput" th:field="*{empEnd}" readonly>
+											</div>
+										</div>
+										<div class="mb-4"></div>
 
-                                                <!-- 완료/취소 버튼 -->
-                                                <div class="col-lg-12">
-                                                    <div class="hstack gap-3 justify-content-end">
-                                                        <button type="submit" class="btn btn-primary btn-border w-xs" id="sa-params" style="font-size: 16px; font-weight: bold;">완료</button>
-                                                        <a class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs" th:href="@{/admin/detail/{empId}(empId=${employeeDetail.empId})}" style="font-size: 16px; font-weight: bold;"> 취소 </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+										<!-- 완료/취소 버튼 -->
+										<div class="col-lg-12">
+											<div class="hstack gap-3 justify-content-end">
+												<button type="submit" class="btn btn-primary btn-border w-xs" id="sa-params"
+												style="font-size: 16px; font-weight: bold;">완료</button>
+												<a class="btn btn-soft-dark waves-effect waves-light material-shadow-none w-xs"
+												 th:href="@{/admin/detail/{empId}(empId=${employeeDetail.empId})}"
+												 style="font-size: 16px; font-weight: bold;"> 취소 </a>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-        <th:block layout:fragment="pagejs">
-            <script src="/assets/libs/prismjs/prism.js"></script>
-            <script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
-            <script src="/assets/js/pages/modal.init.js"></script>
-            <!-- Sweet Alerts js -->
-            <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
-            
+	<th:block layout:fragment="pagejs">
+		<script src="/assets/libs/prismjs/prism.js"></script>
+		<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
+		<script src="/assets/js/pages/modal.init.js"></script>
+		<!-- 	<!-- Sweet Alerts js -->
+		<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+	
+		<!-- <script src="/assets/js/pages/sweetalerts.init.js"></script> -->
 
-            <script th:inline="javascript">
-            document.addEventListener("DOMContentLoaded", function() {
-                const form = document.querySelector("#updateForm");
-                form.addEventListener("submit", function (event) {
-                    console.log("Form submit intercepted");
-                    event.preventDefault(); // 폼 제출 막기
-                    
-                    Swal.fire({
-                        title: '정보 수정 확인',
-                        text: "정말 정보를 수정하시겠습니까?",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: '수정',
-                        cancelButtonText: '취소',
-                        customClass: {
-                            confirmButton: 'btn btn-primary w-xs me-2 mt-2', 
-                            cancelButton: 'btn btn-danger w-xs mt-2',         
-                            popup: 'animate__animated animate__fadeInDown'
-                        },
-                        buttonsStyling: false,
-                        showCloseButton: true
-                    }).then(function (result) {
-                        if (result.isConfirmed) {
-                        	
-                            const formData = new FormData(form);
-                            const jsonData = {};
+		<script th:inline="javascript">
+		document.querySelector("form").addEventListener("submit", function (event) {
+		    event.preventDefault(); // 폼 제출 막기
+		    Swal.fire({
+		        title: '정보 수정 확인',
+		        text: "정말 정보를 수정하시겠습니까?",
+		        icon: 'warning',
+		        showCancelButton: true,
+		        confirmButtonText: '수정',
+		        cancelButtonText: '취소',
+		        customClass: {
+		            confirmButton: 'btn btn-primary w-xs me-2 mt-2',
+		            cancelButton: 'btn btn-danger w-xs mt-2',
+		            popup: 'animate__animated animate__fadeInDown'
+		        },
+		        buttonsStyling: false,
+		        showCloseButton: true
+		    }).then(function (result) {
+		        if (result.isConfirmed) {
+		            const formData = new FormData(event.target);
+		            const jsonData = {};
+		            formData.forEach((value, key) => {
+		                jsonData[key] = value;
+		            });
+		
+		            // CSRF 토큰 및 헤더 추가
+		            var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+		            var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+		
+		            fetch('/admin/update/' + jsonData.empId, {
+		                method: 'POST',
+		                headers: {
+		                    'Content-Type': 'application/json',
+		                    [csrfHeader]: csrfToken // CSRF 토큰을 헤더에 추가
+		                },
+		                body: JSON.stringify(jsonData)
+		            })
+		            .then(response => response.json())
+		            .then(data => {
+		                if (data.res_code === '200') {
+		                    Swal.fire({
+		                        title: '수정 성공',
+		                        text: '직원 정보가 성공적으로 수정되었습니다.',
+		                        icon: 'success',
+		                        confirmButtonClass: 'btn btn-primary w-xs mt-2',
+		                        buttonsStyling: false
+		                    }).then(() => {
+		                        window.location.href = '/admin/detail/' + jsonData.empId;
+		                    });
+		                } else {
+		                    Swal.fire({
+		                        title: '수정 실패',
+		                        text: data.res_msg,
+		                        icon: 'error',
+		                        confirmButtonClass: 'btn btn-primary w-xs mt-2',
+		                        buttonsStyling: false
+		                    });
+		                }
+		            })
+		            .catch(error => {
+		                Swal.fire({
+		                    title: '서버 오류',
+		                    text: '요청 처리 중 오류가 발생했습니다. ' + error.message,
+		                    icon: 'error',
+		                    confirmButtonClass: 'btn btn-primary w-xs mt-2',
+		                    buttonsStyling: false
+		                });
+		            });
+		        } else if (result.dismiss === Swal.DismissReason.cancel) {
+		            const redirectUrl = /*[[@{/admin/detail/{empId}(empId=${employeeDetail.empId})}]]*/ '/admin/detail/';
+		            window.location.href = redirectUrl;
+		        }
+		    });
+		});
+		</script>
 
-                            formData.forEach((value, key) => {
-                                jsonData[key] = value;
-                            });
-            
-                            
-                            const emp_name = document.getElementById("firstnameInput").value.trim();
-                            const dept_no = deptSelect.value;
-                            const job_no = jobSelect.value;
-                            
-                            const obj = {
-                                empName: emp_name,
-                                empPhone: emp_phone,
-                                empSsn: emp_ssn,
-                                empAddress: emp_address,
-                                empAddressDetail: emp_address_detail,
-                                deptNo: dept_no === '' ? null : parseInt(dept_no),
-                                jobNo: job_no === '' || job_no === "default" ? null : parseInt(job_no), 
-                                empHire: emp_hire,
-                                empStatus: emp_status,
-                                empAuth: emp_auth
-                            };
 
-                            console.log("Final Data to be sent:", obj); 
 
-                            const finalData = obj;
 
-                            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-                            const empId = form.querySelector('[name="empId"]').value; 
 
-                            fetch(`/admin/api/update/${empId}`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    [csrfHeader]: csrfToken
-                                },
-                                body: JSON.stringify(finalData)
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('네트워크 응답이 올바르지 않습니다. 상태 코드: ' + response.status);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                console.log("Server response:", data);
-                                if (data.res_code === '200') {
-                                    Swal.fire({
-                                        title: '수정 성공',
-                                        text: '직원 정보가 성공적으로 수정되었습니다.',
-                                        icon: 'success',
-                                        customClass: {
-                                            confirmButton: 'btn btn-primary w-xs mt-2'
-                                        },
-                                        buttonsStyling: false
-                                    }).then(() => {
-                                        const redirectUrl = `/admin/detail/${empId}`;
-                                        window.location.href = redirectUrl;
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        title: '수정 실패',
-                                        text: data.res_msg || '수정 중 오류가 발생했습니다.',
-                                        icon: 'error',
-                                        customClass: {
-                                            confirmButton: 'btn btn-primary w-xs mt-2'
-                                        },
-                                        buttonsStyling: false
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                Swal.fire({
-                                    title: '서버 오류',
-                                    text: '요청 처리 중 오류가 발생했습니다. ' + error.message,
-                                    icon: 'error',
-                                    customClass: {
-                                        confirmButton: 'btn btn-primary w-xs mt-2'
-                                    },
-                                    buttonsStyling: false
-                                });
-                            });
-                        }
-                    });
-                });
-            });
-            
-            
-            /* 주민등록번호 뒷자리 보안 */
-            function maskSsn(ssn) {
-                if (!ssn || ssn.length < 14) {
-                    return ssn;
-                }
-                return ssn.substring(0, 6) + "-*******";
-            }
 
-            document.addEventListener('DOMContentLoaded', function() {
-                var ssnField = document.getElementById('ssnInput');
-                var originalSsn = ssnField.value;
-                ssnField.value = maskSsn(originalSsn); // 주민등록번호 마스킹 처리
-            });
-            </script>
-        </th:block>
-    </body>
+	</th:block>
+</body>
 </html>

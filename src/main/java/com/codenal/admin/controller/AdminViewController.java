@@ -181,7 +181,6 @@ public class AdminViewController {
 	 // 직원 정보 수정 (수정페이지에 상세정보 남아있기)
     @GetMapping("/update/{empId}")
     public String showUpdateForm(@PathVariable("empId") Long empId, Model model) {
-        logger.info("view 1-1: " + empId);
 
         EmployeeDto dto = adminService.employeeDetail(empId);
         List<DepartmentsDto> departments = adminService.getAllDepartments();
@@ -190,7 +189,6 @@ public class AdminViewController {
         model.addAttribute("departments", departments);
         model.addAttribute("jobs", jobs);
 
-        logger.info("view 1-2: " + dto);
         return "admin/update";
     }
 
