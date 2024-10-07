@@ -39,7 +39,7 @@ Give an example
 
 ## 기능 구현
 ### [메인 페이지]
-![Uploading 2024-10-07 (3).png…]()
+![메인페이지](Uploading 2024-10-07 (3).png…)
 
 
 ## Built With
