@@ -8,7 +8,7 @@
         <div th:replace="partials/title-meta :: title-meta('메인화면')"></div>
     </th:block>
 
-    <head>
+     <head>
         <meta charset="UTF-8">
         <meta name="_csrf" th:content="${_csrf.token}" />
         <meta name="_csrf_header" th:content="${_csrf.headerName}" />
@@ -36,7 +36,7 @@
                         <!-- 사용자 정보 카드 -->
                         <div class="col-xl-4">
                             <div class="card">
-                            <div class="card-body card-height-100" style="height: 420px">
+                            <div class="card-body">
                                 <div class="card-body text-center">
                                     <div class="avatar-md mb-3 mx-auto" style="width: 100px; height: 100px;">
                                         <div class='img-thumbnail rounded-circle shadow-none'
@@ -50,11 +50,21 @@
 
                                     <input type="hidden" id="csrf_token" th:value="${_csrf.token}" />
                                     <h5 id="candidate-name" class="mb-1" style="font-weight: bold;">
-                                        <span th:text="${empDto.empName}"></span> <span th:text="${empDto.jobName}"></span>
+
+                                        <span th:text="${empDto.empName}"></span> 
                                     </h5>
+                                    
+                                    
+                                      
+                                    
                                     <h5 id="candidate-dept" class="mb-3" style="font-size: 13px;">
                                         <span th:text="${empDto.deptName}"></span>
+                                    <span th:text="${empDto.jobName}"></span>
                                     </h5>
+
+                                     <div class ="mb-4"></div>
+
+                                 
                                     <div class="d-flex gap-2 justify-content-center mb-4">
                                         <div class="btn-group" role="group"
                                              aria-label="Basic button group" style="width: 100%">

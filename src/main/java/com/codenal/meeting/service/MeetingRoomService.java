@@ -63,6 +63,34 @@ public class MeetingRoomService {
 		return result;
 	}
 	
+	// 예약 가능 시간 수정
+	public void MeetingRoomTimeModify(LocalTime[][] time, int roomNo) {
+		
+		if(meetingRoomTimeRepository.deleteByMeetingRoomNo(roomNo) > 0) {
+			
+			MeetingRoom meetingRoom = meetingRoomRepository.findBy();
+			MeetingRoomDto meetingRoomDto = new MeetingRoomDto().toDto(meetingRoom);
+			System.out.println(meetingRoomDto.getMeeting_room_no());
+			String[] ampm = new String[time.length];
+			LocalTime standard = LocalTime.of(12, 00);
+			for (int i = 0; i < time.length; i++) {
+				int compare = time[i][1].compareTo(standard);
+				if (compare <= (-1)) {
+					ampm[i] = "오전";
+				} else {
+					ampm[i] = "오후";
+				}
+			}
+			for (int i = 0; i < time.length; i++) {
+				MeetingRoomTime times = MeetingRoomTime.builder().meetingRoomNo(meetingRoomDto.getMeeting_room_no())
+						.meetingRoomStartTime(time[i][0]).meetingRoomEndTime(time[i][1]).meetingRoomAmpm(ampm[i]).build();
+				meetingRoomTimeRepository.save(times);
+			}
+		}
+
+
+	}
+	
 	// 회의실 업데이트
 	public MeetingRoom modifyMeetingRoom(MeetingRoomDto dto) {
 		MeetingRoom room = meetingRoomRepository.findByMeetingRoomNo(dto.getMeeting_room_no());

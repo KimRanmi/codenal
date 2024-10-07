@@ -64,7 +64,6 @@ formData.addEventListener('submit', (e) => {
 			listTime.push(formData.reserve_time[i].value);
 		}
 	
-		console.log(listTime);
 		const payload = new FormData(formData);
 		fetch('/meetingRoomModify', {
 			method: 'POST',
@@ -75,8 +74,6 @@ formData.addEventListener('submit', (e) => {
 		})
 			.then(response => response.json())
 			.then(data => {
-				
-				alert(data.res_msg);
 
 				const xhr = new XMLHttpRequest();
 				xhr.open("post", "/meetingRoomTimeModify", true);
@@ -88,7 +85,7 @@ formData.addEventListener('submit', (e) => {
 				const header = document.getElementById("_csrf_header").value;
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 				xhr.setRequestHeader(header, csrfToken);
-				xhr.send("time="+listTime);
+				xhr.send("time="+listTime+"&roomNo="+formData.meeting_room_no.value);
 				location.href="/apps-meeting-room";
 			})
 		
