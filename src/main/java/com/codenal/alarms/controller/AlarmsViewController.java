@@ -37,3 +37,4 @@ public class AlarmsViewController {
         return "partials/topbar"; // 알림 목록을 보여줄 HTML 경로
     }
 }
+

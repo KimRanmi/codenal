@@ -36,6 +36,7 @@ import lombok.Setter;
 @Builder
 @Setter
 public class Employee {
+
 	@Id
 	@Column(name = "emp_id")
 	private Long empId;
@@ -82,7 +83,7 @@ public class Employee {
 	@ManyToOne
 	@JoinColumn(name = "job_no",  referencedColumnName = "job_no")
 	private Jobs jobs;
-
+	
 	@Column(name = "emp_auth")
 	private String empAuth;
 

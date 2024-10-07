@@ -51,4 +51,5 @@ public class AlarmsApiController {
 	public void deleteAlarm(@PathVariable Long alarmNo) {
 		alarmsService.deleteAlarm(alarmNo);
 	}
+
 }

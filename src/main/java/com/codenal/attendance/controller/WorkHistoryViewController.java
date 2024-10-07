@@ -1,6 +1,8 @@
 package com.codenal.attendance.controller;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +27,6 @@ public class WorkHistoryViewController {
     @Autowired
     private WorkHistoryService workHistoryService;
 
-    // 현재 사용자의 empId를 가져오는 메서드
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
@@ -36,35 +37,49 @@ public class WorkHistoryViewController {
         }
     }
 
-    // 근무 내역 조회 페이지
+    /**
+     * 근무 내역 조회 페이지
+     * @param year 선택된 연도 (기본값: 현재 연도)
+     * @param month 선택된 월 (기본값: 현재 월)
+     * @param pageable 페이지 정보
+     * @param model 모델 데이터
+     * @return 뷰 템플릿 경로
+     */
     @GetMapping("/apps-work-history")
     public String showWorkHistoryPage(
-            @RequestParam(value = "startDate", required = false) 
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-
-            @RequestParam(value = "endDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "month", required = false) Integer month,
             @PageableDefault(size = 10, sort = "workHistoryDate", direction = Sort.Direction.DESC) Pageable pageable, 
             Model model) {
 
         Long empId = getCurrentUserId();
-        Page<WorkHistoryDto> workHistories;
 
-        // 날짜 범위가 지정된 경우와 그렇지 않은
-        if (startDate != null && endDate != null) {
-            workHistories = workHistoryService.getHistoriesByRange(empId, startDate, endDate, pageable);
+        // 선택된 연도와 월이 없으면 현재 연도와 월로 설정
+        YearMonth selectedYearMonth;
+        if (year != null && month != null) {
+            selectedYearMonth = YearMonth.of(year, month);
         } else {
-            workHistories = workHistoryService.getHistories(empId, pageable);
+            selectedYearMonth = YearMonth.now();
         }
 
-        // 모델에 데이터를 추가하여 HTML에서 사용
+        // 시작일과 종료일 계산
+        LocalDate startDate = selectedYearMonth.atDay(1);
+        LocalDate endDate = selectedYearMonth.atEndOfMonth();
+
+        // 근무 내역 조회
+        Page<WorkHistoryDto> workHistories = workHistoryService.getHistoriesByRange(empId, startDate, endDate, pageable);
+
+        // 모델에 데이터 추가
         model.addAttribute("workHistories", workHistories);
         model.addAttribute("currentPage", workHistories.getNumber());
         model.addAttribute("totalPages", workHistories.getTotalPages());
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
+        model.addAttribute("selectedYear", selectedYearMonth.getYear());
+        model.addAttribute("selectedMonth", selectedYearMonth.getMonthValue());
 
-        return "apps/workhistory"; 
+        // 현재 선택된 연도와 월을 "yyyy.MM" 형식으로 포맷
+        String currentMonth = selectedYearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM"));
+        model.addAttribute("currentMonth", currentMonth);
+
+        return "apps/workHistory"; // templates/apps/workHistory.html 파일을 렌더링
     }
 }

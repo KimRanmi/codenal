@@ -42,6 +42,9 @@ public class WorkHistory {
     @Column(name = "work_history_over_time")
     private BigDecimal workHistoryOverTime;
     
+    @Column(name = "work_history_working_time")
+    private BigDecimal workHistoryWorkingTime;
+    
     @ManyToOne
     @JoinColumn(name = "emp_id", referencedColumnName = "emp_id", nullable = false)
     private Employee employee; // Employee 객체를 사용한 관계 설정
