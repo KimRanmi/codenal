@@ -106,13 +106,17 @@ Give examples
 
 ## 관리자
 ### [직원 관리]
-![2024-10-08 (9)](https://github.com/user-attachments/assets/f4a7d4db-a399-46c5-8b42-0291a5c6cd74)
+![신규 직원 등록](https://github.com/user-attachments/assets/f4a7d4db-a399-46c5-8b42-0291a5c6cd74)
 * 신규 직원을 등록하는 페이지입니다.
+  
 <br>
-![2024-10-08 (8)](https://github.com/user-attachments/assets/2a69a9a2-0077-43a8-94d4-e21cba4c3127)
+
+![직원 목록](https://github.com/user-attachments/assets/a1976839-0ba3-4783-a3f6-50276dc08768)
 * 재직하고 있는 직원뿐만 아니라 퇴사한 직원들까지 볼 수 있는 페이지입니다.
+  
 <br>
-![2024-10-08 (10)](https://github.com/user-attachments/assets/84b9a752-4fb1-4ffc-a648-d1f5bd148151)
+
+![직원상세정보](https://github.com/user-attachments/assets/84b9a752-4fb1-4ffc-a648-d1f5bd148151)
 * 목록에서 특정 직원을 선택하면 상세 정보 페이지가 나옵니다.
 * 임시 비밀번호 발급과 퇴사 관리, 간단한 정보 수정을 할 수 있습니다.
 
