@@ -245,4 +245,22 @@ public class AnnualLeaveManageService {
             }
         }
     }
+    public AnnualLeaveManage getOrCreateAnnualLeaveManageById(Long empId) {
+        AnnualLeaveManage manage = annualLeaveManageRepository.findByEmployee_EmpId(empId);
+        if (manage == null) {
+            Employee employee = employeeRepository.findByEmpId(empId);
+            if (employee == null) {
+                throw new IllegalArgumentException("Invalid empId: " + empId);
+            }
+            manage = AnnualLeaveManage.builder()
+                    .employee(employee)
+                    .annualTotalDay((double) calculateTotalAnnualLeave(employee))
+                    .annualUsedDay(0.0)
+                    .annualRemainDay((double) calculateTotalAnnualLeave(employee))
+                    .build();
+            annualLeaveManageRepository.save(manage);
+        }
+        return manage;
+    }
+    
 }

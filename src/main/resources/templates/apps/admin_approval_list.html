@@ -119,7 +119,7 @@
 													<li class="page-item"><th:block
 															th:if="${!resultList.first}">
 															<a class="page-link"
-																th:href="${resultList.first} ? '#' : @{/admin_approval_list( page=${pageNumber - 1})}">&lt;</a>
+																th:href="${resultList.first} ? '#' : @{/admin/approval_list( page=${pageNumber - 1})}">&lt;</a>
 														</th:block></li>
 
 													<th:block th:if="${resultList.totalElements > 0}">
@@ -127,7 +127,7 @@
 														<th:block
 															th:each="page : ${#numbers.sequence(startPage, endPage)}">
 															<li class="page-item"><a th:text="${page}"
-																th:href="@{/admin_approval_list( page=${page - 1})}"
+																th:href="@{/admin/approval_list( page=${page - 1})}"
 																class="page-link"
 																th:classappend="${page == pageNumber + 1} ? 'active'">1</a>
 															</li>
@@ -137,7 +137,7 @@
 														<li class="page-item"><th:block
 																th:if="${!resultList.last}">
 																<a class="page-link"
-																	th:href="${resultList.last} ? '#' : @{/admin_approval_list(page=${pageNumber + 1})}">&gt;</a>
+																	th:href="${resultList.last} ? '#' : @{/admin/approval_list(page=${pageNumber + 1})}">&gt;</a>
 															</th:block></li>
 													</th:block>
 

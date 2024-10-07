@@ -61,7 +61,7 @@ public class AnnualLeaveUsage {
    private Approval approval;
    
    @Builder.Default
-   @Column(name = "processed")
+   @Column(name = "processed", nullable = false)
    private boolean processed = false;
    
 }

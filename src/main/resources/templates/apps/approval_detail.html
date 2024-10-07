@@ -353,7 +353,6 @@
 
       <!-- 회수 처리 -->
       <script>
-       document.addEventListener('DOMContentLoaded', function() {
         const revokeButton = document.getElementById('revoke');
         if (revokeButton) {
             document.getElementById('revoke').addEventListener('click', function() {
@@ -399,59 +398,67 @@
                 });
             });
         }
-    });
       </script>
 
-      <!-- 승인으로 이동 -->
-      <script>
-         document.getElementById('consent').addEventListener('click',function(){
-            const id = document.getElementById('approvalNo').value;
-            const csrfToken = document.getElementById('csrf_token').value;
-            const signImg = document.getElementById("sign_img").value;
-            const loginId = document.getElementById("login_id").value;
-            
-             if (signImg === null || signImg === '') {
-                     Swal.fire({
-                         icon: 'warning',
-                         title: '서명 이미지가 없습니다!',
-                         text: '프로필 페이지로 이동합니다.',
-                     }).then(() => {
-                         location.href = '/mypage'; // 프로필 페이지로 이동
-                     }); 
-                     return;
-                 }
-               
-               if(confirm('승인하시겠습니까?')){
-               fetch('/approver/consent' ,{
-                  method: 'POST',
-                       headers: {
-                           'Content-Type': 'application/json',
-                           'X-CSRF-TOKEN': csrfToken
-                       },
-                       body: JSON.stringify({ approvalNo: id, loginId: loginId })
-               })
-               .then(response => response.json())
-                 .then(data => {
-                     console.log(data.res_code);
-                     if (data.res_code === '200') {
-                         Swal.fire({
-                             icon: 'success',
-                             title: "성공",
-                             text: data.res_msg
-                         }).then(() => {
-                             location.href = "/approval/inboxList?num=1";
-                         });
-                     } else {
-                         Swal.fire({
-                             icon: 'error',
-                             title: '실패',
-                             text: data.res_msg
-                         });
-                     }
-                 });
-             }
-         }); 
-   </script>
+     <!-- 승인으로 이동 -->
+<script>
+    document.getElementById('consent').addEventListener('click', function() {
+        const id = document.getElementById('approvalNo').value;
+        const csrfToken = document.getElementById('csrf_token').value;
+        const signImg = document.getElementById("sign_img").value;
+        const loginId = document.getElementById("login_id").value;
+
+        // 서명 이미지 확인
+        if (!signImg) {
+            Swal.fire({
+                icon: 'warning',
+                title: '서명 이미지가 없습니다!',
+                text: '프로필 페이지로 이동합니다.',
+            }).then(() => {
+                location.href = '/mypage'; // 프로필 페이지로 이동
+            });
+            return;
+        }
+        Swal.fire({
+            title: '승인하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '네',
+            cancelButtonText: '아니요'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/approver/consent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ approvalNo: id, loginId: loginId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.res_code);
+                    if (data.res_code === '200') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: "성공",
+                            text: data.res_msg
+                        }).then(() => {
+                            location.href = "/approval/inboxList?num=1"; // 성공 시 페이지 이동
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '실패',
+                            text: data.res_msg
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+
 
       <!-- 반려로 이동 -->
       <script>
@@ -460,8 +467,14 @@
       const csrfToken = document.getElementById('csrf_token').value;
       const loginId = document.getElementById("login_id").value;
       
-         if(confirm('반려하시겠습니까?')){
-            
+      Swal.fire({
+  	    title: '반려하시겠습니까?',
+  	    icon: 'warning',
+  	    showCancelButton: true,
+  	    confirmButtonText: '네',
+  	    cancelButtonText: '아니요'
+  		}).then((result) => {
+  	    	if (result.isConfirmed) {
             $('#myModal').modal('show');
             
             $(document).on('click','#success', function(){
@@ -498,6 +511,7 @@
            });
          })      
        }
+  	})
    }); 
 </script>
    <!-- 반려 결과 모달 -->

@@ -31,6 +31,7 @@ public class Attendance {
     public static final String LATE_ATTENDANCE = "지각";
     public static final String ABSENT = "결근";
     public static final String ANNUAL_LEAVE = "연차";
+    public static final String HALF_ANNUAL_LEAVE = "반차";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
