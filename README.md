@@ -6,27 +6,24 @@
 * 위드X워크는 회사 내 직원들이 원활하게 협업할 수 있도록 설계된 그룹웨어 사이트입니다.
 * 직원들은 개인 업무에 도움될 뿐만 아니라 팀원들과 소통할 수 있는 다양한 서비스들을 이용할 수 있습니다.
 * 관리자는 직원들의 원활한 업무를 위해 서비스 설정에 권한을 가질 수 있고, 전 직원들을 관리할 수 있습니다.
+
 <br>
 
 ## 팀원 구성
-
-What things you need to install the software and how to install them
-
 ```
 Give examples
 ```
 <br>
 
 ## 📺 개발환경
-
-![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
-![](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
-![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
+![](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![](https://img.shields.io/badge/HTML-239120?style=for-the-badge&logo=html5&logoColor=white)
 ![](https://img.shields.io/badge/CSS-239120?&style=for-the-badge&logo=css3&logoColor=white)
 ![](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white)
 ![](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
-![](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
+![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
+![](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
 <br>
 
 ## 프로젝트 기간
@@ -34,14 +31,24 @@ Give examples
 
 <br>
 
-## 역할 분담
-
+## 주요 기능
+* 로그인/ 마이페이지
+* 캘린더
+* 문서함
+* 전자결재 / 관리
+* 주소록
+* 채팅
+* 근태 관리
+* 회의실 관리/ 예약
+* 직원 관리
+* 부서 관리
 <br>
-
 
 ## DB 설계
 ![2024-10-08 (13)](https://github.com/user-attachments/assets/10c8a238-0a2d-4bdb-88e4-3677a7a06c6e)
 <br>
+<br>
+
 
 # 기능 구현
 ## 직원
