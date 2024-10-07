@@ -115,17 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		                        default: { icon: "ri-team-fill" },
 		                        file: { icon: "ri-user-2-fill" }
 		                    }
-                       }).on('select_node.jstree', function(e, data) {
-		                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
-		                    selectArray.length = 0; // 배열 초기화
-		
-		                    selectedNodes.forEach(node => {
-		                        if (node.parent !== 'companyName') {
-		                            selectArray.push({ id: node.id, text: node.text });
-		                            console.log("선택 노드 : "+node);
-		                        }
-		                    });
-		                });
+                       })
 
 						// 모달 표시
                         const modalElement = document.getElementById('staticBackdrop');
@@ -148,10 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
 							        // 부모 노드가 "companyName"이 아니면, 해당 노드를 직급으로 간주
 							        if (item.parent !== 'companyName') {
 							            selectedJobIds.push(item.original.jobId);  // 직급 ID 저장
-							            if (item.parent) {
-							                // 부모 노드가 있으면 해당 부서 ID를 selectedDeptIds에 추가
-							                selectedDeptIds.push(item.parent);
-							            }
 							        } else {
 							            // 부모 노드가 "companyName"이면 부서로 간주
 							            selectedDeptIds.push(item.id);
@@ -191,65 +177,71 @@ const selectRadio = document.getElementById('select');
 const selectedDeptIds = document.getElementById('selectedDeptIds');
 const selectedJobIds = document.getElementById('selectedJobIds');
 
-form.addEventListener('submit', (e) => {
-    e.preventDefault(); // 기본 폼 제출 동작 방지
-    // 유효성 검사
-    let isValid = true;
-    if(announceTitle.value.length < 1){
-		alert('게시글 제목을 입력하세요.');
-		announceTitle.focus(announceTitle);
-		isValid = false;
-	} else if(editor.getMarkdown().length < 1) {
-	    alert('게시글 내용을 입력하세요.');
-	    editor.focus(editor);
-	    isValid = false;
-	} else if (!allRadio.checked && !selectRadio.checked) { 	// 라디오 버튼 선택 여부 확인
-        alert('읽기 권한을 선택하세요.');
-        isValid = false;
-    } else if (selectRadio.checked) {
-        if (selectedDeptIds.value === '' && selectedJobIds.value === '') {    // '권한 직접 설정'을 선택한 경우 부서 또는 직급이 선택되었는지 확인
-            alert('부서 또는 직급을 선택하세요.');
-            isValid = false;
-        }
-    } else if (!isValid) {      // 유효성 검사를 통과하지 못한 경우 제출 방지
-        e.preventDefault();
-    }
-    
+	form.addEventListener('submit', (e) => {
+	    e.preventDefault(); // 기본 폼 제출 동작 방지
 	
-    // FormData 객체를 생성하여 폼 데이터를 가져옴
-    const formData = new FormData(form);
-
-    // 추가적으로 필요한 데이터를 FormData에 추가
-    formData.append('announce_no', document.getElementById('announce_no').value);
-    formData.append('announce_writer', document.getElementById('announce_writer').value);
-    formData.append('announce_title', document.getElementById('announce_title').value);
-    formData.append('announce_content', editor.getHTML());
-    formData.append('reg_date', document.getElementById('reg_date').value);
-    formData.append('read_authority_status', document.querySelector('input[name="read_authority_status"]:checked')?.value);
-
+		// 유효성 검사 함수 호출
+	    if (validateForm()) {
+	        // 유효성 검사를 통과하면 폼을 제출할 수 있는 추가 동작을 실행
+	   		// FormData 객체를 생성하여 폼 데이터를 가져옴
+		    const formData = new FormData(form);
+		
+		    // 추가적으로 필요한 데이터를 FormData에 추가
+		    formData.append('announce_no', document.getElementById('announce_no').value);
+		    formData.append('announce_writer', document.getElementById('announce_writer').value);
+		    formData.append('announce_title', document.getElementById('announce_title').value);
+		    formData.append('announce_content', editor.getHTML());
+		    formData.append('reg_date', document.getElementById('reg_date').value);
+		    formData.append('read_authority_status', document.querySelector('input[name="read_authority_status"]:checked')?.value);
+		
+			
+		    const csrfToken = document.getElementById('csrf_token').value;
+			const announceNo = document.getElementById('announce_no').value;
+		
+		    fetch('/announce/updateEnd/'+announceNo, {
+		        method: 'POST',
+		        headers: {
+		            'X-CSRF-TOKEN': csrfToken // CSRF 토큰을 헤더에 포함
+		        },
+		        body: formData // FormData 객체를 body에 포함하여 전송
+		    })
+		     .then(response => response.json())
+		     .then(data => {
+		        if (data.res_code === '200') {
+		            alert('게시글 수정을 완료했습니다.');
+		            location.href = `/announce/detail/${data.announceNo}`; // 서버에서 받은 `announceNo`로 URL을 설정합니다.
+		        } else {
+		            alert('실패: ' + data.res_msg);
+		        }
+		     })
+		};
 	
-    const csrfToken = document.getElementById('csrf_token').value;
-	const announceNo = document.getElementById('announce_no').value;
-
-    fetch('/announce/updateEnd/'+announceNo, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken // CSRF 토큰을 헤더에 포함
-        },
-        body: formData // FormData 객체를 body에 포함하여 전송
-    })
-     .then(response => response.json())
-     .then(data => {
-        if (data.res_code === '200') {
-            alert('게시글 수정을 완료했습니다.');
-            location.href = `/announce/detail/${data.announceNo}`; // 서버에서 받은 `announceNo`로 URL을 설정합니다.
-        } else {
-            alert('실패: ' + data.res_msg);
-        }
-     })
-     .catch(error => console.error('Error:', error));
+		// 유효성 검사
+	    function validateForm() {
+	    if(announceTitle.value.length < 1 || announceTitle.value.length > 50 ){
+			alert('게시글 제목은 최소 1글자, 최대 50글자 이내로 입력하세요.');
+			announceTitle.focus(announceTitle);
+			return false; // 폼 제출을 막음
+		} else if(editor.getMarkdown().length < 1) {
+		    alert('게시글 내용을 입력하세요.');
+		    editor.focus(editor);
+		   return false; // 폼 제출을 막음
+		} else if (!allRadio.checked && !selectRadio.checked) { 	// 라디오 버튼 선택 여부 확인
+	        alert('읽기 권한을 선택하세요.');
+		   return false; // 폼 제출을 막음
+	    } else if (selectRadio.checked) {
+		    // 부서 또는 직급이 선택되었는지 확인
+		    const deptSelected = selectedDeptIds && selectedDeptIds.value.trim() !== '';
+		    const jobSelected = selectedJobIds && selectedJobIds.value.trim() !== '';
+		
+		    if (!deptSelected && !jobSelected) {  // 둘 다 선택되지 않았을 경우
+		        alert('부서 또는 직급을 선택하세요.');
+		        return false; // 폼 제출을 막음
+		    }
+	    }
+	   	  return true;
+	    }
+	});
 });
-});
-
 
 

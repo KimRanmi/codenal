@@ -161,14 +161,14 @@
 							<div class="fallback">
 								<input name="file" type="file" multiple="multiple">
 								<!-- 기존 파일 목록을 반복해서 출력 -->
-								<div class="mt-5">기존 파일 목록</div>
-								<div th:each="file : ${announceList.announceFile}">
+								<div class="mt-5 mb-2 text-muted">기존 파일 목록</div>
+								<span th:each="file : ${announceList.announceFile}" class="mb-2 border border-1">
 									    <span th:text="${file.fileOriName}">
 									    <!-- 삭제 버튼 추가 -->
 										</span>
 										<button type="button" class="btn btn-sm btn-danger delete-file-btn"
              							   th:attr="data-file-id=${file.fileNo}">삭제</button>
-								</div>
+								</span>
 							</div>
 						</div>
 					</div>
@@ -183,7 +183,7 @@
 						</div>
 						<div class="card-body" style="height: 100%">
 							<div>
-								<input type="radio" id="all" name="read_authority_status" value="N">
+								<input type="radio" id="all" name="read_authority_status" value="Y">
 								<label for="all">전직원</label>
 								<input type="radio" id="select" name="read_authority_status" value="Y">
 								<label for="select">권한 직접 설정</label>
