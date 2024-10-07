@@ -156,11 +156,12 @@ public class CalendarService {
 				eventDtoList.add(annualLeaveAdd);
 			}
 		}
-		System.out.println("확인"+eventDtoList);
+		
 		return eventDtoList;
 	}
 	
 	public Calendar createEvent(CalendarDto dto) {
+		System.out.println("확인"+dto);
 		Calendar calendar = Calendar.builder()
 				.calendarScheduleCategory(dto.getCalendar_schedule_category())
 				.calendarScheduleTitle(dto.getCalendar_schedule_title())
