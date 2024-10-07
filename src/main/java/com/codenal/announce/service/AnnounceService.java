@@ -1,5 +1,9 @@
 package com.codenal.announce.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,15 +11,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
+import com.codenal.admin.repository.DepartmentsRepository;
+import com.codenal.admin.repository.JobsRepository;
 import com.codenal.announce.domain.Announce;
 import com.codenal.announce.domain.AnnounceDto;
 import com.codenal.announce.domain.AnnounceFile;
 import com.codenal.announce.domain.AnnounceFileDto;
+import com.codenal.announce.domain.AnnounceReadAuthority;
 import com.codenal.announce.repository.AnnounceFileRepository;
 import com.codenal.announce.repository.AnnounceReadAuthorityRepository;
 import com.codenal.announce.repository.AnnounceRepository;
@@ -33,14 +40,19 @@ public class AnnounceService {
 	private final AnnounceFileRepository announceFileRepository;
 	private final AnnounceReadAuthorityRepository announceReadAuthorityRepository;
 	private final EmployeeRepository employeeRepository;
+	private final DepartmentsRepository departmentsRepository;
+	private final JobsRepository jobsRepository;
 	
 	@Autowired
 	public AnnounceService(AnnounceRepository announceRepository, AnnounceFileRepository announceFileRepository
-			,AnnounceReadAuthorityRepository announceReadAuthorityRepository, EmployeeRepository employeeRepository) {
+			, AnnounceReadAuthorityRepository announceReadAuthorityRepository, EmployeeRepository employeeRepository
+			, DepartmentsRepository departmentsRepository, JobsRepository jobsRepository) {
 		this.announceRepository = announceRepository;
 		this.announceFileRepository = announceFileRepository;
 		this.announceReadAuthorityRepository = announceReadAuthorityRepository;
 		this.employeeRepository = employeeRepository;
+		this.departmentsRepository=departmentsRepository;
+		this.jobsRepository=jobsRepository;
 	}
 	
 	//******************** 메인화면 출력용 *******************
@@ -116,7 +128,7 @@ public class AnnounceService {
     }
 
     // 게시글 단일 저장 로직
-    public Announce createAnnounce(AnnounceDto dto) {
+    public Announce createAnnounce(AnnounceDto dto, List<Long> deptIds, List<Integer> jobIds) {
         Announce announce = Announce.builder()
         		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
@@ -126,6 +138,21 @@ public class AnnounceService {
         
         // Announce 저장
         Announce savedAnnounce = announceRepository.save(announce);
+        
+        // 부서 ID와 직급 ID를 미리 한 번에 조회하여 매핑
+        List<Departments> departmentsList = departmentsRepository.findAllById(deptIds);
+        List<Jobs> jobsList = jobsRepository.findAllById(jobIds);
+        // 부서와 직급을 함께 저장
+        for (Departments dept : departmentsList) {
+            for (Jobs job : jobsList) {
+            	AnnounceReadAuthority announceReadAuthority = AnnounceReadAuthority.builder()
+            			.announce(savedAnnounce)
+                        .departments(dept)
+                        .jobs(job)
+                        .build();
+                announceReadAuthorityRepository.save(announceReadAuthority);
+            }
+        }
         
         // 저장된 Announce 객체 반환
         return savedAnnounce;
@@ -134,7 +161,7 @@ public class AnnounceService {
     
     // 게시글+File 저장 로직
     @Transactional
-    public Announce createAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos) {
+    public Announce createAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos, List<Long> deptIds, List<Integer> jobIds) {
         Announce announce = Announce.builder()
         		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
@@ -144,6 +171,21 @@ public class AnnounceService {
         
         // Announce 저장
         Announce savedAnnounce = announceRepository.save(announce);
+        
+        // 부서 ID와 직급 ID를 미리 한 번에 조회하여 매핑
+        List<Departments> departmentsList = departmentsRepository.findAllById(deptIds);
+        List<Jobs> jobsList = jobsRepository.findAllById(jobIds);
+        // 부서와 직급을 함께 저장
+        for (Departments dept : departmentsList) {
+            for (Jobs job : jobsList) {
+            	AnnounceReadAuthority announceReadAuthority = AnnounceReadAuthority.builder()
+            			.announce(savedAnnounce)
+                        .departments(dept)
+                        .jobs(job)
+                        .build();
+                announceReadAuthorityRepository.save(announceReadAuthority);
+            }
+        }
         
      // AnnounceFile 객체 생성 및 저장
         for(AnnounceFileDto fileDto : fileDtos) {
@@ -166,6 +208,7 @@ public class AnnounceService {
 	public int deleteAnnounce(int no) {
 		int result = 0;
 		try {
+			announceReadAuthorityRepository.deleteByAnnounce_AnnounceNo(no);
 			announceRepository.deleteById(no);
 			result = 1;
 			
@@ -176,15 +219,9 @@ public class AnnounceService {
 	}
     
     
-    
-    
-    
-    
-    
-    
-// update......................................하는중
-    // 게시글 단일 저장 로직
-    public Announce updateAnnounce(AnnounceDto dto) {
+    // 게시글 단일 수정 로직
+    @Transactional
+    public Announce updateAnnounce(AnnounceDto dto, List<Long> deptIds, List<Integer> jobIds) {
         Announce announce = Announce.builder()
         		.announceWriter(dto.getAnnounce_writer())
                 .announceTitle(dto.getAnnounce_title())
@@ -195,14 +232,30 @@ public class AnnounceService {
         // Announce 저장
         Announce savedAnnounce = announceRepository.save(announce);
         
+        // 부서 ID와 직급 ID를 미리 한 번에 조회하여 매핑
+        List<Departments> departmentsList = departmentsRepository.findAllById(deptIds);
+        List<Jobs> jobsList = jobsRepository.findAllById(jobIds);
+        announceReadAuthorityRepository.deleteByAnnounce_AnnounceNo(announce.getAnnounceNo());  // 기존 읽기 권한 삭제
+        // 부서와 직급을 함께 저장
+        for (Departments dept : departmentsList) {
+            for (Jobs job : jobsList) {
+            	AnnounceReadAuthority announceReadAuthority = AnnounceReadAuthority.builder()
+            			.announce(savedAnnounce)
+                        .departments(dept)
+                        .jobs(job)
+                        .build();
+                announceReadAuthorityRepository.save(announceReadAuthority);
+            }
+        }
+        
         // 저장된 Announce 객체 반환
         return savedAnnounce;
     }
     
 
-    // 게시글+File 저장 로직
+    // 게시글+File 수정 로직
     @Transactional
-    public Announce updateAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos) {
+    public Announce updateAnnounceAndFile(AnnounceDto dto, List<AnnounceFileDto> fileDtos, List<Long> deptIds, List<Integer> jobIds) {
         Announce announce = Announce.builder()
         		.announceNo(dto.getAnnounce_no())
         		.announceWriter(dto.getAnnounce_writer())
@@ -216,7 +269,24 @@ public class AnnounceService {
         // Announce 저장
         Announce savedAnnounce = announceRepository.save(announce);
         
-     // AnnounceFile 객체 생성 및 저장
+        // 부서 ID와 직급 ID를 미리 한 번에 조회하여 매핑
+        List<Departments> departmentsList = departmentsRepository.findAllById(deptIds);
+        List<Jobs> jobsList = jobsRepository.findAllById(jobIds);
+        announceReadAuthorityRepository.deleteByAnnounce_AnnounceNo(announce.getAnnounceNo());  // 기존 읽기 권한 삭제
+        // 부서와 직급을 함께 저장
+        for (Departments dept : departmentsList) {
+            for (Jobs job : jobsList) {
+            	AnnounceReadAuthority announceReadAuthority = AnnounceReadAuthority.builder()
+            			.announce(savedAnnounce)
+                        .departments(dept)
+                        .jobs(job)
+                        .build();
+                announceReadAuthorityRepository.save(announceReadAuthority);
+            }
+        }
+        
+        announceFileRepository.deleteByAnnounce_AnnounceNo(announce.getAnnounceNo());  // 기존 파일 삭제
+        // AnnounceFile 객체 생성 및 저장
         for(AnnounceFileDto fileDto : fileDtos) {
             AnnounceFile aFile = AnnounceFile.builder()
                     .announce(savedAnnounce) // Announce와 연관 설정
@@ -231,5 +301,18 @@ public class AnnounceService {
         
         // 저장된 Announce 객체 반환
         return savedAnnounce;
+    }
+
+    public void deleteFile(Integer fileNo) {
+        // 파일 정보 조회
+        AnnounceFile announceFile = announceFileRepository.findById(fileNo)
+            .orElseThrow(() -> new IllegalArgumentException("해당 파일이 존재하지 않습니다."));
+        
+        // 파일 삭제 처리
+        announceFileRepository.deleteById(announceFile.getFileNo());
+        
+        // 파일 삭제 후 실제 파일 시스템에서 파일도 삭제하려면 해당 파일 경로를 이용하여 처리
+        Path filePath = Paths.get(announceFile.getFilePath());   // 날리는거 수정하기@!!@!@!@!@!@!
+
     }
 }

@@ -40,6 +40,7 @@ public interface AnnounceRepository extends JpaRepository<Announce, Integer>{
     
     @Query("SELECT COUNT(a) FROM Announce a")
     int findAllCount();
+
     
     //****************************************************
     

@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.codenal.addressBook.domain.TreeMenuDto;
 import com.codenal.admin.domain.Departments;
+import com.codenal.admin.domain.Jobs;
 import com.codenal.admin.repository.AdminRepository;
 import com.codenal.admin.repository.DepartmentsRepository;
+import com.codenal.admin.repository.JobsRepository;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.domain.EmployeeDto;
 
@@ -23,11 +25,13 @@ public class AddressBookService {
 
 	private final  DepartmentsRepository departmentsRepository;
 	private final AdminRepository adminRepository;
-
+	private final JobsRepository jobsRepository;
+	
 	@Autowired
-	public AddressBookService(DepartmentsRepository departmentsRepository, AdminRepository adminRepository) {
+	public AddressBookService(DepartmentsRepository departmentsRepository, AdminRepository adminRepository, JobsRepository jobsRepository) {
 		this.departmentsRepository = departmentsRepository;
 		this.adminRepository = adminRepository;
+		this.jobsRepository=jobsRepository;
 	}
 
 	// ------------------직원 목록 검색 (직원 정보)
@@ -102,4 +106,50 @@ public class AddressBookService {
 			return departmentNode;
 		}).collect(Collectors.toList());
 	}
+	
+	
+	
+	
+	// TreeMenu(JsTree)
+	public List<TreeMenuDto> getTreeMenuAnnounce() {
+	    // 전 부서 조회
+	    List<Departments> departments = departmentsRepository.findAll();    
+	    // 전 직급 조회
+	    List<Jobs> jobs = jobsRepository.findAll();  // 모든 직급을 한 번에 조회
+
+	    // 부서 노드 생성
+	    return departments.stream().map(department -> {
+	        // 각 부서별 직급을 부서의 자식 노드로 추가
+	        List<TreeMenuDto> jobNodes = jobs.stream()
+	            .sorted(Comparator.comparing(Jobs::getJobPriority))  // 우선순위에 따라 직급을 정렬
+	            .map(job -> {
+	            	long uniqueId = department.getDeptNo() * 1000L + job.getJobNo();  // deptNo를 1000으로 곱하고 jobNo를 더해 고유한 ID 생성
+
+	                TreeMenuDto jobNode = TreeMenuDto.builder()
+	                        .nodeId(uniqueId)  // 직급 ID 그대로 사용
+	                        .nodeName(job.getJobName())  // 직급명
+	                        .deptId(department.getDeptNo())  // 부서 ID 저장
+	                        .jobId(job.getJobNo())  // 직급 ID 저장
+	                        .nodeState(TreeMenuDto.NodeState.builder().opened(false).build())  // 직급 노드는 기본적으로 닫혀 있음
+	                        .build();
+	                return jobNode;
+	            })
+	            .collect(Collectors.toList());
+
+	        // 부서 노드 생성 및 직급을 자식으로 추가
+	        TreeMenuDto departmentNode = TreeMenuDto.builder()
+	                .nodeId(department.getDeptNo())  // 부서 ID
+	                .nodeName(department.getDeptName())  // 부서명
+	                .deptId(department.getDeptNo())  // 부서 ID 저장
+	                .nodeChildren(jobNodes)  // 직급을 부서의 자식으로 추가
+	                .nodeState(TreeMenuDto.NodeState.builder().opened(true).build())  // 부서 노드는 기본적으로 열려 있음
+	                .build();
+
+	        return departmentNode;
+	    }).collect(Collectors.toList());
+
+	}
+
+
+
 }
