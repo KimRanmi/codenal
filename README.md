@@ -38,37 +38,61 @@ Give an example
 ```
 
 ## 기능 구현
+### [로그인]
+![로그인페이지](https://github.com/user-attachments/assets/aa8a4667-c436-4845-81c3-23d654d0036f)
+* 실행 시 처음 보이는 로그인 페이지입니다.
+* 모든 위드x워크 사용자는 로그인을 해야만 합니다.
+<br>
+  
 ### [메인 페이지]
-![2024-10-07 (3)](https://github.com/user-attachments/assets/9630993a-60ad-4231-b53f-feec9ef63ef2)
+![메인페이지](https://github.com/user-attachments/assets/9630993a-60ad-4231-b53f-feec9ef63ef2)
+* 로그인을 정상적으로 성공했으면 나오는 메인 페이지 입니다.
+* 출퇴근하기 버튼을 통해 ... 
+<br>
+
+### [마이페이지]
+![마이페이지](https://github.com/user-attachments/assets/57c23cee-6727-47df-b7e3-6c3287da62c1)
+![비밀번호 변경](https://github.com/user-attachments/assets/f2aaa8bf-7b9b-424f-aca1-2ca627b9998b)
+* 개인 정보 페이지이며 간단한 정보 수정과 비밀번호 변경을 할 수 있습니다.
+<br>
+
+### [캘린더]
 
 
+### [문서함]
 
-## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+### [전자결재 - 직원]
+![2024-10-08 (2)](https://github.com/user-attachments/assets/583d5b46-9608-486a-a2c7-553d64ca884c)
+* 
 
-## Contributing
+### [전자결재 - 관리자]
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+<br>
 
-## Versioning
+### [주소록]
+![2024-10-08 (6)](https://github.com/user-attachments/assets/45c3faa5-3f55-4faf-bf2d-216ef146716c)
+* 회사 내의 조직도와 직원들의 연락망을 볼 수 있는 목록 페이지입니다.
+<br>
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+### [채팅]
 
-## Authors
+<br>
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+### [근태관리]
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+<br>
 
-## License
+### [게시판]
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+<br>
 
-## Acknowledgments
+### [회의실 예약 - 직원]
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+<br>
+
+### [회의실 관리 - 관리자]
+
+
+<br>
+
