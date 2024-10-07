@@ -43,7 +43,7 @@ public class AnnualLeaveUsage {
    private LocalDate annualUsageEndDate;	
    
    @Column(name="total_day")
-   private float totalDay;
+   private Double totalDay;
    
    @ManyToOne
     @JoinColumn(name="emp_id")
@@ -61,7 +61,7 @@ public class AnnualLeaveUsage {
    private Approval approval;
    
    @Builder.Default
-   @Column(name = "processed")
+   @Column(name = "processed", nullable = false)
    private boolean processed = false;
    
 }

@@ -65,7 +65,6 @@ public class AlarmsDto {
     public Alarms toEntity(Employee employee) {
         return Alarms.builder()
                 .alarmNo(this.alarmNo)
-                .employee(employee)
                 .alarmTitle(this.alarmTitle)
                 .alarmContext(this.alarmContext)
                 .alarmType(this.alarmType)

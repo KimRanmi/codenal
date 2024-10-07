@@ -21,6 +21,7 @@ import com.codenal.annual.domain.AnnualLeaveManage;
 import com.codenal.annual.domain.AnnualLeaveUsageDto;
 import com.codenal.annual.service.AnnualLeaveManageService;
 import com.codenal.annual.service.AnnualLeaveUsageService;
+import com.codenal.attendance.domain.AttendanceDto;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.service.EmployeeService;
 import com.codenal.security.vo.SecurityUser;
@@ -63,40 +64,24 @@ public class AnnualLeaveManageController {
         Employee employee = employeeService.getEmployeeById(empId);
 
         // 연차 관리 정보 가져오기
-        AnnualLeaveManage annualLeaveManage = annualLeaveManageService.getAnnualLeaveManageById(empId);
-
-        // 선택된 연도와 월 설정
-        YearMonth selectedYearMonth;
-        if (year != null && month != null) {
-            selectedYearMonth = YearMonth.of(year, month);
-        } else {
-            selectedYearMonth = YearMonth.now();
+        AnnualLeaveManage annualLeaveManage = annualLeaveManageService.getOrCreateAnnualLeaveManageById(empId);
+        if (annualLeaveManage == null) {
+            annualLeaveManage = new AnnualLeaveManage();
         }
+
+        // 기본 연도와 월을 현재 날짜로 설정
+        YearMonth selectedYearMonth = (year != null && month != null) ? YearMonth.of(year, month) : YearMonth.now();
+        model.addAttribute("selectedYear", selectedYearMonth.getYear());
+        model.addAttribute("selectedMonth", selectedYearMonth.getMonthValue());
 
         // 연차 사용 내역 조회
-        Page<AnnualLeaveUsageDto> annualLeaveUsages;
-        if (startDate != null && endDate != null) {
-            // 날짜 범위가 지정된 경우 해당 기간의 데이터를 조회
-            annualLeaveUsages = annualLeaveUsageService.getAnnualLeaveUsageByDateRange(empId, startDate, endDate, pageable);
-        } else {
-            // 날짜 범위가 지정되지 않은 경우, year와 month를 사용하여 해당 월의 데이터를 조회
-            LocalDate monthStart = selectedYearMonth.atDay(1);
-            LocalDate monthEnd = selectedYearMonth.atEndOfMonth();
-            annualLeaveUsages = annualLeaveUsageService.getAnnualLeaveUsageByDateRange(empId, monthStart, monthEnd, pageable);
-        }
+        Page<AnnualLeaveUsageDto> annualLeaveUsages = annualLeaveUsageService.getAnnualLeaveUsage(empId, startDate, endDate, year, month, pageable);
 
-        // 모델에 데이터 추가
         model.addAttribute("employee", employee);
         model.addAttribute("annualLeaveManage", annualLeaveManage);
         model.addAttribute("annualLeaveUsages", annualLeaveUsages);
-
         model.addAttribute("currentPage", annualLeaveUsages.getNumber());
         model.addAttribute("totalPages", annualLeaveUsages.getTotalPages());
-        model.addAttribute("startDate", startDate);  // startDate가 null일 수 있음
-        model.addAttribute("endDate", endDate);      // endDate도 null일 수 있음
-
-        model.addAttribute("selectedYear", selectedYearMonth.getYear());
-        model.addAttribute("selectedMonth", selectedYearMonth.getMonthValue());
 
         // 현재 선택된 연도와 월을 "yyyy.MM" 형식으로 포맷
         String currentMonthStr = selectedYearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM"));
@@ -104,4 +89,6 @@ public class AnnualLeaveManageController {
 
         return "apps/annual_manage";
     }
+
+
 }

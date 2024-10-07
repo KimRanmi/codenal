@@ -80,36 +80,26 @@ public class DeptApiController {
 	
 	
 	// 부서명 수정
-	@PostMapping("/dept/{dept_no}")
-	public ResponseEntity<Map<String, String>> editDeptName(@PathVariable("dept_no") Long deptNo, DepartmentsDto dto) {
-	    Map<String, String> resultMap = new HashMap<>();
-	    try {
-	        if (deptService.editDepartment(dto) != null) {
-	            resultMap.put("res_msg", "부서명이 성공적으로 수정되었습니다.");
-	            return ResponseEntity.ok(resultMap);
-	        } else {
-	            throw new Exception("부서 수정 중 오류가 발생했습니다.");
-	        }
-	    } catch (IllegalArgumentException e) {
-	        resultMap.put("res_msg", e.getMessage());
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultMap);
-	    } catch (Exception e) {
-	        resultMap.put("res_msg", "부서 수정 중 오류가 발생했습니다.");
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultMap);
-	    }
+//	@PostMapping("/dept/{dept_no}")
+//	public ResponseEntity<Map<String, String>> editDeptName(@PathVariable("dept_no") Long deptNo, DepartmentsDto dto) {
+//	    Map<String, String> resultMap = new HashMap<>();
+//	    try {
+//	        if (deptService.editDepartment(dto) != null) {
+//	            resultMap.put("res_msg", "부서명이 성공적으로 수정되었습니다.");
+//	            return ResponseEntity.ok(resultMap);
+//	        } else {
+//	            throw new Exception("부서 수정 중 오류가 발생했습니다.");
+//	        }
+//	    } catch (IllegalArgumentException e) {
+//	        resultMap.put("res_msg", e.getMessage());
+//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultMap);
+//	    } catch (Exception e) {
+//	        resultMap.put("res_msg", "부서 수정 중 오류가 발생했습니다.");
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultMap);
+//	    }
+//	
+//	}
 	
-	}
-	// 부서명 수정
-	/*
-	 * @PostMapping("/api/editDepartment") public ResponseEntity<String>
-	 * editDepartment(@RequestBody DepartmentsDto departmentsDto) {
-	 * System.out.println("Received DTO: " + departmentsDto); // 디버깅용
-	 * 
-	 * try { // 부서 수정 로직 호출 deptService.editDepartment(departmentsDto); return
-	 * ResponseEntity.ok("부서 수정이 완료되었습니다."); } catch (IllegalArgumentException e) {
-	 * return ResponseEntity.badRequest().body(e.getMessage()); } }
-	 */
-
 
 
 }

@@ -109,7 +109,7 @@ public class CalendarService {
 	public List<CalendarDto> selectEvent(Long writerId){
 		List<Calendar> eventList = calendarRepository.findAll();
 		List<CalendarDto> eventDtoList = new ArrayList<CalendarDto>();
-		List<Approval> approvalList = approvalRepository.findByApprovalStatus(3);
+		List<Approval> approvalList = approvalRepository.findByApprovalStatus(2);
 		for(Calendar c : eventList) {
 			CalendarDto calendarDto = new CalendarDto().toDto(c);
 			Long writer = c.getCalendarScheduleWriter();
@@ -129,6 +129,7 @@ public class CalendarService {
 			new ApprovalDto();
 			ApprovalDto approvalDto = ApprovalDto.toDto(a);
 			AnnualLeaveUsage annualLeaveList = annualLeaveUsageRepository.findByAnnualUsageNo(approvalDto.getAnnual_leave_usage_no());
+			System.out.println(approvalDto);
 			new AnnualLeaveUsageDto();
 			AnnualLeaveUsageDto annualLeaveListDto = AnnualLeaveUsageDto.toDto(annualLeaveList);
 			CalendarDto annualLeaveAdd = new CalendarDto();

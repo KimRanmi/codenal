@@ -117,7 +117,7 @@ public class ApprovalApiController {
 			@RequestPart(value = "file", required = false) MultipartFile file,
 			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
 			@RequestParam(value = "references", required = false) List<Long> references,
-			@RequestParam(value="totalDay") float totalDay) {
+			@RequestParam(value="totalDay") Double totalDay) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
@@ -290,7 +290,7 @@ public class ApprovalApiController {
 			@RequestParam(value = "agree", required = false) List<Long> agree,
 			@RequestParam("approver") List<Long> approver,
 			@RequestParam(value = "references", required = false) List<Long> references,
-			@RequestParam(value="totalDay") float totalDay) {
+			@RequestParam(value="totalDay") Double totalDay) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
@@ -393,18 +393,21 @@ public class ApprovalApiController {
 	// 전자결재 승인 (우선순위 순서대로)
 	@ResponseBody
 	@PostMapping("/approver/consent")
-	public Map<String,String> consentApprover(@RequestBody Map<String, String> request){
-		Map<String, String> resultMap = new HashMap<String, String>();
-		resultMap.put("res_code", "404");
-		Long no = Long.valueOf(request.get("approvalNo"));
-		Long loginId = Long.valueOf(request.get("loginId"));
-		
-		if(approverService.consentApprover(no,loginId)>0) {
-			resultMap.put("res_code","200");
-			resultMap.put("res_msg", "승인되었습니다.");
-		}
-		return resultMap;
+	public Map<String, String> consentApprover(@RequestBody Map<String, String> request) {
+	    Map<String, String> resultMap = new HashMap<>();
+	    resultMap.put("res_code", "404");
+
+	    Long approvalNo = Long.valueOf(request.get("approvalNo"));
+	    Long loginId = Long.valueOf(request.get("loginId"));
+
+	    if (approverService.consentApprover(approvalNo, loginId) > 0) {
+	        resultMap.put("res_code", "200");
+	        resultMap.put("res_msg", "승인되었습니다.");
+	    }
+
+	    return resultMap;
 	}
+	
 	
 	// 전자결재 반려
 	@ResponseBody
@@ -496,10 +499,14 @@ public class ApprovalApiController {
 		}
 		return result;
 	}
-	  // 승인된 연차 신청서 목록을 반환하는 API
+	
+		//승인된 연차 목록을 반환하는 api  ( 종우) 
 	@ResponseBody
-    @GetMapping("/api/approved-annual-leaves")
-    public List<ApprovalDto> getApprovedAnnualLeaves() {
-        return approvalService.getApprovedAnnualLeaves();
-    }
+	@GetMapping("/api/approved-annual-leaves")
+	public ResponseEntity<List<ApprovalDto>> getApprovedAnnualLeaves() {
+	    List<ApprovalDto> approvedAnnualLeaves = approvalService.getApprovedAnnualLeaves();
+	    return ResponseEntity.ok().body(approvedAnnualLeaves);
+	}
+	
+	
 }

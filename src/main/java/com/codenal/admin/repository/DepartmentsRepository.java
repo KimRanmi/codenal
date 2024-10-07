@@ -53,7 +53,7 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 
 	// 2. 부서명 수정
 	// 동일한 부서명이 있는지 확인 (부서번호가 다른 경우)
-	boolean existsByDeptNameAndDeptNoNot(String deptName, Long deptNo);
+	// boolean existsByDeptNameAndDeptNoNot(String deptName, Long deptNo);
 
 
 }

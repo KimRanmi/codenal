@@ -91,23 +91,28 @@ public class ApprovalViewController {
       model.addAttribute("no", no);
       model.addAttribute("cateList", cateList);
       model.addAttribute("remainDay", alm.getAnnualRemainDay());
+      
+      System.out.println("remain : "+alm.getAnnualRemainDay());
       return "apps/approval__leave_create";
    }
 
    // 상신 리스트
    @GetMapping("/approval/list")
-   public String listApproval(Model model, @RequestParam(value = "num", defaultValue = "0") int num,
+   public String listApproval(Model model,   @RequestParam(value="num") int num,
+		   @RequestParam(value = "title", required = false) String title,
          @PageableDefault(page = 0, size = 10, sort = "approvalNo", direction = Sort.Direction.DESC) Pageable pageable) {
       
       // 현재 인증된 사용자 정보 가져오기
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String username = authentication.getName();
       Long id = Long.parseLong(username);
-
-      Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable, num, id);
+      
+      System.out.println(title);
+      Page<Map<String, Object>> resultList = approvalService.selectApprovalList(pageable, num, id, title);
       
       model.addAttribute("resultList", resultList);
       model.addAttribute("num", num);
+      model.addAttribute("title",title);
 
       return "apps/approval_list";
    }
@@ -115,6 +120,7 @@ public class ApprovalViewController {
    // 수신 리스트
    @GetMapping("/approval/inboxList")
    public String inboxListApproval(Model model, @RequestParam(value="num", defaultValue="1") int num,
+		   @RequestParam(value = "title", required = false) String title,
          @PageableDefault(page = 0, size = 10, sort = "approvalNo", direction = Sort.Direction.DESC) Pageable pageable) {
       
       // 현재 인증된 사용자 정보 가져오기
@@ -122,15 +128,15 @@ public class ApprovalViewController {
       String username = authentication.getName();
       Long id = Long.parseLong(username);
       
-      Page<Map<String, Object>> resultList = approvalService.selectApprovalinBoxList(pageable, num, id);
+      Page<Map<String, Object>> resultList = approvalService.selectApprovalinBoxList(pageable, title,num, id);
       
       if(num == 4) {
          System.out.println("지금 상태 : "+num);
-         resultList = approvalService.selectReferrerList(pageable, id);
+         resultList = approvalService.selectReferrerList(pageable, title, id);
       }
       
       model.addAttribute("resultList", resultList);
-      
+      model.addAttribute("title",title);
       model.addAttribute("num", num);
       
       return "apps/approval_list_inbox";
@@ -173,6 +179,7 @@ public class ApprovalViewController {
       // 반려 상태 가져오기
       Approver reject = approverService.findReject(approval_no);
       
+      System.out.println("반려 : "+reject);
       
       model.addAttribute("dto", resultList);
       model.addAttribute("type", typeInt);

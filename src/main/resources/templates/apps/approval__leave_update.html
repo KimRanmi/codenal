@@ -18,15 +18,10 @@
    href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 <link rel="stylesheet"
    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet"
-<<<<<<< HEAD
-	href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
-	
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 <!-- 폰트 -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
-=======
-   href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
->>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
+
 
 <style>
 	* {font-family: "Noto Sans KR", sans-serif !important;} 
@@ -245,7 +240,7 @@ select, input[type=date], input[type=text], #totalDay {
                      </div>
                      <div th:text="${dto.approval.approvalContent}"
                         style="display: none" id="contentDiv"></div>
-                     <div th:value="${remainDay}" id="remainDay"
+                     <div th:text="${remainDay}" id="remainDay"
                               style="display: none;"></div>
 
                      <!-- 토스트 API -->
@@ -296,6 +291,10 @@ select, input[type=date], input[type=text], #totalDay {
          src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
       <script
          src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+         
+     <!-- 모달, 날짜 생성 관련 js -->
+     <script src="/assets/js/pages/project-create.init.js"></script>
+     
      
      <!-- 수신참조자 값 가져오기 -->
       <script>
@@ -312,144 +311,8 @@ select, input[type=date], input[type=text], #totalDay {
       console.log(references.join(' '));
       document.getElementById('references').value = references.join(' ');
       </script>
-     
-     
-     
-     
-      
-      <!-- 모달 관련 js -->
-   <script>
-    // 로그인 한 사람 은 트리구조에서 지우기 
-    const loginId = document.getElementById('login_id').value;
-    const selectArray = []; // 선택된 이름을 저장할 배열
-    let buttonId = '';
 
-    $('#button_modal1, #button_modal2,#references').click(function() {
-        console.log('모달이 열렸습니다.'); // 모달 열림 로그
-        buttonId = this.id;
-        console.log(buttonId);
-        
-        // 선택 배열 초기화
-        selectArray.length = 0; 
-
-        $.ajax({
-            url: '/approval/modal', // 데이터를 가져올 URL
-            method: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                console.log(data); // 데이터 로그
-
-                // jsTree용 데이터 형식 변환. 지금 로그인한 사람 정보는 제외
-                const formatDataForJsTree = (nodes) => {
-                    return nodes
-                    .filter(node => node.nodeId.toString() !== loginId)
-                    .map(node => ({
-                        id: node.nodeId,
-                        text: node.nodeName,
-                        state: { opened: true },
-                        children: node.nodeChildren ? formatDataForJsTree(node.nodeChildren) : [],
-                        icon: node.nodeChildren && node.nodeChildren.length > 0 ? 'ri-team-fill' : 'ri-user-2-fill'
-                    }));
-                };
-                const formattedData = formatDataForJsTree(data);
-                const companyNode = {
-                    id: 'companyName',
-                    text: 'withXwork',
-                    state: { opened: true },
-                    children: formattedData,
-                    icon: 'ri-building-fill'
-                };
-
-                // 기존 jsTree 인스턴스 제거
-                if ($('#treeMenu').data('jstree')) {
-                    $('#treeMenu').jstree("destroy");
-                }
-
-                // jsTree 초기화
-                $('#treeMenu').jstree({
-                    'core': {
-                        animation: 0,
-                        check_callback: false,
-                        data: [companyNode]
-                    },
-                    plugins: ["checkbox"],
-                    types: {
-                        default: { icon: "ri-team-fill" },
-                        file: { icon: "ri-user-2-fill" }
-                    }
-                }).on('select_node.jstree', function(e, data) {
-                    const selectedNodes = $('#treeMenu').jstree("get_selected", true);
-                    selectArray.length = 0; // 배열 초기화
-
-                    selectedNodes.forEach(node => {
-                        if (node.parent !== 'companyName') {
-                            selectArray.push({id: node.id, text: node.text}); // 선택된 자식 노드의 이름 추가, 데이터 베이스에 보낼 id 설정
-                            console.log(node);
-                        }
-                    });
-                });
-
-                // 모달 표시
-                const modalElement = document.getElementById('staticBackdrop');
-                if (modalElement) {
-                    const modal = new bootstrap.Modal(modalElement, {
-                        backdrop: 'static',
-                        keyboard: false // ESC로 닫기 방지
-                    });
-                    modal.show(); // 모달 표시
-                    
-                    $(document).on('click', '#successBtn', function() {
-                        if (buttonId === "references") {
-                            const selectedNames = selectArray.map(item => item.text).join(' '); // 선택된 이름을 결합
-                            const selectNameElement = document.getElementById('references'); 
-
-                            selectNameElement.value = selectedNames; // 결합된 문자열 설정
-                            selectNameElement.setAttribute("data-id", selectArray.map(item => item.id).join(' '));  // json 데이터로 보낼 때 쓸 data-id 값도 넣어주기
-
-                        } else {
-                            const selectNameElements = buttonId === "button_modal1" 
-                                ? document.querySelectorAll('.selectedName') 
-                                : document.querySelectorAll('.selectedName2');
-
-                            const length = Math.min(selectNameElements.length, selectArray.length); // 최소 길이
-
-                            for (let index = 0; index < length; index++) {
-                                if (selectArray[index]) {
-                                    selectNameElements[index].textContent = selectArray[index].text; // 선택된 이름 설정
-                                    selectNameElements[index].setAttribute('data-name', selectArray[index].id); // data-name 설정
-                                } else {
-                                    selectNameElements[index].textContent = ''; // 비워두기
-                                    selectNameElements[index].removeAttribute('data-name'); // data-name 제거
-                                }
-                            }
-                        }
-                        modal.hide(); // 모달 닫기
-                    });
-
-                    // 초기화 버튼 이벤트 -> 이건 나중에 수정
-                    $(document).on('click', '#resetBtn', function() {
-                        const selectNameElements = buttonId === "button_modal1" 
-                            ? document.querySelectorAll('.selectedName') 
-                            : document.querySelectorAll('.selectedName2');
-
-                        selectNameElements.forEach((element) => {
-                            if (element) { // 요소가 존재하는지 확인
-                                element.innerHTML = ''; // 비워두기
-                            } else {
-                                console.warn("해당 요소가 존재하지 않습니다."); // 요소가 없을 때 경고 로그
-                            }
-                        });
-                        selectArray.length = 0; // 배열 초기화
-                    });
-                } else {
-                    console.error("모달 요소를 찾을 수 없습니다.");
-                }
-            }
-        });
-    });
-</script>
-
-<script>
+	<script>
     // 기존 데이터 불러오면서 토스트 api 설정.
     const contentDiv = document.getElementById('contentDiv');
     console.log(contentDiv.textContent);
@@ -483,10 +346,10 @@ select, input[type=date], input[type=text], #totalDay {
         // 토스트 에디터 내용 저장한 값 불러옴
         contentEditor.setHTML(processedContent);
     }
-</script>
+	</script>
 
-<!-- 재상신 -->
-<script>
+	<!-- 재상신 -->
+	<script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('approvalForm');
 
@@ -498,8 +361,8 @@ select, input[type=date], input[type=text], #totalDay {
             const csrfToken = document.getElementById('csrf_token').value;
             const empId = document.getElementById("login_id").value;
             
-            const remainDay = parseFloat(document.getElementById('remainDay').value);
-          const totalDay = parseFloat(document.getElementById('totalDay').value);
+            const remainDay = parseFloat(document.getElementById('remainDay').textContent);
+          	const totalDay = parseFloat(document.getElementById('totalDay').value);
             
             // 1. 합의자 값 가져오기
             const agree = Array.from(document.querySelectorAll('td[data-group="agree"]'))
@@ -543,8 +406,7 @@ select, input[type=date], input[type=text], #totalDay {
           if(totalDay > remainDay){
              vali_text += '연차가 부족합니다.\n';
              vali_check = false;
-          }
-          if (form.approval_title.value === "") {
+          } else if (form.approval_title.value === "") {
               vali_text += '제목을 입력하세요.\n';
               form.approval_title.focus();
               vali_check = false; 
@@ -593,101 +455,9 @@ select, input[type=date], input[type=text], #totalDay {
        }
    });
     });
-</script>
+	</script>
 
-<!-- 날짜 생성 스크립트 설정 -->
-<script>   
-    const select = document.getElementById('category-select');
-    const dateContent = document.getElementById('dateContent');
-    
-    select.addEventListener('change', function() {
-        const selectedValue = select.value;
-        if (selectedValue == '1') {
-            dateContent.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> - ' +
-                                    '<select style="margin-left:10px; width:150px;" name="time_period"> <option>선택하세요</option><option>오전</option><option>오후</option></select> <input type="number" step="0.1" id="totalDay" name="totalDay" style="width:50px;">';
-        } else {
-            dateContent.innerHTML = '<input type="date" style="width:200px;" id="startDate" name="start_date"> - ' +
-                                    '<input type="date" style="width:200px;" id="endDate" name="end_date"> <input type="number" id="totalDay" step="0.1" name="totalDay" style="width:50px;">';
-        }
-        
-        // 날짜 선택 이벤트 리스너 추가
-        const start = document.getElementById('startDate');
-        const end = document.getElementById('endDate');
-
-        if (start) {
-            start.addEventListener('change', calculateWorkDays);
-        }
-        if (end) {
-            end.addEventListener('change', calculateWorkDays);
-            end.addEventListener('change', function() {
-                if (start.value > end.value) {
-                    alert('종료일이 시작일보다 빠릅니다.');
-                    end.value = ''; 
-                }
-            });
-        }
-    });
-
-    function calculateWorkDays() {
-        const startDateValue = document.getElementById('startDate').value;
-        const endDateValue = document.getElementById('endDate') ? document.getElementById('endDate').value : null;
-
-        // 시작 데이터의 값이 없으면 
-        if (!startDateValue) {
-            document.getElementById('totalDay').value = '';
-            return;
-        }
-        
-        // 상태가 1일 경우 반차, 3 or 4 일 경우는 병가, 경조휴가 
-        const selectedValue = select.value;
-        if (selectedValue == '1') {
-            document.getElementById('totalDay').value = '0.5'; // 0.5로 설정
-            return;
-        } else if (selectedValue == '3' || selectedValue == '4') {
-            document.getElementById('totalDay').value = '0'; // 0으로 설정
-            return;
-        }
-        
-        const startDate = new Date(startDateValue);
-        let endDate = endDateValue ? new Date(endDateValue) : new Date();
-
-        if (endDateValue && startDate > endDate) {
-            alert('종료일이 시작일보다 빠릅니다.');
-            return;
-        }
-
-        const year = startDate.getFullYear();
-        const holidays = new Set();
-
-        // 공휴일 데이터 가져오기
-        fetch(`https://date.nager.at/api/v2/PublicHolidays/${year}/KR`)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(item => holidays.add(item.date));
-                const annualDays = countWorkDays(startDate, endDate, holidays);
-                document.getElementById('totalDay').value = annualDays;
-            });
-    }
-
-    function countWorkDays(start, end, holidays) {
-        let totalDays = 0;
-        let currentDate = new Date(start);
-
-        while (currentDate <= end) {
-            const formattedDate = currentDate.toISOString().split('T')[0];
-            const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
-
-            if (!isWeekend && !holidays.has(formattedDate)) {
-                totalDays++;
-            }
-
-            currentDate.setDate(currentDate.getDate() + 1);
-        }   
-        return totalDays;
-    }
-</script>
-
-<script>
+	<script>
     // 삭제
     document.getElementById("delete").addEventListener('click', function() {
         const id = document.getElementById('approvalNo').value;
@@ -723,7 +493,7 @@ select, input[type=date], input[type=text], #totalDay {
         }
     });
 
-</script>
+	</script>
 </div>
 </body>
 </html>

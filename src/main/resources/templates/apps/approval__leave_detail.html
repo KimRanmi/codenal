@@ -16,16 +16,10 @@
    type="text/css" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- 토스트 API -->
-<link rel="stylesheet"
-<<<<<<< HEAD
-	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-	
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />	
 <!-- 폰트 -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
 
-=======
-   href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
->>>>>>> branch 'develop' of https://github.com/KimRanmi/codenal.git
 <script
    src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <style>
@@ -354,10 +348,6 @@ select, input[type=date], input[type=text], #totalDay {
          src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
       <script
          src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-      <script
-         src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
-
-
 
       <!-- 수신참조자 값 가져오기 -->
       <script>
@@ -377,8 +367,6 @@ select, input[type=date], input[type=text], #totalDay {
       
       <!-- 회수로 이동 -->
       <script>
-       document.addEventListener('DOMContentLoaded', function() {
-        
         const revokeButton = document.getElementById('revoke');
         if(revokeButton){
            
@@ -425,7 +413,7 @@ select, input[type=date], input[type=text], #totalDay {
             });
         });
     }
-});
+
 </script>
       <!-- 승인으로 이동 -->
       <script>
@@ -446,7 +434,14 @@ select, input[type=date], input[type=text], #totalDay {
                      return;
                  }
                
-               if(confirm('승인하시겠습니까?')){
+             Swal.fire({
+                 title: '승인하시겠습니까?',
+                 icon: 'warning',
+                 showCancelButton: true,
+                 confirmButtonText: '네',
+                 cancelButtonText: '아니요'
+             }).then((result) => {
+                 if (result.isConfirmed) {
                fetch('/approver/consent' ,{
                   method: 'POST',
                        headers: {
@@ -475,7 +470,8 @@ select, input[type=date], input[type=text], #totalDay {
                      }
                  });
              }
-         }); 
+         });
+     });
    </script>
 
       <!-- 반려로 이동 -->
@@ -485,8 +481,14 @@ select, input[type=date], input[type=text], #totalDay {
       const csrfToken = document.getElementById('csrf_token').value;
       const loginId = document.getElementById("login_id").value;
       
-         if(confirm('반려하시겠습니까?')){
-            
+      Swal.fire({
+    	    title: '반려하시겠습니까?',
+    	    icon: 'warning',
+    	    showCancelButton: true,
+    	    confirmButtonText: '네',
+    	    cancelButtonText: '아니요'
+    	}).then((result) => {
+    	    if (result.isConfirmed) {
             $('#myModal').modal('show');
             
             $(document).on('click','#success', function(){
@@ -521,8 +523,9 @@ select, input[type=date], input[type=text], #totalDay {
                    });
                }
            });
-         })      
-       }
+         })
+    	}
+      })
    }); 
 </script>
 <script>

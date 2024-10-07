@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.stream.Collectors;
-
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,12 +14,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.codenal.alarms.domain.Alarms;
+import com.codenal.alarms.repository.AlarmsRepository;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
-
 import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
@@ -36,9 +34,11 @@ import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.approval.repository.ReferrerRepository;
+import com.codenal.attendance.service.AttendanceService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -53,6 +53,8 @@ public class ApprovalService {
    private final ApprovalFileRepository approvalFileRepository;
    private final ApproverRepository approverRepository;
    private final ReferrerRepository referrerRepository;
+   private final AlarmsRepository alarmsRepository;
+
 
    @Autowired
    public ApprovalService(ApprovalRepository approvalRepository, 
@@ -63,7 +65,9 @@ public class ApprovalService {
          AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
          ApprovalFileRepository approvalFileRepository,
          ApproverRepository approverRepository,
-         ReferrerRepository referrerRepository) {
+         ReferrerRepository referrerRepository,
+         AlarmsRepository alarmsRepository) {
+
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -73,10 +77,11 @@ public class ApprovalService {
       this.approvalFileRepository = approvalFileRepository;
       this.approverRepository = approverRepository;
       this.referrerRepository = referrerRepository;
+      this.alarmsRepository = alarmsRepository;
    }
 
    // 상신리스트 => 조회 0-> 대기 , 1-> 진행중,  2->완료 , 3-> 반려 , 4->회수 
-   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id) {
+   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id, String title) {
 	  
 	  Employee emp = employeeRepository.findByEmpId(id);
 	  
@@ -85,7 +90,7 @@ public class ApprovalService {
 	  
 	  System.out.println(approvalCount);
      
-      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),pageable);
+      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),title,pageable);
 	  
 	  System.out.println(approvalList.getTotalElements());
       
@@ -103,7 +108,6 @@ public class ApprovalService {
          map.put("num", num);
          responseList.add(map);
          
-         System.out.println("나와라 : "+approver.getEmployee().getEmpName());
       }
       
       
@@ -111,13 +115,13 @@ public class ApprovalService {
    }
    
    // 수신리스트 조회
-   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,int num2,Long id) {
+   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,String title,int num2,Long id) {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 		  
 		  System.out.println("num2 : "+num2);
-	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),pageable);
+	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),title,pageable);
 	      
 	      System.out.println("토탈 : "+approvalList.getTotalElements());
 	      
@@ -140,12 +144,12 @@ public class ApprovalService {
 	   }
    
    // 수신참조 리스트 조회
-   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,Long id) {
+   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,String title,Long id) {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 
-	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),pageable);
+	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),title,pageable);
 	      
 	      System.out.println(referrerList);
 	      
@@ -243,7 +247,7 @@ public class ApprovalService {
         case "연차":
             type = 2;
             break;
-        case "경조사휴가":
+        case "경조휴가":
             type = 3;
             break;
         case "병가":
@@ -257,7 +261,7 @@ public class ApprovalService {
                           .annualUsageStartDate((LocalDate)obj.get("시작일자"))
                           .annualUsageEndDate((LocalDate)obj.get("종료일자"))
                           .timePeriod((String)obj.get("반차시간대"))
-                          .totalDay((float)obj.get("사용일수"))
+                          .totalDay(((Number)obj.get("사용일수")).doubleValue())
                           .build();
                               
          
@@ -307,6 +311,13 @@ public class ApprovalService {
    public int revoke(Long approvalNo) {
 	  int result = 4;
 	  
+	  Alarms alarms = alarmsRepository.findByAlarmReferenceNoAndAlarmType(approvalNo, "approval");
+	  if (alarms != null) {
+	      alarmsRepository.delete(alarms);
+	  } else {
+	      // 알람이 존재하지 않음을 처리하는 코드
+	      throw new EntityNotFoundException("알림 없음 : " + approvalNo);
+	  }
 	  return approvalRepository.updateStatus(result,approvalNo);
    }
    
@@ -361,7 +372,7 @@ public class ApprovalService {
 		        case "연차":
 		            type = 2;
 		            break;
-		        case "경조사휴가":
+		        case "경조휴가":
 		            type = 3;
 		            break;
 		        case "병가":
@@ -378,7 +389,7 @@ public class ApprovalService {
 		                          .annualUsageStartDate((LocalDate)obj.get("시작일자"))
 		                          .annualUsageEndDate((LocalDate)obj.get("종료일자"))
 		                          .timePeriod((String)obj.get("반차시간대"))
-		                          .totalDay((float)obj.get("사용일수"))
+		                          .totalDay((Double)obj.get("사용일수"))
 		                          .annualUsageNo(annualNo.getAnnualUsageNo())
 		                          .build();
 		                              

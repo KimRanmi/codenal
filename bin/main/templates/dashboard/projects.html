@@ -36,7 +36,7 @@
                         <!-- 사용자 정보 카드 -->
                         <div class="col-xl-4">
                             <div class="card">
-                            <div class="card-body" style="height: 424px;">
+                            <div class="card-body">
                                 <div class="card-body text-center">
                                     <div class="avatar-md mb-3 mx-auto" style="width: 100px; height: 100px;">
                                         <div class='img-thumbnail rounded-circle shadow-none'
@@ -53,16 +53,30 @@
 
                                         <span th:text="${empDto.empName}"></span> 
                                     </h5>
+                                    
+                                    
+                                      
+                                    
                                     <h5 id="candidate-dept" class="mb-3" style="font-size: 13px;">
-                                        <span th:text="${empDto.deptName}"></span>
                                     <span th:text="${empDto.jobName}"></span>
+                                        <span th:text="${empDto.deptName}"></span>
                                     </h5>
+
+                                     <div class ="mb-4"></div>
+
+                                 
                                     <div class="d-flex gap-2 justify-content-center mb-4">
                                         <div class="btn-group" role="group"
                                              aria-label="Basic button group" style="width: 100%">
                                             <button type="button" class="btn btn-light" id="checkInBtn">출근하기</button>
                                             <button type="button" class="btn btn-light" id="checkOutBtn">퇴근하기</button>
                                         </div>
+                                    </div>
+                                    <div class="border-0 d-flex justify-content-end">
+                                        <p class="text-muted mb-3" style="font-size: 11px">
+                                            
+                                        </p>
+                                        <div class ="mb-4"></div>
                                     </div>
                                     <div class="border-0 d-flex">
                                         <h4 class="card-title mb-3">
@@ -142,7 +156,7 @@
 												<div class="d-flex align-items-start">
 													<div class="flex-grow-1">
 														<a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}">
-															<label class="form-check-label mb-0 ps-2 text-black" for="task_one" th:text="${announce.announce_title}">
+															<label class="form-check-label mb-0 ps-2" for="task_one" th:text="${announce.announce_title}">
 																[인사 발령] 막시무스 팀장 오아이오 지사 영업팀 팀장 발령
 															</label>
 														</a>
