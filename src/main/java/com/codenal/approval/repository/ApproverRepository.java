@@ -59,4 +59,8 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	// 메인화면
 	@Query("SELECT COUNT(a) FROM Approver a WHERE a.employee.empId = ?1 AND a.approvalStatus = ?2")
 	int findByEmployeeEmpIdAndApprovalStatusCount(Long id,int i);
+	
+	// approver 조회
+	Approver findByApprovalApprovalNoAndEmployeeEmpId(Long no, Long empId);
 }
+

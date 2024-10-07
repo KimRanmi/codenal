@@ -14,7 +14,14 @@
     
     <!-- SweetAlert2 CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    
+
+   
+ <style>
+    /* 로그인 페이지 배경 색상을 더 진한 남색으로 설정하고 반투명 적용 */
+    body {
+        background-color: rgba(81, 120, 221, 0.8); /* 진한 남색, 20% 투명 */
+    }
+</style>
 </head>
 
 <body>
@@ -48,10 +55,13 @@
 
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-lg-6 col-xl-5">
-                        <div class="card mt-4">
+                        <div class="card mt-5">
                             <div class="card-body p-4">
+                            <div class="mb-5"></div>
                                 <div class="text-center mt-2">
-                                    <h2 class="text-primary"> 위드x워크</h2>
+                                   <span class="logo-sm">
+						<img src="/assets/images/main-logo.png" alt="" height="38">
+					</span>
                                     <p class="text-muted"></p>
                                 </div>
                                 <div class="p-2 mt-4">
@@ -92,7 +102,7 @@
                                         </div>
 
                                         <div class="mt-4">
-                                            <button class="btn btn-success w-100" type="submit">Login</button>
+                                            <button class="btn btn-primary w-100" type="submit">Login</button>
                                         </div>
 
                                         <div class="mt-4 text-center">

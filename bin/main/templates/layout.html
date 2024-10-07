@@ -30,8 +30,9 @@
 		<div th:replace="partials/app-chat-userprofile-canvas :: offcanvas"></div>	
 	</div>
 	
-	<!-- TOAST UI 알림 컨테이너 -->
- <div id="toast-container" aria-live="polite" aria-atomic="true" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+	<!-- 채팅 토스트 알림 컨테이너 -->
+	<!-- 이 자리에 동적으로 알림이 표시됨 -->
+	<div id="toast-container" aria-live="polite" aria-atomic="true" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 	
 	
 	<th:block layout:fragment="modal" />
@@ -45,77 +46,175 @@
 	<script th:src="@{/assets/js/app.js}"></script>
 	
 	
-	    <!-- WebSocket 연결 스크립트 -->
+	<!-- 알림 WebSocket 연결 스크립트 -->
     <script>
-        // WebSocket 연결 설정
-   const socketUrl = 'ws://localhost:8083/allnotification';
+    /* 알림 WebSocket 연결 설정 */
+    const notificationSocketUrl = 'ws://localhost:8083/allnotification';
 
-   // 페이지에서 WebSocket 사용 여부를 확인하기 위한 전역 상태
-   if (!window.isChatPage) {
-    if (!window.socket || window.socket.readyState === WebSocket.CLOSED) {
-        window.socket = new WebSocket(socketUrl);
 
-        window.socket.onopen = function(event) {
-            console.log("레이아웃 알림 WebSocket 연결 성공");
+    /* 페이지에서 알림 WebSocket 사용 여부를 확인하기 위한 전역 상태 */
+	// WebSocket이 없거나 닫힌 경우 연결 설정
+    if (!window.notificationSocket || window.notificationSocket.readyState === WebSocket.CLOSED) {
+    	window.notificationSocket = new WebSocket(notificationSocketUrl);
+        setUpNotificationWebSocketHandlers(window.notificationSocket);
+    } else if (window.notificationSocket.readyState === WebSocket.OPEN) {
+        console.log("알림 WebSocket이 이미 연결되어 있는 상태");
+    }
+	
+
+
+
+    /* WebSocket 핸들러 설정 함수 (알림) */
+    function setUpNotificationWebSocketHandlers(socket) {
+        socket.onopen = function(event) {
+            console.log("전역 알림 웹소켓 연결완료");
         };
 
-        window.socket.onmessage = function(event) {
-            const message = event.data;
+        socket.onmessage = function(event) {
             const resp = JSON.parse(event.data);
-            showToast(resp.msg_content, resp.sender_name, resp.send_date, resp.room_no);  // 받은 알림 메시지를 처리
+            
+            const receivedRoomNo = resp.room_no; // 수신된 메시지의 room_no
+            
+            
+	        // approval 타입의 알림은 모든 페이지에서 보여주기
+	        if (resp.type === 'approval') {
+	        	console.log(resp);
+	            addNotification(resp.msg_content, resp.approval_url);
+	        } 
+			// 채팅 페이지가 아니거나 현재 접속한 채팅방 번호와 다를 때만 showToast 함수 호출
+			else if (!window.isChatPage || window.currentRoomNo !== receivedRoomNo) {
+				showToast(resp.msg_content, resp.sender_name, resp.send_date, resp.room_no);  // 받은 알림 메시지를 처리
+			}
         };
 
-        window.socket.onclose = function(event) {
-            console.log("WebSocket 닫힘.");
+        socket.onclose = function(event) {
+            console.log("알림 웹소켓 연결 종료");
         };
-
-        window.socket.onerror = function(event) {
-            console.error("WebSocket 오류: ", event);
-        };
-    } else if (window.socket.readyState === WebSocket.OPEN) {
-        // 이미 WebSocket이 연결된 경우, 메시지를 보낼 수 있음
-        window.socket.send("getNotifications");
     }
-    } else {
-        console.log("WebSocket 연결 대기중");
-    }
 
-        
-    </script>
-
-	<script>
-	     function showToast(msgContent, senderName, sendDate, roomNo) {
-	     const truncatedMsgContent = msgContent.length > 15 ? msgContent.substring(0, 15) + '...' : msgContent;
-         const toastHTML = `
-             <div class="toast fade" role="alert" aria-live="assertive" data-bs-autohide="true" aria-atomic="true" style="background-color: lightpink;">
-                 <div class="toast-header" >
-                     <img src="assets/images/logo-sm.png" class="rounded me-2" alt="..." height="20">
-                     <span class="fw-semibold me-auto">채팅 알림</span>
-                     <small>방금</small>&nbsp;
-                     <small>${new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
-                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                 </div>
-                 <div class="toast-body">
-                    ${senderName}: ${truncatedMsgContent}
+   
+    /* 토스트 알림 함수 */
+    function showToast(msgContent, senderName, sendDate, roomNo) {
+	   const truncatedMsgContent = msgContent.length > 15 ? msgContent.substring(0, 15) + '...' : msgContent;
+       const toastHTML = `
+           <div class="toast fade" role="alert" aria-live="assertive" data-bs-autohide="true" aria-atomic="true" style="background-color: lightblue;">
+               <div class="toast-header" >
+                   <img src="/assets/images/main-logo.png" class="rounded me-2" alt="..." height="20">
+                   <span class="fw-semibold me-auto">채팅 알림</span>
+                   <small>방금</small>&nbsp;
+                   <small>${new Date(sendDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                   <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+               </div>
+               <div class="toast-body">
+                  ${senderName}: ${truncatedMsgContent}
 	                 <div style="text-align: right;">
 					    <a href="/chatList/${roomNo}"><button type="button" class="btn btn-primary btn-sm waves-effect waves-light"><i class="ri-mail-send-line"></i>&nbsp;이동</button></button></a>
 	    			</div>
-                 </div>
-             </div>
-         `;
+               </div>
+           </div>
+       `;
 
-         const toastContainer = document.getElementById('toast-container');
-         toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+       const toastContainer = document.getElementById('toast-container');
+       toastContainer.insertAdjacentHTML('beforeend', toastHTML);
 
-         const toastElement = toastContainer.lastElementChild;
-         const bsToast = new bootstrap.Toast(toastElement);
-         bsToast.show();
+       const toastElement = toastContainer.lastElementChild;
+       const bsToast = new bootstrap.Toast(toastElement);
+       bsToast.show();
 
-         toastElement.addEventListener('hidden.bs.toast', () => {
-             toastElement.remove();
-         });
-     }
-     </script>
+       toastElement.addEventListener('hidden.bs.toast', () => {
+           toastElement.remove();
+       });
+
+   }
+   </script>
+   
+   <script>   
+   // 알림 리스트 불러오기
+   document.addEventListener('DOMContentLoaded', function() {
+	    fetch('/alarms/topbar')
+	        .then(response => {
+	            if (!response.ok) {
+	                throw new Error('Network response was not ok');
+	            }
+	            return response.text(); // HTML 형태로 응답
+	        })
+	        .then(data => {
+	            const parser = new DOMParser();
+	            const doc = parser.parseFromString(data, 'text/html');
+	            const newAlarms = doc.querySelector('#all-noti-tab');
+
+	            // 기존 알림 리스트 업데이트
+	            if (newAlarms && newAlarms.querySelectorAll('.notification-item').length > 0) {
+	                document.querySelector('#all-noti-tab').innerHTML = newAlarms.innerHTML;
+	            } else {
+	                document.querySelector('#all-noti-tab').innerHTML = `
+	                    <div class="empty-notification-elem">
+	                        <div class="w-25 w-sm-50 pt-3 mx-auto">
+	                            <img src="/assets/images/svg/bell.svg" class="img-fluid" alt="user-pic">
+	                        </div>
+	                        <div class="text-center pb-5 mt-2">
+	                            <h5 class="fs-18 fw-semibold lh-base">알림이 없습니다.</h5>
+	                        </div>
+	                    </div>`;
+	            }
+	        })
+	   function addNotification(notificationMessage, notificationUrl) {
+	       const notificationItem = document.createElement('div');
+	       notificationItem.classList.add('notification-item', 'p-2', 'border-bottom');
+	       notificationItem.innerHTML = `<a href="${notificationUrl}" class="text-body">${notificationMessage}</a>`;
+	       
+	       // 알림 리스트 상단에 추가
+	       const allNotiTab = document.getElementById('all-noti-tab');
+	       allNotiTab.insertBefore(notificationItem, allNotiTab.firstChild); // 리스트 상단에 추가
+	
+	       // 결재 알림 탭에도 추가
+	       const approvalTabItem = document.createElement('div');
+	       approvalTabItem.classList.add('text-body', 'notification-item', 'd-block', 'dropdown-item', 'position-relative');
+	       approvalTabItem.innerHTML = `<div class="d-flex"><div class="flex-1"><a href="${notificationUrl}" class="text-body">${notificationMessage}</a></div></div>`;
+	       document.getElementById('approval-tab').appendChild(approvalTabItem);
+   }
+	});
+   
+
+   
+
+//알림 삭제 ㅠ 제발
+document.getElementById('deleteButton').addEventListener('click', function() {
+	console.log(1);
+	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+	const checkboxes = document.querySelectorAll('input.form-check-input:checked');
+	console.log(checkboxes);
+	
+    checkboxes.forEach(checkbox => {
+        const alarmNo = checkbox.getAttribute('data-alarm-no');
+        console.log(`Deleting alarm with ID: ${alarmNo}`);
+        fetch('/api/alarms/delete/'+alarmNo, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+		.then(response => {
+		    if (!response.ok) {
+		        throw new Error('Network response was not ok');
+		    }
+		    return response.json(); // 필요시 JSON 응답을 처리
+		})
+		.then(data => {
+		    console.log('Success:', data);
+		})
+		.catch(error => {
+		    console.error('There was a problem with the fetch operation:', error);
+		});
+		        // 알림 항목 삭제
+		        const alarmContainer = checkbox.closest('.d-flex');
+		        alarmContainer.remove();  // HTML에서 항목 제거
+		    })
+		})
+   
+    </script>
+	
 </body>
 
 </html>

@@ -22,6 +22,7 @@ import com.codenal.chat.repository.ChatParticipantsRepository;
 import com.codenal.chat.repository.ChatReadRepository;
 import com.codenal.chat.repository.ChatRoomRepository;
 import com.codenal.employee.domain.Employee;
+import com.codenal.employee.domain.EmployeeDto;
 import com.codenal.employee.repository.EmployeeRepository;
 
 import jakarta.transaction.Transactional;
@@ -55,11 +56,11 @@ public class ChatService {
 		Employee emp = employeeRepository.findByEmpId(Long.parseLong(empId));
 			empName.add(emp.getEmpName());
 		}
-
+		
 		// 1. 채팅방 정보 save
 		ChatRoom chatRoom = ChatRoom.builder()
-				.chatName(empName.toString().substring(1, empName.toString().length()-1))
-				.roomType(empIds.size()<=2?1:2)
+				.chatName(empIds.size() <=2 ? empName.toString().substring(1, empName.toString().length()-1) : roomDto.getChat_name())
+				.roomType(empIds.size()<=2?1 : 2)
 				.roomStatus('Y')
 				.build();
 		ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
@@ -301,4 +302,17 @@ public class ChatService {
 		}
 		return chatListDto;
 	}
+
+	public List<EmployeeDto> getActiveEmployeeListSearch(String username, String empSearch) {
+    	Long empId = Long.parseLong(username);
+    	List<Employee> empList = employeeRepository.findByEmpNameContainingOrDepartmentsDeptNameContaining(empId, empSearch);;
+    	
+    	List<EmployeeDto> dtoList = new ArrayList<EmployeeDto>();
+    	for(Employee e : empList) {
+    		EmployeeDto dto = new EmployeeDto().fromEntity(e);
+    		dtoList.add(dto);
+    	}
+    	return dtoList;
+	}
+
 }

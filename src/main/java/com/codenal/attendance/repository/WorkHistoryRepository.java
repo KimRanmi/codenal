@@ -13,13 +13,10 @@ import com.codenal.attendance.domain.WorkHistory;
 @Repository
 public interface WorkHistoryRepository extends JpaRepository<WorkHistory, Long> {
 
-    // 페이징을 지원하는 간결한 메서드
+    // 페이징을 지원하는 메서드
     Page<WorkHistory> findByEmployee_EmpId(Long empId, Pageable pageable);
 
-    // 날짜범위로 근무내역 조회
     Page<WorkHistory> findByEmployee_EmpIdAndWorkHistoryDateBetween(Long empId, LocalDate startDate, LocalDate endDate, Pageable pageable);
-    			
-    
     
     Optional<WorkHistory> findByEmployee_EmpIdAndWorkHistoryDate(Long empId, LocalDate workHistoryDate);
 

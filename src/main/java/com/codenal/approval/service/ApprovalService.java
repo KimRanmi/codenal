@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
 import com.codenal.approval.domain.ApprovalBaseFormType;
 import com.codenal.approval.domain.ApprovalCategory;
+import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFile;
 import com.codenal.approval.domain.ApprovalForm;
 import com.codenal.approval.domain.ApprovalFormDto;
@@ -70,7 +72,7 @@ public class ApprovalService {
    }
 
    // 상신리스트 => 조회 0-> 대기 , 1-> 진행중,  2->완료 , 3-> 반려 , 4->회수 
-   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id) {
+   public Page<Map<String, Object>> selectApprovalList(Pageable pageable,int num2,Long id, String title) {
 	  
 	  Employee emp = employeeRepository.findByEmpId(id);
 	  
@@ -79,7 +81,7 @@ public class ApprovalService {
 	  
 	  System.out.println(approvalCount);
      
-      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),pageable);
+      Page<Object[]> approvalList = approvalRepository.findList(num2,emp.getEmpId(),title,pageable);
 	  
 	  System.out.println(approvalList.getTotalElements());
       
@@ -97,7 +99,6 @@ public class ApprovalService {
          map.put("num", num);
          responseList.add(map);
          
-         System.out.println("나와라 : "+approver.getEmployee().getEmpName());
       }
       
       
@@ -105,13 +106,13 @@ public class ApprovalService {
    }
    
    // 수신리스트 조회
-   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,int num2,Long id) {
+   public Page<Map<String, Object>> selectApprovalinBoxList(Pageable pageable,String title,int num2,Long id) {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 		  
 		  System.out.println("num2 : "+num2);
-	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),pageable);
+	      Page<Object[]> approvalList = approvalRepository.findinboxList(num2,emp.getEmpId(),title,pageable);
 	      
 	      System.out.println("토탈 : "+approvalList.getTotalElements());
 	      
@@ -134,12 +135,12 @@ public class ApprovalService {
 	   }
    
    // 수신참조 리스트 조회
-   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,Long id) {
+   public Page<Map<String, Object>> selectReferrerList(Pageable pageable,String title,Long id) {
 		  
 		  Employee emp = employeeRepository.findByEmpId(id);
 		  System.out.println("로그인 한 사람 : "+emp.getEmpId());
 
-	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),pageable);
+	      Page<Object[]> referrerList = approvalRepository.findReferrerList(emp.getEmpId(),title,pageable);
 	      
 	      System.out.println(referrerList);
 	      
@@ -237,7 +238,7 @@ public class ApprovalService {
         case "연차":
             type = 2;
             break;
-        case "경조사휴가":
+        case "경조휴가":
             type = 3;
             break;
         case "병가":
@@ -251,7 +252,7 @@ public class ApprovalService {
                           .annualUsageStartDate((LocalDate)obj.get("시작일자"))
                           .annualUsageEndDate((LocalDate)obj.get("종료일자"))
                           .timePeriod((String)obj.get("반차시간대"))
-                          .totalDay((float)obj.get("사용일수"))
+                          .totalDay((Double)obj.get("사용일수"))
                           .build();
                               
          
@@ -355,7 +356,7 @@ public class ApprovalService {
 		        case "연차":
 		            type = 2;
 		            break;
-		        case "경조사휴가":
+		        case "경조휴가":
 		            type = 3;
 		            break;
 		        case "병가":
@@ -372,7 +373,7 @@ public class ApprovalService {
 		                          .annualUsageStartDate((LocalDate)obj.get("시작일자"))
 		                          .annualUsageEndDate((LocalDate)obj.get("종료일자"))
 		                          .timePeriod((String)obj.get("반차시간대"))
-		                          .totalDay((float)obj.get("사용일수"))
+		                          .totalDay((Double)obj.get("사용일수"))
 		                          .annualUsageNo(annualNo.getAnnualUsageNo())
 		                          .build();
 		                              
@@ -472,10 +473,47 @@ public class ApprovalService {
 				   				.formContent(content)
 				   				.build();
 		   return approvalFormRepository.save(af);
-	   }
+	   }				
+	   // 승인된 연차 신청서 목록 조회 메서드
+	    public List<ApprovalDto> getApprovedAnnualLeaves() {
+	        List<Approval> approvals = approvalRepository.findApprovedAnnualLeaves();
+	        return approvals.stream()
+	                .map(ApprovalDto::toDto)
+	                .collect(Collectors.toList());
+	    }
+	   
 	   
 	   // 메인화면 approvalcount
 	   public int approvalCount(Long empId, int i) {
 		   return approvalRepository.findByEmployeeEmpIdAndApprovalStatus(empId,i);
+	   }
+	   
+	   @Transactional
+	   public void approveAnnualLeave(Long approvalNo) {
+	       // 연차 신청서 승인 처리
+	       Approval approval = approvalRepository.findByApprovalNo(approvalNo);
+	       if (approval == null) {
+	           throw new IllegalStateException("존재하지 않는 전자결재 번호입니다.");
+	       }
+
+	       if (approval.getApprovalStatus() != 1) { // 상태가 승인 대기 상태인 경우만 승인
+	           throw new IllegalStateException("이미 처리된 전자결재입니다.");
+	       }
+
+	       approval.setApprovalStatus(2); // 승인 상태로 변경
+	       approvalRepository.save(approval);
+
+	       // 연차 사용 내역 반영
+	       AnnualLeaveUsage annualLeaveUsage = approval.getAnnualLeaveUsage();
+	       if (annualLeaveUsage != null) {
+	           Long empId = approval.getEmployee().getEmpId();
+	           LocalDate startDate = annualLeaveUsage.getAnnualUsageStartDate();
+	           LocalDate endDate = annualLeaveUsage.getAnnualUsageEndDate();
+
+	           // 출퇴근 관리 서비스 호출하여 연차 상태 반영
+	           for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+	               attendanceService.applyAnnualLeave(empId, date);
+	           } //
+	       }
 	   }
 }

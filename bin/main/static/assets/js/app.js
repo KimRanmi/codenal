@@ -982,9 +982,9 @@ File: Main Js File
 					if (document.getElementById("empty-cart")) {
 						document.getElementById("empty-cart").style.display = dropdownItemCart == 0 ? "block" : "none";
 					}
-					if (document.getElementById("checkout-elem")) {
+					/*if (document.getElementById("checkout-elem")) {
 						document.getElementById("checkout-elem").style.display = dropdownItemCart == 0 ? "none" : "block";
-					}
+					}*/
 				});
 			});
 			Array.from(document.getElementsByClassName("cartitem-badge")).forEach(function (e) {
@@ -1021,17 +1021,17 @@ File: Main Js File
 						if (elem.querySelector(".view-all")) {
 							elem.querySelector(".view-all").style.display = "none";
 						}
-						var emptyNotificationElem = elem.querySelector(".empty-notification-elem")
+						/*var emptyNotificationElem = elem.querySelector(".empty-notification-elem")
 						if (!emptyNotificationElem) {
 							elem.innerHTML += '<div class="empty-notification-elem">\
 							<div class="w-25 w-sm-50 pt-3 mx-auto">\
 								<img src="/assets/images/svg/bell.svg" class="img-fluid" alt="user-pic">\
 							</div>\
 							<div class="text-center pb-5 mt-2">\
-								<h6 class="fs-18 fw-semibold lh-base">Hey! You have no any notifications </h6>\
+								<h5 class="fs-18 fw-semibold lh-base">알림이 없습니다. </h5>\
 							</div>\
 						</div>'
-						}
+						}*/
 					}
 				});
 			}
@@ -1997,3 +1997,9 @@ if (mybutton) {
 		document.documentElement.scrollTop = 0;
 	}
 }
+
+
+
+
+
+

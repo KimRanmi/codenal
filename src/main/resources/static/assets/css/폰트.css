@@ -1,0 +1,27 @@
+@charset "utf-8";
+
+.notoSansThin {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 100;
+    color: #333;
+}
+.notoSansLight {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 300;
+    color: #333;
+}
+.notoSansRegular {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 400;
+    color: #333;
+}
+.notoSansMedium {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 600;
+    color: #333;
+}
+.notoSansBold {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 800;
+    color: #333;
+}

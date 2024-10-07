@@ -42,7 +42,9 @@ public class AlarmsApiController {
 
         // 로그인된 사용자의 empId 가져오기
         Long empId = Long.parseLong(userDetails.getUsername());
-
+        
+        System.out.println("알림 목록 불러오니");
+        
         return alarmsService.getAlarmsByEmp(empId);
     }
 

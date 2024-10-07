@@ -19,12 +19,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 @Builder
+@Setter
 @Table(name="annual_leave_usage")
 
 public class AnnualLeaveUsage {
@@ -41,7 +43,7 @@ public class AnnualLeaveUsage {
    private LocalDate annualUsageEndDate;	
    
    @Column(name="total_day")
-   private float totalDay;
+   private Double totalDay;
    
    @ManyToOne
     @JoinColumn(name="emp_id")
@@ -57,4 +59,9 @@ public class AnnualLeaveUsage {
    
    @OneToOne(mappedBy="annualLeaveUsage")
    private Approval approval;
+   
+   @Builder.Default
+   @Column(name = "processed")
+   private boolean processed = false;
+   
 }

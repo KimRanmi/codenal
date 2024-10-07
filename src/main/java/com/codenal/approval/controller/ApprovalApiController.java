@@ -1,6 +1,7 @@
 package com.codenal.approval.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.codenal.approval.domain.Approval;
+import com.codenal.approval.domain.ApprovalDto;
 import com.codenal.approval.domain.ApprovalFileDto;
 import com.codenal.approval.domain.ApprovalForm;
-import com.codenal.approval.domain.ApprovalFormDto;
 import com.codenal.approval.service.ApprovalFileService;
 import com.codenal.approval.service.ApprovalService;
 import com.codenal.approval.service.ApproverService;
@@ -213,7 +214,7 @@ public class ApprovalApiController {
 		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
 		
 		// 날짜 최신 날짜로 수정
-		LocalDate ldt = LocalDate.now();
+		LocalDateTime ldt = LocalDateTime.now();
 
 		// 타입 형변환
 		Integer form_code = Integer.parseInt(formCode);
@@ -298,7 +299,7 @@ public class ApprovalApiController {
 		approvalContent = approvalContent.replaceAll("<hr\\s*/?>", "<br>"); // <hr>를 <br>로 변환
 		
 		// 날짜 최신 날짜로 수정
-		LocalDate ldt = LocalDate.now();
+		LocalDateTime ldt = LocalDateTime.now();
 		
 
 		// 타입 형변환
@@ -392,21 +393,24 @@ public class ApprovalApiController {
 	// 전자결재 승인 (우선순위 순서대로)
 	@ResponseBody
 	@PostMapping("/approver/consent")
-	public Map<String,String> consentApprover(@RequestBody Map<String, String> request){
-		Map<String, String> resultMap = new HashMap<String, String>();
-		resultMap.put("res_code", "404");
-		Long no = Long.valueOf(request.get("approvalNo"));
-		Long loginId = Long.valueOf(request.get("loginId"));
-		
-		if(approverService.consentApprover(no,loginId)>0) {
-			resultMap.put("res_code","200");
-			resultMap.put("res_msg", "승인되었습니다.");
-		}
-		
-		System.out.println(resultMap);
-		
-		return resultMap;
+	public Map<String, String> consentApprover(@RequestBody Map<String, String> request) {
+	    Map<String, String> resultMap = new HashMap<>();
+	    resultMap.put("res_code", "404");
+
+	    Long approvalNo = Long.valueOf(request.get("approvalNo"));
+	    Long loginId = Long.valueOf(request.get("loginId"));
+
+	    if (approverService.consentApprover(approvalNo, loginId) > 0) {
+	        resultMap.put("res_code", "200");
+	        resultMap.put("res_msg", "승인되었습니다.");
+
+	        // 연차 신청서 승인 시 출퇴근 관리와 연동
+	        approvalService.approveAnnualLeave(approvalNo);
+	    }
+
+	    return resultMap;
 	}
+	
 	
 	// 전자결재 반려
 	@ResponseBody
@@ -498,4 +502,14 @@ public class ApprovalApiController {
 		}
 		return result;
 	}
+	
+		//승인된 연차 목록을 반환하는 api  ( 종우) 
+	@ResponseBody
+	@GetMapping("/api/approved-annual-leaves")
+	public ResponseEntity<List<ApprovalDto>> getApprovedAnnualLeaves() {
+	    List<ApprovalDto> approvedAnnualLeaves = approvalService.getApprovedAnnualLeaves();
+	    return ResponseEntity.ok().body(approvedAnnualLeaves);
+	}
+	
+	
 }

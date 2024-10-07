@@ -76,6 +76,8 @@ formData.addEventListener('submit', (e) => {
 		})
 			.then(response => response.json())
 			.then(data => {
+				
+				alert(data.res_msg);
 
 				const xhr = new XMLHttpRequest();
 				xhr.open("post", "/meetingRoomTimeCreate", true);

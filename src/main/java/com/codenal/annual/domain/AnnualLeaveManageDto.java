@@ -15,14 +15,19 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
-
 public class AnnualLeaveManageDto {
+
+
+    private Long annual_manage_no;
+    private Double annual_total_day;
+    private Double annual_used_day;
+    private Double annual_remain_day;
+    private Long emp_id;
+
+  
+
+
 	
-	private Long annual_manage_no;
-	private float annual_total_day;
-	private float annual_used_day;
-	private float annual_remain_day;
-	private Long emp_id;
 	
 	public AnnualLeaveManage toEntity(Employee employee) {
 		return AnnualLeaveManage.builder()
