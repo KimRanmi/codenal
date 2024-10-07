@@ -39,7 +39,8 @@ Give an example
 
 ## 기능 구현
 ### [메인 페이지]
-![메인페이지](Uploading 2024-10-07 (3).png…)
+![2024-10-07 (3)](https://github.com/user-attachments/assets/9630993a-60ad-4231-b53f-feec9ef63ef2)
+
 
 
 ## Built With
