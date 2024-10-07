@@ -29,17 +29,17 @@ Give examples
 ![](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 <br>
 
-### 프로젝트 기간
+## 프로젝트 기간
 
 
 <br>
 
-### 역할 분담
+## 역할 분담
 
 <br>
 
 
-### DB 설계
+## DB 설계
 ![2024-10-08 (13)](https://github.com/user-attachments/assets/10c8a238-0a2d-4bdb-88e4-3677a7a06c6e)
 <br>
 
