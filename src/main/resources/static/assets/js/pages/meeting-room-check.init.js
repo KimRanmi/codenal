@@ -63,8 +63,6 @@ formData.addEventListener('submit', (e) => {
 		for(let i=0; i<formData.reserve_time.length; i++){
 			listTime.push(formData.reserve_time[i].value);
 		}
-	
-		console.log(listTime);
 		
 		const payload = new FormData(formData);
 		fetch('/meetingRoomCreate', {
@@ -76,9 +74,6 @@ formData.addEventListener('submit', (e) => {
 		})
 			.then(response => response.json())
 			.then(data => {
-				
-				alert(data.res_msg);
-
 				const xhr = new XMLHttpRequest();
 				xhr.open("post", "/meetingRoomTimeCreate", true);
 				xhr.onreadystatechange = function() {
@@ -137,7 +132,6 @@ formData.addEventListener('submit', (e) => {
         },false);
         reader.addEventListener("loadend",function (event) {
             file.src = event.target.result;
-            console.log(file.src);
         },false);
         if (file) {
             reader.readAsDataURL(file);
@@ -249,7 +243,6 @@ formData.addEventListener('submit', (e) => {
                             sessionStorage.setItem('editInputValue', JSON.stringify(editObj));
                         }
                     } else {
-                        console.log('Form Action Not Found.');
                     }
                     window.location.replace("/apps-ecommerce-products");
                     return false;

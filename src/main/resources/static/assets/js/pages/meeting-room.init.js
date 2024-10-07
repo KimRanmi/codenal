@@ -25,6 +25,21 @@ var productThubnailSlider = new Swiper(".product-thumbnail-slider", {
 	},
 });
 
+for(let i=0; i<document.getElementById("size").value; i++){
+	
+	var date_range = document.getElementsByClassName('datePicker')[i].flatpickr({
+						dateFormat: "Y-m-d",
+			            minDate: "today",
+			            inline:"true",
+			            defaultDate: "today",
+			            disable: [
+							function(date){
+								return (date.getDay() == 0 || date.getDay() == 6);
+							}
+						]
+			        });
+}
+
 const csrfToken = document.getElementById('csrf_token').value;
 
 fetch('/meetingRoom', {
@@ -35,8 +50,6 @@ fetch('/meetingRoom', {
 })
 	.then(response => response.json())
 	.then(data => {
-		
-		console.log(data.meetingRoom.length);
 		for(let i=0; i<= data.meetingRoom.length; i++){
 			
 		document.getElementsByClassName("list-group")[0].innerHTML += "<a class='list-group-item list-group-item-action nav-link show'\
@@ -202,12 +215,16 @@ fetch('/meetingRoom', {
 		}
 	})*/
 	
+
+let reserveDate = "";
+
+const reserveDateCheck=(reserveDateCheck)=> {
+	reserveDate = reserveDateCheck.value.toString();
 	
+}
 
 const reserve=(event)=> {
 	/*event.preventDefault();*/
-	
-	console.log(event.value);
 	
 	let listTime = [];
 		
@@ -217,17 +234,14 @@ const reserve=(event)=> {
 			}
 		}
 	
-	console.log(listTime);
 	
 		let dateFormat = new Date();
 		let nowDay = new Date();
-		dateFormat.setDate(document.getElementById("meeting_room_reserve_date").value.substring(0,2))
+		dateFormat.setDate(document.getElementById("meeting_room_reserve_date").value)
 	let vali_check = false;
 	let vali_text = "";
 	if (listTime == "") {
 		vali_text += '예약 시간을 선택하세요.';
-	} else if (dateFormat < nowDay) {
-		vali_text += '지난 날짜는 예약이 불가능합니다.';
 	} else {
 		vali_check = true;
 	}
@@ -240,9 +254,7 @@ const reserve=(event)=> {
 		const empId = document.getElementById("empId").value;
 		
 		
-		
-		console.log(document.getElementById("meeting_room_reserve_date").value.substring(0,2));
-		let reserveDate = dateFormat.getFullYear()+"-"+(dateFormat.getMonth()+1).toString().padStart(2, '0')+"-"+dateFormat.getDate().toString().padStart(2, '0');
+		/*let reserveDate = dateFormat.getFullYear()+"-"+(dateFormat.getMonth()+1).toString().padStart(2, '0')+"-"+dateFormat.getDate().toString().padStart(2, '0');*/
 		
 		/*const payload = new FormData(formData);
 		console.log(reserveDate);*/
@@ -279,7 +291,6 @@ const deleteMeetingRoom=(event) => {
 	/*event.preventDefault();*/
 	
 	let meetingRoomNo = event.value;
-	console.log(meetingRoomNo);
 	if(confirm("해당 회의실을 삭제하시겠습니까?")){
 		fetch('/meetingRoomDelete/'+meetingRoomNo,{
 			method:'delete',

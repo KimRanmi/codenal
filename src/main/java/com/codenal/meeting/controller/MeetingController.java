@@ -46,6 +46,26 @@ public class MeetingController {
 		this.fileService = fileService;
 	}
 	
+	// 회의실 예약 가능 시간 수정
+	@ResponseBody
+	@PostMapping("/meetingRoomTimeModify")
+	public void MeetingRoomTimeModify(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String[] time = request.getParameter("time").split(",");
+		int roomNo = Integer.parseInt(request.getParameter("roomNo"));
+		String[][] times = new String[time.length][2];
+		for (int i = 0; i < time.length; i++) {
+			times[i] = time[i].split("~");
+		}
+		LocalTime[][] toTime = new LocalTime[time.length][2];
+		for (int i = 0; i < times.length; i++) {
+			for (int j = 0; j < times[i].length; j++) {
+				toTime[i][j] = LocalTime.parse(times[i][j]);
+			}
+		}
+		meetingRoomService.MeetingRoomTimeModify(toTime , roomNo);
+	}
+	
 	// 회의실 수정
 	@ResponseBody
 	@PostMapping("/meetingRoomModify")
