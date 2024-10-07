@@ -497,31 +497,29 @@
 						<!-- 알림 드롭 메뉴 끝 -->
 						<!----------------------------------- 알림 끝 ----------------------------------------->
 						
-
-						 <div class="dropdown ms-sm-3 header-item topbar-user">
-                            <button type="button" class="btn" data-bs-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                                <span class="d-flex align-items-center">
-                                    <!-- 프로필 이미지: 조건부 표현식 사용 -->
-                                    <img class="rounded-circle header-profile-user"
-                                        th:if="${empDto != null and empDto.empProfilePicture != null}"
-                                        th:src="${empDto.empProfilePicture}"
-                                        alt="Header Avatar" width="40" height="40">
-                                    <img class="rounded-circle header-profile-user"
-                                        th:unless="${empDto != null and empDto.empProfilePicture != null}"
-                                        src="/assets/images/users/user-dummy-img.jpg"
-                                        alt="Header Avatar" width="40" height="40">
-                                    <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-                                            <span th:text="${empDto != null ? empDto.empName : 'Guest'}"></span>
-                                            <span th:text="${empDto != null ? empDto.jobName : ''}"></span>
-                                        </span>
-                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
-                                            <span th:text="${empDto != null ? empDto.deptName : ''}"></span>
-                                        </span>
-                                    </span>
-                                </span>
-                            </button>
+						<div class="dropdown ms-sm-3 header-item topbar-user">
+							<button type="button" class="btn" data-bs-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="false">
+								<span class="d-flex align-items-center"> <!-- 프로필 이미지: 조건부 표현식 사용 -->
+									<img class="rounded-circle header-profile-user"
+									th:if="${empDto != null and empDto.empProfilePicture != null}"
+									th:src="${empDto.empProfilePicture}" alt="Header Avatar"
+									width="40" height="40"> <img
+									class="rounded-circle header-profile-user"
+									th:unless="${empDto != null and empDto.empProfilePicture != null}"
+									src="/assets/images/users/user-dummy-img.jpg" alt="Header Avatar"
+									width="40" height="40"> <span class="text-start ms-xl-2">
+										<span
+										class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
+											<span th:text="${empDto != null ? empDto.empName : 'Guest'}"></span>
+											<span th:text="${empDto != null ? empDto.jobName : ''}"></span>
+									</span> <span
+										class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
+											<span th:text="${empDto != null ? empDto.deptName : ''}"></span>
+									</span>
+								</span>
+								</span>
+							</button>
 							<div class="dropdown-menu dropdown-menu-end">
 								<!-- item-->
 								<h6 class="dropdown-header">어서오세요!</h6>

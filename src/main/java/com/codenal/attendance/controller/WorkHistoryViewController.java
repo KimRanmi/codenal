@@ -49,6 +49,8 @@ public class WorkHistoryViewController {
     public String showWorkHistoryPage(
             @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "month", required = false) Integer month,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate,
             @PageableDefault(size = 10, sort = "workHistoryDate", direction = Sort.Direction.DESC) Pageable pageable, 
             Model model) {
 
@@ -63,11 +65,11 @@ public class WorkHistoryViewController {
         }
 
         // 시작일과 종료일 계산
-        LocalDate startDate = selectedYearMonth.atDay(1);
-        LocalDate endDate = selectedYearMonth.atEndOfMonth();
+        LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : selectedYearMonth.atDay(1);
+        LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : selectedYearMonth.atEndOfMonth();
 
         // 근무 내역 조회
-        Page<WorkHistoryDto> workHistories = workHistoryService.getHistoriesByRange(empId, startDate, endDate, pageable);
+        Page<WorkHistoryDto> workHistories = workHistoryService.getHistoriesByRange(empId, start, end, pageable);
 
         // 모델에 데이터 추가
         model.addAttribute("workHistories", workHistories);
@@ -80,6 +82,10 @@ public class WorkHistoryViewController {
         String currentMonth = selectedYearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM"));
         model.addAttribute("currentMonth", currentMonth);
 
-        return "apps/workHistory"; // templates/apps/workHistory.html 파일을 렌더링
+        // 검색 후 날짜 필드는 초기화
+        model.addAttribute("startDate", null);
+        model.addAttribute("endDate", null);
+
+        return "apps/workHistory";
     }
 }

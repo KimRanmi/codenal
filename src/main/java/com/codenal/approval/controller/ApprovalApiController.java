@@ -403,7 +403,6 @@ public class ApprovalApiController {
 	    if (approverService.consentApprover(approvalNo, loginId) > 0) {
 	        resultMap.put("res_code", "200");
 	        resultMap.put("res_msg", "승인되었습니다.");
-
 	    }
 
 	    return resultMap;

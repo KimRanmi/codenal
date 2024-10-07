@@ -45,4 +45,5 @@ public interface DocumentRepository extends JpaRepository<Documents, Long> {
         // 직원 ID에 따른 전체 문서 용량 합산 (long으로 반환)
         @Query("SELECT SUM(d.docSize) FROM Documents d WHERE d.docEmpId = :empId")
         Long sumDocSize(@Param("empId") Long empId);
+        
 }

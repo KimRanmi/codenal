@@ -43,36 +43,35 @@ import com.codenal.security.vo.SecurityUser;
 		    public String showAttendancePage(
 		            @RequestParam(value = "year", required = false) Integer year,
 		            @RequestParam(value = "month", required = false) Integer month,
+		            @RequestParam(value = "startDate", required = false) String startDate,
+		            @RequestParam(value = "endDate", required = false) String endDate,
 		            @PageableDefault(size = 10, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable, 
 		            Model model) {
 
-		         Long empId = getCurrentUserId();
+		        Long empId = getCurrentUserId();
 
-		        // 선택된 연도와 월이 없으면 현재 연도와 월로 설정
-		        YearMonth selectedYearMonth;
-		        if (year != null && month != null) {
-		            selectedYearMonth = YearMonth.of(year, month);
-		        } else {
-		            selectedYearMonth = YearMonth.now();
-		        }
-
-		        // 시작일과 종료일 계산
-		        LocalDate startDate = selectedYearMonth.atDay(1);
-		        LocalDate endDate = selectedYearMonth.atEndOfMonth();
+		        // 연도와 월 기본값 설정
+		        YearMonth selectedYearMonth = (year != null && month != null) ? YearMonth.of(year, month) : YearMonth.now();
+		        
+		        // 검색 기간이 없는 경우 기본값 설정
+		        LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : selectedYearMonth.atDay(1);
+		        LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : selectedYearMonth.atEndOfMonth();
 
 		        // 출퇴근 기록 조회
-		        Page<AttendanceDto> attendances = attendanceService.getAttendancesByDateRange(empId, startDate, endDate, pageable);
+		        Page<AttendanceDto> attendances = attendanceService.getAttendancesByDateRange(empId, start, end, pageable);
 
-		        // 모델에 데이터 추가
+		        // 모델에 검색 결과 및 페이지 정보 추가
 		        model.addAttribute("attendances", attendances);
 		        model.addAttribute("currentPage", attendances.getNumber());
 		        model.addAttribute("totalPages", attendances.getTotalPages());
-		        model.addAttribute("selectedYear", selectedYearMonth.getYear());
-		        model.addAttribute("selectedMonth", selectedYearMonth.getMonthValue());
 
-		        // 현재 선택된 연도와 월을 "yyyy.MM" 형식으로 포맷
+		        // 선택된 연도와 월 정보 추가
 		        String currentMonth = selectedYearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM"));
 		        model.addAttribute("currentMonth", currentMonth);
+
+		        // 검색 후 날짜 필드는 초기화
+		        model.addAttribute("startDate", null);
+		        model.addAttribute("endDate", null);
 
 		        return "apps/attendance";
 		    }

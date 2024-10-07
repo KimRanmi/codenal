@@ -34,6 +34,7 @@ import com.codenal.approval.repository.ApprovalFormRepository;
 import com.codenal.approval.repository.ApprovalRepository;
 import com.codenal.approval.repository.ApproverRepository;
 import com.codenal.approval.repository.ReferrerRepository;
+import com.codenal.attendance.service.AttendanceService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
@@ -54,6 +55,7 @@ public class ApprovalService {
    private final ReferrerRepository referrerRepository;
    private final AlarmsRepository alarmsRepository;
 
+
    @Autowired
    public ApprovalService(ApprovalRepository approvalRepository, 
          EmployeeRepository employeeRepository,
@@ -65,6 +67,7 @@ public class ApprovalService {
          ApproverRepository approverRepository,
          ReferrerRepository referrerRepository,
          AlarmsRepository alarmsRepository) {
+
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -258,7 +261,7 @@ public class ApprovalService {
                           .annualUsageStartDate((LocalDate)obj.get("시작일자"))
                           .annualUsageEndDate((LocalDate)obj.get("종료일자"))
                           .timePeriod((String)obj.get("반차시간대"))
-                          .totalDay((Double)obj.get("사용일수"))
+                          .totalDay(((Number)obj.get("사용일수")).doubleValue())
                           .build();
                               
          
