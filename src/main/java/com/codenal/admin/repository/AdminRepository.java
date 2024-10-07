@@ -22,6 +22,7 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	@Query("SELECT e FROM Employee e WHERE e.empId = :empId AND e.empAuth = :empAuth")
 	Page<Employee> searchByEmpId(@Param("empId") Long empId, @Param("empAuth") String empAuth, Pageable pageable);
 
+
 	// 이름
 	Page<Employee> findByEmpNameContainingAndEmpAuth(String empName, String empAuth, Pageable pageable);
 
@@ -37,20 +38,21 @@ public interface AdminRepository extends JpaRepository<Employee, Long> {
 	// 전체
 	@Query("SELECT e FROM Employee e " +
 		       "WHERE e.empAuth = :empAuth " +
-		       "AND (:empStatus IS NULL OR e.empStatus = :empStatus) " +  // 재직 상태 필터링
+		       "AND (:empStatus IS NULL OR e.empStatus = :empStatus) " + 
 		       "AND (" +
-		       "(COALESCE(:empId, NULL) IS NULL OR CAST(e.empId AS string) LIKE %:keyword%) " +  // 사번은 문자열로 변환하여 LIKE 연산
-		       "OR e.empName LIKE %:keyword% " +       // 직원명
-		       "OR e.departments.deptName LIKE %:keyword% " +  // 부서명
-		       "OR e.jobs.jobName LIKE %:keyword% " +  // 직급명
-		       "OR e.empPhone LIKE %:keyword%" +       // 전화번호
+		       "(COALESCE(:empId, NULL) IS NULL OR e.empId = :empId) " +  // 사번은 숫자로 정확하게 매칭
+		       "OR e.empName LIKE %:keyword% " +       
+		       "OR e.departments.deptName LIKE %:keyword% " +
+		       "OR e.jobs.jobName LIKE %:keyword% " +  
+		       "OR e.empPhone LIKE %:keyword%" +       
 		       ")")
 		Page<Employee> searchByMultipleFields(
 		    @Param("empAuth") String empAuth, 
-		    @Param("empStatus") String empStatus,  // 재직 상태 (필요 없을 경우 null)
-		    @Param("empId") Long empId,  // 사번 (필요 없을 경우 null)
+		    @Param("empStatus") String empStatus,
+		    @Param("empId") Long empId,  // 사번 검색 (필요 없을 경우 null)
 		    @Param("keyword") String keyword,  // 검색어 (사번, 직원명 등)
 		    Pageable pageable);
+
 
 
 

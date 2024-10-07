@@ -111,29 +111,29 @@ public class DeptService {
 	 */
 
 	// 부서명 수정
-	@Transactional
-	public Departments editDepartment(DepartmentsDto dto) { 
-
-		if (departmentsRepository.existsByDeptNameAndDeptNoNot(dto.getDeptName(), dto.getDeptNo())) {
-			throw new IllegalArgumentException("이미 존재하는 부서명입니다.");
-		}
-
-		DepartmentsDto temp = editDeptName(dto.getDeptNo());
-		temp.setDeptName(dto.getDeptName());
-
-		Departments dept = temp.toEntity();
-		return departmentsRepository.save(dept);
-	}
-
-
-	public DepartmentsDto editDeptName(Long dept_no) {
-		Departments d = departmentsRepository.findByDeptNo(dept_no);
-
-		DepartmentsDto dto = DepartmentsDto.builder()
-				.deptNo(d.getDeptNo())	
-				.deptName(d.getDeptName())
-				.build();
-
-		return dto;
-	}
+//	@Transactional
+//	public Departments editDepartment(DepartmentsDto dto) { 
+//
+//		if (departmentsRepository.existsByDeptNameAndDeptNoNot(dto.getDeptName(), dto.getDeptNo())) {
+//			throw new IllegalArgumentException("이미 존재하는 부서명입니다.");
+//		}
+//
+//		DepartmentsDto temp = editDeptName(dto.getDeptNo());
+//		temp.setDeptName(dto.getDeptName());
+//
+//		Departments dept = temp.toEntity();
+//		return departmentsRepository.save(dept);
+//	}
+//
+//
+//	public DepartmentsDto editDeptName(Long dept_no) {
+//		Departments d = departmentsRepository.findByDeptNo(dept_no);
+//
+//		DepartmentsDto dto = DepartmentsDto.builder()
+//				.deptNo(d.getDeptNo())	
+//				.deptName(d.getDeptName())
+//				.build();
+//
+//		return dto;
+//	}
 }

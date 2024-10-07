@@ -170,7 +170,7 @@ public class AdminService {
             case 1: // 전체 검색
                 adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, "", pageable);
                 break;
-            case 2: // 사번 검색 (부분 검색 가능)
+            case 2: // 사번 검색 
                 adminSearchTwo = adminRepository.searchByMultipleFields("USER", null, null, searchText, pageable);
                 break;
             case 3: // 직원명 검색
