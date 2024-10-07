@@ -15,7 +15,7 @@ Give examples
 ```
 
 ## 📺 개발환경
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=yohan050605)](https://github.com/anuraghazra/github-readme-stats)
+
 ![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
 ![](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
 ![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
@@ -25,11 +25,11 @@ Give examples
 ![](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
 ![](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 
+### 프로젝트 기간
+
+
+
 ### 역할 분담
-
-
-
-### And coding style tests
 
 Explain what these tests test and why
 
@@ -37,9 +37,10 @@ Explain what these tests test and why
 Give an example
 ```
 
-## Deployment
+## 기능 구현
+### [메인 페이지]
+![Uploading 2024-10-07 (3).png…]()
 
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
