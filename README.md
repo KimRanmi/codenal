@@ -6,7 +6,7 @@
 * 직원들은 개인 업무에 도움될 뿐만 아니라 팀원들과 소통할 수 있는 다양한 서비스들을 이용할 수 있습니다.
 * 관리자는 직원들의 원활한 업무를 위해 서비스 설정에 권한을 가질 수 있고, 전 직원들을 관리할 수 있습니다.
 
-### 팀원 구성
+## 팀원 구성
 
 What things you need to install the software and how to install them
 
