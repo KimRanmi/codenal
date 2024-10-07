@@ -29,6 +29,8 @@ public interface AlarmsRepository extends JpaRepository<Alarms, Long> {
     List<Alarms> findAlarmsBeforeDate(@Param("date") LocalDateTime date);
     
     // 알림 조회
-    Alarms findByAlarmReferenceNo(Long referenceNo);
+    Alarms findByAlarmReferenceNoAndAlarmType(Long referenceNo,String type);
+    
+    
 
 }

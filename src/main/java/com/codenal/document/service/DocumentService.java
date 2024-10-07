@@ -89,10 +89,33 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
-    // 문서를 복원하는 메서드 (휴지통에서 개인 문서로 복원, 상태를 0으로 변경)
+   
+    // 문서를 복원하는 메서드 (휴지통에서 원래 상태로 복원)
+    @Transactional
     public void restoreDocuments(List<Long> docIds) {
         List<Documents> documents = documentRepository.findAllById(docIds);
-        documents.forEach(document -> document.setDocStatus(0)); // 상태를 개인 문서(0)로 변경
+        for (Documents document : documents) {
+            // 문서가 공유된 상태인지 확인
+            boolean isShared = documentSharedUsersRepository.existsByDocSharedNo(document.getDocNo());
+            
+            if (isShared) {
+                // 공유 문서로 복원
+                // 즐겨찾기 상태도 유지
+                if (document.getDocStatus() == STATUS_SHARED_FAVORITE) {
+                    document.setDocStatus(STATUS_SHARED_FAVORITE);
+                } else {
+                    document.setDocStatus(STATUS_SHARED);
+                }
+            } else {
+                // 개인 문서로 복원
+                // 즐겨찾기 상태도 유지
+                if (document.getDocStatus() == STATUS_PERSONAL_FAVORITE) {
+                    document.setDocStatus(STATUS_PERSONAL_FAVORITE);
+                } else {
+                    document.setDocStatus(STATUS_PERSONAL);
+                }
+            }
+        }
         documentRepository.saveAll(documents);
     }
 
@@ -119,14 +142,21 @@ public class DocumentService {
 
  // 공유받은 문서 조회
     public List<DocumentDto> getDocumentsSharedWithMe(Long empId) {
-        // 공유받은 문서를 조회하려면 DocumentSharedUsers 테이블을 통해 문서 ID를 가져와야 함
+        // DocumentSharedUsers 테이블을 통해 공유된 문서 ID를 가져옴
         List<DocumentSharedUsers> sharedUsers = documentSharedUsersRepository.findByDocSharedWithEmpId(empId);
         List<Documents> documents = sharedUsers.stream()
                 .map(DocumentSharedUsers::getDocuments)
                 .collect(Collectors.toList());
 
+        // 문서에서 등록자의 정보 (employee)를 제대로 로드하여 DTO로 변환
         return documents.stream()
-                .map(DocumentDto::fromEntity)
+                .map(document -> {
+                    // 여기서 employee를 확인하고 uploaderName을 설정
+                    String uploaderName = (document.getEmployee() != null) ? document.getEmployee().getEmpName() : "Unknown";
+                    DocumentDto documentDto = DocumentDto.fromEntity(document);
+                    documentDto.setUploaderName(uploaderName);  // uploaderName을 설정
+                    return documentDto;
+                })
                 .collect(Collectors.toList());
     }
     

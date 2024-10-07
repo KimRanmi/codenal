@@ -326,10 +326,10 @@
                const content = contentEditor.getHTML();
                
                payload.append("approval_content", content);
-            payload.append("agree", agree);
-            payload.append("approver",approver);
-            payload.append("references", references);
-            payload.append("emp_id",emp_id);
+	           payload.append("agree", agree);
+	           payload.append("approver",approver);
+	           payload.append("references", references);
+	           payload.append("emp_id",emp_id);
                
             payload.forEach((value, key) => {
                 console.log(`${key}: ${value}`);

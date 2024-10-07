@@ -17,18 +17,13 @@ public interface AnnualLeaveUsageRepository extends JpaRepository <AnnualLeaveUs
 
 	AnnualLeaveUsage findByAnnualUsageNo(Long annualUsageNo);
 	
-	 List<AnnualLeaveUsage> findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
-		        Long empId, LocalDate startDate, LocalDate endDate);
-	 // 페이지네이션 적용된 메서드
-//	    Page<AnnualLeaveUsage> findByEmployee_EmpIdAndAnnualUsageStartDateBetween(
-//	            Long empId, LocalDate startDate, LocalDate endDate, Pageable pageable);
-
 	    // 사용자의 모든 연차 사용 내역 조회 (페이지네이션 적용)
 	    Page<AnnualLeaveUsage> findByEmployee_EmpId(Long empId, Pageable pageable);
 	    
 	    
-	    Page<AnnualLeaveUsage> findByEmployee_EmpIdAndAnnualUsageStartDateLessThanEqualAndAnnualUsageEndDateGreaterThanEqual(
-	    	    Long empId, LocalDate startDate, LocalDate endDate, Pageable pageable);
+	 // 특정 월의 연차 사용 내역만 가져오는 메소드 추가
+	    Page<AnnualLeaveUsage> findByEmployee_EmpIdAndAnnualUsageStartDateBetween(
+	        Long empId, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
 	}
 

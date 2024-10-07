@@ -28,7 +28,7 @@
 
 		<div class="row">
 
-			
+			<a onclick=""></a>
 
 			<div class="col-xxl-4 col-xl-6">
 				<div class="card">
@@ -88,6 +88,7 @@
 						</div>
 					</div>
 				<div class="tab-content text-muted mt-3 mt-lg-0">
+					<input type="hidden" th:value="${#lists.size(meetingRoom)}" id="size">
 					<div th:if="${!#lists.isEmpty(meetingRoom)}" class='tab-pane fade meetingRoomActive' th:each="meetingRoomDetail : ${meetingRoom}" id='meetingRoomDetail' th:attr="id=meetingRoomDetail+${meetingRoomDetail.meeting_room_no}"
 						role='tabpanel' aria-labelledby='custom-v-pills-home-tab'>
 						<div class='card-header align-items-center d-flex'>
@@ -136,26 +137,19 @@
 													<input type="hidden" id="empAuth" th:value="${empAuth}">
 													<div class='row'>
 														<div class='col-lg-7 mb-4'>
-															<div class='mt-3 upcoming-scheduled rangeMode animate arrowTop arrowLeft open'>
+															<div class='mt-3'>
 															<input type="hidden" th:value="${nowDate.getYear}" id="nowYear">
 															<input type="hidden" th:value="${nowDate.getMonthValue}" id="nowMonth">
 															<input type="hidden" th:value="${nowDate.getDayOfMonth}" id="nowDay">
-																<input type='text' class='form-control' name="meeting_room_reserve_date" id="meeting_room_reserve_date"
-																	data-provider='flatpickr' data-date-format='d M, Y'
-																	data-deafult-date='today' data-inline-date='true'>
+																<input type='text' class='form-control datePicker' name="meeting_room_reserve_date" id="meeting_room_reserve_date"
+																onchange="reserveDateCheck(this);">
 															</div>
 														</div>
 														<div class='col-xl-5'>
 															<h5 class='fs-16 fw-bold' style="font-family: 'Noto Sans KR', sans-serif;">예약 시간</h5>
 																<div class='mb-3 mt-3'>
 																	<h5 class="fs-12 fw-bold text-muted" style="font-family: 'Noto Sans KR', sans-serif;">오전</h5>
-																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전') && !meetingRoomTimeDetail.meeting_room_end_time.isAfter(#calendars.createNow())}">
-																		<input type="checkbox" disabled="disabled" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
-																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
-																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
-																		style='width: 120px'><span th:text="${meetingRoomTimeDetail.meeting_room_start_time}"></span> ~ <span th:text="${meetingRoomTimeDetail.meeting_room_end_time}"></span></label>
-																	</th:block>
-																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전') && meetingRoomTimeDetail.meeting_room_end_time.isAfter(#calendars.createNow())}">
+																	<th:block th:each="meetingRoomTimeDetail : ${meetingRoomTime}" th:if="${meetingRoomTimeDetail.meeting_room_ampm.equals('오전')}">
 																		<input type="checkbox" class='btn-check reserve_time' name="meeting_room_reserve_time_no" th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}" id='btnradio' th:attr="id=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}" 
 																		autocomplete='off' th:value="${meetingRoomTimeDetail.meeting_room_time_no}"> <label th:if="${meetingRoomTimeDetail.meeting_room_no == meetingRoomDetail.meeting_room_no}"
 																		class='btn btn-outline-primary' for='btnradio' th:attr="for=btnradio+${meetingRoomTimeDetail.meeting_room_time_no}"
