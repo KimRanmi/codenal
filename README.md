@@ -1,5 +1,4 @@
-<img src="https://capsule-render.vercel.app/api?type=모양&color=색상코드&height=높이&section=header&text=텍스트&fontSize=텍스트크기" />
-출처: https://hulrud.tistory.com/3 [주독야독:티스토리]
+![header](https://capsule-render.vercel.app/api?type=wave&color=auto&height=300&section=header&text=capsule%20render&fontSize=90)
 # WithXWork 그룹웨어 사이트
 [사진 첨부]
 
