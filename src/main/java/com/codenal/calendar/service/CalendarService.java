@@ -131,7 +131,7 @@ public class CalendarService {
 			if(approvalDto.getAnnual_leave_usage_no() != null) {
 				
 				AnnualLeaveUsage annualLeaveList = annualLeaveUsageRepository.findByAnnualUsageNo(approvalDto.getAnnual_leave_usage_no());
-				System.out.println(approvalDto);
+	
 				new AnnualLeaveUsageDto();
 				AnnualLeaveUsageDto annualLeaveListDto = AnnualLeaveUsageDto.toDto(annualLeaveList);
 				CalendarDto annualLeaveAdd = new CalendarDto();
@@ -161,7 +161,6 @@ public class CalendarService {
 	}
 	
 	public Calendar createEvent(CalendarDto dto) {
-		System.out.println("확인"+dto);
 		Calendar calendar = Calendar.builder()
 				.calendarScheduleCategory(dto.getCalendar_schedule_category())
 				.calendarScheduleTitle(dto.getCalendar_schedule_title())

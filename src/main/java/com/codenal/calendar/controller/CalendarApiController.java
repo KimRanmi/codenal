@@ -87,7 +87,6 @@ public class CalendarApiController {
 	public Map<String, Object> selectEvent(@PathVariable("id") Long writer) {
 		Map<String, Object> resultEvent = new HashMap<String, Object>();
 		List<CalendarDto> eventList = calendarService.selectEvent(writer);
-		System.out.println(eventList);
 		JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
  
@@ -117,7 +116,6 @@ public class CalendarApiController {
 	@ResponseBody
 	@PostMapping("/create/event")
 	public void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("확확인");
 		CalendarDto dto = new CalendarDto();
 		dto.setCalendar_schedule_category(Long.parseLong(request.getParameter("category")));
 		dto.setCalendar_schedule_title(request.getParameter("title"));
@@ -131,7 +129,6 @@ public class CalendarApiController {
 		if(endDate != null && endDate.equals("null") == false) {
 			dto.setCalendar_schedule_end_date(LocalDateTime.parse(endDate, dtf));
 		}
-		System.out.println("확확인"+dto);
 		calendarService.createEvent(dto);
 	}
 
