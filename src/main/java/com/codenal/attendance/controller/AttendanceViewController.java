@@ -73,6 +73,6 @@ import com.codenal.security.vo.SecurityUser;
 		        model.addAttribute("startDate", null);
 		        model.addAttribute("endDate", null);
 
-		        return "authentication/auth-404-cover";
+		        return "apps/attendance";
 		    }
 	}
