@@ -142,7 +142,7 @@ public class ApproverService {
          
          Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(updateApproval.getApprovalNo(),firstId);
          Map<String,Object> map = new HashMap<>();
-         map.put("approver", approver);
+         map.put("approver", aor);
          notification(map,"updateApprover");
          
          // 결재자 등록
