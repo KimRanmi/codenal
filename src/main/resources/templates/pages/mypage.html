@@ -17,10 +17,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- 폰트 -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+	rel="stylesheet">
 
 <style>
-* {font-family: "Noto Sans KR", sans-serif !important;} 
+* {
+	font-family: "Noto Sans KR", sans-serif !important;
+}
 /* 모달 관련 CSS 수정 */
 .modal-dialog {
 	margin: 0; /* 여백 제거 */
@@ -50,9 +54,9 @@
 /* 프로필 배경의 단색 진한 남색 배경 설정 */
 /* 기존의 그라데이션 효과를 없애고, 진한 남색으로 변경 */
 .profile-wid-bg.profile-setting-img {
-    background-color: #003366 !important; /* 진한 남색 배경 설정 */
-    background-image: none !important; /* 그라데이션 제거 */
-    height: 150px !important; /* 필요에 따라 세로폭 조정 가능 */
+	background-color: #003366 !important; /* 진한 남색 배경 설정 */
+	background-image: none !important; /* 그라데이션 제거 */
+	height: 150px !important; /* 필요에 따라 세로폭 조정 가능 */
 }
 </style>
 
@@ -62,10 +66,7 @@
 
 	<div layout:fragment="content">
 		<div class="position-relative mx-n4 mt-n4">
-			<div class="profile-wid-bg profile-setting-img">
-				
-				
-			</div>
+			<div class="profile-wid-bg profile-setting-img"></div>
 		</div>
 
 		<div class="row">
@@ -211,16 +212,15 @@
 													th:value="${session.signatureImage != null ? session.signatureImage : '서명이미지 없음'}"
 													readonly>
 												<button type="button" class="btn btn-primary btn-sm"
-													data-bs-toggle="modal" data-bs-target="#flipModal" disabled>
+													data-bs-toggle="modal" data-bs-target="#flipModal">
 													등록/수정</button>
-
 											</div>
 										</div>
 										<!--end col-->
 										<div id="flipModal" class="modal fade flip" tabindex="-1"
 											aria-labelledby="flipModalLabel" aria-hidden="true">
 											<div class="modal-dialog modal-dialog-centered">
-												<div class="modal-content"> 
+												<div class="modal-content">
 													<div class="modal-header">
 														<h5 class="modal-title" id="flipModalLabel">서명 등록/수정</h5>
 														<button type="button" class="btn-close"
@@ -460,11 +460,12 @@
     .then(data => {
         if (data.success) {
             if (dataURL === '') {
-                document.getElementById('signatureImage').value = '서명이미지 없음';
-                // 캔버스를 지운 상태로 업데이트
+                document.getElementById('signatureImage').value = '';  // 빈 문자열로 설정
+                document.getElementById('signImageInput').value = '서명이미지 없음';  // 표시용 필드 업데이트
                 clearCanvas();
             } else {
                 document.getElementById('signatureImage').value = data.filePath;
+                document.getElementById('signImageInput').value = data.filePath;
             }
             Swal.fire({
                 icon: 'success',
@@ -472,11 +473,11 @@
                 text: '서명이 성공적으로 저장되었습니다.'
             });
         } else {
-        	 Swal.fire({
-                 icon: 'error',
-                 title: '실패',
-                 text: '서명 저장에 실패했습니다: ' + data.error
-             });
+            Swal.fire({
+                icon: 'error',
+                title: '실패',
+                text: '서명 저장에 실패했습니다: ' + data.error
+            });
         }
     })
     .catch(error => {
