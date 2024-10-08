@@ -85,10 +85,12 @@ public class EmployeeController {
                     if (signatureImage.trim().isEmpty()) {
                         employee.setEmpSignImage(null);  // 서명 이미지 삭제
                         session.setAttribute("signatureImage", null);  // 세션에서 제거
+                       
                     } else {
                         // 서명 이미지가 존재할 경우 저장
                         employee.setEmpSignImage(signatureImage);  // 서명 이미지 저장
-                        session.setAttribute("signatureImage", signatureImage);  // 세션에 저장
+                        session.setAttribute("signatureImage", signatureImage);
+                        response.put("filePath", signatureImage);// 세션에 저장
                     }
 
                     response.put("filePath", signatureImage);  // 클라이언트에 반환할 서명 정보
