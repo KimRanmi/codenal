@@ -112,7 +112,7 @@ public class WebSecurityConfig {
         return new MyLoginSuccessHandler(employeeService);
     }
 
-    @Bean
+   
     public MyLoginFailureHandler myLoginFailureHandler() {
         return new MyLoginFailureHandler();
     }
