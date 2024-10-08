@@ -91,7 +91,7 @@
 										<div th:if="${chat.chatRoom.roomType == 1}">
 											<!-- 채팅방 선택시 해당방 상세 정보 불러옴 -->
 											<a th:href="@{/chatList/{roomNo}(roomNo=${chat.chatRoom.roomNo})}" class="unread-msg-user">
-												<div class="d-flex align-items-center" th:if="${chat.employee.empId != session.empId}">
+												<div class="d-flex align-items-center">
 													<div
 														class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
 														<img
