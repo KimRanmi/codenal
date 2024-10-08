@@ -345,7 +345,41 @@
 
 	   
 	}
+	
+	// 반차일경우
+	@Transactional
+	public void applyHalfLeave(Long empId, LocalDate date, boolean isMorningHalf, LocalTime defaultEndTime) {
+	    Optional<Attendance> attendanceOpt = attendanceRepository.findByEmpIdAndWorkDate(empId, date);
+	    
+	    Attendance attendance;
+	    
+	    if (attendanceOpt.isPresent()) {
+	        attendance = attendanceOpt.get();
+	    } else {
+	        // 새로운 Attendance 객체 생성
+	        attendance = Attendance.builder()
+	            .empId(empId)
+	            .workDate(date)
+	            .build(); // 초기 상태로만 생성
+	    }
+	    
+	    if (isMorningHalf) {
+	        // 오전 반차 처리
+	        attendance.setAttendStatus("반차");
+	        attendance.setAttendStartTime(LocalTime.of(14, 0)); // 오후 출근 시간 설정
+	        attendance.setAttendEndTime(null); // 퇴근 시간 필요 없음
+	    } else {
+	        // 오후 반차 처리
+	        attendance.setAttendStatus("반차");
+	        attendance.setAttendStartTime(null); // 출근 시간 필요 없음
+	        attendance.setAttendEndTime(LocalTime.of(13, 0)); // 종료 시간 설정
+	    }
+	    
+	    attendanceRepository.save(attendance); 
 	}
+
+
+}
 	
 	
 	

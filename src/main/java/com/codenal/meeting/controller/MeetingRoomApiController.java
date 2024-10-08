@@ -65,9 +65,12 @@ public class MeetingRoomApiController {
 	public String apps_ecommerce_product_details(Model model) {
 		List<MeetingRoomDto> mr = meetingRoomService.meetingRoomList();
 		List<MeetingRoomTimeDto> time = meetingRoomService.meetingRoomTimeList();
+		Map<String, Object> result = new HashMap<String, Object>();
 		Long empId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 		model.addAttribute("meetingRoom", mr);
+		result.put("meetingRoom", mr);
 		model.addAttribute("meetingRoomTime", time);
+		result.put("meetingRoomTime", time);
 		model.addAttribute("empId", SecurityContextHolder.getContext().getAuthentication().getName());
 		Employee emp = employeeService.getEmployeeById(empId);
 		EmployeeDto empDto = EmployeeDto.fromEntity(emp);

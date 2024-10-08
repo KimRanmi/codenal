@@ -1,0 +1,55 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="ko"
+      data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none"
+      data-preloader="disable">
+<head>
+    <!-- 페이지 제목 -->
+    <div th:replace="partials/title-meta :: title-meta('500 Error')"></div>
+
+    <!-- CSS 스타일 -->
+    <div th:replace="partials/head-css :: head-css"></div>
+
+    <style>
+        * {
+            font-family: "Noto Sans KR", sans-serif !important;
+        }
+        body {
+            background-color: white; /* 배경 흰색 */
+        }
+        h1, h4, p {
+            color: #003366; /* 남색 계열 텍스트 */
+        }
+        .btn {
+            background-color: #003366;
+            color: white;
+        }
+        .btn:hover {
+            background-color: #002244;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 에러 페이지 wrapper -->
+    <div class="auth-page-wrapper py-5 d-flex justify-content-center align-items-center min-vh-100">
+        <!-- 에러 페이지 내용 -->
+        <div class="auth-page-content overflow-hidden p-0">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-xl-4 text-center">
+                        <div class="error-500 position-relative">
+                            <img src="/assets/images/error500.png" alt="500 Error" class="img-fluid error-500-img error-img" />
+                            <h1 class="title text-muted">500 error</h1>
+                        </div>
+                        <div>
+                            <h4>서버 내부 오류입니다!</h4>
+                            <p class="text-muted w-75 mx-auto">서버에 문제가 발생했습니다. 홈으로 돌아가거나 잠시 후 다시 시도해주세요.</p>
+                            <a href="/" class="btn"><i class="mdi mdi-home me-1"></i>홈으로 돌아가기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

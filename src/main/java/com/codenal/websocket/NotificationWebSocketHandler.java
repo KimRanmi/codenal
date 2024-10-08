@@ -1,6 +1,8 @@
 package com.codenal.websocket;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,37 +142,36 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler{
 			alarmsService.createAlarm(alarms);
 		    System.out.println("연결 ? : " + notificationMessage);
 		    
-		    // empId로 세션 찾기
-		    
-		    WebSocketSession session = clientsEmpId.get(empIdString);
-		    
-		   // 세션 아이디
-		   String sessionEmpId = session.getPrincipal().getName(); 
-		    
-		   System.out.println("값 : "+clients.values());
-		  
-		   System.out.println("empId : "+sessionEmpId);
-		    
-		    
 		    // 메시지 객체 생성
 		    Map<String, Object> message = new HashMap<>();
 		    message.put("type", "approval"); // 타입 설정
 		    message.put("msg_content", notificationMessage);
 		    message.put("approval_url", alarmUrl);
-		    
 		    // 알림 저장
 		    alarmsService.createAlarm(alarms);
+		    
+		    // empId로 세션 찾기
+		    WebSocketSession session = clientsEmpId.get(empIdString);
+
+		    // 세션이 null인지 확인
+		    if (session == null) {
+		        System.out.println("세션이 존재하지 않습니다: empId = " + empIdString);
+		        return; // 메서드 종료 (세션이 없을 경우)
+		    }
 
 		    // 세션이 열려 있는 경우에만 알림 전송
-		    if (session != null && session.isOpen()) {
-		    	if(empIdString.equals(sessionEmpId)) {
-		    		session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(message)));		    		
-		    	}else {
-		    		 System.out.println("일치하는 id 없음");
-		    	}
+		    if (session.isOpen()) {
+		        // 세션 아이디 가져오기
+		        String sessionEmpId = session.getPrincipal() != null ? session.getPrincipal().getName() : null;
+
+		        if (sessionEmpId != null && empIdString.equals(sessionEmpId)) {
+		            session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(message)));
+		        } else {
+		            System.out.println("일치하는 ID 없음: empId = " + empIdString);
+		        }
 		    } else {
-		        // 세션이 없거나 닫혀 있는 경우
-		        System.out.println("세션이 없거나 닫혀 있습니다: empId = " + empIdString);
+		        // 세션이 닫혀 있는 경우
+		        System.out.println("세션이 닫혀 있습니다: empId = " + empIdString);
 		    }
 		}
 

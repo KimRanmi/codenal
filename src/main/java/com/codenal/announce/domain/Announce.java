@@ -43,8 +43,7 @@ public class Announce {
 	
 	@OneToMany(mappedBy = "announce")
 	private List<AnnounceReadAuthority> readAuthorities;
-
-
+	
 	@Column(name="announce_writer")
 	private Long announceWriter;
 	

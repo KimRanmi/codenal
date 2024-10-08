@@ -62,5 +62,8 @@ public interface ApproverRepository extends JpaRepository<Approver, Long>{
 	
 	// approver 조회
 	Approver findByApprovalApprovalNoAndEmployeeEmpId(Long no, Long empId);
+	
+	// 다음 결재자 정보 가져오기
+	Approver findByApprovalApprovalNoAndApproverPriority(Long no, int currentPriority);
 }
 

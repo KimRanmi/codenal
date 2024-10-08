@@ -63,6 +63,33 @@ public class MeetingRoomService {
 		return result;
 	}
 	
+	// 예약 가능 시간 수정
+	public void MeetingRoomTimeModify(LocalTime[][] time, String roomNo) {
+		
+		if(meetingRoomTimeRepository.deleteByMeetingRoomNo(Integer.parseInt(roomNo)) > 0 || meetingRoomTimeRepository.deleteByMeetingRoomNo(Integer.parseInt(roomNo)) == 0) {
+			
+			MeetingRoom meetingRoom = meetingRoomRepository.findByMeetingRoomNo(Long.parseLong(roomNo));
+			MeetingRoomDto meetingRoomDto = new MeetingRoomDto().toDto(meetingRoom);
+			String[] ampm = new String[time.length];
+			LocalTime standard = LocalTime.of(12, 00);
+			for (int i = 0; i < time.length; i++) {
+				int compare = time[i][1].compareTo(standard);
+				if (compare <= (-1)) {
+					ampm[i] = "오전";
+				} else {
+					ampm[i] = "오후";
+				}
+			}
+			for (int i = 0; i < time.length; i++) {
+				MeetingRoomTime times = MeetingRoomTime.builder().meetingRoomNo(meetingRoomDto.getMeeting_room_no())
+						.meetingRoomStartTime(time[i][0]).meetingRoomEndTime(time[i][1]).meetingRoomAmpm(ampm[i]).build();
+				meetingRoomTimeRepository.save(times);
+			}
+		}
+
+
+	}
+	
 	// 회의실 업데이트
 	public MeetingRoom modifyMeetingRoom(MeetingRoomDto dto) {
 		MeetingRoom room = meetingRoomRepository.findByMeetingRoomNo(dto.getMeeting_room_no());
@@ -140,7 +167,6 @@ public class MeetingRoomService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("확인"+result);
 		return result;
 	}
 	
@@ -160,7 +186,6 @@ public class MeetingRoomService {
 		
 		MeetingRoom meetingRoom = meetingRoomRepository.findBy();
 		MeetingRoomDto meetingRoomDto = new MeetingRoomDto().toDto(meetingRoom);
-		System.out.println(meetingRoomDto.getMeeting_room_no());
 		String[] ampm = new String[time.length];
 		LocalTime standard = LocalTime.of(12, 00);
 		for(int i=0; i<time.length; i++) {
@@ -206,13 +231,11 @@ public class MeetingRoomService {
 	// 회의실 리스트 뽑기
 	public List<MeetingRoomDto> meetingRoomList() {
 		List<MeetingRoom> mr = meetingRoomRepository.findAll();
-		System.out.println(mr);
 		List<MeetingRoomDto> mrDto = new ArrayList<MeetingRoomDto>();
 		for(MeetingRoom m : mr) {
 			MeetingRoomDto mrToDto = new MeetingRoomDto().toDto(m);
 			mrDto.add(mrToDto);
 		}
-//		MeetingRoomTime meetingTime = meetingRoomTimeRepository.findByMeetingRoomTimeNo(mrDto.get(0).getMeeting_room_no());
 		return mrDto;
 	}
 	
@@ -222,12 +245,8 @@ public class MeetingRoomService {
 		List<MeetingRoomTimeDto> timeDto = new ArrayList<MeetingRoomTimeDto>();
 		for(MeetingRoomTime t : time) {
 			MeetingRoomTimeDto timeToDto = new MeetingRoomTimeDto().toDto(t);
-//			SimpleDateFormat format = new SimpleDateFormat("hh:mm");
-//			String hh = format.format(timeToDto.getMeeting_room_start_time());
-//			System.out.println(timeToDto.getMeeting_room_start_time());
 			timeDto.add(timeToDto);
 		}
-		System.out.println(timeDto);
 		return timeDto;
 	}
 

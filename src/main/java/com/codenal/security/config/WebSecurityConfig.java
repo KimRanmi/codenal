@@ -83,9 +83,9 @@ public class WebSecurityConfig {
             )
             .logout((logout) -> logout
                 .logoutUrl("/auth-logout-basic")
-                .logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
+                .logoutSuccessUrl("/auth-signin-basic")
                 .invalidateHttpSession(true) // 세션 무효화
-                .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
+                .deleteCookies("JSESSIONID", "remember-me")// JSESSIONID 쿠키 삭제
                 .permitAll()
             )
             .sessionManagement(session -> session

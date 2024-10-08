@@ -522,15 +522,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         var e_id = defaultEvents.length + 1;
          
-        	/*const payload = new FormData();
-        	payload.append('calendar_schedule_category' , categoryNo);
-        	payload.append('calendar_schedule_title' , updatedTitle);
-        	payload.append('calendar_schedule_location' , event_location);
-        	payload.append('calendar_schedule_content' , eventDescription);
-        	payload.append('calendar_schedule_writer' , 1);
-        	payload.append('calendar_schedule_start_date' , updateStartDate);
-        	payload.append('calendar_schedule_end_date' , updateEndDate);
-	    	payload;*/
 	    	
 	        const payload = {
 				calendar_schedule_category : updatedCategory,
@@ -541,59 +532,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				calendar_schedule_start_date : updateStartDate,
 				calendar_schedule_end_date : updateEndDate
 			}
-	    	/*console.log(payload);*/
-	    	
-	    	
-            // JSON 객체 생성
-            /*let obj = {
-                calendar_schedule_title: updatedTitle
-            };
-            let jsonData = JSON.stringify(obj);
-            // fetch를 사용하여 서버에 POST 요청 보내기
-            fetch('/create/event', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: jsonData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert('전송 성공: ' + JSON.stringify(data));
-            })
-            .catch(error => {
-                console.error('There was a problem with your fetch operation:', error);
-                alert('전송 실패: ' + error.message);
-            });*/
-        
-	    	
-			/*const data = {
-				method:'POST',
-	            body:payload
-			}*/
-			
-			/*const jsonData = JSON.stringify(updatedTitle);
-			const ttt = "yyy";
-			var allEvent = calendar.getEvents();
-			console.log(allEvent);
-	        fetch('/create/event',{
-	        	method:'POST',
-	            body:payload,
-	            headers: {
-					"Content-Type": "application/json;charset=utf-8", 
-					"Accept": "application/json"
-				}
-	        })
-	        .then(response => response.json())
-	        .then(data=>{
-	        	alert(data.res_msg);
-	        })*/
-	        
 	        console.log('작성자'+writer);
 	        if(eventContent == null){
 				console.log('생성');
@@ -852,9 +790,6 @@ function upcomingEvent(a) {
         return (new Date(o1.start)) - (new Date(o2.start));
     });
     document.getElementById("upcoming-event-list").innerHTML = null;
-    document.getElementById("upcoming-event-list2").innerHTML = null;
-    document.getElementById("upcoming-event-list3").innerHTML = null;
-    document.getElementById("upcoming-event-list4").innerHTML = null;
     Array.from(a).forEach(function (element) {
         var title = element.title;
         if (element.end) {
@@ -896,7 +831,8 @@ function upcomingEvent(a) {
         }
 
         var end_dt = (e_dt) ? " ~ " + e_dt : '';
-        var category = '';
+        var category = element.className.split("-");
+        console.log(category);
         /*if(element.className.includes('bg-soft-success')){
 			category = '[개인]';
 		} else if(element.className.includes('bg-soft-info')){
@@ -923,32 +859,17 @@ function upcomingEvent(a) {
         let lastDay = new Date(lastDate.getFullYear(),(lastDate.getMonth()+1),0);
         /*console.log(element.end);*/
 		if (e_dt == null && element.start >= toDay || e_dt != null && element.end <= lastDay) {
-			if (element.className.includes('bg-soft-success')) {
-				u_event = "<div class='ms-2 mt-2 mb-2'>\
-						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
-							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
-					</div>";
-				document.getElementById("upcoming-event-list").innerHTML += u_event;
-
-			} else if(element.className.includes('bg-soft-info')) {
-				u_event = "<div class='ms-2 mt-2 mb-2'>\
-						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
-							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
-					</div>";
-				document.getElementById("upcoming-event-list2").innerHTML += u_event;
-			} else if(element.className.includes('bg-soft-warning')) {
-				u_event = "<div class='ms-2 mt-2 mb-2'>\
-						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
-							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
-					</div>";
-				document.getElementById("upcoming-event-list3").innerHTML += u_event;
-			} else {
-				u_event = "<div class='ms-2 mt-2 mb-2'>\
-						<input type='checkbox' class='form-check-input ms-0'id='task_one' checked='checked' value='"+ title + "'>\
-							<label class='form-check-label mb-0 ps-2' for='task_one'>"+ title + "</label>\
-					</div>";
-				document.getElementById("upcoming-event-list4").innerHTML += u_event;
-			}
+			u_event = "<div class='card mb-3'>\
+                        <div class='card-body'>\
+                            <div class='d-flex mb-3'>\
+                                <div class='flex-grow-1'><i class='mdi mdi-checkbox-blank-circle me-2 text-"+category[2]+"'></i><span class='fw-medium'>" + startDate + " </span></div>\
+                                <div class='flex-shrink-0'><small class='badge badge-soft-primary ms-auto'>" + e_time_s + e_time_e + "</small></div>\
+                            </div>\
+                            <h6 class='card-title fs-16'> " + title + "</h6>\
+                            <p class='text-muted text-truncate-two-lines mb-0'> " + description + "</p>\
+                        </div>\
+                    </div>";
+        document.getElementById("upcoming-event-list").innerHTML += u_event;
 		}
     });
 };

@@ -2,13 +2,13 @@ package com.codenal.approval.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.codenal.alarms.domain.Alarms;
 import com.codenal.alarms.repository.AlarmsRepository;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveManageRepository;
@@ -126,10 +126,6 @@ public class ApproverService {
       for (Approver apv : approverList) {
          approverRepository.delete(apv);
       }
-      
-      // 기존 알림 지우기
-      Alarms alarm = alarmsRepository.findByAlarmReferenceNo(updateApproval.getApprovalNo());
-      alarmsRepository.delete(alarm);
 
       // 합의자 등록 (합의자는 없을 수도 있음)
       if (!agree.isEmpty()) {
@@ -146,7 +142,7 @@ public class ApproverService {
          
          Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(updateApproval.getApprovalNo(),firstId);
          Map<String,Object> map = new HashMap<>();
-         map.put("approver", approver);
+         map.put("approver", aor);
          notification(map,"updateApprover");
          
          // 결재자 등록
@@ -189,7 +185,7 @@ public class ApproverService {
             Long id = references.get(i);
             Employee emp = employeeRepository.findByEmpId(id);
             Referrer referrer = Referrer.builder().approval(createdApproval).employee(emp).build();
-
+            
             System.out.println(referrer);
             referrerRepository.save(referrer);
          }
@@ -243,7 +239,7 @@ public class ApproverService {
            // 다음 결재자 상태 변경
            approverRepository.updateNextEmpIdStatus(no, currentPriority + 1);
            
-           Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(no,loginId);
+           Approver aor = approverRepository.findByApprovalApprovalNoAndApprovalStatus(no, currentPriority + 1);
            Map<String,Object> map = new HashMap<>();
            map.put("approver", aor);
            notification(map,"approver");
@@ -263,9 +259,28 @@ public class ApproverService {
                Long empId = alu.getEmployee().getEmpId();
                LocalDate startDate = alu.getAnnualUsageStartDate();
                LocalDate endDate = alu.getAnnualUsageEndDate();
+               
+               System.out.println("시작 : "+startDate);
+               System.out.println("종료 : "+endDate);
+               
+               if(alu.getAnnualType() != 1) {
+            	   for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            		   attendanceService.applyAnnualLeave(empId, date);
+            	   }    	   
+               }else {
+            	   LocalDate halfDate = startDate;
+            	   
+            	   LocalTime startTime;
+            	   LocalTime endTime;
+            	   
+            	   if (alu.getTimePeriod().equals("오전")) {
+            		    endTime = LocalTime.of(13, 0); // 종료 시간은 13시
+            		} else {
+            		    startTime = LocalTime.of(14, 0); // 오후 반차는 14시에 시작
+            		    endTime = LocalTime.of(18, 0); // 종료 시간은 18시로 설정
+            		}
 
-               for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                   attendanceService.applyAnnualLeave(empId, date);
+            	   attendanceService.applyHalfLeave(empId, halfDate, alu.getTimePeriod().equals("오전"), endTime);
                }
            }
                   
@@ -297,13 +312,8 @@ public class ApproverService {
          // 결재자 상태 변경
          app = approverRepository.updateReject(approverStatus, rejectText,ldt, no, loginId);
          
-         
-         if(app > 0) {
-            
-            approvalRepository.updateStatus(3, no);
-         }
-            
-         approvalRepository.updateStatus(2, no);
+         // 전자결재 상태 변경
+         approvalRepository.updateStatus(3, no);
          
          // 결재 데이터 조회
          Approval approval = approvalRepository.findByApprovalNo(no);

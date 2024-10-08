@@ -1,6 +1,7 @@
 package com.codenal.admin.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -83,7 +84,7 @@ public class DeptService {
 	// 부서 삭제
 	@Transactional
 	public int deleteDept(Long deptNo) {
-		
+
 		Departments department = departmentsRepository.findById(deptNo)
 				.orElseThrow(() -> new IllegalStateException("존재하지 않는 부서입니다."));
 
@@ -92,48 +93,22 @@ public class DeptService {
 		}
 
 		departmentsRepository.delete(department);
-		
+
 		return 1; 
 	}
 
 
 	// 부서명 수정
-	/*
-	 * public void editDepartment(DepartmentsDto departmentsDto) { // 부서 번호로 엔티티를
-	 * 생성하여 업데이트 작업 Departments department =
-	 * departmentsRepository.findByDeptNo(departmentsDto.getDeptNo());
-	 * 
-	 * if (department == null) { throw new
-	 * IllegalArgumentException("존재하지 않는 부서입니다."); }
-	 * 
-	 * // 부서명 수정 department.setDeptName(departmentsDto.getDeptName());
-	 * departmentsRepository.save(department); // 변경된 부서 정보 저장 }
-	 */
-
-	// 부서명 수정
-	@Transactional
-	public Departments editDepartment(DepartmentsDto dto) { 
-
-		if (departmentsRepository.existsByDeptNameAndDeptNoNot(dto.getDeptName(), dto.getDeptNo())) {
-			throw new IllegalArgumentException("이미 존재하는 부서명입니다.");
+	public int updateDepartment(DepartmentsDto dto) throws Exception {
+		// 부서명 중복 체크
+		Optional<Departments> existingDept = departmentsRepository.findByDeptName(dto.getDeptName());
+		if (existingDept.isPresent() && !existingDept.get().getDeptNo().equals(dto.getDeptNo())) {
+			// 이미 부서명이 존재 + 부서 번호가 다른 경우
+			return 0; 
 		}
 
-		DepartmentsDto temp = editDeptName(dto.getDeptNo());
-		temp.setDeptName(dto.getDeptName());
-
-		Departments dept = temp.toEntity();
-		return departmentsRepository.save(dept);
-	}
-
-
-	public DepartmentsDto editDeptName(Long dept_no) {
-		Departments d = departmentsRepository.findByDeptNo(dept_no);
-
-		DepartmentsDto dto = DepartmentsDto.builder()
-				.deptNo(d.getDeptNo())	
-				.deptName(d.getDeptName())
-				.build();
-
-		return dto;
+		Departments departments = dto.toEntity();
+		departmentsRepository.save(departments);
+		return 1; 
 	}
 }

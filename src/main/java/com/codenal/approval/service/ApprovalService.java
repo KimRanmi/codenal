@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.codenal.alarms.domain.Alarms;
+import com.codenal.alarms.repository.AlarmsRepository;
 import com.codenal.annual.domain.AnnualLeaveUsage;
 import com.codenal.annual.repository.AnnualLeaveUsageRepository;
 import com.codenal.approval.domain.Approval;
@@ -36,6 +38,7 @@ import com.codenal.attendance.service.AttendanceService;
 import com.codenal.employee.domain.Employee;
 import com.codenal.employee.repository.EmployeeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -50,6 +53,7 @@ public class ApprovalService {
    private final ApprovalFileRepository approvalFileRepository;
    private final ApproverRepository approverRepository;
    private final ReferrerRepository referrerRepository;
+   private final AlarmsRepository alarmsRepository;
 
 
    @Autowired
@@ -61,8 +65,9 @@ public class ApprovalService {
          AnnualLeaveUsageRepository annualLeaveUsageRepositroy,
          ApprovalFileRepository approvalFileRepository,
          ApproverRepository approverRepository,
-         ReferrerRepository referrerRepository
-) {
+         ReferrerRepository referrerRepository,
+         AlarmsRepository alarmsRepository) {
+
       this.approvalRepository = approvalRepository;
       this.employeeRepository = employeeRepository;
       this.approvalCategoryRepository = approvalCategoryRepository;
@@ -72,6 +77,7 @@ public class ApprovalService {
       this.approvalFileRepository = approvalFileRepository;
       this.approverRepository = approverRepository;
       this.referrerRepository = referrerRepository;
+      this.alarmsRepository = alarmsRepository;
    }
 
    // 상신리스트 => 조회 0-> 대기 , 1-> 진행중,  2->완료 , 3-> 반려 , 4->회수 
@@ -305,6 +311,13 @@ public class ApprovalService {
    public int revoke(Long approvalNo) {
 	  int result = 4;
 	  
+	  Alarms alarms = alarmsRepository.findByAlarmReferenceNoAndAlarmType(approvalNo, "approval");
+	  if (alarms != null) {
+	      alarmsRepository.delete(alarms);
+	  } else {
+	      // 알람이 존재하지 않음을 처리하는 코드
+	      throw new EntityNotFoundException("알림 없음 : " + approvalNo);
+	  }
 	  return approvalRepository.updateStatus(result,approvalNo);
    }
    
@@ -490,7 +503,4 @@ public class ApprovalService {
 	   public int approvalCount(Long empId, int i) {
 		   return approvalRepository.findByEmployeeEmpIdAndApprovalStatus(empId,i);
 	   }
-	   
-	 
-	   
 }

@@ -46,6 +46,26 @@ public class MeetingController {
 		this.fileService = fileService;
 	}
 	
+	// 회의실 예약 가능 시간 수정
+	@ResponseBody
+	@PostMapping("/meetingRoomTimeModify")
+	public void MeetingRoomTimeModify(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String[] time = request.getParameter("time").split(",");
+		String roomNo = request.getParameter("roomNo");
+		String[][] times = new String[time.length][2];
+		for (int i = 0; i < time.length; i++) {
+			times[i] = time[i].split("~");
+		}
+		LocalTime[][] toTime = new LocalTime[time.length][2];
+		for (int i = 0; i < times.length; i++) {
+			for (int j = 0; j < times[i].length; j++) {
+				toTime[i][j] = LocalTime.parse(times[i][j]);
+			}
+		}
+		meetingRoomService.MeetingRoomTimeModify(toTime , roomNo);
+	}
+	
 	// 회의실 수정
 	@ResponseBody
 	@PostMapping("/meetingRoomModify")
@@ -77,7 +97,6 @@ public class MeetingController {
 		reserveDto.setMeeting_room_no(Long.parseLong(request.getParameter("meetingRoomNo")));
 		reserveDto.setMeeting_room_reserve_date(LocalDate.parse(request.getParameter("reserveDate")));
 		String time = request.getParameter("reserveTime");
-		System.out.println(reserveDto.getMeeting_room_reserve_date());
 		reserveDto.setMeeting_room_reserve_time_no(Long.parseLong(time));
 		reserveDto.setEmp_id(Long.parseLong(request.getParameter("reserveEmpId")));
 		meetingRoomService.meetingRoomReserveModify(reserveDto);
@@ -115,7 +134,6 @@ public class MeetingController {
 		result.put("msg", "삭제 중 문제가 발생했습니다.");
 		int aaa = fileService.delete(roomNo);
 		if(aaa > 0) {
-			System.out.println("확인"+roomNo);
 			
 			if(meetingRoomService.MeetingRoomDelete(roomNo) > 0) {
 				result.put("msg", "삭제되었습니다.");
@@ -140,11 +158,6 @@ public class MeetingController {
 			}
 		}
 		meetingRoomService.MeetingRoomTimeCreate(toTime);
-//		for (String[] str : times) {
-//			for (String s : str) {
-//				System.out.println(s);
-//			}
-//		}
 	}
 	
 	// 회의실 추가
@@ -155,7 +168,6 @@ public class MeetingController {
 		
 		String saveFile = fileService.Img(file);
 		String path = saveFile;
-//		System.out.println(time);
 		if(saveFile != null) {
 			dto.setMeeting_room_img(path);
 			if(meetingRoomService.MeetingRoomCreate(dto) != null) {

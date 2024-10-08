@@ -64,20 +64,21 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 
 		// 수신참조 리스트
 		@Query(value = "SELECT a, f, r FROM Approval a "
-	             + "JOIN a.employee e "
-	             + "JOIN a.approvalCategory c "
-	             + "JOIN c.approvalForm f "
-	             + "JOIN a.referrer r "
-	             + "WHERE r.employee.empId = ?1 "
-	             + "AND (a.approvalTitle LIKE %?2% OR ?3 IS NULL) ",
-	       countQuery = "SELECT count(DISTINCT a) FROM Approval a "
-	                  + "JOIN a.employee e "
-	                  + "JOIN a.approvalCategory c "
-	                  + "JOIN c.approvalForm f "
-	                  + "JOIN a.referrer r "
-	                  + "WHERE r.employee.empId = ?1 "
-	                  + "AND (a.approvalTitle LIKE %?2% OR ?3 IS NULL) ")
-		Page<Object[]> findReferrerList(Long empId,String title, Pageable pageable);
+		        + "JOIN a.employee e "
+		        + "JOIN a.approvalCategory c "
+		        + "JOIN c.approvalForm f "
+		        + "JOIN a.referrer r "
+		        + "WHERE r.employee.empId = ?1 "
+		        + "AND (a.approvalTitle LIKE %?2% OR ?2 IS NULL)",
+		        countQuery = "SELECT count(DISTINCT a) FROM Approval a "
+		        + "JOIN a.employee e "
+		        + "JOIN a.approvalCategory c "
+		        + "JOIN c.approvalForm f "
+		        + "JOIN a.referrer r "
+		        + "WHERE r.employee.empId = ?1 "
+		        + "AND (a.approvalTitle LIKE %?2% OR ?2 IS NULL)")
+		Page<Object[]> findReferrerList(Long empId, String title, Pageable pageable);
+
 		
 		// usage값이 null일 수도 있어서 left join 처리
 		@Query("SELECT a, e, t, u, f " +

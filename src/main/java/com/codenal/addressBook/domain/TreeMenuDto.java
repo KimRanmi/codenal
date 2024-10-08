@@ -25,6 +25,11 @@ public class TreeMenuDto {	// 실제 엔티티는 nono
     private List<TreeMenuDto> nodeChildren; // 자식 노드
     private String nodeIcon; // 노드 아이콘
 
+    
+    private long deptId;  // 부서 ID 추가
+    private long jobId;   // 직급 ID 추가
+    
+    
     @Getter
     @Setter
     @NoArgsConstructor
