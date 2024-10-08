@@ -191,8 +191,6 @@ document.addEventListener("DOMContentLoaded", function () {
     new Draggable(externalEventContainerEl, {
         itemSelector: '.external-event',
         eventData: function (eventEl) {
-			
-			let writer = 12345678;
 			let categoryNo = 0;
 			switch (eventEl.getAttribute('data-class')) {
 				case 'bg-soft-success': categoryNo = 1; break; /*개인일정*/
@@ -213,12 +211,15 @@ document.addEventListener("DOMContentLoaded", function () {
 			xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
 			xhr.setRequestHeader(header, csrfToken);
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-			xhr.send("category="+categoryNo+"&title="+eventEl.innerText+"&writer="+writer+"&start_date="+startDate);
+			let content = " ";
+			xhr.send("category="+categoryNo+"&title="+eventEl.innerText+"&writer="+writer+"&start_date="+startDate+"&content="+content);
             return {
                 id: Math.floor(Math.random() * 11000),
                 title: eventEl.innerText,
                 allDay: true,
                 start: new Date(),
+                writer: writer,
+                description: ' ',
                 className: eventEl.getAttribute('data-class')
             };
         }
@@ -847,7 +848,7 @@ function upcomingEvent(a) {
         var e_time_s = tConvert(getTime(element.start));
         var e_time_e = tConvert(getTime(updatedDay));
         if (e_time_s == e_time_e) {
-            var e_time_s = "Full day event";
+            var e_time_s = "하루 종일";
             var e_time_e = null;
         }
         var e_time_e = (e_time_e) ? " ~ " + e_time_e : "";

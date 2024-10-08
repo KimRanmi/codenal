@@ -108,7 +108,7 @@ tr {
 											<td th:text="${announce.view_count}"></td>
 											<td>
 											    <a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}"
-											       th:text="${announce.announce_title}" class="text-black">
+											       th:text="${announce.announce_title}">
 											    </a>
 											</td>
 											<td th:text="${announce.employee.empName}">작성자이름</td>
