@@ -285,7 +285,6 @@ public class AnnounceService {
             }
         }
         
-        announceFileRepository.deleteByAnnounce_AnnounceNo(announce.getAnnounceNo());  // 기존 파일 삭제
         // AnnounceFile 객체 생성 및 저장
         for(AnnounceFileDto fileDto : fileDtos) {
             AnnounceFile aFile = AnnounceFile.builder()
@@ -311,8 +310,7 @@ public class AnnounceService {
         // 파일 삭제 처리
         announceFileRepository.deleteById(announceFile.getFileNo());
         
-        // 파일 삭제 후 실제 파일 시스템에서 파일도 삭제하려면 해당 파일 경로를 이용하여 처리
-        Path filePath = Paths.get(announceFile.getFilePath());   // 날리는거 수정하기@!!@!@!@!@!@!
+        Path filePath = Paths.get(announceFile.getFilePath());
 
     }
 }

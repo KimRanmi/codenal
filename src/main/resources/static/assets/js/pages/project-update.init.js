@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		const csrfToken = document.getElementById('csrf_token').value;
         button.addEventListener('click', function() {
 		const fileId = this.getAttribute('data-file-id');  // 버튼에서 fileId를 가져옴
-        console.log(fileId);
             if (confirm('정말로 이 파일을 삭제하시겠습니까?')) {
                  fetch('/announce/deleteFile', {
 			        method: 'POST',
