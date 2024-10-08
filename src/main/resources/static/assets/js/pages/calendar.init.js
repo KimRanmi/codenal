@@ -831,8 +831,8 @@ function upcomingEvent(a) {
         }
 
         var end_dt = (e_dt) ? " ~ " + e_dt : '';
-        var category = element.className;
-        console.log(element.className);
+        var category = element.className.split("-");
+        console.log(category);
         /*if(element.className.includes('bg-soft-success')){
 			category = '[개인]';
 		} else if(element.className.includes('bg-soft-info')){
@@ -862,7 +862,7 @@ function upcomingEvent(a) {
 			u_event = "<div class='card mb-3'>\
                         <div class='card-body'>\
                             <div class='d-flex mb-3'>\
-                                <div class='flex-grow-1'><i class='mdi mdi-checkbox-blank-circle me-2 text-" + category + "'></i><span class='fw-medium'>" + startDate + end_dt + " </span></div>\
+                                <div class='flex-grow-1'><i class='mdi mdi-checkbox-blank-circle me-2 text-"+category[2]+"'></i><span class='fw-medium'>" + startDate + " </span></div>\
                                 <div class='flex-shrink-0'><small class='badge badge-soft-primary ms-auto'>" + e_time_s + e_time_e + "</small></div>\
                             </div>\
                             <h6 class='card-title fs-16'> " + title + "</h6>\

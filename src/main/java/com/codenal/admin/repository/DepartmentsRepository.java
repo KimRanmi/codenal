@@ -2,6 +2,7 @@ package com.codenal.admin.repository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,12 +49,8 @@ public interface DepartmentsRepository extends JpaRepository<Departments, Long> 
 	// 1. 부서 추가
 	boolean existsByDeptName(String deptName);
 
-
-
-
 	// 2. 부서명 수정
-	// 동일한 부서명이 있는지 확인 (부서번호가 다른 경우)
-	// boolean existsByDeptNameAndDeptNoNot(String deptName, Long deptNo);
+	Optional<Departments> findByDeptName(String deptName);
 
 
 }
