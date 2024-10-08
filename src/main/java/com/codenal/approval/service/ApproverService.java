@@ -239,7 +239,7 @@ public class ApproverService {
            // 다음 결재자 상태 변경
            approverRepository.updateNextEmpIdStatus(no, currentPriority + 1);
            
-           Approver aor = approverRepository.findByApprovalApprovalNoAndEmployeeEmpId(no,loginId);
+           Approver aor = approverRepository.findByApprovalApprovalNoAndApprovalStatus(no, currentPriority + 1);
            Map<String,Object> map = new HashMap<>();
            map.put("approver", aor);
            notification(map,"approver");
