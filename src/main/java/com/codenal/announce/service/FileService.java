@@ -75,7 +75,7 @@ public class FileService {
 	}
 
 	@Transactional
-	public int deletefile(int announceNo) {
+	public int deletefile(int announceNo) {    // announce 삭제시
 	    int result = -1;
 
 	    try {
@@ -114,6 +114,8 @@ public class FileService {
 
 	    return result;
 	}
+	
+	
 	
 	public ResponseEntity<Object> announceFiledownload(int file_no) {
 	    try {
