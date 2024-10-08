@@ -32,23 +32,32 @@ public class DeptApiController {
 	@ResponseBody
 	@PostMapping("/addDepartments")
 	public Map<String, String> addDepartment(@RequestBody DepartmentsDto dto) {
-		Map<String, String> resultMap = new HashMap<>();
-		try {
-			int result = deptService.addDepartment(dto);
-			if (result > 0) {
-				resultMap.put("res_code", "200");
-				resultMap.put("res_msg", "부서 추가가 성공적으로 등록되었습니다.");
-			} else {
-				resultMap.put("res_code", "404");
-				resultMap.put("res_msg", "이미 존재하는 부서명입니다.");
-			}
-		} catch (Exception e) {
-			resultMap.put("res_code", "500");
-			resultMap.put("res_msg", "추가 중 오류가 발생했습니다: " + e.getMessage());
-		}
+	    Map<String, String> resultMap = new HashMap<>();
+	    try {
+	        // 부서명이 null이거나 빈 값일 경우 예외 발생
+	        if (dto.getDeptName() == null || dto.getDeptName().trim().isEmpty()) {
+	            throw new IllegalArgumentException("부서명은 필수 입력 사항입니다.");
+	        }
 
-		return resultMap;
+	        int result = deptService.addDepartment(dto);
+	        if (result > 0) {
+	            resultMap.put("res_code", "200");
+	            resultMap.put("res_msg", "부서 추가가 성공적으로 등록되었습니다.");
+	        } else {
+	            resultMap.put("res_code", "404");
+	            resultMap.put("res_msg", "이미 존재하는 부서명입니다.");
+	        }
+	    } catch (IllegalArgumentException e) {
+	        resultMap.put("res_code", "400");
+	        resultMap.put("res_msg", e.getMessage());
+	    } catch (Exception e) {
+	        resultMap.put("res_code", "500");
+	        resultMap.put("res_msg", "추가 중 오류가 발생했습니다: " + e.getMessage());
+	    }
+
+	    return resultMap;
 	}
+
 
 
 	// 부서 삭제
