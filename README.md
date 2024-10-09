@@ -8,7 +8,7 @@
 
 <br>
 
-## 🏃 팀원 구성
+## 👨 팀원 구성
 ```
 https://github.com/KimRanmi
 https://github.com/SuHyeonSim
@@ -28,12 +28,16 @@ https://github.com/Lee-se0202
 
 ![](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
 ![](https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white)
-![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
 ![](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
+![](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![](https://img.shields.io/badge/Canva-%2300C4CC.svg?&style=for-the-badge&logo=Canva&logoColor=white)
+<br>
+
 ![](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
 ![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
+![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
 ![](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
+
 
 <br>
 
@@ -56,13 +60,13 @@ https://github.com/Lee-se0202
 * 알림
 <br>
 
-## 📖 DB 설계
+## 📖 ERD 설
 ![image](https://github.com/user-attachments/assets/668b066d-b9c2-47f3-80da-a8b06f9cac28)
 <br>
 <br> 
 
 
-# 기능 구현 (직원)
+# 🔔 기능 구현 (직원)
 ## [로그인]
 ![로그인](https://github.com/user-attachments/assets/c22b7b4d-8779-4d2f-a3e7-6e02cd924fcd)
 * 실행 시 처음 보이는 로그인 페이지입니다.
@@ -184,7 +188,7 @@ https://github.com/Lee-se0202
 <br>
 <br>
 
-# 기능구현 (관리자)
+# 🔔 기능구현 (관리자)
 ## [직원 관리]
 ![신규직원](https://github.com/user-attachments/assets/1625c38f-69ac-4661-8326-93b1f16ce6cf)
 * 관리자 신규 직원을 등록하면 직원은 로그인 계정이 생성됩니다.
