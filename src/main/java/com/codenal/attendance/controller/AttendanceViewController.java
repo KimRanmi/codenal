@@ -52,7 +52,7 @@ import com.codenal.security.vo.SecurityUser;
 
 		        // 연도와 월 기본값 설정
 		        YearMonth selectedYearMonth = (year != null && month != null) ? YearMonth.of(year, month) : YearMonth.now();
-		        
+
 		        // 검색 기간이 없는 경우 기본값 설정
 		        LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : selectedYearMonth.atDay(1);
 		        LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : selectedYearMonth.atEndOfMonth();
@@ -69,10 +69,14 @@ import com.codenal.security.vo.SecurityUser;
 		        String currentMonth = selectedYearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM"));
 		        model.addAttribute("currentMonth", currentMonth);
 
-		        // 검색 후 날짜 필드는 초기화
-		        model.addAttribute("startDate", null);
-		        model.addAttribute("endDate", null);
+		        // year과 month를 모델에 추가
+		        model.addAttribute("year", selectedYearMonth.getYear());
+		        model.addAttribute("month", selectedYearMonth.getMonthValue());
+
+		        // 검색 후 날짜 필드를 실제 값으로 유지
+		        model.addAttribute("startDate", startDate);
+		        model.addAttribute("endDate", endDate);
 
 		        return "apps/attendance";
 		    }
-	}
+}

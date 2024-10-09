@@ -151,11 +151,15 @@ public class DocumentApiController {
             return ResponseEntity.status(500).body("파일을 휴지통으로 이동하는 데 실패했습니다.");
         }
     }
-    // 휴지통 파일 목록 가져오기
-    @GetMapping("/trash")
-    public ResponseEntity<List<DocumentDto>> getTrashDocuments() {
-        List<DocumentDto> documents = documentService.getDocumentsByStatus(STATUS_TRASH);
-        return ResponseEntity.ok(documents);  // JSON 형식으로 문서 목록을 반환
+    @GetMapping("/trash-paged")
+    public ResponseEntity<Page<DocumentDto>> getPagedTrashDocuments(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        
+        Page<Documents> documentPage = documentService.getDocumentsByStatus(STATUS_TRASH, page, size);
+        Page<DocumentDto> documentDtoPage = documentPage.map(DocumentDto::fromEntity);
+
+        return ResponseEntity.ok(documentDtoPage);
     }
 
     @PostMapping("/restore")

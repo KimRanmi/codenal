@@ -46,4 +46,6 @@ public interface DocumentRepository extends JpaRepository<Documents, Long> {
         @Query("SELECT SUM(d.docSize) FROM Documents d WHERE d.docEmpId = :empId")
         Long sumDocSize(@Param("empId") Long empId);
         
+        
+        
 }

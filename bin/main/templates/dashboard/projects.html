@@ -15,6 +15,10 @@
         <title>메인화면</title>
         <!-- 필요한 CSS 및 기타 head 요소 추가 -->
         <!-- 폰트 -->
+        
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+        
+        
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
     	<style type="text/css">
 			* {font-family: "Noto Sans KR", sans-serif !important;} 
@@ -498,6 +502,8 @@
 		</div><!-- end row -->
 
 	<th:block layout:fragment="pagejs">
+	
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 		<!-- apexcharts -->
 		<script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
@@ -613,22 +619,32 @@
                             },
                             body: JSON.stringify({})
                         })
-                            .then(response => {
-                                if (!response.ok) {
-                                    return response.text().then(text => { throw new Error(text); });
-                                }
-                                return response.text();
-                            })
-                            .then(data => {
-                                alert('출근이 완료되었습니다.');
-                                checkInBtn.disabled = true;
-                                checkOutBtn.disabled = false;
-                                updateButtonStyles(); // 버튼 스타일 업데이트
-                                loadAttendanceSummary(); // 통계 정보 재로드
-                            })
-                            .catch(error => {
-                                alert('출근에 실패했습니다: ' + error.message);
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(text => { throw new Error(text); });
+                            }
+                            return response.text();
+                        })
+                        .then(data => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '출근 완료',
+                                text: '출근이 성공적으로 완료되었습니다.',
+                                confirmButtonText: '확인'
                             });
+                            checkInBtn.disabled = true;
+                            checkOutBtn.disabled = false;
+                            updateButtonStyles(); // 버튼 스타일 업데이트
+                            loadAttendanceSummary(); // 통계 정보 재로드
+                        })
+                        .catch(error => { // catch 블록 추가
+                            Swal.fire({
+                                icon: 'error',
+                                title: '출근 실패',
+                                text: '출근에 실패했습니다: ' + error.message,
+                                confirmButtonText: '확인'
+                            });
+                        });
                     });
 
                     // 퇴근하기 버튼 클릭 이벤트
@@ -641,21 +657,31 @@
                             },
                             body: JSON.stringify({})
                         })
-                            .then(response => {
-                                if (!response.ok) {
-                                    return response.text().then(text => { throw new Error(text); });
-                                }
-                                return response.text();
-                            })
-                            .then(data => {
-                                alert('퇴근이 완료되었습니다.');
-                                checkOutBtn.disabled = true;
-                                updateButtonStyles(); // 버튼 스타일 업데이트
-                                loadAttendanceSummary(); // 통계 정보 재로드
-                            })
-                            .catch(error => {
-                                alert('퇴근에 실패했습니다: ' + error.message);
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(text => { throw new Error(text); });
+                            }
+                            return response.text();
+                        })
+                        .then(data => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '퇴근 완료',
+                                text: '퇴근이 성공적으로 완료되었습니다.',
+                                confirmButtonText: '확인'
                             });
+                            checkOutBtn.disabled = true;
+                            updateButtonStyles(); // 버튼 스타일 업데이트
+                            loadAttendanceSummary(); // 통계 정보 재로드
+                        })
+                        .catch(error => { // catch 블록 추가
+                            Swal.fire({
+                                icon: 'error',
+                                title: '퇴근 실패',
+                                text: '퇴근에 실패했습니다: ' + error.message,
+                                confirmButtonText: '확인'
+                            });
+                        });
                     });
                 });
             </script>

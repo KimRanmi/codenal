@@ -169,51 +169,57 @@
 							</table>
 						</div>
 
-						   <!-- 페이지네이션 처리 -->
-                            <ul class="pagination justify-content-center" th:if="${attendances.totalPages > 1}">
-                                <!-- 이전 페이지 버튼 -->
-                                <li class="page-item" th:classappend="${attendances.first} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:if="${!attendances.first}"
-                                       th:href="@{/apps-attendance(
-                                           startDate=${startDate},
-                                           endDate=${endDate},
-                                           page=${attendances.number - 1},
-                                           size=${attendances.size})}"
-                                       aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                    <span class="page-link" th:if="${attendances.first}">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </span>
-                                </li>
+						  <!-- 페이지네이션 처리 -->
+<ul class="pagination justify-content-center" th:if="${attendances.totalPages > 1}">
+    <!-- 이전 페이지 버튼 -->
+    <li class="page-item" th:classappend="${attendances.first} ? 'disabled'">
+        <a class="page-link"
+           th:if="${!attendances.first}"
+           th:href="@{/apps-attendance(
+               year=${year},
+               month=${month},
+               startDate=${startDate},
+               endDate=${endDate},
+               page=${attendances.number - 1},
+               size=${attendances.size})}"
+           aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+        </a>
+        <span class="page-link" th:if="${attendances.first}">
+            <span aria-hidden="true">&laquo;</span>
+        </span>
+    </li>
 
-                                <!-- 페이지 번호 버튼 -->
-                                <li class="page-item"
-                                    th:each="i : ${#numbers.sequence(1, attendances.totalPages)}"
-                                    th:classappend="${i == attendances.number + 1} ? 'active'">
-                                    <a class="page-link"
-                                       th:href="@{/apps-attendance(
-                                           startDate=${startDate},
-                                           endDate=${endDate},
-                                           page=${i - 1},
-                                           size=${attendances.size})}"
-                                       th:text="${i}">1</a>
-                                </li>
+    <!-- 페이지 번호 버튼 -->
+<li class="page-item"
+    th:each="i : ${#numbers.sequence(1, attendances.totalPages)}"
+    th:classappend="${i == (attendances.number + 1)} ? 'active'">
+    <a class="page-link"
+       th:href="@{/apps-attendance(
+           year=${year},
+           month=${month},
+           startDate=${startDate},
+           endDate=${endDate},
+           page=${i - 1},
+           size=${attendances.size})}"
+       th:text="${i}">1</a>
+</li>
 
-                                <!-- 다음 페이지 버튼 -->
-                                <li class="page-item" th:classappend="${attendances.last} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="@{/apps-attendance(
-                                           startDate=${startDate},
-                                           endDate=${endDate},
-                                           page=${attendances.number + 1},
-                                           size=${attendances.size})}"
-                                       aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
+    <!-- 다음 페이지 버튼 -->
+    <li class="page-item" th:classappend="${attendances.last} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{/apps-attendance(
+               year=${year},
+               month=${month},
+               startDate=${startDate},
+               endDate=${endDate},
+               page=${attendances.number + 1},
+               size=${attendances.size})}"
+           aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+        </a>
+    </li>
+</ul>
 					</div>
 				</div>
 			</div>

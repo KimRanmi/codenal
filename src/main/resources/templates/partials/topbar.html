@@ -535,9 +535,10 @@
 								<div class="dropdown-divider"></div>
 								
 								
-								<a class="dropdown-item" href="/auth-signin-basic"><i
-										class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
-										class="align-middle" data-key="t-logout">로그아웃</span></a>
+								<a class="dropdown-item" href="/auth-signin-basic" id="logout-link">
+    <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
+    <span class="align-middle" data-key="t-logout">로그아웃</span>
+</a>
 
 							</div>
 						</div>
@@ -578,34 +579,44 @@
 			</div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->
 		<script>
-		 document.addEventListener('DOMContentLoaded', function () {
-		        let startTime;
+		document.addEventListener('DOMContentLoaded', function () {
+		    let startTime;
 
-		        // localStorage에서 로그인 시작 시간을 가져옴
-		        const storedTime = localStorage.getItem('loginStartTime');
-		        if (storedTime) {
-		            startTime = parseInt(storedTime, 10);
-		        } else {
-		            startTime = Date.now(); // 현재 시간을 시작 시간으로 설정
-		            localStorage.setItem('loginStartTime', startTime);
-		        }
+		    // localStorage에서 로그인 시작 시간을 가져옴
+		    const storedTime = localStorage.getItem('loginStartTime');
+		    if (storedTime) {
+		        startTime = parseInt(storedTime, 10);
+		    } else {
+		        startTime = Date.now(); // 현재 시간을 시작 시간으로 설정
+		        localStorage.setItem('loginStartTime', startTime);
+		    }
 
-		        // 즉시 업데이트하여 새로고침 시 00:00:00 방지
-		        updateLoginTimer();
+		    // 즉시 업데이트하여 새로고침 시 00:00:00 방지
+		    updateLoginTimer();
 
-		        function updateLoginTimer() {
-		            const currentTime = Date.now();
-		            const elapsed = Math.floor((currentTime - startTime) / 1000);
+		    function updateLoginTimer() {
+		        const currentTime = Date.now();
+		        const elapsed = Math.floor((currentTime - startTime) / 1000);
 
-		            const hours = String(Math.floor(elapsed / 3600)).padStart(2, '0');
-		            const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
-		            const seconds = String(elapsed % 60).padStart(2, '0');
-		            document.getElementById('loginTimer').textContent = `Login on :: ${hours}:${minutes}:${seconds}`;
-		        }
+		        const hours = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+		        const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+		        const seconds = String(elapsed % 60).padStart(2, '0');
+		        document.getElementById('loginTimer').textContent = `Login on :: ${hours}:${minutes}:${seconds}`;
+		    }
 
-		        // 타이머 시작
-		        setInterval(updateLoginTimer, 1000);
-		    });
+		    // 타이머 시작
+		    const timerInterval = setInterval(updateLoginTimer, 1000);
+
+		    // 로그아웃 버튼 클릭 시 loginStartTime 제거 및 타이머 정지
+		    const logoutLink = document.getElementById('logout-link');
+		    if (logoutLink) {
+		        logoutLink.addEventListener('click', function() {
+		            localStorage.removeItem('loginStartTime');
+		            clearInterval(timerInterval); // 타이머 정지
+		        });
+		    }
+		});
+
 </script>
 
 

@@ -232,7 +232,7 @@ public class DocumentService {
             }
 
             // 공유 대상자 관리
-            for (Long empId : empIds) {
+            for (Long empId : empIds) {	
                 DocumentSharedUsersId id = new DocumentSharedUsersId(document.getDocNo(), empId);
                 if (!documentSharedUsersRepository.existsById(id)) {
                     DocumentSharedUsers sharedUser = DocumentSharedUsers.builder()
