@@ -101,8 +101,28 @@ Give examples
 <br>
 
 ## [전자결재]
-![2024-10-08 (2)](https://github.com/user-attachments/assets/583d5b46-9608-486a-a2c7-553d64ca884c)
-* 
+전자결재 시스템은 근태신청서, 요청서, 품의서를 기안할 수 있습니다.
+
+<br>
+
+![전자결재1](https://github.com/user-attachments/assets/a2a0c39d-5f13-404d-85cb-6d1b18503790)
+* 먼저 근태 신청서는 연차와 반차는 사용할 총 일수가 표시되며, 이때 공휴일과 주말은 제외되어 계산됩니다.
+* 만약 연차와 반차를 신청하는 날보다 보유한 연차가 부족하다면 "연차 부족" alert이 생성됩니다.
+* 필수 항목을 빠짐없이 입력했다면 기안함으로 이동합니다.
+
+<br>
+
+![전자결재2](https://github.com/user-attachments/assets/f083c596-7163-4099-9efc-422bec520c99)
+* 모든 기안서는 관리자가 설정한 양식에 따라 제출할 수 있는 내용이 달라집니다.
+<br>
+
+![전자결재3](https://github.com/user-attachments/assets/bb10d253-46f7-4e3b-82f2-7442d20d2ec4)
+* 결재자가 반려버튼을 누를 경우 반려 사유를 작성할 수 있습니다.
+* 상신자는 알림을 통해 반려 사실을 확인할 수 있으며, 반려 버튼 클릭 시 반려 사유를 확인할 수 있습니다.
+<br>
+
+![전자결재 알림](https://github.com/user-attachments/assets/f8d34122-af95-45c1-a3d2-65efc8064477)
+* 결재해야 할 사람과 다음 결재자 그리고 마지막 결재자인 상신자에게 현 결재 상황에 대한 실시간 알림이 전송됩니다.
 <br>
 
 ## [주소록]
@@ -122,6 +142,10 @@ Give examples
 ![근태관리2](https://github.com/user-attachments/assets/ded53b0a-974c-4837-ab2c-65c0fba7cfc2)
 * 메인페이지에 있는 출퇴근 버튼을 누르면 출퇴근 관리에 반영됩니다.
 * 근무내역 관리에서는 날짜별 초과 근무 시간, 총 근무시간을 조회할 수 있습니다.
+<br>
+
+![근태관리3](https://github.com/user-attachments/assets/4121912b-d96d-4e6a-8ba9-77f2a81c3190)
+* 근태 신청서가 승인되면 근태관리에서 자신의 연차 정보를 확인할 수 있습니다.
 <br>
 
 ## [게시판]
