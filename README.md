@@ -1,36 +1,48 @@
 # WithXWork 그룹웨어 사이트
 ![스크린샷 2024-10-10 020547](https://github.com/user-attachments/assets/d47064ac-ae02-446a-aa68-38d2a6b2a08d)
 
-## 프로젝트 소개
+## 🚀 프로젝트 소개
 * 위드X워크는 회사 내 직원들이 원활하게 협업할 수 있도록 설계된 그룹웨어 사이트입니다.
 * 직원들은 개인 업무에 도움될 뿐만 아니라 팀원들과 소통할 수 있는 다양한 서비스들을 이용할 수 있습니다.
 * 관리자는 직원들의 원활한 업무를 위해 서비스 설정에 권한을 가지고, 전 직원들을 관리할 수 있습니다.
 
 <br>
 
-## 팀원 구성
+## 🏃 팀원 구성
 ```
-Give examples
+https://github.com/KimRanmi
+https://github.com/SuHyeonSim
+https://github.com/jongw306
+https://github.com/povheo
+https://github.com/Lee-se0202
+
 ```
 <br>
 
 ## 📺 개발환경
 ![](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-![](https://img.shields.io/badge/HTML-239120?style=for-the-badge&logo=html5&logoColor=white)
-![](https://img.shields.io/badge/CSS-239120?&style=for-the-badge&logo=css3&logoColor=white)
+![](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white)
-![](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
-![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
-![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
-![](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
 <br>
 
-## 프로젝트 기간
+![](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
+![](https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white)
+![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
+![](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
+![](https://img.shields.io/badge/Canva-%2300C4CC.svg?&style=for-the-badge&logo=Canva&logoColor=white)
+![](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
+![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
+![](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
+
+<br>
+
+## 📅 프로젝트 기간
 ![프로젝트 기간](https://github.com/user-attachments/assets/3a18540f-930f-4c3f-b2d6-5b0d01d91e07)
 <br>
 <br>
 
-## 주요 기능
+## 💻 주요 기능
 * 로그인/ 마이페이지
 * 캘린더
 * 문서함
@@ -44,7 +56,7 @@ Give examples
 * 알림
 <br>
 
-## DB 설계
+## 📖 DB 설계
 ![image](https://github.com/user-attachments/assets/668b066d-b9c2-47f3-80da-a8b06f9cac28)
 <br>
 <br> 
