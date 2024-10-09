@@ -1,11 +1,10 @@
 # WithXWork 그룹웨어 사이트
-[사진 첨부]
-<br>
+![스크린샷 2024-10-10 020547](https://github.com/user-attachments/assets/d47064ac-ae02-446a-aa68-38d2a6b2a08d)
 
 ## 프로젝트 소개
 * 위드X워크는 회사 내 직원들이 원활하게 협업할 수 있도록 설계된 그룹웨어 사이트입니다.
 * 직원들은 개인 업무에 도움될 뿐만 아니라 팀원들과 소통할 수 있는 다양한 서비스들을 이용할 수 있습니다.
-* 관리자는 직원들의 원활한 업무를 위해 서비스 설정에 권한을 가질 수 있고, 전 직원들을 관리할 수 있습니다.
+* 관리자는 직원들의 원활한 업무를 위해 서비스 설정에 권한을 가지고, 전 직원들을 관리할 수 있습니다.
 
 <br>
 
@@ -27,8 +26,8 @@ Give examples
 <br>
 
 ## 프로젝트 기간
-
-
+![프로젝트 기간](https://github.com/user-attachments/assets/3a18540f-930f-4c3f-b2d6-5b0d01d91e07)
+<br>
 <br>
 
 ## 주요 기능
@@ -46,85 +45,118 @@ Give examples
 <br>
 
 ## DB 설계
-![2024-10-08 (13)](https://github.com/user-attachments/assets/10c8a238-0a2d-4bdb-88e4-3677a7a06c6e)
+![image](https://github.com/user-attachments/assets/668b066d-b9c2-47f3-80da-a8b06f9cac28)
 <br>
 <br> 
 
 
-# 기능 구현
-## 직원
-### [로그인]
-![로그인페이지](https://github.com/user-attachments/assets/aa8a4667-c436-4845-81c3-23d654d0036f)
+# 기능 구현 (직원)
+## [로그인]
+![로그인](https://github.com/user-attachments/assets/c22b7b4d-8779-4d2f-a3e7-6e02cd924fcd)
 * 실행 시 처음 보이는 로그인 페이지입니다.
-* 모든 위드x워크 사용자는 로그인을 해야만 합니다.
+* ID 저장과 로그인 유지 기능을 사용할 수 있습니다.
 <br>
   
-### [메인 페이지]
-![메인페이지](https://github.com/user-attachments/assets/9630993a-60ad-4231-b53f-feec9ef63ef2)
-* 로그인을 정상적으로 성공했으면 나오는 메인 페이지 입니다.
-* 출퇴근하기 버튼을 통해 ... 
+## [메인 페이지]
+![메인페이지](https://github.com/user-attachments/assets/5b6a1f54-771d-4e31-9eab-1219ce438299)
+* 로그인을 하면 나오는 메인 페이지 입니다. 
 <br>
 
-### [마이페이지]
-![마이페이지](https://github.com/user-attachments/assets/57c23cee-6727-47df-b7e3-6c3287da62c1)
-![비밀번호 변경](https://github.com/user-attachments/assets/f2aaa8bf-7b9b-424f-aca1-2ca627b9998b)
-* 개인 정보 페이지이며 간단한 정보 수정과 비밀번호 변경을 할 수 있습니다.
+## [마이 페이지]
+![마이페이지1](https://github.com/user-attachments/assets/2d0d6427-30e0-4c0f-92dc-466921aaa4cb)
+* 개인 정보 페이지이며 간단한 정보 수정을 할 수 있습니다.
+* 또한, 서명이미지를 캔버스를 활용해 첨부가 가능합니다.
 <br>
 
-### [캘린더]
+![마이페이지2](https://github.com/user-attachments/assets/6a334e08-d2dd-4b52-acfe-cf1d25469710)
+* 비밀번호 변경도 가능합니다.
+<br>
+
+## [캘린더]
+![20241010_000608406](https://github.com/user-attachments/assets/a987f395-b795-4d02-8425-1454a190c82b)
+* 캘린더에서는 크게 전체, 부서, 개인으로 나누어 일정을 등록할 수 있습니다.
+* 또한, 일정 수정과 삭제를 할 수 있습니다.
+<br>
+
+![캘린더 2](https://github.com/user-attachments/assets/543e2bb5-981d-42c9-a338-578b34806b52)
+* 등록한 일정은 드래그를 통해 이동할 수 있으며, 월*주*일 단위로 확인할 수 있습니다.
+* 메인 페이지에 있는 캘린더를 통해 일정을 확인할 수도 이동할 수도 있습니다.
+<br>
+  
+## [문서함]
 
 
-### [문서함]
-
-
-### [전자결재 - 직원]
+## [전자결재]
 ![2024-10-08 (2)](https://github.com/user-attachments/assets/583d5b46-9608-486a-a2c7-553d64ca884c)
 * 
 <br>
 
-### [주소록]
-![2024-10-08 (6)](https://github.com/user-attachments/assets/45c3faa5-3f55-4faf-bf2d-216ef146716c)
+## [주소록]
+![주소록](https://github.com/user-attachments/assets/a6f74d81-1a68-445c-9aa6-5178498ed418)
 * 회사 내의 조직도와 직원들의 연락망을 볼 수 있는 목록 페이지입니다.
 <br>
 
-### [채팅]
+## [채팅]
 
 <br>
 
-### [근태관리]
+## [근태관리]
+![근태관리1](https://github.com/user-attachments/assets/a32ab353-0c74-4181-8211-cc19b07f6624)
+* 기간 별로 혹은 월 별로 출퇴근 시간과 근무 시간, 근무 상태를 조회할 수 있습니다.
+<br>
+
+![근태관리2](https://github.com/user-attachments/assets/ded53b0a-974c-4837-ab2c-65c0fba7cfc2)
+* 메인페이지에 있는 출퇴근 버튼을 누르면 출퇴근 관리에 반영됩니다.
+* 근무내역 관리에서는 날짜별 초과 근무 시간, 총 근무시간을 조회할 수 있습니다.
+<br>
+
+## [게시판]
 
 <br>
 
-### [게시판]
-
+## [회의실 예약]
+![회의실 예약1](https://github.com/user-attachments/assets/8c2d134f-1cca-440c-a630-f3c3a2a507a1)
+* 관리자가 설정해 놓은 회의실을 직원이 예약할 수 있습니다.
+* 원하는 회의실 장소와 시간대를 설정하여 예약을 합니다.
 <br>
 
-### [회의실 예약 ]
-
+![회의실 예약2](https://github.com/user-attachments/assets/d57ba1d1-4537-4137-8790-ffa28f732c10)
+* 예약 내역에서 시간대를 변경할 수도 예약 취소도 가능합니다.
 <br>
 
 
 
 ## 관리자
-### [직원 관리]
-![신규 직원 등록](https://github.com/user-attachments/assets/f4a7d4db-a399-46c5-8b42-0291a5c6cd74)
-* 신규 직원을 등록하는 페이지입니다.
-  
+## [직원 관리]
+![신규직원](https://github.com/user-attachments/assets/1625c38f-69ac-4661-8326-93b1f16ce6cf)
+* 관리자 신규 직원을 등록하면 직원은 로그인 계정이 생성됩니다.
 <br>
 
-![직원 목록](https://github.com/user-attachments/assets/a1976839-0ba3-4783-a3f6-50276dc08768)
-* 재직하고 있는 직원뿐만 아니라 퇴사한 직원들까지 볼 수 있는 페이지입니다.
-  
-<br>
-
-![직원상세정보](https://github.com/user-attachments/assets/84b9a752-4fb1-4ffc-a648-d1f5bd148151)
+![직원 상세](https://github.com/user-attachments/assets/2d2f5982-000a-45cd-8590-1680d58406ff)
 * 목록에서 특정 직원을 선택하면 상세 정보 페이지가 나옵니다.
-* 임시 비밀번호 발급과 퇴사 관리, 간단한 정보 수정을 할 수 있습니다.
-
-### [회의실 관리]
-
+* 임시 비밀번호 발급을 통해 기본 비밀번호 'work1234'로 변경됩니다.
+* 수정 버튼을 통해 직원의 이름, 부서, 직급을 수정할 수 있습니다.
 <br>
 
-### [전자결재 - 관리자]
+![퇴사관리](https://github.com/user-attachments/assets/cc28c0bd-db31-451b-9177-8e78f08a5979)
+* 퇴사 관리 탭을 누르면 직원을 퇴사 처리할 수 있습니다.
+* 퇴사일은 입사일 이전 날짜로 선택할 수 없도록 설정했습니다.
+<br>
+
+## [부서 관리]
+![부서관리](https://github.com/user-attachments/assets/f69bd916-b1cd-48ab-ab5a-d2fa74f210df)
+* 부서를 추가하거나 삭제하고, 부서명 수정이 가능한 페이지입니다.
+* 부서를 삭제할 때는 부서 내에 직원이 한 명도 없어야 가능합니다.
+<br>
+
+## [회의실 관리]
+![회의실 관리1](https://github.com/user-attachments/assets/1adb7f15-5d1a-4f6a-b6ba-da841fd62b43)
+* 직원들이 예약할 수 있도록 회의실 장소와 시간대를 지정하여 추가합니다.
+<br>
+
+![회의실 관리2](https://github.com/user-attachments/assets/b610742d-fc21-4160-ae50-7acb23370d4a)
+* 이미 등록한 회의실 정보를 수정하거나 삭제할 수 있습니다.
+
+## [전자결재  관리]
 
 <br>
