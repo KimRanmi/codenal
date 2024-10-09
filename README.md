@@ -41,7 +41,7 @@
 <br>
 
 
-## 📺 ERD 설계
+## 💻 ERD 설계
 ![image](https://github.com/user-attachments/assets/668b066d-b9c2-47f3-80da-a8b06f9cac28)
 <br>
 <br> 
