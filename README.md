@@ -1,4 +1,4 @@
-# 🚀 WithXWork 그룹웨어 사이트
+# 🌐 WithXWork 그룹웨어 사이트
 ![스크린샷 2024-10-10 020547](https://github.com/user-attachments/assets/d47064ac-ae02-446a-aa68-38d2a6b2a08d)
 
 ## 🧐 프로젝트 소개
@@ -9,14 +9,12 @@
 <br>
 
 ## 👩‍💻 팀원 구성
-```
-https://github.com/KimRanmi
-https://github.com/SuHyeonSim
-https://github.com/jongw306
-https://github.com/povheo
-https://github.com/Lee-se0202
+| 김란미 <br> https://github.com/KimRanmi | 심수현 <br> https://github.com/SuHyeonSim |최종우 <br> https://github.com/jongw306 |
+|---|:---:|:---:|
+<br>
 
-```
+| 허수영 <br> https://github.com/povheo| 이소은 <br> https://github.com/Lee-se0202|
+|---|:---:|
 <br>
 
 ## 📺 개발환경
@@ -38,6 +36,9 @@ https://github.com/Lee-se0202
 <br>
 <br> 
 
+* * *
+
+<br>
 
 # 🔔 기능 구현 (직원)
 ## [로그인]
