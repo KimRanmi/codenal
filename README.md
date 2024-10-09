@@ -84,7 +84,21 @@ Give examples
 <br>
   
 ## [문서함]
+![문서함1](https://github.com/user-attachments/assets/61705d2a-1ba6-4895-b59b-8ba6f8280bf2)
+* 파일을 등록할 수 있는 문서함입니다.
+* 등록한 파일을 삭제하면 휴지통으로 이동합니다.
+* 휴지통으로 이동한 파일은 복원이 가능하며, 완전히 삭제할 수도 있습니다.
+<br>
 
+![문서함2](https://github.com/user-attachments/assets/03c75d7d-7b93-41b6-9882-3f0cac7c74a1)
+* 파일은 다운로드가 가능합니다.
+* 또한, 우측 아이콘을 누르면 즐겨찾기가 됩니다.
+<br>
+
+
+* 파일 등록 시 공유할 상대를 지정할 수 있고 이러한 파일은 공유 문서함으로 이동합니다.
+* 공유한 직원은 공유한 문서함에 공유 받은 직원은 공유 받은 문서함으로 조회됩니다.
+<br>
 
 ## [전자결재]
 ![2024-10-08 (2)](https://github.com/user-attachments/assets/583d5b46-9608-486a-a2c7-553d64ca884c)
@@ -126,7 +140,7 @@ Give examples
 
 
 
-## 관리자
+## 기능구현 (관리자)
 ## [직원 관리]
 ![신규직원](https://github.com/user-attachments/assets/1625c38f-69ac-4661-8326-93b1f16ce6cf)
 * 관리자 신규 직원을 등록하면 직원은 로그인 계정이 생성됩니다.
