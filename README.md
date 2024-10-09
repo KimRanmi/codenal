@@ -102,14 +102,12 @@ Give examples
 
 ## [전자결재]
 전자결재 시스템은 근태신청서, 요청서, 품의서를 기안할 수 있습니다.
-
 <br>
 
 ![전자결재1](https://github.com/user-attachments/assets/a2a0c39d-5f13-404d-85cb-6d1b18503790)
 * 먼저 근태 신청서는 연차와 반차는 사용할 총 일수가 표시되며, 이때 공휴일과 주말은 제외되어 계산됩니다.
 * 만약 연차와 반차를 신청하는 날보다 보유한 연차가 부족하다면 "연차 부족" alert이 생성됩니다.
 * 필수 항목을 빠짐없이 입력했다면 기안함으로 이동합니다.
-
 <br>
 
 ![전자결재2](https://github.com/user-attachments/assets/f083c596-7163-4099-9efc-422bec520c99)
@@ -131,8 +129,13 @@ Give examples
 <br>
 
 ## [채팅]
-
+### 1:1 채팅
+와 잠만...
+* 네비게이터의 채팅을 누르면 채팅방 조회 페이지로 이동하고, 현재 참여중인 채팅방이 조회 됩니다.
 <br>
+
+### 팅
+
 
 ## [근태관리]
 ![근태관리1](https://github.com/user-attachments/assets/a32ab353-0c74-4181-8211-cc19b07f6624)
@@ -149,7 +152,13 @@ Give examples
 <br>
 
 ## [게시판]
+![스크린샷 2024-10-10 031937](https://github.com/user-attachments/assets/8e589012-a317-4199-8139-fc6e86e190f6)
+* 게시판에서는 권한 유형이 로그인한 직원의 부서, 직급과 동일할 때 게시글 상세조회가 가능합니다.
+<br>
 
+![스크린샷 2024-10-10 031954](https://github.com/user-attachments/assets/8d91e6ae-cabb-4c7f-9c25-b74ba40efaf7)
+* 게시판에서 글을 작성할 때는 조회 가능한 직원들을 선택하여 권한을 부여할 수 있습니다.
+* 파일 등록 클릭시 이미지와 문서 파일 업로드가 가능합니다다.
 <br>
 
 ## [회의실 예약]
@@ -161,8 +170,7 @@ Give examples
 ![회의실 예약2](https://github.com/user-attachments/assets/d57ba1d1-4537-4137-8790-ffa28f732c10)
 * 예약 내역에서 시간대를 변경할 수도 예약 취소도 가능합니다.
 <br>
-
-
+<br>
 
 # 기능구현 (관리자)
 ## [직원 관리]
@@ -190,6 +198,7 @@ Give examples
 ## [회의실 관리]
 ![회의실 관리1](https://github.com/user-attachments/assets/1adb7f15-5d1a-4f6a-b6ba-da841fd62b43)
 * 직원들이 예약할 수 있도록 회의실 장소와 시간대를 지정하여 추가합니다.
+* 회의실에 대한 이미지도 첨부할 수 있습니다.
 <br>
 
 ![회의실 관리2](https://github.com/user-attachments/assets/b610742d-fc21-4160-ae50-7acb23370d4a)
