@@ -33,34 +33,7 @@ https://github.com/Lee-se0202
 ![](https://img.shields.io/badge/Canva-%2300C4CC.svg?&style=for-the-badge&logo=Canva&logoColor=white)
 <br>
 
-![](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
-![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
-![](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
-![](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
-
-
-<br>
-
-## 📅 프로젝트 기간
-![프로젝트 기간](https://github.com/user-attachments/assets/3a18540f-930f-4c3f-b2d6-5b0d01d91e07)
-<br>
-<br>
-
-## 💻 주요 기능
-* 로그인/ 마이페이지
-* 캘린더
-* 문서함
-* 전자결재 / 관리
-* 주소록
-* 채팅
-* 근태 관리
-* 회의실 관리/ 예약
-* 직원 관리
-* 부서 관리
-* 알림
-<br>
-
-## 📖 ERD 설
+![](https://img.shields.i계
 ![image](https://github.com/user-attachments/assets/668b066d-b9c2-47f3-80da-a8b06f9cac28)
 <br>
 <br> 
