@@ -13,11 +13,18 @@
 
 <meta name="_csrf" th:content="${_csrf.token}" />
 <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- 폰트 -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+	rel="stylesheet">
 
 <style>
-* {font-family: "Noto Sans KR", sans-serif !important;} 
+* {
+	font-family: "Noto Sans KR", sans-serif !important;
+}
 /* 모달 관련 CSS 수정 */
 .modal-dialog {
 	margin: 0; /* 여백 제거 */
@@ -47,9 +54,9 @@
 /* 프로필 배경의 단색 진한 남색 배경 설정 */
 /* 기존의 그라데이션 효과를 없애고, 진한 남색으로 변경 */
 .profile-wid-bg.profile-setting-img {
-    background-color: #003366 !important; /* 진한 남색 배경 설정 */
-    background-image: none !important; /* 그라데이션 제거 */
-    height: 150px !important; /* 필요에 따라 세로폭 조정 가능 */
+	background-color: #003366 !important; /* 진한 남색 배경 설정 */
+	background-image: none !important; /* 그라데이션 제거 */
+	height: 150px !important; /* 필요에 따라 세로폭 조정 가능 */
 }
 </style>
 
@@ -59,10 +66,7 @@
 
 	<div layout:fragment="content">
 		<div class="position-relative mx-n4 mt-n4">
-			<div class="profile-wid-bg profile-setting-img">
-				
-				
-			</div>
+			<div class="profile-wid-bg profile-setting-img"></div>
 		</div>
 
 		<div class="row">
@@ -77,7 +81,7 @@
 									class="profile-user position-relative d-inline-block mx-auto mb-4">
 									<!-- 프로필 이미지 동적 바인딩 -->
 									<img
-										th:src="${session.profileImage != null ? session.profileImage : '/assets/images/users/avatar-1.jpg'}"
+										th:src="${session.profileImage != null ? session.profileImage : '/assets/images/users/user-dummy-img.jpg'}"
 										class="rounded-circle avatar-xl img-thumbnail user-profile-image"
 										alt="user-profile-image" id="profileImage">
 									<div class="avatar-xs p-0 rounded-circle profile-photo-edit">
@@ -208,16 +212,15 @@
 													th:value="${session.signatureImage != null ? session.signatureImage : '서명이미지 없음'}"
 													readonly>
 												<button type="button" class="btn btn-primary btn-sm"
-													data-bs-toggle="modal" data-bs-target="#flipModal" disabled>
+													data-bs-toggle="modal" data-bs-target="#flipModal">
 													등록/수정</button>
-
 											</div>
 										</div>
 										<!--end col-->
 										<div id="flipModal" class="modal fade flip" tabindex="-1"
 											aria-labelledby="flipModalLabel" aria-hidden="true">
 											<div class="modal-dialog modal-dialog-centered">
-												<div class="modal-content"> 
+												<div class="modal-content">
 													<div class="modal-header">
 														<h5 class="modal-title" id="flipModalLabel">서명 등록/수정</h5>
 														<button type="button" class="btn-close"
@@ -354,16 +357,23 @@
 		                })
 		                .then(response => response.json())
 		                .then(data => {
-		                    if (data.success) {
-		                        // 프로필 이미지 업데이트
-		                        document.getElementById('profileImage').src = data.imageUrl;
-		                        alert('프로필 이미지가 성공적으로 저장되었습니다.');
+		                	  if (data.success) {
+		                          document.getElementById('profileImage').src = data.imageUrl;
+		                          Swal.fire({
+		                              icon: 'success',
+		                              title: '성공',
+		                              text: '프로필 이미지가 성공적으로 저장되었습니다.'
+		                          });
 
 		                        // localStorage에 업데이트 이벤트 기록 (타임스탬프 추가하여 캐싱 문제 방지)
 		                        const updatedImageUrl = data.imageUrl + '?t=' + new Date().getTime();
 		                        localStorage.setItem('profileImageUpdated', updatedImageUrl);
 		                    } else {
-		                        alert('프로필 이미지 저장에 실패했습니다: ' + data.error);
+		                    	 Swal.fire({
+		                             icon: 'error',
+		                             title: '실패',
+		                             text: '프로필 이미지 저장에 실패했습니다: ' + data.error
+		                         });
 		                    }
 		                })
 		                .catch(error => {
@@ -450,15 +460,24 @@
     .then(data => {
         if (data.success) {
             if (dataURL === '') {
-                document.getElementById('signatureImage').value = '서명이미지 없음';
-                // 캔버스를 지운 상태로 업데이트
+                document.getElementById('signatureImage').value = '';  // 빈 문자열로 설정
+                document.getElementById('signImageInput').value = '서명이미지 없음';  // 표시용 필드 업데이트
                 clearCanvas();
             } else {
                 document.getElementById('signatureImage').value = data.filePath;
+                document.getElementById('signImageInput').value = data.filePath;
             }
-            alert('서명이 성공적으로 저장되었습니다.');
+            Swal.fire({
+                icon: 'success',
+                title: '성공',
+                text: '서명이 성공적으로 저장되었습니다.'
+            });
         } else {
-            alert('서명 저장에 실패했습니다: ' + data.error);
+            Swal.fire({
+                icon: 'error',
+                title: '실패',
+                text: '서명 저장에 실패했습니다: ' + data.error
+            });
         }
     })
     .catch(error => {
@@ -567,9 +586,17 @@
 		        .then(response => response.json())
 		        .then(data => {
 		            if (data.success) {
-		                alert('저장되었습니다.');
+		            	  Swal.fire({
+		                        icon: 'success',
+		                        title: '성공',
+		                        text: '저장되었습니다.'
+		                    });
 		            } else {
-		                alert('저장에 실패했습니다.');
+		            	Swal.fire({
+	                        icon: 'error',
+	                        title: '실패',
+	                        text: '저장에 실패했습니다.'
+	                    });
 		            }
 		        })
 		        .catch(error => {

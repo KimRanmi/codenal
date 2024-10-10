@@ -28,4 +28,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             + "AND e.empAuth != 'ADMIN' "
             + "ORDER BY e.departments.deptName DESC")
     List<Employee> findByEmpNameContainingOrDepartmentsDeptNameContaining(@Param("empId") Long empId, @Param("searchText") String searchText);
+    
+    
+    @Query("SELECT e.empId FROM Employee e")
+    List<Long> findAllEmployeeIds();
 }

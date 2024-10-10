@@ -117,7 +117,7 @@ public class ApprovalApiController {
 			@RequestPart(value = "file", required = false) MultipartFile file,
 			@RequestParam(value = "agree", required = false)List<Long> agree, @RequestParam("approver")List<Long> approver,
 			@RequestParam(value = "references", required = false) List<Long> references,
-			@RequestParam(value="totalDay") float totalDay) {
+			@RequestParam(value="totalDay") Double totalDay) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		System.out.println("시작");
@@ -290,7 +290,7 @@ public class ApprovalApiController {
 			@RequestParam(value = "agree", required = false) List<Long> agree,
 			@RequestParam("approver") List<Long> approver,
 			@RequestParam(value = "references", required = false) List<Long> references,
-			@RequestParam(value="totalDay") float totalDay) {
+			@RequestParam(value="totalDay") Double totalDay) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "404");
@@ -403,9 +403,6 @@ public class ApprovalApiController {
 	    if (approverService.consentApprover(approvalNo, loginId) > 0) {
 	        resultMap.put("res_code", "200");
 	        resultMap.put("res_msg", "승인되었습니다.");
-
-	        // 연차 신청서 승인 시 출퇴근 관리와 연동
-	        approvalService.approveAnnualLeave(approvalNo);
 	    }
 
 	    return resultMap;

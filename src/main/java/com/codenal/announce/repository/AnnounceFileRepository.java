@@ -1,5 +1,7 @@
 package com.codenal.announce.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.codenal.announce.domain.Announce;
@@ -12,4 +14,10 @@ public interface AnnounceFileRepository extends JpaRepository<AnnounceFile, Inte
 //    List<AnnounceFile> findByAnnounceNo(@Param("announceNo") Long announceNo);
 
 	AnnounceFile findByAnnounceAnnounceNo(int announceNo);
+
+	void deleteByAnnounce_AnnounceNo(int announceNo);
+
+	List<AnnounceFile> findByAnnounce_AnnounceNo(int announceNo);
+
+	void deleteById(int announceNo);
 }

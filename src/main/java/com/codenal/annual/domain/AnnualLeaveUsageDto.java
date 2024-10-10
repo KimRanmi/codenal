@@ -29,7 +29,7 @@ public class AnnualLeaveUsageDto {
 
     // 추가 필드
     private String empName;
-    private String jobName; // 직급명
+   
 
     public static AnnualLeaveUsageDto toDto(AnnualLeaveUsage alu) {
         return AnnualLeaveUsageDto.builder()
@@ -41,7 +41,6 @@ public class AnnualLeaveUsageDto {
                 .time_period(alu.getTimePeriod())
                 .total_day(alu.getTotalDay())
                 .empName(alu.getEmployee().getEmpName())
-                .jobName(alu.getEmployee().getJobs().getJobName()) // 직급명 가져오기
                 .build();
     }
 
@@ -55,5 +54,12 @@ public class AnnualLeaveUsageDto {
                 .totalDay(total_day)
                 .employee(Employee.builder().empId(emp_id).build())
                 .build();
+    }
+    public Double getTotalDay() {
+        return total_day;
+    }
+
+    public void setTotalDay(Double totalDay) {
+        this.total_day = totalDay;
     }
 }

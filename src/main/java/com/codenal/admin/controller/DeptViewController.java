@@ -60,17 +60,4 @@ public class DeptViewController {
 	}
 
 
-	// 부서 추가
-	@GetMapping("/addDept")
-	public String addDeptPage() {
-		return "admin/dept/addDept";
-	}
-
-	// 부서명 수정
-//	@GetMapping("/dept/edit/{dept_no}")
-//	public String editDeptPage(@PathVariable("dept_no")Long dept_no, Model model){
-//		DepartmentsDto dto = deptService.editDeptName(dept_no);
-//		model.addAttribute("editDept",dto);
-//		return "admin/dept";
-//	}
 }

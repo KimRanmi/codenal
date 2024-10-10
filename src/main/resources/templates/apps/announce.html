@@ -53,6 +53,8 @@ tr {
 					</div>
 					<div class="card-body border border-dashed border-end row justify-content-end">
 							<input type="hidden" th:value="${username}"></input>
+							<input type="hidden" th:value="${#authentication.principal.employeeDto.deptNo}" id="user_dept_no"></input>
+							<input type="hidden" th:value="${#authentication.principal.employeeDto.jobNo}" id="user_job_no"></input>
 							<div class="search col-1 col-sm-3" th:if="${searchDto != null}">
 								<form th:action="@{/announce}" th:object="${searchDto}" method="get">
 
@@ -104,9 +106,11 @@ tr {
 											<td
 												th:text="${(announceList.pageable.pageSize) * (announceList.pageable.pageNumber)+stat.count}"></td>
 											<td th:text="${announce.view_count}"></td>
-											<td><a
-												th:href="@{/announce/detail/{no}(no=${announce.announce_no})}"
-												th:text="${announce.announce_title}"></a></td>
+											<td>
+											    <a th:href="@{/announce/detail/{no}(no=${announce.announce_no})}"
+											       th:text="${announce.announce_title}">
+											    </a>
+											</td>
 											<td th:text="${announce.employee.empName}">작성자이름</td>
 											<td
 												th:text="${#temporals.format(announce.reg_date, 'yy-MM-dd HH:mm:ss')}">작성날짜</td>

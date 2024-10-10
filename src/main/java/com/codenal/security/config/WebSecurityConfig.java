@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.RememberMeConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -43,13 +43,12 @@ public class WebSecurityConfig {
         this.employeeService = employeeService;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityService securityService) throws Exception {
         http
-        // CORS 설정 적용
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .authorizeHttpRequests((requests) -> requests
+            // CORS 설정 적용
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/auth-signin-basic", "/assets/**", "/api/approved-annual-leaves").permitAll()
                 .requestMatchers("/admin/list").permitAll()
                 .requestMatchers("/admin/join").permitAll()
@@ -71,48 +70,51 @@ public class WebSecurityConfig {
                 .requestMatchers("/topbar/**").permitAll()
                 .requestMatchers("/chatList/**", "/chatting").permitAll()
                 .anyRequest().authenticated()
-        )
-        .formLogin(login ->
-            login.loginPage("/auth-signin-basic")
-                .loginProcessingUrl("/auth-signin-basic")
-                .usernameParameter("emp_id")
-                .passwordParameter("emp_pw")
+            )
+            .formLogin(login ->
+                login.loginPage("/auth-signin-basic")
+                    .loginProcessingUrl("/auth-signin-basic")
+                    .usernameParameter("emp_id")
+                    .passwordParameter("emp_pw")
+                    .permitAll()
+                    .defaultSuccessUrl("/", true)
+                    .successHandler(myLoginSuccessHandler()) // 사용자 정의 성공 핸들러
+                    .failureHandler(myLoginFailureHandler())
+            )
+            .logout((logout) -> logout
+                .logoutUrl("/auth-logout-basic")
+                .logoutSuccessUrl("/auth-signin-basic")
+                .invalidateHttpSession(true) // 세션 무효화
+                .deleteCookies("JSESSIONID", "remember-me")// JSESSIONID 쿠키 삭제
                 .permitAll()
-                .defaultSuccessUrl("/", true)
-                .successHandler(myLoginSuccessHandler())
-                .failureHandler(myLoginFailureHandler())
-        )
-        .logout((logout) -> logout
-            .logoutUrl("/auth-logout-basic")
-            .logoutSuccessUrl("/auth-signin-basic?auth-logout-basic=true")
-            .permitAll()
-        )
-        .rememberMe((rememberMe) -> rememberMe
-            .key("uniqueAndSecret")
-            .tokenRepository(tokenRepository())
-            .tokenValiditySeconds(86400 * 7)
-            .userDetailsService(securityService)
-        );
+            )
+            .sessionManagement(session -> session
+                .maximumSessions(1) // 최대 세션 수 설정
+                .maxSessionsPreventsLogin(false) // 기존 세션을 무효화하지 않음
+                .and()
+                .sessionFixation().migrateSession() // 세션 고정 보호
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션이 필요할 때만 생성
+                .invalidSessionUrl("/auth-signin-basic") // 세션이 유효하지 않을 경우 이동할 URL
+                
+                
+            	    )
+            .rememberMe(rememberMe -> rememberMe
+                .key("uniqueAndSecret")
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(24 * 60 * 60) // 1일 동안 유지
+            );
 
-        return http.build(); // SecurityFilterChain 객체를 반환하도록 수정
+        return http.build(); // SecurityFilterChain 객체 반환
     }
-
 
     @Bean
     public MyLoginSuccessHandler myLoginSuccessHandler() {
         return new MyLoginSuccessHandler(employeeService);
     }
 
-    @Bean
+   
     public MyLoginFailureHandler myLoginFailureHandler() {
         return new MyLoginFailureHandler();
-    }
-
-    @Bean
-    public PersistentTokenRepository tokenRepository() {
-        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
-        jdbcTokenRepository.setDataSource(dataSource);
-        return jdbcTokenRepository;
     }
 
     @Bean
@@ -133,7 +135,7 @@ public class WebSecurityConfig {
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
             registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("/classpath:/uploads/");
+                .addResourceLocations("classpath:/uploads/");
         }
     }
 
