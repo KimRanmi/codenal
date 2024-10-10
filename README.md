@@ -1,4 +1,4 @@
-![그룹채팅3](https://github.com/user-attachments/assets/644e6d3d-c434-4888-a60e-37051abf81a3)# 🌐 WithXWork 그룹웨어 사이트
+# 🌐 WithXWork 그룹웨어 사이트
 ![스크린샷 2024-10-10 020547](https://github.com/user-attachments/assets/d47064ac-ae02-446a-aa68-38d2a6b2a08d)
 
 ## 🧐 프로젝트 소개
