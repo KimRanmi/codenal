@@ -125,9 +125,15 @@
 
 ## [채팅]
 ### 1:1 채팅
-와 잠만...
+![일대일채팅1](https://github.com/user-attachments/assets/841561b9-56bd-43f2-97ec-f1f5258cd53b)
 * 네비게이터의 채팅을 누르면 채팅방 조회 페이지로 이동하고, 현재 참여중인 채팅방이 조회 됩니다.
 <br>
+
+![일대일채팅2](https://github.com/user-attachments/assets/9716fe4b-82a4-48a5-ba84-b0254b67a5b1)
+* 
+<br>
+
+
 
 ### 그룹채팅
 <br>
