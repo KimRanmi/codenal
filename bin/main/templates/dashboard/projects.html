@@ -27,9 +27,12 @@
             <div th:replace="partials/page-title :: page-title('메인화면','홈')"></div>
             <!-- end page title -->
 
-            <div class="row project-wrapper">
-                <input type="hidden" id="empId" th:value="${empId}">
-                <!-- 현재 로그인한 사용자 id -->
+            <!-- 현재 로그인한 사용자 id -->
+            <input type="hidden" id="empId" th:value="${empId}">
+            <div class="row project-wrapper text-center" th:if="${empId} == '12345678'" style="align-items: center; height: 670px">
+            	<div class="text-muted" style="font-size: 30px; font-weight: 600;">관리자님, 환영합니다.</div>
+            </div>
+            <div class="row project-wrapper" th:if="${empId} != '12345678'">
 
                 <div class="col-xxl-8">
                     <div class="row">
