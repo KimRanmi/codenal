@@ -31,7 +31,8 @@
 <br>
 
 ![](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
-![](https://img.shields.io/badge/Bootstrap-563D7C?style=for-t림
+
+
 <br>
 
 ## 📅 프로젝트 기간
@@ -53,6 +54,7 @@
 * 직원 관리
 * 부서 관리
 * 알림
+<br>
 
 ## 💻 ERD 설계
 ![image](https://github.com/user-attachments/assets/668b066d-b9c2-47f3-80da-a8b06f9cac28)
