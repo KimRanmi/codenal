@@ -166,6 +166,7 @@
 ![일대일채팅3](https://github.com/user-attachments/assets/5cb33507-5750-41ca-9587-706f7d551b55)
 *
 <br>
+<br>
 
 ### 7-2. 그룹채팅
 ### 7-2-1. 그룹 채팅 이용 및 방 만들기
