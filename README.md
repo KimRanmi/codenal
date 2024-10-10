@@ -40,6 +40,10 @@
 
 <br>
 
+## 📅 프로젝트 기간
+![스크린샷 2024-10-10 102634](https://github.com/user-attachments/assets/adb858c8-d5e0-42f5-93dc-07370922cc07)
+
+<br>
 
 ## 💻 ERD 설계
 ![image](https://github.com/user-attachments/assets/668b066d-b9c2-47f3-80da-a8b06f9cac28)
