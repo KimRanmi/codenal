@@ -31,33 +31,7 @@
 <br>
 
 ![](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
-![](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
-![](https://img.shields.io/badge/Canva-%2300C4CC.svg?&style=for-the-badge&logo=Canva&logoColor=white)
-![](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
-![](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
-![](	https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)
-<br>
-
-<br>
-
-## 📅 프로젝트 기간
-![스크린샷 2024-10-10 102634](https://github.com/user-attachments/assets/adb858c8-d5e0-42f5-93dc-07370922cc07)
-
-<br>
-
-## 주요 기능
-* 로그인
-* 마이 페이지
-* 캘린더
-* 문서함
-* 전자 결재 및 양식 관리
-* 주소록
-* 1:1 채팅과 그룹채팅
-* 근태 관리
-* 게시판
-* 회의실 예약 및 관리
-* 직원 관리
-* 부서관리
+![](https://img.shields.io/badge/Bootstrap-563D7C?style=for-t림
 <br>
 
 ## 💻 ERD 설계
