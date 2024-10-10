@@ -215,9 +215,9 @@
 <br>
 
 ### 9-2. 
-![스크린샷 2024-10-10 031954](https://github.com/user-attachments/assets/8d91e6ae-cabb-4c7f-9c25-b74ba40efaf7)
+![게시판2](https://github.com/user-attachments/assets/f9070b2a-5318-4503-b2c2-dfced3dbc6d5)
 * 게시판에서 글을 작성할 때는 조회 가능한 직원들을 선택하여 권한을 부여할 수 있습니다.
-* 파일 등록 클릭시 이미지와 문서 파일 업로드가 가능합니다다.
+* 권한 설정 선택 후 아무도 선택하지 않는 당면 유효성 검사 메세지가 출력됩니다.
 <br>
 
 ## 10. 회의실 예약
